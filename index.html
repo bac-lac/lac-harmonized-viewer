@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Archives Canada Viewer Demo</title>
+
+	<style type="text/css">
+		html,
+		body {
+			height: 100%;
+		}
+
+		body {
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			padding: 0;
+			margin: 0;
+		}
+	</style>
+
+	<script src="../node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="../dist/vendors/all.js"></script>
+	<script src="../src/main.js"></script>
+	<link href="../dist/archivescanada-viewer.css" rel="stylesheet" type="text/css">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.0/css/ion.rangeSlider.min.css" />
+	<script src="//cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.0/js/ion.rangeSlider.min.js"></script>
+</head>
+
+<body>
+	<div id="av" class="harmonized-viewer" style="height:100%">
+		<div class="harmonized-viewer-spinner">
+			<svg class="spinner" viewBox="0 0 50 50">
+				<circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+			</svg>
+		</div>
+		<div class="harmonized-viewer-header"></div>
+		<div class="harmonized-viewer-columns">
+
+			<div class="harmonized-viewer-main">
+				<nav class="harmonized-viewer-toolbar navbar navbar-expand-lg">
+					<div class="collapse navbar-collapse" id="navbarSupportedContent">
+						<ul class="navbar-nav mr-auto">
+							<li class="nav-item">
+								<a href="javascript:;" class="harmonized-viewer-toolbar-button nav-link"
+									title="Go home">
+									<span class="material-icons">home</span>
+								</a>
+							</li>
+							<li class="separator"></li>
+							<li class="nav-item">
+								<a href="javascript:;" class="harmonized-viewer-toolbar-button nav-link"
+									title="Fullscreen">
+									<span class="material-icons">fullscreen</span>
+								</a>
+							</li>
+						</ul>
+						<ul class="navbar-nav">
+							<li class="harmonized-viewer-toolbar-zoom nav-item" style="width:175px">
+								<input type="text" id="example_id" name="example_name" value="" />
+							</li>
+							<li class="nav-item">
+								<a href="javascript:;" class="harmonized-viewer-toolbar-button nav-link"
+									title="Toggle sidebar">
+									<span class="material-icons">vertical_split</span>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</nav>
+				<div id="openseadragon1" class="harmonized-viewer-viewport"></div>
+			</div>
+			<div class="harmonized-viewer-metadata"></div>
+			
+		</div>
+	</div>
+	</div>
+	<script type="text/javascript">
+		$(function () {
+			// $(window).resize(function () {
+			// 	console.log('res');
+			// 	var viewportHeight = $(this).innerHeight();
+			// 	$(this).find('.harmonized-viewer .harmonized-viewer-viewport').height(viewportHeight);
+			// });
+
+			$('#av').harmonizedViewer({
+				propertyName: "a custom value"
+			});
+		});
+	</script>
+</body>
+
+</html>
