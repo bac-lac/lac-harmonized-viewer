@@ -1,4 +1,5 @@
 .harmonized-viewer {
+  width: 100%;
   display: flex;
   flex-flow: column;
   background: #f6f7fa; }
@@ -50,6 +51,8 @@
       top: 20px; }
     .harmonized-viewer .harmonized-viewer-toolbar-zoom .irs.irs--round .irs-line {
       background-color: rgba(0, 0, 0, 0.05); }
+    .harmonized-viewer .harmonized-viewer-toolbar-zoom .irs.irs--round .irs-bar {
+      background-color: #3a87f2; }
     .harmonized-viewer .harmonized-viewer-toolbar-zoom .irs.irs--round .irs-handle {
       cursor: pointer;
       top: 12px;
@@ -58,11 +61,19 @@
       border: none;
       background-color: #fff; }
   .harmonized-viewer .harmonized-viewer-columns {
-    height: 100%;
-    display: flex; }
+    width: 100%;
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    position: relative; }
   .harmonized-viewer .harmonized-viewer-main {
+    width: 100%;
+    height: 100%;
+    display: flex;
     flex: 3;
-    height: 100%; }
+    flex-flow: column;
+    margin-right: 0;
+    transition: margin 0.2s; }
     .harmonized-viewer .harmonized-viewer-main .error {
       display: flex;
       flex-flow: column;
@@ -78,13 +89,19 @@
         display: block;
         color: rgba(0, 0, 0, 0.5); }
   .harmonized-viewer .harmonized-viewer-viewport {
-    flex: 1;
-    height: 100%; }
+    flex: 1; }
   .harmonized-viewer .openseadragon-canvas {
     outline: none; }
   .harmonized-viewer .harmonized-viewer-metadata {
-    flex: 1 0 0;
-    background: #fff; }
+    position: absolute;
+    right: 0;
+    width: 300px;
+    height: 100%;
+    flex: auto 0 0;
+    background: #fff;
+    transform: translateX(100%);
+    transition: transform 0.2s;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
 
 @keyframes shadow-inset-center {
   0% {
