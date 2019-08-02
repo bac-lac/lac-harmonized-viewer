@@ -13,13 +13,13 @@ module.exports = function (grunt) {
 			dist: {
 				files: [
 					{
-						//src: 'node_modules/bootstrap/dist/js/bootstrap.bundle.js',
-						src: 'node_modules/bootstrap/dist/js/bootstrap.js',
-						dest: 'dist/vendors/bootstrap.js'
+						//src: 'node_modules/bootstrap/dist/js/bootstrap.js',
+						src: 'node_modules/bootstrap/dist/js/bootstrap.bundle.js',
+						dest: 'tmp/vendors/bootstrap.js'
 					},
 					{
 						src: 'node_modules/openseadragon/build/openseadragon/openseadragon.js',
-						dest: 'dist/vendors/openseadragon.js'
+						dest: 'tmp/vendors/openseadragon.js'
 					}
 				]
 			}
@@ -27,12 +27,8 @@ module.exports = function (grunt) {
 
 		// Concat definitions
 		concat: {
-			vendors: {
-				src: ['dist/vendors/*.js'],
-				dest: "dist/vendors/all.js"
-			},
 			dist: {
-				src: ['src/**/*.js'],
+				src: ['src/**/*.js', 'tmp/**/*.js'],
 				dest: "dist/archivescanada-viewer.js"
 			}
 		},
@@ -96,6 +92,16 @@ module.exports = function (grunt) {
 			}
 		},
 
+		// Clean temp folder
+		clean: {
+			tmp: {
+				src: ['tmp']
+			},
+			dist: {
+				src: ['dist']
+			}
+		},
+
 		// watch for changes to source
 		// Better than calling grunt a million times
 		// (call 'grunt watch')
@@ -110,6 +116,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks("grunt-contrib-concat");
 	grunt.loadNpmTasks("grunt-contrib-copy");
 	grunt.loadNpmTasks("grunt-contrib-jshint");
+	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks("grunt-jscs");
 	grunt.loadNpmTasks("grunt-contrib-uglify");
 	grunt.loadNpmTasks("grunt-contrib-cssmin");
@@ -117,6 +124,6 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks("grunt-karma");
 
 	grunt.registerTask("lint", ["jshint", "jscs"]);
-	grunt.registerTask("build", ["copy", "concat", "sass", "uglify", "cssmin"]);
+	grunt.registerTask("build", ["clean:dist", "copy", "concat", "sass", "uglify", "cssmin", "clean:tmp"]);
 	grunt.registerTask("default", ["jshint", "build"]);
 };
