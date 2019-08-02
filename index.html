@@ -18,130 +18,112 @@
 	</style>
 
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-	<script type="text/javascript" src="/dist/archivescanada-viewer.min.js"></script>
-	<link href="/dist/archivescanada-viewer.min.css" rel="stylesheet" type="text/css">
-	
+	<script type="text/javascript" src="/dist/archives-viewer.js"></script>
+	<link href="/dist/archives-viewer.min.css" rel="stylesheet" type="text/css">
+	<link href="/dist/archives-viewer-theme.min.css" rel="stylesheet" type="text/css">
+
 	<link
 		href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp"
 		rel="stylesheet">
-
-	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.0/css/ion.rangeSlider.min.css" />
-	<script src="//cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.0/js/ion.rangeSlider.min.js"></script>
 </head>
 
 <body>
 
-	<div class="mdc-slider" tabindex="0" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
-		aria-label="Select Value">
-		<div class="mdc-slider__track-container">
-			<div class="mdc-slider__track"></div>
-		</div>
-		<div class="mdc-slider__thumb-container">
-			<svg class="mdc-slider__thumb" width="21" height="21">
-				<circle cx="10.5" cy="10.5" r="7.875"></circle>
-			</svg>
-			<div class="mdc-slider__focus-ring"></div>
-		</div>
-	</div>
-
-	<div id="av" class="arviewer" style="height:100%">
-		<div class="arviewer-spinner">
+	<div id="av" class="archv">
+		<div class="archv-spinner">
 			<svg class="spinner" viewBox="0 0 50 50">
 				<circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
 			</svg>
 		</div>
-		<div class="arviewer-header"></div>
-		<div class="arviewer-columns">
-
-			<div class="arviewer-main">
-				<nav class="arviewer-toolbar navbar navbar-expand-lg">
-					<div class="collapse navbar-collapse" id="navbarSupportedContent">
-						<ul class="navbar-nav mr-auto">
-							<li class="nav-item">
-								<a href="javascript:;" class="arviewer-toolbar-button nav-link" title="Previous page">
-									<span class="arviewer-toolbar-button-icon material-icons">chevron_left</span>
-								</a>
-							</li>
-							<li class="arviewer-toolbar-page-number nav-item" style="width:30px">
-								<input type="text" class="arviewer-toolbar-input form-control text-center" value="1" />
-							</li>
-							<li class="nav-item">
-								<span class="navbar-text">
-									of 7
-								</span>
-							</li>
-							<li class="nav-item">
-								<a href="javascript:;" class="arviewer-toolbar-button nav-link" title="Next page">
-									<span class="arviewer-toolbar-button-icon material-icons">chevron_right</span>
-								</a>
-							</li>
-							<li class="separator"></li>
-							<li class="nav-item">
-								<a href="javascript:;" class="arviewer-toolbar-button nav-link" title="Go home">
-									<span class="arviewer-toolbar-button-icon material-icons">home</span>
-								</a>
-							</li>
-							<li class="nav-item dropdown">
-								<a href="javascript:;"
-									class="arviewer-toolbar-button arviewer-toolbar-button-download nav-link dropdown-toggle"
-									title="Download" data-toggle="dropdown">
-									<span class="arviewer-toolbar-button-icon material-icons">save_alt</span>
-									<span class="arviewer-toolbar-button-text">
-										Download
-									</span>
-								</a>
-								<div class="dropdown-menu">
-									<a class="dropdown-item" href="#">Action</a>
-									<a class="dropdown-item" href="#">Another action</a>
-									<div class="dropdown-divider"></div>
-									<a class="dropdown-item" href="#">Something else here</a>
-								</div>
-							</li>
-							<li class="nav-item">
-								<a href="javascript:;" class="arviewer-toolbar-button nav-link"
-									title="Printable version">
-									<span class="arviewer-toolbar-button-icon material-icons">print</span>
-									<span class="arviewer-toolbar-button-text">Printable version</span>
-								</a>
-							</li>
-							<li class="separator"></li>
-							<li class="nav-item">
-								<a href="javascript:;" class="arviewerbutton nav-link" title="Fullscreen">
-									<span class="arviewer-toolbar-button-icon material-icons">fullscreen</span>
-								</a>
-							</li>
-						</ul>
-						<ul class="navbar-nav">
-							<li class="arviewer-toolbar-zoom-value nav-item">
-								<span class="navbar-text" data-bind="zoom"></span>
-							</li>
-							<li class="arviewer-toolbar-zoom nav-item" style="width:175px">
-								<input type="text" id="example_id" name="example_name" value="" />
-							</li>
-							<li class="nav-item">
-								<a href="javascript:;" class="arviewer-toolbar-button nav-link" title="Toggle sidebar">
-									<span class="arviewer-toolbar-button-icon material-icons">vertical_split</span>
-								</a>
-							</li>
-						</ul>
-					</div>
-				</nav>
-				<div id="openseadragon1" class="arviewer-viewport"></div>
+		<div class="archv-head-bar"></div>
+		<nav class="archv-tool-bar navbar navbar-expand-lg">
+			<div class="collapse navbar-collapse">
+				<ul class="navbar-nav mr-auto">
+					<li class="nav-item">
+						<a href="javascript:;" class="nav-link" title="Previous page">
+							<span class="material-icons">chevron_left</span>
+						</a>
+					</li>
+					<li class="archv-tool-bar-page-number nav-item" style="width:30px">
+						<input type="text" class="archv-tool-bar-input form-control text-center" value="1" />
+					</li>
+					<li class="nav-item">
+						<span class="navbar-text">
+							of 7
+						</span>
+					</li>
+					<li class="nav-item">
+						<a href="javascript:;" class="nav-link" title="Next page">
+							<span class="material-icons">chevron_right</span>
+						</a>
+					</li>
+					<li class="separator"></li>
+					<li class="nav-item">
+						<a href="javascript:;" class="nav-link" title="Go home">
+							<span class="material-icons">home</span>
+						</a>
+					</li>
+					<li class="nav-item dropdown">
+						<a href="javascript:;" class="archv-tool-bar-button-download nav-link dropdown-toggle"
+							title="Download" data-toggle="dropdown">
+							<span class="material-icons">file_download</span>
+							<span class="archv-tool-bar-button-text">Download</span>
+						</a>
+						<div class="dropdown-menu">
+							<a class="dropdown-item" href="#">Action</a>
+							<a class="dropdown-item" href="#">Another action</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" href="#">Something else here</a>
+						</div>
+					</li>
+					<li class="nav-item">
+						<a href="javascript:;" class="nav-link" title="Printable version">
+							<span class="material-icons">print</span>
+							<span class="archv-tool-bar-button-text">Printable version</span>
+						</a>
+					</li>
+					<li class="separator"></li>
+					<li class="nav-item">
+						<a href="javascript:;" class="archviewerbutton nav-link" title="Fullscreen">
+							<span class="material-icons">fullscreen</span>
+						</a>
+					</li>
+				</ul>
+				<ul class="navbar-nav">
+					<li class="archv-tool-bar-zoom-value nav-item">
+						<span class="navbar-text" data-bind="zoom"></span>
+					</li>
+					<li class="archv-tool-bar-zoom nav-item" style="width:175px">
+						<input type="text" id="example_id" name="example_name" value="" />
+					</li>
+					<li class="nav-item">
+						<a href="javascript:;" class="nav-link" title="Toggle sidebar">
+							<span class="material-icons">vertical_split</span>
+						</a>
+					</li>
+				</ul>
 			</div>
-			<div class="arviewer-metadata"></div>
+		</nav>
+		<div class="archv-container">
+
+			<div class="archv-main">
+
+				<div id="openseadragon1" class="archv-viewport"></div>
+			</div>
+			<div class="archv-metadata"></div>
 
 		</div>
 	</div>
-	</div>
+
 	<script type="text/javascript">
 		$(function () {
 			// $(window).resize(function () {
 			// 	console.log('res');
 			// 	var viewportHeight = $(this).innerHeight();
-			// 	$(this).find('.arviewer .arviewer-viewport').height(viewportHeight);
+			// 	$(this).find('.archviewer .archv-viewport').height(viewportHeight);
 			// });
 
-			var av = $('#av').harmonizedViewer({
+			var av = $('#av').archivesViewer({
 				propertyName: "a custom value"
 			});
 		});
