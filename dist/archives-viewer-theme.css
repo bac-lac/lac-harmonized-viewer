@@ -1,0 +1,15 @@
+.archv {
+  background-color: #616161; }
+  .archv .archv-head-bar {
+    height: 60px;
+    background-color: #363640; }
+  .archv .archv-tool-bar {
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
+    background-color: #f5f5f5; }
+    .archv .archv-tool-bar .nav-item .nav-link {
+      color: #757575;
+      display: flex;
+      align-items: center; }
+    .archv .archv-tool-bar .separator {
+      width: 1px;
+      background: #d3d3d3; }

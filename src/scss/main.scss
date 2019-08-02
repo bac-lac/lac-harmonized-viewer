@@ -1,34 +1,21 @@
-$prefix: arviewer;
+$prefix: archv;
 
 .#{$prefix} {
   width: 100%;
+  height: 100%;
   display: flex;
   flex-flow: column;
-  background: #f6f7fa;
-
-  & &-header {
-    color: #fff;
-    padding: 0.8rem 1.4rem;
-    background: #2c2c2c;
-  }
 
   & &-toolbar {
-    border-bottom: #d9d8d9 2px solid;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    background: #eee;
-
-    &.navbar {
-      padding: 0.5rem;
-    }
 
     .nav-item,
     .separator {
       margin: 0 0.2rem;
 
-      .navbar-text {
-        padding-left: 0.2rem;
-        padding-right: 0.2rem;
-      }
+      // .navbar-text {
+      //   padding-left: 0.2rem;
+      //   padding-right: 0.2rem;
+      // }
     }
 
     .separator {
@@ -45,10 +32,10 @@ $prefix: arviewer;
       align-items: center;
     }
 
-    .nav-link,
-    .navbar-text {
-      padding: 0.3rem 1rem;
-    }
+    // .nav-link,
+    // .navbar-text {
+    //   padding: 0.3rem 1rem;
+    // }
 
     &-button {
       line-height: 24px;
@@ -153,7 +140,7 @@ $prefix: arviewer;
     }
   }
 
-  & &-columns {
+  & &-container {
     width: 100%;
     flex: 1;
     display: flex;

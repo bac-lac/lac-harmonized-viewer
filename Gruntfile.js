@@ -13,13 +13,24 @@ module.exports = function (grunt) {
 			dist: {
 				files: [
 					{
-						//src: 'node_modules/bootstrap/dist/js/bootstrap.js',
 						src: 'node_modules/bootstrap/dist/js/bootstrap.bundle.js',
-						dest: 'tmp/vendors/bootstrap.js'
+						dest: 'public/vendors/bootstrap/bootstrap.js'
 					},
+					// {
+					// 	src: 'node_modules/@material/**/dist/*.js',
+					// 	dest: 'public/vendors/material.js'
+					// },
 					{
 						src: 'node_modules/openseadragon/build/openseadragon/openseadragon.js',
-						dest: 'tmp/vendors/openseadragon.js'
+						dest: 'public/vendors/openseadragon/openseadragon.js'
+					},
+					{
+						src: 'node_modules/ion-rangeslider/js/ion.rangeSlider.js',
+						dest: 'public/vendors/ionrangeslider/ionrangeslider.js'
+					},
+					{
+						src: 'node_modules/ion-rangeslider/css/ion.rangeSlider.css',
+						dest: 'public/vendors/ionrangeslider/ionrangeslider.css'
 					}
 				]
 			}
@@ -28,8 +39,8 @@ module.exports = function (grunt) {
 		// Concat definitions
 		concat: {
 			dist: {
-				src: ['src/**/*.js', 'tmp/**/*.js'],
-				dest: "dist/archivescanada-viewer.js"
+				src: ['src/**/*.js', 'public/vendors/**/*.js'],
+				dest: "dist/archives-viewer.js"
 			}
 		},
 
@@ -51,8 +62,8 @@ module.exports = function (grunt) {
 		// Minify JS
 		uglify: {
 			dist: {
-				src: ["dist/archivescanada-viewer.js"],
-				dest: "dist/archivescanada-viewer.min.js"
+				src: ["dist/archives-viewer.js"],
+				dest: "dist/archives-viewer.min.js"
 			}
 		},
 
@@ -76,9 +87,14 @@ module.exports = function (grunt) {
 				sourceMap: false
 			},
 			dist: {
-				files: {
-					'dist/archivescanada-viewer.css': 'src/scss/main.scss'
-				}
+				files: [
+					{
+						'dist/archives-viewer.css': 'src/scss/main.scss'
+					},
+					{
+						'dist/archives-viewer-theme.css': 'src/scss/theme.scss'
+					}
+				]
 			}
 		},
 
@@ -94,8 +110,8 @@ module.exports = function (grunt) {
 
 		// Clean temp folder
 		clean: {
-			tmp: {
-				src: ['tmp']
+			public: {
+				src: ['public']
 			},
 			dist: {
 				src: ['dist']
@@ -124,6 +140,6 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks("grunt-karma");
 
 	grunt.registerTask("lint", ["jshint", "jscs"]);
-	grunt.registerTask("build", ["clean:dist", "copy", "concat", "sass", "uglify", "cssmin", "clean:tmp"]);
+	grunt.registerTask("build", ["clean:dist", "copy", "concat", "sass", "uglify", "cssmin", "clean:public"]);
 	grunt.registerTask("default", ["jshint", "build"]);
 };

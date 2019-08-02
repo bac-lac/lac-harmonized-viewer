@@ -49,7 +49,7 @@
             // you can add more functions like the one below and
             // call them like the example below
             //this.yourOtherFunction( "jQuery Boilerplate1112" );
-            
+
             this.initOpenSeadragon();
 
 
@@ -85,7 +85,7 @@
                     openseadragon.viewport.zoomTo(zoom);
                 }
             });
-
+            
             openseadragon.addHandler("open", function () {
                 $(self.element).find(".spinner").hide();
 
@@ -122,32 +122,32 @@
             $(this.element).bind("toggleSidebar", function () {
                 console.log("toggleSidebar");
 
-                var $main = $(this).find(".arviewer-main");
-                var $metadata = $(this).find(".arviewer-metadata");
+                var $main = $(this).find(".archv-main");
+                var $metadata = $(this).find(".archv-metadata");
 
                 var closed = ($main.css("margin-right") === "0px");
 
                 if (!closed) {
                     $main.css("margin-right", "0px");
                     $metadata.css("transform", "translateX(100%)");
-                    $(this).find(".arviewer-toolbar-button").last().removeClass("active");
+                    $(this).find(".archv-toolbar-button").last().removeClass("active");
                 }
                 else {
                     $main.css("margin-right", "300px");
                     $metadata.css("transform", "translateX(0)");
-                    $(this).find(".arviewer-toolbar-button").last().addClass("active");
+                    $(this).find(".archv-toolbar-button").last().addClass("active");
                 }
             });
 
-            $(this.element).find(".arviewer-toolbar-button").eq(0).on("click", function () {
+            $(this.element).find(".archv-toolbar-button").eq(0).on("click", function () {
                 $(this).trigger("myEventStart");
             });
 
-            $(this.element).find(".arviewer-toolbar-button").last().on("click", function () {
+            $(this.element).find(".archv-toolbar-button").last().on("click", function () {
                 $(this).trigger("toggleSidebar");
             });
 
-            //$(this.element).find(".arviewer-metadata").hide();
+            //$(this.element).find(".archv-metadata").hide();
         },
 
 
@@ -200,11 +200,11 @@
 
         errror: function () {
             var $error = $("<div class=\"error\"><span class=\"error-icon material-icons\">error_outline</span><div class=\"error-text\">An unexpected error occurred.<br />Please try again later.</div></div>");
-            $(this.element).find(".arviewer").append($error);
+            $(this.element).find(".archv").append($error);
         }
     });
 
-    $.fn.harmonizedViewer = function (options) {
+    $.fn.archivesViewer = function (options) {
         return this.each(function () {
             if (!$.data(this, "plugin_" + pluginName)) {
                 $.data(this, "plugin_" +
