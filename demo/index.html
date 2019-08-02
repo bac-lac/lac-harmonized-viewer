@@ -21,57 +21,115 @@
 	<script src="../dist/vendors/all.js"></script>
 	<script src="../src/main.js"></script>
 	<link href="../dist/archivescanada-viewer.css" rel="stylesheet" type="text/css">
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link
+		href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp"
+		rel="stylesheet">
 
 	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.0/css/ion.rangeSlider.min.css" />
 	<script src="//cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.0/js/ion.rangeSlider.min.js"></script>
 </head>
 
 <body>
-	<div id="av" class="harmonized-viewer" style="height:100%">
-		<div class="harmonized-viewer-spinner">
+
+	<div class="mdc-slider" tabindex="0" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+		aria-label="Select Value">
+		<div class="mdc-slider__track-container">
+			<div class="mdc-slider__track"></div>
+		</div>
+		<div class="mdc-slider__thumb-container">
+			<svg class="mdc-slider__thumb" width="21" height="21">
+				<circle cx="10.5" cy="10.5" r="7.875"></circle>
+			</svg>
+			<div class="mdc-slider__focus-ring"></div>
+		</div>
+	</div>
+
+	<div id="av" class="arviewer" style="height:100%">
+		<div class="arviewer-spinner">
 			<svg class="spinner" viewBox="0 0 50 50">
 				<circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
 			</svg>
 		</div>
-		<div class="harmonized-viewer-header"></div>
-		<div class="harmonized-viewer-columns">
+		<div class="arviewer-header"></div>
+		<div class="arviewer-columns">
 
-			<div class="harmonized-viewer-main">
-				<nav class="harmonized-viewer-toolbar navbar navbar-expand-lg">
+			<div class="arviewer-main">
+				<nav class="arviewer-toolbar navbar navbar-expand-lg">
 					<div class="collapse navbar-collapse" id="navbarSupportedContent">
 						<ul class="navbar-nav mr-auto">
 							<li class="nav-item">
-								<a href="javascript:;" class="harmonized-viewer-toolbar-button nav-link"
-									title="Go home">
-									<span class="material-icons">home</span>
+								<a href="javascript:;" class="arviewer-toolbar-button nav-link" title="Previous page">
+									<span class="arviewer-toolbar-button-icon material-icons">chevron_left</span>
+								</a>
+							</li>
+							<li class="arviewer-toolbar-page-number nav-item" style="width:30px">
+								<input type="text" class="arviewer-toolbar-input form-control text-center" value="1" />
+							</li>
+							<li class="nav-item">
+								<span class="navbar-text">
+									of 7
+								</span>
+							</li>
+							<li class="nav-item">
+								<a href="javascript:;" class="arviewer-toolbar-button nav-link" title="Next page">
+									<span class="arviewer-toolbar-button-icon material-icons">chevron_right</span>
 								</a>
 							</li>
 							<li class="separator"></li>
 							<li class="nav-item">
-								<a href="javascript:;" class="harmonized-viewer-toolbar-button nav-link"
-									title="Fullscreen">
-									<span class="material-icons">fullscreen</span>
+								<a href="javascript:;" class="arviewer-toolbar-button nav-link" title="Go home">
+									<span class="arviewer-toolbar-button-icon material-icons">home</span>
+								</a>
+							</li>
+							<li class="nav-item dropdown">
+								<a href="javascript:;"
+									class="arviewer-toolbar-button arviewer-toolbar-button-download nav-link dropdown-toggle"
+									title="Download" data-toggle="dropdown">
+									<span class="arviewer-toolbar-button-icon material-icons">save_alt</span>
+									<span class="arviewer-toolbar-button-text">
+										Download
+									</span>
+								</a>
+								<div class="dropdown-menu">
+									<a class="dropdown-item" href="#">Action</a>
+									<a class="dropdown-item" href="#">Another action</a>
+									<div class="dropdown-divider"></div>
+									<a class="dropdown-item" href="#">Something else here</a>
+								</div>
+							</li>
+							<li class="nav-item">
+								<a href="javascript:;" class="arviewer-toolbar-button nav-link"
+									title="Printable version">
+									<span class="arviewer-toolbar-button-icon material-icons">print</span>
+									<span class="arviewer-toolbar-button-text">Printable version</span>
+								</a>
+							</li>
+							<li class="separator"></li>
+							<li class="nav-item">
+								<a href="javascript:;" class="arviewerbutton nav-link" title="Fullscreen">
+									<span class="arviewer-toolbar-button-icon material-icons">fullscreen</span>
 								</a>
 							</li>
 						</ul>
 						<ul class="navbar-nav">
-							<li class="harmonized-viewer-toolbar-zoom nav-item" style="width:175px">
+							<li class="arviewer-toolbar-zoom-value nav-item">
+								<span class="navbar-text" data-bind="zoom"></span>
+							</li>
+							<li class="arviewer-toolbar-zoom nav-item" style="width:175px">
 								<input type="text" id="example_id" name="example_name" value="" />
 							</li>
 							<li class="nav-item">
-								<a href="javascript:;" class="harmonized-viewer-toolbar-button nav-link"
-									title="Toggle sidebar">
-									<span class="material-icons">vertical_split</span>
+								<a href="javascript:;" class="arviewer-toolbar-button nav-link" title="Toggle sidebar">
+									<span class="arviewer-toolbar-button-icon material-icons">vertical_split</span>
 								</a>
 							</li>
 						</ul>
 					</div>
 				</nav>
-				<div id="openseadragon1" class="harmonized-viewer-viewport"></div>
+				<div id="openseadragon1" class="arviewer-viewport"></div>
 			</div>
-			<div class="harmonized-viewer-metadata"></div>
-			
+			<div class="arviewer-metadata"></div>
+
 		</div>
 	</div>
 	</div>
@@ -80,12 +138,12 @@
 			// $(window).resize(function () {
 			// 	console.log('res');
 			// 	var viewportHeight = $(this).innerHeight();
-			// 	$(this).find('.harmonized-viewer .harmonized-viewer-viewport').height(viewportHeight);
+			// 	$(this).find('.arviewer .arviewer-viewport').height(viewportHeight);
 			// });
 
 			var av = $('#av').harmonizedViewer({
 				propertyName: "a custom value"
-            });
+			});
 		});
 	</script>
 </body>

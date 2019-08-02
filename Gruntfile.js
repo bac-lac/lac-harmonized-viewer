@@ -13,10 +13,13 @@ module.exports = function (grunt) {
 			dist: {
 				files: [
 					{
-						expand: true,
-						cwd: 'node_modules/openseadragon/build/openseadragon',
-						src: 'openseadragon.min.js',
-						dest: 'dist/vendors'
+						//src: 'node_modules/bootstrap/dist/js/bootstrap.bundle.js',
+						src: 'node_modules/bootstrap/dist/js/bootstrap.js',
+						dest: 'dist/vendors/bootstrap.js'
+					},
+					{
+						src: 'node_modules/openseadragon/build/openseadragon/openseadragon.js',
+						dest: 'dist/vendors/openseadragon.js'
 					}
 				]
 			}

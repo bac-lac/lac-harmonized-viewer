@@ -1,4 +1,4 @@
-$prefix: harmonized-viewer;
+$prefix: arviewer;
 
 .#{$prefix} {
   width: 100%;
@@ -14,22 +14,44 @@ $prefix: harmonized-viewer;
 
   & &-toolbar {
     border-bottom: #d9d8d9 2px solid;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     background: #eee;
 
     &.navbar {
       padding: 0.5rem;
     }
 
-    li {
-      margin-right: 0.3rem;
+    .nav-item,
+    .separator {
+      margin: 0 0.2rem;
+
+      .navbar-text {
+        padding-left: 0.2rem;
+        padding-right: 0.2rem;
+      }
     }
 
-    li.separator {
-      border-right: #d9d8d9 1px solid;
+    .separator {
+      width: 1px;
+      background: #d9d8d9;
+    }
+
+    .nav-item.dropdown .dropdown-menu {
+      border-radius: 2px;
+    }
+
+    &-page-number {
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-link,
+    .navbar-text {
+      padding: 0.3rem 1rem;
     }
 
     &-button {
+      line-height: 24px;
       text-decoration: none;
       border: transparent 1px solid;
       border-radius: 2px;
@@ -71,13 +93,42 @@ $prefix: harmonized-viewer;
       left: 0.5px;
     }
 
+    &-button-download.dropdown-toggle::after {
+      color: rgba(0, 0, 0, 0.3);
+      content: "expand_more";
+      font-family: "Material Icons";
+      border: none;
+    }
+
+    &-button-icon {
+      width: 24px;
+      font-size: 24px;
+    }
+
+    &-button-text {
+      margin-left: 0.3rem;
+    }
+
+    &-input {
+      height: auto;
+      padding: 1px 0.75rem;
+      margin: 0;
+      border: none;
+      background-color: #d9d8d9;
+      transition: background-color 0.2s;
+    }
+
+    &-input:hover {
+      background-color: #fff;
+    }
+
     &-zoom .irs.irs--round {
       height: 26px;
     }
 
     &-zoom .irs.irs--round .irs-line,
     &-zoom .irs.irs--round .irs-bar {
-      top: 20px;
+      top: 17px;
     }
 
     &-zoom .irs.irs--round .irs-line {
@@ -90,11 +141,15 @@ $prefix: harmonized-viewer;
 
     &-zoom .irs.irs--round .irs-handle {
       cursor: pointer;
-      top: 12px;
+      top: 9px;
       width: 20px;
       height: 20px;
-      border: none;
-      background-color: #fff;
+      border: #fff 5px solid;
+      background-image: linear-gradient(#e5e5e5, #fff);
+    }
+
+    &-zoom .irs.irs--round .irs-handle:active {
+      background-image: linear-gradient(#d5d5d5, #fff);
     }
   }
 

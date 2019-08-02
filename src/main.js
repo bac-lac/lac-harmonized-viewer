@@ -22,8 +22,7 @@
 
     var zoomSlider;
     var $zoomSlider;
-    var isZoomSliderActive = false;
-    //var zoomSliderValue;
+    var zoomSliderActive = false;
 
     // The actual plugin constructor
     function Plugin(element, options) {
@@ -50,8 +49,9 @@
             // you can add more functions like the one below and
             // call them like the example below
             //this.yourOtherFunction( "jQuery Boilerplate1112" );
+            
+            this.initOpenSeadragon();
 
-            console.log("init");
 
             var self = this;
 
@@ -64,30 +64,26 @@
                 hide_min_max: true,
                 hide_from_to: true,
                 onFinish: function () {
-                    console.log("slider finish");
-                    isZoomSliderActive = false;
+                    zoomSliderActive = false;
                 }
             }).data("ionRangeSlider");
 
-            $(document).on("mousedown", "#av .irs-handle", function () {
-                console.log("slider start");
-                isZoomSliderActive = true;
-            });
+            // $(document).on("mousedown", "#av .irs-handle", function () {
+            //     console.log("slider start");
+            // });
+            // $(document).on("click", "#av .irs-line", function () {
+            //     console.log("slider click");
+            // });
 
             $zoomSlider.on("change", function () {
-                if (isZoomSliderActive === true) {
+                //console.log("zoom slider change");
+                //console.log(zoomSlider.is_active);
+
+                if (zoomSlider.is_active === true || zoomSlider.is_click === true) {
+                    zoomSliderActive = true;
                     var zoom = $(this).prop("value");
                     openseadragon.viewport.zoomTo(zoom);
                 }
-            });
-
-            openseadragon = new OpenSeadragon({
-                id: "openseadragon1",
-                prefixUrl: "../node_modules/openseadragon/build/openseadragon/images/",
-                tileSources: "https://openseadragon.github.io/example-images/highsmith/highsmith.dzi",
-                showNavigator: true,
-                navigatorPosition: "BOTTOM_RIGHT",
-                showNavigationControl: false
             });
 
             openseadragon.addHandler("open", function () {
@@ -96,7 +92,7 @@
                 var minZoom = openseadragon.viewport.getMinZoom();
                 var maxZoom = openseadragon.viewport.getMaxZoom();
 
-                zoomSlider.update({ min: minZoom, max: maxZoom, step: (maxZoom / 100) });
+                zoomSlider.update({ min: minZoom, max: maxZoom, step: (maxZoom / 100), from: minZoom });
 
                 // var elem = $("<div style=\"width:100px; height:100px; background:green;\">aaa<input type=text></div>")[0];
                 // openseadragon.viewport.viewer.addOverlay(elem, new OpenSeadragon.Rect(0.33, 0.75, 0.2, 0.25), OpenSeadragon.Placement.CENTER);
@@ -108,9 +104,7 @@
             });
 
             openseadragon.addHandler("animation", function () {
-                if (isZoomSliderActive === false) {
-                    self.updateZoom();
-                }
+                self.refreshZoomSlider();
             });
 
             //subscribe to 'myEventStart'
@@ -128,56 +122,85 @@
             $(this.element).bind("toggleSidebar", function () {
                 console.log("toggleSidebar");
 
-                var $main = $(this).find(".harmonized-viewer-main");
-                var $metadata = $(this).find(".harmonized-viewer-metadata");
-                
+                var $main = $(this).find(".arviewer-main");
+                var $metadata = $(this).find(".arviewer-metadata");
+
                 var closed = ($main.css("margin-right") === "0px");
 
                 if (!closed) {
                     $main.css("margin-right", "0px");
                     $metadata.css("transform", "translateX(100%)");
-                    $(this).find(".harmonized-viewer-toolbar-button").last().removeClass("active");
+                    $(this).find(".arviewer-toolbar-button").last().removeClass("active");
                 }
                 else {
                     $main.css("margin-right", "300px");
                     $metadata.css("transform", "translateX(0)");
-                    $(this).find(".harmonized-viewer-toolbar-button").last().addClass("active");
+                    $(this).find(".arviewer-toolbar-button").last().addClass("active");
                 }
             });
 
-            $(this.element).find(".harmonized-viewer-toolbar-button").eq(0).on("click", function () {
+            $(this.element).find(".arviewer-toolbar-button").eq(0).on("click", function () {
                 $(this).trigger("myEventStart");
             });
 
-            $(this.element).find(".harmonized-viewer-toolbar-button").last().on("click", function () {
+            $(this.element).find(".arviewer-toolbar-button").last().on("click", function () {
                 $(this).trigger("toggleSidebar");
             });
 
-            //$(this.element).find(".harmonized-viewer-metadata").hide();
-        },
-        yourOtherFunction: function (text) {
-
-            // some logic
-            $(this.element).text(text);
+            //$(this.element).find(".arviewer-metadata").hide();
         },
 
-        updateZoom: function () {
 
-            // Get current and target zoom values (before and after animations)
-            var current = openseadragon.viewport.getZoom(true);
+        initOpenSeadragon: function () {
+
+            openseadragon = new OpenSeadragon({
+                id: "openseadragon1",
+                prefixUrl: "../node_modules/openseadragon/build/openseadragon/images/",
+                tileSources: "https://openseadragon.github.io/example-images/highsmith/highsmith.dzi",
+                showNavigator: true,
+                navigatorPosition: "BOTTOM_RIGHT",
+                showNavigationControl: false,
+                minZoomImageRatio: 1.0
+            });
+        },
+
+        initZoomSliders: function () {
+
+        },
+
+        refreshZoomSlider: function () {
+
+            var minZoom = openseadragon.viewport.getMinZoom();
+            var maxZoom = openseadragon.viewport.getMaxZoom();
+
             var target = openseadragon.viewport.getZoom(false);
 
-            var zoomSliderValue = $zoomSlider.prop("value");
+            var diff = (maxZoom - minZoom);
+            var ratio = (target !== minZoom) ? (diff > 0) ? Math.round((target - minZoom) * 100 / diff, 0) : 0 : 0;
 
-            // Don't update the slider when slider value is equal to target zoom value
-            if (zoomSliderValue !== target) {
-                zoomSlider.update({ from: current });
+            $("*[data-bind='zoom']").each(function (index, elem) {
+                $(elem).text(ratio + "%");
+            });
+
+            if (zoomSlider.is_active === false && zoomSlider.is_click === false && zoomSliderActive === false) {
+
+                //console.log(openseadragon);
+
+                // Get current and target zoom values (before and after animations)
+                var current = openseadragon.viewport.getZoom(true);
+
+                //console.log(current, target);
+
+                // Don't update the slider when slider value is equal to target zoom value
+                if (current !== target) {
+                    zoomSlider.update({ from: target });
+                }
             }
         },
 
         errror: function () {
             var $error = $("<div class=\"error\"><span class=\"error-icon material-icons\">error_outline</span><div class=\"error-text\">An unexpected error occurred.<br />Please try again later.</div></div>");
-            $(this.element).find(".harmonized-viewer").append($error);
+            $(this.element).find(".arviewer").append($error);
         }
     });
 
