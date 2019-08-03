@@ -16,21 +16,17 @@ module.exports = function (grunt) {
 						src: 'node_modules/bootstrap/dist/js/bootstrap.bundle.js',
 						dest: 'public/vendors/bootstrap/bootstrap.js'
 					},
-					// {
-					// 	src: 'node_modules/@material/**/dist/*.js',
-					// 	dest: 'public/vendors/material.js'
-					// },
 					{
 						src: 'node_modules/openseadragon/build/openseadragon/openseadragon.js',
 						dest: 'public/vendors/openseadragon/openseadragon.js'
 					},
 					{
-						src: 'node_modules/ion-rangeslider/js/ion.rangeSlider.js',
-						dest: 'public/vendors/ionrangeslider/ionrangeslider.js'
+						src: 'node_modules/material-design-lite/material.css',
+						dest: 'public/vendors/material-design-lite/material.css'
 					},
 					{
-						src: 'node_modules/ion-rangeslider/css/ion.rangeSlider.css',
-						dest: 'public/vendors/ionrangeslider/ionrangeslider.css'
+						src: 'node_modules/material-design-lite/material.js',
+						dest: 'public/vendors/material-design-lite/material.js'
 					}
 				]
 			}
@@ -84,7 +80,7 @@ module.exports = function (grunt) {
 		sass: {
 			options: {
 				implementation: sass,
-				sourceMap: false
+				sourceMap: true
 			},
 			dist: {
 				files: [

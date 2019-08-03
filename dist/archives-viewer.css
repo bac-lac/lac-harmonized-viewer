@@ -1,161 +1,3 @@
-.archv {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-flow: column; }
-  .archv .archv-toolbar .nav-item,
-  .archv .archv-toolbar .separator {
-    margin: 0 0.2rem; }
-  .archv .archv-toolbar .separator {
-    width: 1px;
-    background: #d9d8d9; }
-  .archv .archv-toolbar .nav-item.dropdown .dropdown-menu {
-    border-radius: 2px; }
-  .archv .archv-toolbar-page-number {
-    display: flex;
-    align-items: center; }
-  .archv .archv-toolbar-button {
-    line-height: 24px;
-    text-decoration: none;
-    border: transparent 1px solid;
-    border-radius: 2px;
-    background: transparent; }
-    .archv .archv-toolbar-button:link, .archv .archv-toolbar-button:visited {
-      color: #6c6c6c; }
-    .archv .archv-toolbar-button.nav-link {
-      display: flex;
-      align-items: center; }
-    .archv .archv-toolbar-button.active {
-      animation: shadow-inset-center 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-      border-color: #bbb;
-      background: #d9d8d9; }
-  .archv .archv-toolbar-button:hover {
-    cursor: pointer;
-    background: #d9d8d9;
-    transition: background-color linear 0.2s; }
-  .archv .archv-toolbar-button:active {
-    color: #3c3c3c;
-    border-color: #bbb;
-    background: #d9d8d9;
-    animation: shadow-inset-center 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
-  .archv .archv-toolbar-button:active span {
-    position: relative;
-    top: 0.5px;
-    left: 0.5px; }
-  .archv .archv-toolbar-button-download.dropdown-toggle::after {
-    color: rgba(0, 0, 0, 0.3);
-    content: "expand_more";
-    font-family: "Material Icons";
-    border: none; }
-  .archv .archv-toolbar-button-icon {
-    width: 24px;
-    font-size: 24px; }
-  .archv .archv-toolbar-button-text {
-    margin-left: 0.3rem; }
-  .archv .archv-toolbar-input {
-    height: auto;
-    padding: 1px 0.75rem;
-    margin: 0;
-    border: none;
-    background-color: #d9d8d9;
-    transition: background-color 0.2s; }
-  .archv .archv-toolbar-input:hover {
-    background-color: #fff; }
-  .archv .archv-toolbar-zoom .irs.irs--round {
-    height: 26px; }
-  .archv .archv-toolbar-zoom .irs.irs--round .irs-line,
-  .archv .archv-toolbar-zoom .irs.irs--round .irs-bar {
-    top: 17px; }
-  .archv .archv-toolbar-zoom .irs.irs--round .irs-line {
-    background-color: rgba(0, 0, 0, 0.05); }
-  .archv .archv-toolbar-zoom .irs.irs--round .irs-bar {
-    background-color: #3a87f2; }
-  .archv .archv-toolbar-zoom .irs.irs--round .irs-handle {
-    cursor: pointer;
-    top: 9px;
-    width: 20px;
-    height: 20px;
-    border: #fff 5px solid;
-    background-image: linear-gradient(#e5e5e5, #fff); }
-  .archv .archv-toolbar-zoom .irs.irs--round .irs-handle:active {
-    background-image: linear-gradient(#d5d5d5, #fff); }
-  .archv .archv-container {
-    width: 100%;
-    flex: 1;
-    display: flex;
-    overflow: hidden;
-    position: relative; }
-  .archv .archv-main {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex: 3;
-    flex-flow: column;
-    margin-right: 0;
-    transition: margin 0.2s; }
-    .archv .archv-main .error {
-      display: flex;
-      flex-flow: column;
-      text-align: center; }
-      .archv .archv-main .error-icon {
-        display: block;
-        cursor: default;
-        user-select: none;
-        color: rgba(0, 0, 0, 0.15);
-        font-size: 5rem;
-        margin-bottom: 1rem; }
-      .archv .archv-main .error-text {
-        display: block;
-        color: rgba(0, 0, 0, 0.5); }
-  .archv .archv-viewport {
-    flex: 1; }
-  .archv .openseadragon-canvas {
-    outline: none; }
-  .archv .archv-metadata {
-    position: absolute;
-    right: 0;
-    width: 300px;
-    height: 100%;
-    flex: auto 0 0;
-    background: #fff;
-    transform: translateX(100%);
-    transition: transform 0.2s;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
-
-@keyframes shadow-inset-center {
-  0% {
-    box-shadow: inset 0 0 0 0 rgba(0, 0, 0, 0); }
-  100% {
-    box-shadow: inset 0 0 14px 0px rgba(0, 0, 0, 0.2); } }
-  .archv .spinner {
-    animation: rotate 2s linear infinite;
-    z-index: 2;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin: -25px 0 0 -25px;
-    width: 50px;
-    height: 50px; }
-  .archv .spinner .path {
-    stroke: #3a87f2;
-    stroke-linecap: round;
-    animation: dash 1.5s ease-in-out infinite; }
-
-@keyframes rotate {
-  100% {
-    transform: rotate(360deg); } }
-
-@keyframes dash {
-  0% {
-    stroke-dasharray: 1, 150;
-    stroke-dashoffset: 0; }
-  50% {
-    stroke-dasharray: 90, 150;
-    stroke-dashoffset: -35; }
-  100% {
-    stroke-dasharray: 90, 150;
-    stroke-dashoffset: -124; } }
-
 /*!
  * Bootstrap v4.3.1 (https://getbootstrap.com/)
  * Copyright 2011-2019 The Bootstrap Authors
@@ -7177,3 +7019,35 @@ a.text-dark:hover, a.text-dark:focus {
   .table .thead-dark th {
     color: inherit;
     border-color: #dee2e6; } }
+
+.av-viewer {
+  width: 100%;
+  height: 100%; }
+  .av-viewer .av-toolbar .mdl-navigation__item {
+    padding: 0;
+    line-height: initial; }
+  .av-viewer .av-drawer-button,
+  .av-viewer .av-drawer {
+    left: initial;
+    right: 0; }
+  .av-viewer .av-drawer {
+    width: 390px;
+    transform: translateX(400px); }
+  .av-viewer .av-content {
+    height: 100%; }
+  .av-viewer .av-viewport {
+    flex-grow: 1;
+    height: 100%; }
+    .av-viewer .av-viewport .av-spinner {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center; }
+      .av-viewer .av-viewport .av-spinner .mdl-spinner {
+        width: 50px;
+        height: 50px; }
+  .av-viewer .openseadragon-canvas {
+    outline: none; }
+
+/*# sourceMappingURL=archives-viewer.css.map */

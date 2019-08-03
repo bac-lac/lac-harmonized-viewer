@@ -1,15 +1,21 @@
-.archv {
-  background-color: #616161; }
-  .archv .archv-head-bar {
-    height: 60px;
-    background-color: #363640; }
-  .archv .archv-tool-bar {
-    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
-    background-color: #f5f5f5; }
-    .archv .archv-tool-bar .nav-item .nav-link {
-      color: #757575;
-      display: flex;
-      align-items: center; }
-    .archv .archv-tool-bar .separator {
-      width: 1px;
-      background: #d3d3d3; }
+.av-viewer {
+  background-color: #525252; }
+  .av-viewer .av-header {
+    background-color: #222; }
+  .av-viewer .av-toolbar {
+    height: 50px;
+    padding-left: 0.6rem;
+    padding-right: 0.6rem;
+    border-top: #111 1px solid;
+    border-bottom: #111 1px solid;
+    background-color: #2c2c2c; }
+    .av-viewer .av-toolbar .mdl-button {
+      color: #8c8c8c;
+      min-width: 50px; }
+  .av-viewer .av-spinner .mdl-spinner .mdl-spinner__layer {
+    border-color: #e0e0e0;
+    border-width: 5px; }
+    .av-viewer .av-spinner .mdl-spinner .mdl-spinner__layer .mdl-spinner__circle-clipper .mdl-spinner__circle {
+      border-width: 5px; }
+
+/*# sourceMappingURL=archives-viewer-theme.css.map */
