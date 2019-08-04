@@ -1,14 +1,14 @@
 .av-viewer {
   background-color: #f5f5f5; }
   .av-viewer .av-header {
-    background-color: #146094; }
+    background-color: #16a085; }
   .av-viewer .av-toolbar {
     height: 50px;
-    padding-left: 0.6rem;
-    padding-right: 0.6rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
     border-top: #e2e2e2 1px solid;
     border-bottom: #e2e2e2 1px solid;
-    background-color: #cccccc; }
+    background-color: #dcdcdc; }
     .av-viewer .av-toolbar .mdl-button {
       color: #5c5c5c;
       min-width: 40px;

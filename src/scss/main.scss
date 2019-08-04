@@ -12,6 +12,13 @@
   }
 }
 
+.#{$ns}-header {
+  .mdl-layout__header-row {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
 .#{$ns}-toolbar {
   .mdl-navigation__item {
     padding: 0;
@@ -24,7 +31,7 @@
   right: -300px;
   height: 100%;
   position: fixed;
-  border-left: #eee 2px solid;
+  border-left: #f2f2f2 2px solid;
   background: #fff;
   transition: right 0.5s ease;
 
@@ -84,5 +91,5 @@
 .#{$ns}-error {
   padding: 1.2rem 1.8rem;
   color: #b00020;
-  background-color: rgba(176, 0, 32, .1);
+  background-color: rgba(176, 0, 32, 0.1);
 }
