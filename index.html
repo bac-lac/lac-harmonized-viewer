@@ -52,94 +52,36 @@
 			</div>
 
 			<div class="av-toolbar mdl-layout__header-row">
-				<button type="button" class="mdl-button" data-bind="home" title="Go home">
+				<button type="button" class="mdl-button mdl-js-button mdl-js-ripple-effect" data-toggle="sidebar"
+					title="Go home">
 					<i class="material-icons">home</i>
 				</button>
 				<div class="mdl-layout-spacer"></div>
-				<button type="button" class="mdl-button" data-bind="home" title="Show/hide sidebar">
+				<button type="button" class="mdl-button mdl-js-button mdl-js-ripple-effect" data-toggle="sidebar"
+					title="Show/hide sidebar">
 					<i class="material-icons">vertical_split</i>
 				</button>
-				<!-- 					<div class="collapse navbar-collapse">
-						<ul class="navbar-nav mr-auto">
-							<li class="nav-item">
-								<a href="javascript:;" class="nav-link" title="Previous page">
-									<span class="material-icons">chevron_left</span>
-								</a>
-							</li>
-							<li class="av-tool-bar-page-number nav-item" style="width:30px">
-								<input type="text" class="av-tool-bar-input form-control text-center" value="1" />
-							</li>
-							<li class="nav-item">
-								<span class="navbar-text">
-									of 7
-								</span>
-							</li>
-							<li class="nav-item">
-								<a href="javascript:;" class="nav-link" title="Next page">
-									<span class="material-icons">chevron_right</span>
-								</a>
-							</li>
-							<li class="separator"></li>
-							<li class="nav-item">
-								<a href="javascript:;" class="nav-link" title="Go home">
-									<span class="material-icons">home</span>
-								</a>
-							</li>
-							<li class="nav-item dropdown">
-								<a href="javascript:;" class="av-tool-bar-button-download nav-link dropdown-toggle"
-									title="Download" data-toggle="dropdown">
-									<span class="material-icons">file_download</span>
-									<span class="av-tool-bar-button-text">Download</span>
-								</a>
-								<div class="dropdown-menu">
-									<a class="dropdown-item" href="#">Action</a>
-									<a class="dropdown-item" href="#">Another action</a>
-									<div class="dropdown-divider"></div>
-									<a class="dropdown-item" href="#">Something else here</a>
-								</div>
-							</li>
-							<li class="nav-item">
-								<a href="javascript:;" class="nav-link" title="Printable version">
-									<span class="material-icons">print</span>
-									<span class="av-tool-bar-button-text">Printable version</span>
-								</a>
-							</li>
-							<li class="separator"></li>
-							<li class="nav-item">
-								<a href="javascript:;" class="archviewerbutton nav-link" title="Fullscreen">
-									<span class="material-icons">fullscreen</span>
-								</a>
-							</li>
-						</ul>
-						<ul class="navbar-nav">
-							<li class="av-tool-bar-zoom-value nav-item">
-								<span class="navbar-text" data-bind="zoom"></span>
-							</li>
-							<li class="av-tool-bar-zoom nav-item" style="width:175px">
-								<input type="text" id="example_id" name="example_name" value="" />
-							</li>
-							<li class="nav-item">
-								<a href="javascript:;" class="nav-link" title="Toggle sidebar">
-									<span class="material-icons">vertical_split</span>
-								</a>
-							</li>
-						</ul>
-					</div> -->
 			</div>
 		</header>
 
-		<main class="mdl-layout__content">
-			<div class="av-content mdl-grid mdl-grid--no-spacing">
+		<main class="av-main">
 
-				<div id="openseadragon1" class="av-viewport mdl-cell mdl-cell--middle">
-					<div class="av-spinner" style="opacity:0;">
-						<div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
+			<!-- <div class="av-error">
+			</div> -->
+
+			<div class="av-content">
+
+				<div class="av-viewport">
+					<div id="openseadragon1" style="width:100%; height:100%;">
+						<div class="av-spinner">
+							<div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
+						</div>
 					</div>
 				</div>
 
 			</div>
-			<aside class="av-drawer mdl-layout__drawer mdl-layout__drawer--right">
-				<span class="mdl-layout-title">Title</span>
+			<aside class="av-sidebar">
+				<h4 class="mdl-layout-title">Title</h4>
 				<nav class="mdl-navigation">
 					<a class="mdl-navigation__link" href="">Link</a>
 					<a class="mdl-navigation__link" href="">Link</a>
@@ -152,7 +94,7 @@
 
 	<script type="text/javascript">
 		$(function () {
-			var av = $('#av').archivesViewer({
+			av = $('#av').archivesViewer({
 				propertyName: "a custom value"
 			});
 		});
