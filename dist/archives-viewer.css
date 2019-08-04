@@ -7022,32 +7022,65 @@ a.text-dark:hover, a.text-dark:focus {
 
 .av-viewer {
   width: 100%;
-  height: 100%; }
-  .av-viewer .av-toolbar .mdl-navigation__item {
-    padding: 0;
-    line-height: initial; }
-  .av-viewer .av-drawer-button,
-  .av-viewer .av-drawer {
-    left: initial;
-    right: 0; }
-  .av-viewer .av-drawer {
-    width: 390px;
-    transform: translateX(400px); }
-  .av-viewer .av-content {
-    height: 100%; }
-  .av-viewer .av-viewport {
-    flex-grow: 1;
-    height: 100%; }
-    .av-viewer .av-viewport .av-spinner {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center; }
-      .av-viewer .av-viewport .av-spinner .mdl-spinner {
-        width: 50px;
-        height: 50px; }
+  height: 100%;
+  display: flex;
+  flex-flow: row; }
   .av-viewer .openseadragon-canvas {
     outline: none; }
+
+.av-toolbar .mdl-navigation__item {
+  padding: 0;
+  line-height: initial; }
+
+.av-sidebar {
+  width: 300px;
+  right: -300px;
+  height: 100%;
+  position: fixed;
+  border-left: #eee 2px solid;
+  background: #fff;
+  transition: right 0.5s ease; }
+  .av-sidebar.av-sidebar--opened {
+    right: 0; }
+  .av-sidebar .mdl-layout-title {
+    margin: 0;
+    line-height: 64px;
+    padding-left: 40px; }
+
+.av-main {
+  flex: auto;
+  display: flex; }
+
+.av-content {
+  flex: auto;
+  right: 0;
+  position: relative;
+  transition: right 0.5s ease; }
+  .av-content.av-content--condensed {
+    right: 300px; }
+
+.av-viewport {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center; }
+  .av-viewport .av-spinner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center; }
+    .av-viewport .av-spinner .mdl-spinner {
+      width: 50px;
+      height: 50px; }
+  .av-viewport.av-viewport--empty::after {
+    color: rgba(0, 0, 0, 0.04);
+    content: "power_off";
+    font: 20rem "Material Icons"; }
+
+.av-error {
+  padding: 1.2rem 1.8rem;
+  color: #b00020;
+  background-color: rgba(176, 0, 32, 0.1); }
 
 /*# sourceMappingURL=archives-viewer.css.map */

@@ -50,13 +50,14 @@
             // call them like the example below
             //this.yourOtherFunction( "jQuery Boilerplate1112" );
 
+            this.events = {};
+
             this.initSpinner();
-
-
             this.initOpenSeadragon();
 
+            this.bindEventControls();
 
-            var self = this;
+
 
             $zoomSlider = $("#example_id");
             // zoomSlider = $zoomSlider.ionRangeSlider({
@@ -90,6 +91,8 @@
                 */
             });
 
+            var self = this;
+
             openseadragon.addHandler("open", function () {
                 self.hideSpinner();
 
@@ -102,47 +105,52 @@
                 self.refreshZoomSlider();
             });
 
-            //subscribe to 'myEventStart'
-            $(this.element).bind("myEventStart", function () {
-                console.log("event start");
-                openseadragon.viewport.goHome();
+            //$(this.element).on("toggleSidebar", this.toggleSidebar);
+            this.addHandler("sidebar", function () {
+                console.log("custom toggle sidebar");
+                self.toggleSidebar();
             });
+        },
 
-            //subscribe to 'myEventEnd'
-            $(this.element).bind("myEventEnd", function () {
-                console.log("event end");
-            });
+        getContent: function () {
+            return $(this.element).find(".av-content");
+        },
 
-            //subscribe to 'toggleSidebar'
-            $(this.element).bind("toggleSidebar", function () {
-                console.log("toggleSidebar");
+        getSidebar: function () {
+            return $(this.element).find(".av-sidebar");
+        },
 
-                var $main = $(this).find(".av-main");
-                var $metadata = $(this).find(".av-metadata");
+        openSidebar: function () {
+            var $sidebar = this.getSidebar();
+            $sidebar.addClass("av-sidebar--opened");
+            var $content = this.getContent();
+            $content.addClass("av-content--condensed");
+            var $controls = this.getEventControls("sidebar");
+            $controls.addClass("is-checked");
+        },
 
-                var closed = ($main.css("margin-right") === "0px");
+        closeSidebar: function () {
+            var $sidebar = this.getSidebar();
+            $sidebar.removeClass("av-sidebar--opened");
+            var $content = this.getContent();
+            $content.removeClass("av-content--condensed");
+            var $controls = this.getEventControls("sidebar");
+            $controls.removeClass("is-checked");
+        },
 
-                if (!closed) {
-                    $main.css("margin-right", "0px");
-                    $metadata.css("transform", "translateX(100%)");
-                    $(this).find(".av-toolbar-button").last().removeClass("active");
-                }
-                else {
-                    $main.css("margin-right", "300px");
-                    $metadata.css("transform", "translateX(0)");
-                    $(this).find(".av-toolbar-button").last().addClass("active");
-                }
-            });
+        toggleSidebar: function () {
+            //console.log(this);
+            if (this.isSidebarOpened()) {
+                this.closeSidebar();
+            }
+            else {
+                this.openSidebar();
+            }
+        },
 
-            $(this.element).find(".av-toolbar-button").eq(0).on("click", function () {
-                $(this).trigger("myEventStart");
-            });
-
-            $(this.element).find(".av-toolbar-button").last().on("click", function () {
-                $(this).trigger("toggleSidebar");
-            });
-
-            //$(this.element).find(".av-metadata").hide();
+        isSidebarOpened: function () {
+            var $sidebar = this.getSidebar();
+            return $sidebar.hasClass("av-sidebar--opened");
         },
 
         initSpinner: function () {
@@ -163,7 +171,73 @@
             $spinner.css("opacity", 0).hide(); // hide the spinner immediately
         },
 
+        bindEventControls: function () {
+            var self = this;
+
+            var $controls = this.getEventControls("sidebar");
+            $controls.each(function (index, control) {
+
+                var id = self.getUniqueId(control);
+                var selector = self.format("[data-avid={0}]", id);
+
+                $(document).on("click", selector, function () {
+                    var eventName = $(selector).attr("data-toggle");
+                    self.raiseEvent(eventName);
+                });
+
+            });
+        },
+
+        getEventControls: function (eventName) {
+            return $(this.element).find("[data-toggle=" + eventName + "]");
+        },
+
+        raiseEvent: function (eventName, eventArgs) {
+            var handler = this.getHandler(eventName);
+            if (handler) {
+                if (!eventArgs) {
+                    eventArgs = {};
+                }
+                handler(this, eventArgs);
+            }
+        },
+
+        addHandler: function (eventName, handler, userData) {
+            var events = this.events[eventName];
+            if (!events) {
+                this.events[eventName] = events = [];
+            }
+            if (handler && typeof handler === "function") {
+                events[events.length] = { handler: handler, userData: userData || null };
+            }
+        },
+
+        getHandler: function (eventName) {
+            var events = this.events[eventName];
+            if (!events || !events.length) {
+                return null;
+            }
+            events = events.length === 1 ?
+                [events[0]] :
+                Array.apply(null, events);
+            return function (source, args) {
+                var i,
+                    length = events.length;
+                for (i = 0; i < length; i++) {
+                    if (events[i]) {
+                        args.eventSource = source;
+                        args.userData = events[i].userData;
+                        events[i].handler(args);
+                    }
+                }
+            };
+        },
+
         initOpenSeadragon: function () {
+            if (openseadragon !== undefined) {
+                openseadragon.destroy();
+                openseadragon = null;
+            }
             openseadragon = new OpenSeadragon({
                 id: "openseadragon1",
                 prefixUrl: "../node_modules/openseadragon/build/openseadragon/images/",
@@ -247,7 +321,41 @@
             //}
         },
 
-        errror: function () {
+        getUniqueId: function (element) {
+            var id = $(element).attr("data-avid");
+            if (id) {
+                return id;
+            }
+
+            var length = 6;
+            var allowedChars = "0123456789abcdef".split("");
+            if (!length) {
+                length = Math.floor(Math.random() * allowedChars.length);
+            }
+            var uniqueId = "";
+            for (var i = 0; i < length; i++) {
+                uniqueId += allowedChars[Math.floor(Math.random() * allowedChars.length)];
+            }
+
+            // Check if this ID is already taken by an element before 
+            if ($("data-avid" + uniqueId).length == 0) {
+                $(element).attr("data-avid", uniqueId);
+                return uniqueId;
+            }
+            else {
+                return this.getUniqueId(element);
+            }
+        },
+
+        format: function (value) {
+            for (var i = 0; i < (arguments.length - 1); i++) {
+                var regexp = new RegExp("\\{" + i + "\\}", "gi");
+                value = value.replace(regexp, arguments[(i + 1)]);
+            }
+            return value;
+        },
+
+        error: function () {
             var $error = $("<div class=\"error\"><span class=\"error-icon material-icons\">error_outline</span><div class=\"error-text\">An unexpected error occurred.<br />Please try again later.</div></div>");
             $(this.element).find(".archv").append($error);
         }

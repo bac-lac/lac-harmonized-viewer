@@ -4,48 +4,85 @@
 .#{$ns}-viewer {
   width: 100%;
   height: 100%;
-
-  .#{$ns}-toolbar {
-    .mdl-navigation__item {
-      padding: 0;
-      line-height: initial;
-    }
-  }
-
-  .#{$ns}-drawer-button,
-  .#{$ns}-drawer {
-    left: initial;
-    right: 0;
-  }
-
-  .#{$ns}-drawer {
-    width: 390px;
-    transform: translateX(400px);
-  }
-
-  .#{$ns}-content {
-    height: 100%;
-  }
-
-  .#{$ns}-viewport {
-    flex-grow: 1;
-    height: 100%;
-
-    .#{$ns}-spinner {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      .mdl-spinner {
-        width: 50px;
-        height: 50px;
-      }
-    }
-  }
+  display: flex;
+  flex-flow: row;
 
   .openseadragon-canvas {
     outline: none;
   }
+}
+
+.#{$ns}-toolbar {
+  .mdl-navigation__item {
+    padding: 0;
+    line-height: initial;
+  }
+}
+
+.#{$ns}-sidebar {
+  width: 300px;
+  right: -300px;
+  height: 100%;
+  position: fixed;
+  border-left: #eee 2px solid;
+  background: #fff;
+  transition: right 0.5s ease;
+
+  &#{&}--opened {
+    right: 0;
+  }
+
+  .mdl-layout-title {
+    margin: 0;
+    line-height: 64px;
+    padding-left: 40px;
+  }
+}
+
+.#{$ns}-main {
+  flex: auto;
+  display: flex;
+}
+
+.#{$ns}-content {
+  flex: auto;
+  right: 0;
+  position: relative;
+  transition: right 0.5s ease;
+
+  &#{&}--condensed {
+    right: 300px;
+  }
+}
+
+.#{$ns}-viewport {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .#{$ns}-spinner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .mdl-spinner {
+      width: 50px;
+      height: 50px;
+    }
+  }
+
+  &#{&}--empty::after {
+    color: rgba(0, 0, 0, 0.04);
+    content: "power_off";
+    font: 20rem "Material Icons";
+  }
+}
+
+.#{$ns}-error {
+  padding: 1.2rem 1.8rem;
+  color: #b00020;
+  background-color: rgba(176, 0, 32, .1);
 }

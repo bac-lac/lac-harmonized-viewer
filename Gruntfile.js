@@ -137,5 +137,5 @@ module.exports = function (grunt) {
 
 	grunt.registerTask("lint", ["jshint", "jscs"]);
 	grunt.registerTask("build", ["clean:dist", "copy", "concat", "sass", "uglify", "cssmin", "clean:public"]);
-	grunt.registerTask("default", ["jshint", "build"]);
+	grunt.registerTask("default", ["build"]);
 };
