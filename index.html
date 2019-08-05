@@ -13,10 +13,8 @@
 		href="//fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp"
 		rel="stylesheet">
 
-	<link href="/dist/archives-viewer.min.css" rel="stylesheet" type="text/css">
-	<link href="/dist/archives-viewer-theme.min.css" rel="stylesheet" type="text/css">
-
-	<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+	<link href="/dist/archives-viewer.css" rel="stylesheet" type="text/css">
+	<link href="/dist/archives-viewer-theme.css" rel="stylesheet" type="text/css">
 
 	<style type="text/css">
 		html,
@@ -34,37 +32,59 @@
 
 <body>
 
-	<div id="av" class="av-viewer mdl-layout mdl-js-layout">
-		<header class="av-header mdl-layout__header mdl-layout__header--scroll mdl-shadow--6dp">
+	<div id="av" class="av-viewer">
+		<header class="av-header">
 
-			<div class="mdl-layout__header-row">
-				<!-- Title -->
-				<span class="mdl-layout-title">Title</span>
-				<!-- Add spacer, to align navigation to the right -->
-				<div class="mdl-layout-spacer"></div>
-				<!-- Navigation -->
-				<nav class="mdl-navigation">
-					<a class="mdl-navigation__link" href="">Link</a>
-					<a class="mdl-navigation__link" href="">Link</a>
-					<a class="mdl-navigation__link" href="">Link</a>
-					<a class="mdl-navigation__link" href="">Link</a>
-				</nav>
+			<div class="av-titlebar">
+				<div class="av-logo"></div>
+				<div>
+					<h1 class="av-manifest-label"></h1>
+					<h2 class="av-image-label"></h2>
+				</div>
 			</div>
 
-			<div class="av-toolbar mdl-layout__header-row">
-				<button type="button" class="mdl-button" data-toggle="sidebar"
-					title="Go home">
-					<i class="material-icons">home</i>
-				</button>
-				<div class="mdl-layout-spacer"></div>
-				<button type="button" class="mdl-button" data-toggle="gallery"
-					title="Toggle gallery view">
-					<i class="material-icons">view_list</i>
-				</button>
-				<button type="button" class="mdl-button" data-toggle="sidebar"
-					title="Show/hide sidebar">
-					<i class="material-icons">vertical_split</i>
-				</button>
+			<div class="av-toolbar">
+				<div class="av-toolbar-left">
+					<button type="button" class="av-button" data-toggle="home" title="Go home">
+						<i class="material-icons">home</i>
+					</button>
+					<div class="separator"></div>
+					<!-- <button type="button" class="av-button" data-toggle="fullscreen" title="Toggle fullscreen view">
+						<i class="material-icons">fullscreen</i>
+					</button> -->
+					<button type="button" class="av-button" title="Download a copy">
+						<i class="material-icons">file_download</i>
+						Download
+					</button>
+					<button type="button" class="av-button" title="Printable version">
+						<i class="material-icons">print</i>
+						Printable version
+					</button>
+				</div>
+				<div class="av-toolbar-right">
+					<button type="button" class="av-button av-button-toggle" data-toggle="debug"
+						title="Toggle debug mode">
+						<i class="material-icons">developer_mode</i>
+					</button>
+					<div class="separator"></div>
+					<button type="button" class="av-button" data-toggle="zoom-out" title="Zoom out">
+						<i class="material-icons">remove</i>
+					</button>
+					<div class="dropdown">
+						50%
+					</div>
+					<button type="button" class="av-button" data-toggle="zoom-in" title="Zoom in">
+						<i class="material-icons">add</i>
+					</button>
+					<!-- <button type="button" class="av-button" data-toggle="gallery" title="Toggle gallery view">
+						<i class="material-icons">view_list</i>
+					</button> -->
+					<div class="separator"></div>
+					<button type="button" class="av-button av-button-toggle" data-toggle="sidebar"
+						title="Show/hide sidebar">
+						<i class="material-icons">vertical_split</i>
+					</button>
+				</div>
 			</div>
 		</header>
 
@@ -73,26 +93,18 @@
 			<!-- <div class="av-error">
 			</div> -->
 
+			<aside class="av-sidebar">
+				<h3 class="av-sidebar-title">Item Properties</h3>
+				<div class="av-sidebar-content">
+
+				</div>
+			</aside>
+
 			<div class="av-content">
 
-				<div class="av-viewport">
-					<div id="openseadragon1" style="width:100%; height:100%;">
-						<div class="av-spinner">
-							<div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
-						</div>
-					</div>
-				</div>
+				<div class="av-viewport"></div>
 
 			</div>
-			<aside class="av-sidebar">
-				<h4 class="mdl-layout-title">Title</h4>
-				<nav class="mdl-navigation">
-					<a class="mdl-navigation__link" href="">Link</a>
-					<a class="mdl-navigation__link" href="">Link</a>
-					<a class="mdl-navigation__link" href="">Link</a>
-					<a class="mdl-navigation__link" href="">Link</a>
-				</nav>
-			</aside>
 		</main>
 	</div>
 
