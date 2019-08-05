@@ -1,11 +1,19 @@
 @import "variables";
-@import "../../node_modules/bootstrap/scss/bootstrap.scss";
 
 .#{$ns}-viewer {
   width: 100%;
   height: 100%;
   display: flex;
-  flex-flow: row;
+  flex-flow: column;
+  font-family: "Roboto", Helvetica, Arial, sans-serif;
+  background-color: #616161;
+
+  &,
+  & *,
+  &::before,
+  &::after {
+    box-sizing: border-box;
+  }
 
   .openseadragon-canvas {
     outline: none;
@@ -13,36 +21,128 @@
 }
 
 .#{$ns}-header {
-  .mdl-layout__header-row {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.#{$ns}-titlebar {
+  height: 64px;
+  min-height: 64px;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  & h1,
+  & h2,
+  & h3,
+  & h4,
+  & h5,
+  & h6 {
+    margin: 0;
+    padding: 0;
+    letter-spacing: 0.02em;
+  }
+
+  .#{$ns}-manifest-label {
+    color: #fff;
+    font-size: 14px;
+    font-weight: normal;
+  }
+
+  .#{$ns}-image-label {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 20px;
   }
 }
 
 .#{$ns}-toolbar {
-  .mdl-navigation__item {
-    padding: 0;
-    line-height: initial;
+  height: 50px;
+  padding: 0 0.5rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  align-self: stretch;
+  align-items: center;
+  box-sizing: border-box;
+
+  &-left,
+  &-right {
+    display: flex;
+    align-items: center;
+  }
+
+  &-right {
+    margin-left: auto;
+  }
+
+  .#{$ns}-button {
+    cursor: pointer;
+    color: #5c5c5c;
+    height: 36px;
+    padding: 0 12px;
+    line-height: 36px;
+    display: inline-block;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-size: 14px;
+    border-radius: 2px;
+    border: none;
+
+    &:hover {
+      background-color: rgba(158, 158, 158, 0.2);
+    }
+
+    &:active {
+      background-color: rgba(158, 158, 158, 0.4);
+    }
+
+    .material-icons {
+      vertical-align: middle;
+    }
+  }
+
+  .separator {
+    width: 1px;
+    height: 36px;
+    margin: 0 0.3rem;
+    background: rgba(158, 158, 158, 0.2);
   }
 }
 
 .#{$ns}-sidebar {
-  width: 300px;
-  right: -300px;
+  width: 350px;
   height: 100%;
+  left: auto;
+  right: 0;
+  z-index: 1;
   position: fixed;
+  visibility: hidden;
+  transition: all 0.5s ease;
   border-left: #f2f2f2 2px solid;
   background: #fff;
-  transition: right 0.5s ease;
 
-  &#{&}--opened {
-    right: 0;
+  &#{&}--visible {
+    width: 350px;
+    visibility: visible;
+
+    & ~ .#{$ns}-content .#{$ns}-viewport {
+      transform: translate3d(-350px, 0, 0);
+    }
   }
 
-  .mdl-layout-title {
-    margin: 0;
-    line-height: 64px;
+  & &-title,
+  & &-content {
     padding-left: 40px;
+  }
+
+  & &-title {
+    font-weight: normal;
   }
 }
 
@@ -53,13 +153,9 @@
 
 .#{$ns}-content {
   flex: auto;
-  right: 0;
+  height: 100%;
+  overflow: hidden;
   position: relative;
-  transition: right 0.5s ease;
-
-  &#{&}--condensed {
-    right: 300px;
-  }
 }
 
 .#{$ns}-viewport {
@@ -67,19 +163,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
-  .#{$ns}-spinner {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    .mdl-spinner {
-      width: 50px;
-      height: 50px;
-    }
-  }
+  position: relative;
+  overflow-y: auto;
+  left: 0;
+  z-index: 2;
+  transition: transform ease 0.5s;
 
   &#{&}--empty::after {
     color: rgba(0, 0, 0, 0.04);
@@ -89,7 +177,43 @@
 }
 
 .#{$ns}-error {
-  padding: 1.2rem 1.8rem;
-  color: #b00020;
-  background-color: rgba(176, 0, 32, 0.1);
+  width: 400px;
+  text-align: center;
+  line-height: 1.5rem;
+
+  &-icon {
+    font-size: 5rem;
+    color: #e74c3c;
+  }
+
+  &-text {
+    color: #999;
+    margin-top: 0.5rem;
+  }
+
+  .#{$ns}-debug {
+    color: #666;
+    padding: 0.5rem 0.8rem;
+    margin-top: 1rem;
+    font: 0.8rem Consolas, "Courier New", monospace;
+    background-color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+.#{$ns}-spinner {
+  border: 10px solid rgba(0, 0, 0, 0.05);
+  border-top: 10px solid rgba(22, 160, 133, 0.5);
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: #{$ns}-spinner 1.5s ease infinite;
+}
+
+@keyframes #{$ns}-spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

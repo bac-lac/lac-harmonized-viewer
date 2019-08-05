@@ -15,14 +15,13 @@
     // Default plugin settings
     var pluginName = "archivesViewer",
         defaults = {
-            propertyName: "value"
+            locale: "en-GB"
         };
 
-    var openseadragon;
+    var debug;
 
-    //var zoomSlider;
-    var $zoomSlider;
-    //var zoomSliderActive = false;
+    var manifest;
+    var openseadragon;
 
     // The actual plugin constructor
     function Plugin(element, options) {
@@ -53,67 +52,42 @@
             this.events = {};
 
             this.initSpinner();
+            this.initToolbar();
             this.initOpenSeadragon();
 
-            this.bindEventControls();
-
-
-
-            $zoomSlider = $("#example_id");
-            // zoomSlider = $zoomSlider.ionRangeSlider({
-            //     skin: "round",
-            //     min: 0,
-            //     max: 100,
-            //     step: 1,
-            //     hide_min_max: true,
-            //     hide_from_to: true,
-            //     onFinish: function () {
-            //         zoomSliderActive = false;
-            //     }
-            // }).data("ionRangeSlider");
-
-            // $(document).on("mousedown", "#av .irs-handle", function () {
-            //     console.log("slider start");
-            // });
-            // $(document).on("click", "#av .irs-line", function () {
-            //     console.log("slider click");
-            // });
-
-            $zoomSlider.on("change", function () {
-                //console.log("zoom slider change");
-                //console.log(zoomSlider.is_active);
-                /*
-                if (zoomSlider.is_active === true || zoomSlider.is_click === true) {
-                    zoomSliderActive = true;
-                    var zoom = $(this).prop("value");
-                    openseadragon.viewport.zoomTo(zoom);
-                }
-                */
-            });
+            //this.bindEventControls();
 
             var self = this;
 
-            openseadragon.addHandler("open", function () {
-                self.hideSpinner();
-
-            });
-            openseadragon.addHandler("open-failed", function () {
-                $(openseadragon.element).hide();
+            this.addHandler("debug", function () {
+                self.debug = !self.debug;
+                window.sessionStorage.setItem("debug", self.debug);
             });
 
-            openseadragon.addHandler("animation", function () {
-                self.refreshZoomSlider();
-            });
-
-            //$(this.element).on("toggleSidebar", this.toggleSidebar);
             this.addHandler("sidebar", function () {
-                console.log("custom toggle sidebar");
                 self.toggleSidebar();
             });
+
+            this.debug = (window.sessionStorage.getItem("debug") === "true") ? true : false;
+            if (this.debug) {
+                this.getEventControls("debug").addClass("av-button-toggle--active");
+            }
+        },
+
+        setManifestLabel: function (label) {
+            $(this.element).find(".av-manifest-label").html(label);
+        },
+
+        setImageLabel: function (label) {
+            $(this.element).find(".av-image-label").html(label);
         },
 
         getContent: function () {
             return $(this.element).find(".av-content");
+        },
+
+        getViewport: function () {
+            return $(this.element).find(".av-viewport");
         },
 
         getSidebar: function () {
@@ -122,24 +96,15 @@
 
         openSidebar: function () {
             var $sidebar = this.getSidebar();
-            $sidebar.addClass("av-sidebar--opened");
-            var $content = this.getContent();
-            $content.addClass("av-content--condensed");
-            var $controls = this.getEventControls("sidebar");
-            $controls.addClass("is-checked");
+            $sidebar.addClass("av-sidebar--visible");
         },
 
         closeSidebar: function () {
             var $sidebar = this.getSidebar();
-            $sidebar.removeClass("av-sidebar--opened");
-            var $content = this.getContent();
-            $content.removeClass("av-content--condensed");
-            var $controls = this.getEventControls("sidebar");
-            $controls.removeClass("is-checked");
+            $sidebar.removeClass("av-sidebar--visible");
         },
 
         toggleSidebar: function () {
-            //console.log(this);
             if (this.isSidebarOpened()) {
                 this.closeSidebar();
             }
@@ -158,7 +123,12 @@
         },
 
         getSpinner: function () {
-            return $(this.element).find(".av-viewport .av-spinner");
+            var $viewport = this.getViewport();
+            var $spinner = $viewport.find(".av-spinner");
+            if ($spinner.length === 0) {
+                $spinner = $("<div />").addClass("av-spinner").appendTo($viewport);
+            }
+            return $spinner;
         },
 
         showSpinner: function () {
@@ -171,20 +141,26 @@
             $spinner.css("opacity", 0).hide(); // hide the spinner immediately
         },
 
-        bindEventControls: function () {
+        initToolbar: function () {
+            $(document).on("click", ".av-toolbar .av-button-toggle", function () {
+                $(this).toggleClass("av-button-toggle--active");
+            });
+        },
+
+        getManifestCanvas: function () {
+            return this.manifest
+                .getSequenceByIndex(0)
+                .getCanvasByIndex(openseadragon.currentPage());
+        },
+
+        bindEventControls: function (eventName) {
             var self = this;
-
-            var $controls = this.getEventControls("sidebar");
+            var $controls = this.getEventControls(eventName);
             $controls.each(function (index, control) {
-
-                var id = self.getUniqueId(control);
-                var selector = self.format("[data-avid={0}]", id);
-
+                var selector = self.format("#{0}", self.getUniqueId(control));
                 $(document).on("click", selector, function () {
-                    var eventName = $(selector).attr("data-toggle");
                     self.raiseEvent(eventName);
                 });
-
             });
         },
 
@@ -193,6 +169,9 @@
         },
 
         raiseEvent: function (eventName, eventArgs) {
+            if (this.debug) {
+                console.log(this.format("Event raised: {0}", eventName));
+            }
             var handler = this.getHandler(eventName);
             if (handler) {
                 if (!eventArgs) {
@@ -209,6 +188,7 @@
             }
             if (handler && typeof handler === "function") {
                 events[events.length] = { handler: handler, userData: userData || null };
+                this.bindEventControls(eventName);
             }
         },
 
@@ -234,95 +214,75 @@
         },
 
         initOpenSeadragon: function () {
+            var self = this;
+
             if (openseadragon !== undefined) {
                 openseadragon.destroy();
                 openseadragon = null;
             }
-            openseadragon = new OpenSeadragon({
-                id: "openseadragon1",
-                prefixUrl: "../node_modules/openseadragon/build/openseadragon/images/",
-                tileSources: "https://openseadragon.github.io/example-images/highsmith/highsmith.dzi",
-                showNavigator: true,
-                navigatorPosition: "BOTTOM_RIGHT",
-                showNavigationControl: false,
-                minZoomImageRatio: 1.0
-            });
-            this.resetZoom();
-        },
 
-        resetZoom: function () {
-            if (openseadragon === undefined) {
-                return console.error("Failed to reset zoom because Openseadragon has not been initialized yet.");
-            }
+            // Create root OpenSeadragon element inside viewport
+            var $viewport = this.getViewport();
+            var $openseadragon = $("<div/>").width("100%").height("100%").appendTo($viewport);
 
-            var $zoomSlider = this.getZoomSlider();
-            if ($zoomSlider.length > 0) {
+            var openseadragonId = this.getUniqueId($openseadragon[0]);
 
-                var minZoom = openseadragon.viewport.getMinZoom();
-                var maxZoom = openseadragon.viewport.getMaxZoom();
-                var steps = this.getZoomSteps(minZoom, maxZoom);
+            var tileSource = "https://d.lib.ncsu.edu/collections/catalog/nubian-message-1992-11-30/manifest";
+            //var tileSource = "https://openseadragon.github.io/example-images/highsmith/highsmith.dzi";
 
-                // Redraw the zoom slider position
-                $zoomSlider.update({
-                    from: minZoom,
-                    min: minZoom,
-                    max: maxZoom,
-                    step: steps
+            manifesto.loadManifest(tileSource).then(function (manifest) {
+
+                self.manifest = manifesto.create(manifest);
+
+                var sources = new Array();
+                $.each(self.manifest.getSequences(), function (sequenceIndex, sequence) {
+                    var canvases = sequence.getCanvases();
+                    $.each(canvases, function (canvasIndex, canvas) {
+                        var images = canvas.getImages();
+                        var id = images[0].getResource().getServices()[0].id;
+                        sources.push({
+                            id: id,
+                            sequenceIndex: sequenceIndex,
+                            canvasIndex: canvasIndex
+                        });
+                    });
                 });
 
-            }
-        },
+                openseadragon = new OpenSeadragon({
+                    id: openseadragonId,
+                    prefixUrl: "../node_modules/openseadragon/build/openseadragon/images/",
+                    tileSources: sources.map(function (i) { return i.id }),
+                    sequenceMode: true,
+                    showNavigator: true,
+                    navigatorPosition: "BOTTOM_RIGHT",
+                    showNavigationControl: false,
+                    minZoomImageRatio: 1.0,
+                    preserveViewport: true
+                });
 
-        initZoomSlider: function () {
+                openseadragon.addHandler("open", function () {
+                    self.hideSpinner();
 
-        },
+                    self.setManifestLabel(self.manifest.getDefaultLabel());
 
-        getZoomSlider: function () {
-            return $(this.element).find(".az-zoom-slider");
-        },
+                    var canvas = self.getManifestCanvas();
+                    var label = canvas.getLabel().filter(function (i) { return (i.locale === self.settings.locale); })[0];
 
-        getZoomSteps: function (minZoom, maxZoom) {
-            if (minZoom === undefined) {
-                minZoom = 0;
-            }
-            if (maxZoom === undefined) {
-                maxZoom = 0;
-            }
-            return Math.round((maxZoom - minZoom) / 100, 0);
-        },
+                    self.setImageLabel(label.value);
+                });
+                openseadragon.addHandler("open-failed", function (err) {
+                    $(openseadragon.element).hide();
+                    self.showError(err);
+                });
 
-        refreshZoomSlider: function () {
-
-            var minZoom = openseadragon.viewport.getMinZoom();
-            var maxZoom = openseadragon.viewport.getMaxZoom();
-
-            var target = openseadragon.viewport.getZoom(false);
-
-            var diff = (maxZoom - minZoom);
-            var ratio = (target !== minZoom) ? (diff > 0) ? Math.round((target - minZoom) * 100 / diff, 0) : 0 : 0;
-
-            $("*[data-bind='zoom']").each(function (index, elem) {
-                $(elem).text(ratio + "%");
+                openseadragon.addHandler("animation", function () {
+                    //self.refreshZoomSlider();
+                });
             });
-
-            //if (zoomSlider.is_active === false && zoomSlider.is_click === false && zoomSliderActive === false) {
-
-            //console.log(openseadragon);
-
-            // Get current and target zoom values (before and after animations)
-            var current = openseadragon.viewport.getZoom(true);
-
-            //console.log(current, target);
-
-            // Don't update the slider when slider value is equal to target zoom value
-            if (current !== target) {
-                //zoomSlider.update({ from: target });
-            }
-            //}
         },
 
         getUniqueId: function (element) {
-            var id = $(element).attr("data-avid");
+            var id = $(element).attr("id");
             if (id) {
                 return id;
             }
@@ -332,14 +292,16 @@
             if (!length) {
                 length = Math.floor(Math.random() * allowedChars.length);
             }
+
             var uniqueId = "";
             for (var i = 0; i < length; i++) {
                 uniqueId += allowedChars[Math.floor(Math.random() * allowedChars.length)];
             }
 
             // Check if this ID is already taken by an element before 
-            if ($("data-avid" + uniqueId).length == 0) {
-                $(element).attr("data-avid", uniqueId);
+            var selector = this.format("#{0}", uniqueId);
+            if ($(selector).length == 0) {
+                $(element).attr("id", uniqueId);
                 return uniqueId;
             }
             else {
@@ -355,9 +317,19 @@
             return value;
         },
 
-        error: function () {
-            var $error = $("<div class=\"error\"><span class=\"error-icon material-icons\">error_outline</span><div class=\"error-text\">An unexpected error occurred.<br />Please try again later.</div></div>");
-            $(this.element).find(".archv").append($error);
+        showError: function (err) {
+            this.hideSpinner();
+
+            var $error = $("<div />").addClass("av-error");
+            $("<i />").addClass("av-error-icon").addClass("material-icons").text("error_outline").appendTo($error);
+            $("<div />").addClass("av-error-text").html("An unexpected error occurred.<br />Please try again later.").appendTo($error);
+
+            if (this.debug) {
+                $("<div />").addClass("av-debug").html(err.message).appendTo($error);
+            }
+
+            var $viewport = this.getViewport();
+            $error.appendTo($viewport);
         }
     });
 

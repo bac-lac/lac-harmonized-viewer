@@ -15,14 +15,13 @@
     // Default plugin settings
     var pluginName = "archivesViewer",
         defaults = {
-            propertyName: "value"
+            locale: "en-GB"
         };
 
-    var openseadragon;
+    var debug;
 
-    //var zoomSlider;
-    var $zoomSlider;
-    //var zoomSliderActive = false;
+    var manifest;
+    var openseadragon;
 
     // The actual plugin constructor
     function Plugin(element, options) {
@@ -53,67 +52,42 @@
             this.events = {};
 
             this.initSpinner();
+            this.initToolbar();
             this.initOpenSeadragon();
 
-            this.bindEventControls();
-
-
-
-            $zoomSlider = $("#example_id");
-            // zoomSlider = $zoomSlider.ionRangeSlider({
-            //     skin: "round",
-            //     min: 0,
-            //     max: 100,
-            //     step: 1,
-            //     hide_min_max: true,
-            //     hide_from_to: true,
-            //     onFinish: function () {
-            //         zoomSliderActive = false;
-            //     }
-            // }).data("ionRangeSlider");
-
-            // $(document).on("mousedown", "#av .irs-handle", function () {
-            //     console.log("slider start");
-            // });
-            // $(document).on("click", "#av .irs-line", function () {
-            //     console.log("slider click");
-            // });
-
-            $zoomSlider.on("change", function () {
-                //console.log("zoom slider change");
-                //console.log(zoomSlider.is_active);
-                /*
-                if (zoomSlider.is_active === true || zoomSlider.is_click === true) {
-                    zoomSliderActive = true;
-                    var zoom = $(this).prop("value");
-                    openseadragon.viewport.zoomTo(zoom);
-                }
-                */
-            });
+            //this.bindEventControls();
 
             var self = this;
 
-            openseadragon.addHandler("open", function () {
-                self.hideSpinner();
-
-            });
-            openseadragon.addHandler("open-failed", function () {
-                $(openseadragon.element).hide();
+            this.addHandler("debug", function () {
+                self.debug = !self.debug;
+                window.sessionStorage.setItem("debug", self.debug);
             });
 
-            openseadragon.addHandler("animation", function () {
-                self.refreshZoomSlider();
-            });
-
-            //$(this.element).on("toggleSidebar", this.toggleSidebar);
             this.addHandler("sidebar", function () {
-                console.log("custom toggle sidebar");
                 self.toggleSidebar();
             });
+
+            this.debug = (window.sessionStorage.getItem("debug") === "true") ? true : false;
+            if (this.debug) {
+                this.getEventControls("debug").addClass("av-button-toggle--active");
+            }
+        },
+
+        setManifestLabel: function (label) {
+            $(this.element).find(".av-manifest-label").html(label);
+        },
+
+        setImageLabel: function (label) {
+            $(this.element).find(".av-image-label").html(label);
         },
 
         getContent: function () {
             return $(this.element).find(".av-content");
+        },
+
+        getViewport: function () {
+            return $(this.element).find(".av-viewport");
         },
 
         getSidebar: function () {
@@ -122,24 +96,15 @@
 
         openSidebar: function () {
             var $sidebar = this.getSidebar();
-            $sidebar.addClass("av-sidebar--opened");
-            var $content = this.getContent();
-            $content.addClass("av-content--condensed");
-            var $controls = this.getEventControls("sidebar");
-            $controls.addClass("is-checked");
+            $sidebar.addClass("av-sidebar--visible");
         },
 
         closeSidebar: function () {
             var $sidebar = this.getSidebar();
-            $sidebar.removeClass("av-sidebar--opened");
-            var $content = this.getContent();
-            $content.removeClass("av-content--condensed");
-            var $controls = this.getEventControls("sidebar");
-            $controls.removeClass("is-checked");
+            $sidebar.removeClass("av-sidebar--visible");
         },
 
         toggleSidebar: function () {
-            //console.log(this);
             if (this.isSidebarOpened()) {
                 this.closeSidebar();
             }
@@ -158,7 +123,12 @@
         },
 
         getSpinner: function () {
-            return $(this.element).find(".av-viewport .av-spinner");
+            var $viewport = this.getViewport();
+            var $spinner = $viewport.find(".av-spinner");
+            if ($spinner.length === 0) {
+                $spinner = $("<div />").addClass("av-spinner").appendTo($viewport);
+            }
+            return $spinner;
         },
 
         showSpinner: function () {
@@ -171,20 +141,26 @@
             $spinner.css("opacity", 0).hide(); // hide the spinner immediately
         },
 
-        bindEventControls: function () {
+        initToolbar: function () {
+            $(document).on("click", ".av-toolbar .av-button-toggle", function () {
+                $(this).toggleClass("av-button-toggle--active");
+            });
+        },
+
+        getManifestCanvas: function () {
+            return this.manifest
+                .getSequenceByIndex(0)
+                .getCanvasByIndex(openseadragon.currentPage());
+        },
+
+        bindEventControls: function (eventName) {
             var self = this;
-
-            var $controls = this.getEventControls("sidebar");
+            var $controls = this.getEventControls(eventName);
             $controls.each(function (index, control) {
-
-                var id = self.getUniqueId(control);
-                var selector = self.format("[data-avid={0}]", id);
-
+                var selector = self.format("#{0}", self.getUniqueId(control));
                 $(document).on("click", selector, function () {
-                    var eventName = $(selector).attr("data-toggle");
                     self.raiseEvent(eventName);
                 });
-
             });
         },
 
@@ -193,6 +169,9 @@
         },
 
         raiseEvent: function (eventName, eventArgs) {
+            if (this.debug) {
+                console.log(this.format("Event raised: {0}", eventName));
+            }
             var handler = this.getHandler(eventName);
             if (handler) {
                 if (!eventArgs) {
@@ -209,6 +188,7 @@
             }
             if (handler && typeof handler === "function") {
                 events[events.length] = { handler: handler, userData: userData || null };
+                this.bindEventControls(eventName);
             }
         },
 
@@ -234,95 +214,75 @@
         },
 
         initOpenSeadragon: function () {
+            var self = this;
+
             if (openseadragon !== undefined) {
                 openseadragon.destroy();
                 openseadragon = null;
             }
-            openseadragon = new OpenSeadragon({
-                id: "openseadragon1",
-                prefixUrl: "../node_modules/openseadragon/build/openseadragon/images/",
-                tileSources: "https://openseadragon.github.io/example-images/highsmith/highsmith.dzi",
-                showNavigator: true,
-                navigatorPosition: "BOTTOM_RIGHT",
-                showNavigationControl: false,
-                minZoomImageRatio: 1.0
-            });
-            this.resetZoom();
-        },
 
-        resetZoom: function () {
-            if (openseadragon === undefined) {
-                return console.error("Failed to reset zoom because Openseadragon has not been initialized yet.");
-            }
+            // Create root OpenSeadragon element inside viewport
+            var $viewport = this.getViewport();
+            var $openseadragon = $("<div/>").width("100%").height("100%").appendTo($viewport);
 
-            var $zoomSlider = this.getZoomSlider();
-            if ($zoomSlider.length > 0) {
+            var openseadragonId = this.getUniqueId($openseadragon[0]);
 
-                var minZoom = openseadragon.viewport.getMinZoom();
-                var maxZoom = openseadragon.viewport.getMaxZoom();
-                var steps = this.getZoomSteps(minZoom, maxZoom);
+            var tileSource = "https://d.lib.ncsu.edu/collections/catalog/nubian-message-1992-11-30/manifest";
+            //var tileSource = "https://openseadragon.github.io/example-images/highsmith/highsmith.dzi";
 
-                // Redraw the zoom slider position
-                $zoomSlider.update({
-                    from: minZoom,
-                    min: minZoom,
-                    max: maxZoom,
-                    step: steps
+            manifesto.loadManifest(tileSource).then(function (manifest) {
+
+                self.manifest = manifesto.create(manifest);
+
+                var sources = new Array();
+                $.each(self.manifest.getSequences(), function (sequenceIndex, sequence) {
+                    var canvases = sequence.getCanvases();
+                    $.each(canvases, function (canvasIndex, canvas) {
+                        var images = canvas.getImages();
+                        var id = images[0].getResource().getServices()[0].id;
+                        sources.push({
+                            id: id,
+                            sequenceIndex: sequenceIndex,
+                            canvasIndex: canvasIndex
+                        });
+                    });
                 });
 
-            }
-        },
+                openseadragon = new OpenSeadragon({
+                    id: openseadragonId,
+                    prefixUrl: "../node_modules/openseadragon/build/openseadragon/images/",
+                    tileSources: sources.map(function (i) { return i.id }),
+                    sequenceMode: true,
+                    showNavigator: true,
+                    navigatorPosition: "BOTTOM_RIGHT",
+                    showNavigationControl: false,
+                    minZoomImageRatio: 1.0,
+                    preserveViewport: true
+                });
 
-        initZoomSlider: function () {
+                openseadragon.addHandler("open", function () {
+                    self.hideSpinner();
 
-        },
+                    self.setManifestLabel(self.manifest.getDefaultLabel());
 
-        getZoomSlider: function () {
-            return $(this.element).find(".az-zoom-slider");
-        },
+                    var canvas = self.getManifestCanvas();
+                    var label = canvas.getLabel().filter(function (i) { return (i.locale === self.settings.locale); })[0];
 
-        getZoomSteps: function (minZoom, maxZoom) {
-            if (minZoom === undefined) {
-                minZoom = 0;
-            }
-            if (maxZoom === undefined) {
-                maxZoom = 0;
-            }
-            return Math.round((maxZoom - minZoom) / 100, 0);
-        },
+                    self.setImageLabel(label.value);
+                });
+                openseadragon.addHandler("open-failed", function (err) {
+                    $(openseadragon.element).hide();
+                    self.showError(err);
+                });
 
-        refreshZoomSlider: function () {
-
-            var minZoom = openseadragon.viewport.getMinZoom();
-            var maxZoom = openseadragon.viewport.getMaxZoom();
-
-            var target = openseadragon.viewport.getZoom(false);
-
-            var diff = (maxZoom - minZoom);
-            var ratio = (target !== minZoom) ? (diff > 0) ? Math.round((target - minZoom) * 100 / diff, 0) : 0 : 0;
-
-            $("*[data-bind='zoom']").each(function (index, elem) {
-                $(elem).text(ratio + "%");
+                openseadragon.addHandler("animation", function () {
+                    //self.refreshZoomSlider();
+                });
             });
-
-            //if (zoomSlider.is_active === false && zoomSlider.is_click === false && zoomSliderActive === false) {
-
-            //console.log(openseadragon);
-
-            // Get current and target zoom values (before and after animations)
-            var current = openseadragon.viewport.getZoom(true);
-
-            //console.log(current, target);
-
-            // Don't update the slider when slider value is equal to target zoom value
-            if (current !== target) {
-                //zoomSlider.update({ from: target });
-            }
-            //}
         },
 
         getUniqueId: function (element) {
-            var id = $(element).attr("data-avid");
+            var id = $(element).attr("id");
             if (id) {
                 return id;
             }
@@ -332,14 +292,16 @@
             if (!length) {
                 length = Math.floor(Math.random() * allowedChars.length);
             }
+
             var uniqueId = "";
             for (var i = 0; i < length; i++) {
                 uniqueId += allowedChars[Math.floor(Math.random() * allowedChars.length)];
             }
 
             // Check if this ID is already taken by an element before 
-            if ($("data-avid" + uniqueId).length == 0) {
-                $(element).attr("data-avid", uniqueId);
+            var selector = this.format("#{0}", uniqueId);
+            if ($(selector).length == 0) {
+                $(element).attr("id", uniqueId);
                 return uniqueId;
             }
             else {
@@ -355,9 +317,19 @@
             return value;
         },
 
-        error: function () {
-            var $error = $("<div class=\"error\"><span class=\"error-icon material-icons\">error_outline</span><div class=\"error-text\">An unexpected error occurred.<br />Please try again later.</div></div>");
-            $(this.element).find(".archv").append($error);
+        showError: function (err) {
+            this.hideSpinner();
+
+            var $error = $("<div />").addClass("av-error");
+            $("<i />").addClass("av-error-icon").addClass("material-icons").text("error_outline").appendTo($error);
+            $("<div />").addClass("av-error-text").html("An unexpected error occurred.<br />Please try again later.").appendTo($error);
+
+            if (this.debug) {
+                $("<div />").addClass("av-debug").html(err.message).appendTo($error);
+            }
+
+            var $viewport = this.getViewport();
+            $error.appendTo($viewport);
         }
     });
 
@@ -372,11016 +344,11508 @@
 
 })(jQuery, window, document);
 
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.httpStatusCodes = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function (global){
+var HTTPStatusCode;
+(function (HTTPStatusCode) {
+    HTTPStatusCode.CONTINUE = 100;
+    HTTPStatusCode.SWITCHING_PROTOCOLS = 101;
+    HTTPStatusCode.PROCESSING = 102;
+    HTTPStatusCode.OK = 200;
+    HTTPStatusCode.CREATED = 201;
+    HTTPStatusCode.ACCEPTED = 202;
+    HTTPStatusCode.NON_AUTHORITATIVE_INFORMATION = 203;
+    HTTPStatusCode.NO_CONTENT = 204;
+    HTTPStatusCode.RESET_CONTENT = 205;
+    HTTPStatusCode.PARTIAL_CONTENT = 206;
+    HTTPStatusCode.MULTI_STATUS = 207;
+    HTTPStatusCode.MULTIPLE_CHOICES = 300;
+    HTTPStatusCode.MOVED_PERMANENTLY = 301;
+    HTTPStatusCode.MOVED_TEMPORARILY = 302;
+    HTTPStatusCode.SEE_OTHER = 303;
+    HTTPStatusCode.NOT_MODIFIED = 304;
+    HTTPStatusCode.USE_PROXY = 305;
+    HTTPStatusCode.TEMPORARY_REDIRECT = 307;
+    HTTPStatusCode.BAD_REQUEST = 400;
+    HTTPStatusCode.UNAUTHORIZED = 401;
+    HTTPStatusCode.PAYMENT_REQUIRED = 402;
+    HTTPStatusCode.FORBIDDEN = 403;
+    HTTPStatusCode.NOT_FOUND = 404;
+    HTTPStatusCode.METHOD_NOT_ALLOWED = 405;
+    HTTPStatusCode.NOT_ACCEPTABLE = 406;
+    HTTPStatusCode.PROXY_AUTHENTICATION_REQUIRED = 407;
+    HTTPStatusCode.REQUEST_TIME_OUT = 408;
+    HTTPStatusCode.CONFLICT = 409;
+    HTTPStatusCode.GONE = 410;
+    HTTPStatusCode.LENGTH_REQUIRED = 411;
+    HTTPStatusCode.PRECONDITION_FAILED = 412;
+    HTTPStatusCode.REQUEST_ENTITY_TOO_LARGE = 413;
+    HTTPStatusCode.REQUEST_URI_TOO_LARGE = 414;
+    HTTPStatusCode.UNSUPPORTED_MEDIA_TYPE = 415;
+    HTTPStatusCode.REQUESTED_RANGE_NOT_SATISFIABLE = 416;
+    HTTPStatusCode.EXPECTATION_FAILED = 417;
+    HTTPStatusCode.IM_A_TEAPOT = 418;
+    HTTPStatusCode.UNPROCESSABLE_ENTITY = 422;
+    HTTPStatusCode.LOCKED = 423;
+    HTTPStatusCode.FAILED_DEPENDENCY = 424;
+    HTTPStatusCode.UNORDERED_COLLECTION = 425;
+    HTTPStatusCode.UPGRADE_REQUIRED = 426;
+    HTTPStatusCode.PRECONDITION_REQUIRED = 428;
+    HTTPStatusCode.TOO_MANY_REQUESTS = 429;
+    HTTPStatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE = 431;
+    HTTPStatusCode.INTERNAL_SERVER_ERROR = 500;
+    HTTPStatusCode.NOT_IMPLEMENTED = 501;
+    HTTPStatusCode.BAD_GATEWAY = 502;
+    HTTPStatusCode.SERVICE_UNAVAILABLE = 503;
+    HTTPStatusCode.GATEWAY_TIME_OUT = 504;
+    HTTPStatusCode.HTTP_VERSION_NOT_SUPPORTED = 505;
+    HTTPStatusCode.VARIANT_ALSO_NEGOTIATES = 506;
+    HTTPStatusCode.INSUFFICIENT_STORAGE = 507;
+    HTTPStatusCode.BANDWIDTH_LIMIT_EXCEEDED = 509;
+    HTTPStatusCode.NOT_EXTENDED = 510;
+    HTTPStatusCode.NETWORK_AUTHENTICATION_REQUIRED = 511;
+})(HTTPStatusCode || (HTTPStatusCode = {}));
+(function (g) {
+    if (!g.HTTPStatusCode) {
+        g.HTTPStatusCode = HTTPStatusCode;
+    }
+})(global);
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}]},{},[1])(1)
+});
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.manifesto = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+(function (global){
+
+var Manifesto;
+(function (Manifesto) {
+    var StringValue = /** @class */ (function () {
+        function StringValue(value) {
+            this.value = "";
+            if (value) {
+                this.value = value.toLowerCase();
+            }
+        }
+        StringValue.prototype.toString = function () {
+            return this.value;
+        };
+        return StringValue;
+    }());
+    Manifesto.StringValue = StringValue;
+})(Manifesto || (Manifesto = {}));
+
+var Manifesto;
+(function (Manifesto) {
+    var Duration = /** @class */ (function () {
+        function Duration(start, end) {
+            this.start = start;
+            this.end = end;
+        }
+        Duration.prototype.getLength = function () {
+            return this.end - this.start;
+        };
+        return Duration;
+    }());
+    Manifesto.Duration = Duration;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var AnnotationMotivation = /** @class */ (function (_super) {
+        __extends(AnnotationMotivation, _super);
+        function AnnotationMotivation() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        // todo: use getters when ES3 target is no longer required.
+        AnnotationMotivation.prototype.bookmarking = function () {
+            return new AnnotationMotivation(AnnotationMotivation.BOOKMARKING.toString());
+        };
+        AnnotationMotivation.prototype.classifying = function () {
+            return new AnnotationMotivation(AnnotationMotivation.CLASSIFYING.toString());
+        };
+        AnnotationMotivation.prototype.commenting = function () {
+            return new AnnotationMotivation(AnnotationMotivation.COMMENTING.toString());
+        };
+        AnnotationMotivation.prototype.describing = function () {
+            return new AnnotationMotivation(AnnotationMotivation.DESCRIBING.toString());
+        };
+        AnnotationMotivation.prototype.editing = function () {
+            return new AnnotationMotivation(AnnotationMotivation.EDITING.toString());
+        };
+        AnnotationMotivation.prototype.highlighting = function () {
+            return new AnnotationMotivation(AnnotationMotivation.HIGHLIGHTING.toString());
+        };
+        AnnotationMotivation.prototype.identifying = function () {
+            return new AnnotationMotivation(AnnotationMotivation.IDENTIFYING.toString());
+        };
+        AnnotationMotivation.prototype.linking = function () {
+            return new AnnotationMotivation(AnnotationMotivation.LINKING.toString());
+        };
+        AnnotationMotivation.prototype.moderating = function () {
+            return new AnnotationMotivation(AnnotationMotivation.MODERATING.toString());
+        };
+        AnnotationMotivation.prototype.painting = function () {
+            return new AnnotationMotivation(AnnotationMotivation.PAINTING.toString());
+        };
+        AnnotationMotivation.prototype.questioning = function () {
+            return new AnnotationMotivation(AnnotationMotivation.QUESTIONING.toString());
+        };
+        AnnotationMotivation.prototype.replying = function () {
+            return new AnnotationMotivation(AnnotationMotivation.REPLYING.toString());
+        };
+        AnnotationMotivation.prototype.tagging = function () {
+            return new AnnotationMotivation(AnnotationMotivation.TAGGING.toString());
+        };
+        AnnotationMotivation.prototype.transcribing = function () {
+            return new AnnotationMotivation(AnnotationMotivation.TRANSCRIBING.toString());
+        };
+        AnnotationMotivation.BOOKMARKING = new AnnotationMotivation("oa:bookmarking");
+        AnnotationMotivation.CLASSIFYING = new AnnotationMotivation("oa:classifying");
+        AnnotationMotivation.COMMENTING = new AnnotationMotivation("oa:commenting");
+        AnnotationMotivation.DESCRIBING = new AnnotationMotivation("oa:describing");
+        AnnotationMotivation.EDITING = new AnnotationMotivation("oa:editing");
+        AnnotationMotivation.HIGHLIGHTING = new AnnotationMotivation("oa:highlighting");
+        AnnotationMotivation.IDENTIFYING = new AnnotationMotivation("oa:identifying");
+        AnnotationMotivation.LINKING = new AnnotationMotivation("oa:linking");
+        AnnotationMotivation.MODERATING = new AnnotationMotivation("oa:moderating");
+        AnnotationMotivation.PAINTING = new AnnotationMotivation("sc:painting");
+        AnnotationMotivation.QUESTIONING = new AnnotationMotivation("oa:questioning");
+        AnnotationMotivation.REPLYING = new AnnotationMotivation("oa:replying");
+        AnnotationMotivation.TAGGING = new AnnotationMotivation("oa:tagging");
+        AnnotationMotivation.TRANSCRIBING = new AnnotationMotivation("oad:transcribing");
+        return AnnotationMotivation;
+    }(Manifesto.StringValue));
+    Manifesto.AnnotationMotivation = AnnotationMotivation;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var Behavior = /** @class */ (function (_super) {
+        __extends(Behavior, _super);
+        function Behavior() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        // todo: use getters when ES3 target is no longer required.
+        Behavior.prototype.autoadvance = function () {
+            return new Behavior(Behavior.AUTOADVANCE.toString());
+        };
+        Behavior.prototype.nonav = function () {
+            return new Behavior(Behavior.NONAV.toString());
+        };
+        Behavior.prototype.paged = function () {
+            return new Behavior(Behavior.PAGED.toString());
+        };
+        Behavior.AUTOADVANCE = new Behavior("auto-advance");
+        Behavior.NONAV = new Behavior("no-nav");
+        Behavior.PAGED = new Behavior("paged");
+        return Behavior;
+    }(Manifesto.StringValue));
+    Manifesto.Behavior = Behavior;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var IIIFResourceType = /** @class */ (function (_super) {
+        __extends(IIIFResourceType, _super);
+        function IIIFResourceType() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        // todo: use getters when ES3 target is no longer required.
+        IIIFResourceType.prototype.annotation = function () {
+            return new IIIFResourceType(IIIFResourceType.ANNOTATION.toString());
+        };
+        IIIFResourceType.prototype.canvas = function () {
+            return new IIIFResourceType(IIIFResourceType.CANVAS.toString());
+        };
+        IIIFResourceType.prototype.collection = function () {
+            return new IIIFResourceType(IIIFResourceType.COLLECTION.toString());
+        };
+        IIIFResourceType.prototype.manifest = function () {
+            return new IIIFResourceType(IIIFResourceType.MANIFEST.toString());
+        };
+        IIIFResourceType.prototype.range = function () {
+            return new IIIFResourceType(IIIFResourceType.RANGE.toString());
+        };
+        IIIFResourceType.prototype.sequence = function () {
+            return new IIIFResourceType(IIIFResourceType.SEQUENCE.toString());
+        };
+        IIIFResourceType.ANNOTATION = new IIIFResourceType("annotation");
+        IIIFResourceType.CANVAS = new IIIFResourceType("canvas");
+        IIIFResourceType.COLLECTION = new IIIFResourceType("collection");
+        IIIFResourceType.MANIFEST = new IIIFResourceType("manifest");
+        IIIFResourceType.RANGE = new IIIFResourceType("range");
+        IIIFResourceType.SEQUENCE = new IIIFResourceType("sequence");
+        return IIIFResourceType;
+    }(Manifesto.StringValue));
+    Manifesto.IIIFResourceType = IIIFResourceType;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var ManifestType = /** @class */ (function (_super) {
+        __extends(ManifestType, _super);
+        function ManifestType() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        // todo: use getters when ES3 target is no longer required.
+        ManifestType.prototype.empty = function () {
+            return new ManifestType(ManifestType.EMPTY.toString());
+        };
+        ManifestType.prototype.manuscript = function () {
+            return new ManifestType(ManifestType.MANUSCRIPT.toString());
+        };
+        ManifestType.prototype.monograph = function () {
+            return new ManifestType(ManifestType.MONOGRAPH.toString());
+        };
+        ManifestType.EMPTY = new ManifestType("");
+        ManifestType.MANUSCRIPT = new ManifestType("manuscript");
+        ManifestType.MONOGRAPH = new ManifestType("monograph");
+        return ManifestType;
+    }(Manifesto.StringValue));
+    Manifesto.ManifestType = ManifestType;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var RenderingFormat = /** @class */ (function (_super) {
+        __extends(RenderingFormat, _super);
+        function RenderingFormat() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        // todo: use getters when ES3 target is no longer required.
+        RenderingFormat.prototype.pdf = function () {
+            return new RenderingFormat(RenderingFormat.PDF.toString());
+        };
+        RenderingFormat.prototype.doc = function () {
+            return new RenderingFormat(RenderingFormat.DOC.toString());
+        };
+        RenderingFormat.prototype.docx = function () {
+            return new RenderingFormat(RenderingFormat.DOCX.toString());
+        };
+        RenderingFormat.PDF = new RenderingFormat("application/pdf");
+        RenderingFormat.DOC = new RenderingFormat("application/msword");
+        RenderingFormat.DOCX = new RenderingFormat("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        return RenderingFormat;
+    }(Manifesto.StringValue));
+    Manifesto.RenderingFormat = RenderingFormat;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var MediaType = /** @class */ (function (_super) {
+        __extends(MediaType, _super);
+        function MediaType() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        // todo: use getters when ES3 target is no longer required.
+        MediaType.prototype.jpg = function () {
+            return new MediaType(MediaType.JPG.toString());
+        };
+        MediaType.prototype.mp4 = function () {
+            return new MediaType(MediaType.MP4.toString());
+        };
+        MediaType.prototype.pdf = function () {
+            return new MediaType(MediaType.PDF.toString());
+        };
+        MediaType.prototype.threejs = function () {
+            return new MediaType(MediaType.THREEJS.toString());
+        };
+        MediaType.prototype.webm = function () {
+            return new MediaType(MediaType.WEBM.toString());
+        };
+        MediaType.JPG = new MediaType("image/jpeg");
+        MediaType.MP4 = new MediaType("video/mp4");
+        MediaType.PDF = new MediaType("application/pdf");
+        MediaType.THREEJS = new MediaType("application/vnd.threejs+json");
+        MediaType.WEBM = new MediaType("video/webm");
+        return MediaType;
+    }(Manifesto.StringValue));
+    Manifesto.MediaType = MediaType;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var ResourceType = /** @class */ (function (_super) {
+        __extends(ResourceType, _super);
+        function ResourceType() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        // todo: use getters when ES3 target is no longer required.
+        ResourceType.prototype.canvas = function () {
+            return new ResourceType(ResourceType.CANVAS.toString());
+        };
+        ResourceType.prototype.choice = function () {
+            return new ResourceType(ResourceType.CHOICE.toString());
+        };
+        ResourceType.prototype.document = function () {
+            return new ResourceType(ResourceType.DOCUMENT.toString());
+        };
+        ResourceType.prototype.image = function () {
+            return new ResourceType(ResourceType.IMAGE.toString());
+        };
+        ResourceType.prototype.movingimage = function () {
+            return new ResourceType(ResourceType.MOVINGIMAGE.toString());
+        };
+        ResourceType.prototype.physicalobject = function () {
+            return new ResourceType(ResourceType.PHYSICALOBJECT.toString());
+        };
+        ResourceType.prototype.sound = function () {
+            return new ResourceType(ResourceType.SOUND.toString());
+        };
+        ResourceType.prototype.text = function () {
+            return new ResourceType(ResourceType.TEXT.toString());
+        };
+        ResourceType.CANVAS = new ResourceType("canvas");
+        ResourceType.CHOICE = new ResourceType("choice");
+        ResourceType.DOCUMENT = new ResourceType("document");
+        ResourceType.IMAGE = new ResourceType("image");
+        ResourceType.MOVINGIMAGE = new ResourceType("movingimage");
+        ResourceType.PHYSICALOBJECT = new ResourceType("physicalobject");
+        ResourceType.SOUND = new ResourceType("sound");
+        ResourceType.TEXT = new ResourceType("textualbody");
+        return ResourceType;
+    }(Manifesto.StringValue));
+    Manifesto.ResourceType = ResourceType;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var ServiceProfile = /** @class */ (function (_super) {
+        __extends(ServiceProfile, _super);
+        function ServiceProfile() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        // todo: use getters when ES3 target is no longer required.
+        ServiceProfile.prototype.auth1Clickthrough = function () {
+            return new ServiceProfile(ServiceProfile.AUTH1CLICKTHROUGH.toString());
+        };
+        ServiceProfile.prototype.auth1External = function () {
+            return new ServiceProfile(ServiceProfile.AUTH1EXTERNAL.toString());
+        };
+        ServiceProfile.prototype.auth1Kiosk = function () {
+            return new ServiceProfile(ServiceProfile.AUTH1KIOSK.toString());
+        };
+        ServiceProfile.prototype.auth1Login = function () {
+            return new ServiceProfile(ServiceProfile.AUTH1LOGIN.toString());
+        };
+        ServiceProfile.prototype.auth1Logout = function () {
+            return new ServiceProfile(ServiceProfile.AUTH1LOGOUT.toString());
+        };
+        ServiceProfile.prototype.auth1Probe = function () {
+            return new ServiceProfile(ServiceProfile.AUTH1PROBE.toString());
+        };
+        ServiceProfile.prototype.auth1Token = function () {
+            return new ServiceProfile(ServiceProfile.AUTH1TOKEN.toString());
+        };
+        ServiceProfile.prototype.autoComplete = function () {
+            return new ServiceProfile(ServiceProfile.AUTOCOMPLETE.toString());
+        };
+        ServiceProfile.prototype.iiif1ImageLevel1 = function () {
+            return new ServiceProfile(ServiceProfile.IIIF1IMAGELEVEL1.toString());
+        };
+        ServiceProfile.prototype.iiif1ImageLevel2 = function () {
+            return new ServiceProfile(ServiceProfile.IIIF1IMAGELEVEL2.toString());
+        };
+        ServiceProfile.prototype.iiif2ImageLevel1 = function () {
+            return new ServiceProfile(ServiceProfile.IIIF2IMAGELEVEL1.toString());
+        };
+        ServiceProfile.prototype.iiif2ImageLevel2 = function () {
+            return new ServiceProfile(ServiceProfile.IIIF2IMAGELEVEL2.toString());
+        };
+        ServiceProfile.prototype.ixif = function () {
+            return new ServiceProfile(ServiceProfile.IXIF.toString());
+        };
+        ServiceProfile.prototype.login = function () {
+            return new ServiceProfile(ServiceProfile.AUTHLOGIN.toString());
+        };
+        ServiceProfile.prototype.clickThrough = function () {
+            return new ServiceProfile(ServiceProfile.AUTHCLICKTHROUGH.toString());
+        };
+        ServiceProfile.prototype.restricted = function () {
+            return new ServiceProfile(ServiceProfile.AUTHRESTRICTED.toString());
+        };
+        ServiceProfile.prototype.logout = function () {
+            return new ServiceProfile(ServiceProfile.AUTHLOGOUT.toString());
+        };
+        ServiceProfile.prototype.otherManifestations = function () {
+            return new ServiceProfile(ServiceProfile.OTHERMANIFESTATIONS.toString());
+        };
+        ServiceProfile.prototype.search = function () {
+            return new ServiceProfile(ServiceProfile.SEARCH.toString());
+        };
+        ServiceProfile.prototype.stanfordIIIFImageCompliance1 = function () {
+            return new ServiceProfile(ServiceProfile.STANFORDIIIFIMAGECOMPLIANCE1.toString());
+        };
+        ServiceProfile.prototype.stanfordIIIFImageCompliance2 = function () {
+            return new ServiceProfile(ServiceProfile.STANFORDIIIFIMAGECOMPLIANCE2.toString());
+        };
+        ServiceProfile.prototype.stanfordIIIFImageConformance1 = function () {
+            return new ServiceProfile(ServiceProfile.STANFORDIIIFIMAGECONFORMANCE1.toString());
+        };
+        ServiceProfile.prototype.stanfordIIIFImageConformance2 = function () {
+            return new ServiceProfile(ServiceProfile.STANFORDIIIFIMAGECONFORMANCE2.toString());
+        };
+        ServiceProfile.prototype.stanfordIIIF1ImageCompliance1 = function () {
+            return new ServiceProfile(ServiceProfile.STANFORDIIIF1IMAGECOMPLIANCE1.toString());
+        };
+        ServiceProfile.prototype.stanfordIIIF1ImageCompliance2 = function () {
+            return new ServiceProfile(ServiceProfile.STANFORDIIIF1IMAGECOMPLIANCE2.toString());
+        };
+        ServiceProfile.prototype.stanfordIIIF1ImageConformance1 = function () {
+            return new ServiceProfile(ServiceProfile.STANFORDIIIF1IMAGECONFORMANCE1.toString());
+        };
+        ServiceProfile.prototype.stanfordIIIF1ImageConformance2 = function () {
+            return new ServiceProfile(ServiceProfile.STANFORDIIIF1IMAGECONFORMANCE2.toString());
+        };
+        ServiceProfile.prototype.token = function () {
+            return new ServiceProfile(ServiceProfile.AUTHTOKEN.toString());
+        };
+        ServiceProfile.prototype.trackingExtensions = function () {
+            return new ServiceProfile(ServiceProfile.TRACKINGEXTENSIONS.toString());
+        };
+        ServiceProfile.prototype.uiExtensions = function () {
+            return new ServiceProfile(ServiceProfile.UIEXTENSIONS.toString());
+        };
+        ServiceProfile.prototype.printExtensions = function () {
+            return new ServiceProfile(ServiceProfile.PRINTEXTENSIONS.toString());
+        };
+        ServiceProfile.prototype.shareExtensions = function () {
+            return new ServiceProfile(ServiceProfile.SHAREEXTENSIONS.toString());
+        };
+        // image api
+        ServiceProfile.STANFORDIIIFIMAGECOMPLIANCE0 = new ServiceProfile("http://library.stanford.edu/iiif/image-api/compliance.html#level0");
+        ServiceProfile.STANFORDIIIFIMAGECOMPLIANCE1 = new ServiceProfile("http://library.stanford.edu/iiif/image-api/compliance.html#level1");
+        ServiceProfile.STANFORDIIIFIMAGECOMPLIANCE2 = new ServiceProfile("http://library.stanford.edu/iiif/image-api/compliance.html#level2");
+        ServiceProfile.STANFORDIIIFIMAGECONFORMANCE0 = new ServiceProfile("http://library.stanford.edu/iiif/image-api/conformance.html#level0");
+        ServiceProfile.STANFORDIIIFIMAGECONFORMANCE1 = new ServiceProfile("http://library.stanford.edu/iiif/image-api/conformance.html#level1");
+        ServiceProfile.STANFORDIIIFIMAGECONFORMANCE2 = new ServiceProfile("http://library.stanford.edu/iiif/image-api/conformance.html#level2");
+        ServiceProfile.STANFORDIIIF1IMAGECOMPLIANCE0 = new ServiceProfile("http://library.stanford.edu/iiif/image-api/1.1/compliance.html#level0");
+        ServiceProfile.STANFORDIIIF1IMAGECOMPLIANCE1 = new ServiceProfile("http://library.stanford.edu/iiif/image-api/1.1/compliance.html#level1");
+        ServiceProfile.STANFORDIIIF1IMAGECOMPLIANCE2 = new ServiceProfile("http://library.stanford.edu/iiif/image-api/1.1/compliance.html#level2");
+        ServiceProfile.STANFORDIIIF1IMAGECONFORMANCE0 = new ServiceProfile("http://library.stanford.edu/iiif/image-api/1.1/conformance.html#level0");
+        ServiceProfile.STANFORDIIIF1IMAGECONFORMANCE1 = new ServiceProfile("http://library.stanford.edu/iiif/image-api/1.1/conformance.html#level1");
+        ServiceProfile.STANFORDIIIF1IMAGECONFORMANCE2 = new ServiceProfile("http://library.stanford.edu/iiif/image-api/1.1/conformance.html#level2");
+        ServiceProfile.IIIF1IMAGELEVEL0 = new ServiceProfile("http://iiif.io/api/image/1/level0.json");
+        ServiceProfile.IIIF1IMAGELEVEL0PROFILE = new ServiceProfile("http://iiif.io/api/image/1/profiles/level0.json");
+        ServiceProfile.IIIF1IMAGELEVEL1 = new ServiceProfile("http://iiif.io/api/image/1/level1.json");
+        ServiceProfile.IIIF1IMAGELEVEL1PROFILE = new ServiceProfile("http://iiif.io/api/image/1/profiles/level1.json");
+        ServiceProfile.IIIF1IMAGELEVEL2 = new ServiceProfile("http://iiif.io/api/image/1/level2.json");
+        ServiceProfile.IIIF1IMAGELEVEL2PROFILE = new ServiceProfile("http://iiif.io/api/image/1/profiles/level2.json");
+        ServiceProfile.IIIF2IMAGELEVEL0 = new ServiceProfile("http://iiif.io/api/image/2/level0.json");
+        ServiceProfile.IIIF2IMAGELEVEL0PROFILE = new ServiceProfile("http://iiif.io/api/image/2/profiles/level0.json");
+        ServiceProfile.IIIF2IMAGELEVEL1 = new ServiceProfile("http://iiif.io/api/image/2/level1.json");
+        ServiceProfile.IIIF2IMAGELEVEL1PROFILE = new ServiceProfile("http://iiif.io/api/image/2/profiles/level1.json");
+        ServiceProfile.IIIF2IMAGELEVEL2 = new ServiceProfile("http://iiif.io/api/image/2/level2.json");
+        ServiceProfile.IIIF2IMAGELEVEL2PROFILE = new ServiceProfile("http://iiif.io/api/image/2/profiles/level2.json");
+        // auth api
+        ServiceProfile.AUTHCLICKTHROUGH = new ServiceProfile("http://iiif.io/api/auth/0/login/clickthrough");
+        ServiceProfile.AUTHLOGIN = new ServiceProfile("http://iiif.io/api/auth/0/login");
+        ServiceProfile.AUTHLOGOUT = new ServiceProfile("http://iiif.io/api/auth/0/logout");
+        ServiceProfile.AUTHRESTRICTED = new ServiceProfile("http://iiif.io/api/auth/0/login/restricted");
+        ServiceProfile.AUTHTOKEN = new ServiceProfile("http://iiif.io/api/auth/0/token");
+        ServiceProfile.AUTH1CLICKTHROUGH = new ServiceProfile("http://iiif.io/api/auth/1/clickthrough");
+        ServiceProfile.AUTH1EXTERNAL = new ServiceProfile("http://iiif.io/api/auth/1/external");
+        ServiceProfile.AUTH1KIOSK = new ServiceProfile("http://iiif.io/api/auth/1/kiosk");
+        ServiceProfile.AUTH1LOGIN = new ServiceProfile("http://iiif.io/api/auth/1/login");
+        ServiceProfile.AUTH1LOGOUT = new ServiceProfile("http://iiif.io/api/auth/1/logout");
+        ServiceProfile.AUTH1PROBE = new ServiceProfile("http://iiif.io/api/auth/1/probe");
+        ServiceProfile.AUTH1TOKEN = new ServiceProfile("http://iiif.io/api/auth/1/token");
+        // search api
+        ServiceProfile.AUTOCOMPLETE = new ServiceProfile("http://iiif.io/api/search/0/autocomplete");
+        ServiceProfile.SEARCH = new ServiceProfile("http://iiif.io/api/search/0/search");
+        // extensions
+        ServiceProfile.TRACKINGEXTENSIONS = new ServiceProfile("http://universalviewer.io/tracking-extensions-profile");
+        ServiceProfile.UIEXTENSIONS = new ServiceProfile("http://universalviewer.io/ui-extensions-profile");
+        ServiceProfile.PRINTEXTENSIONS = new ServiceProfile("http://universalviewer.io/print-extensions-profile");
+        ServiceProfile.SHAREEXTENSIONS = new ServiceProfile("http://universalviewer.io/share-extensions-profile");
+        // other
+        ServiceProfile.OTHERMANIFESTATIONS = new ServiceProfile("http://iiif.io/api/otherManifestations.json");
+        ServiceProfile.IXIF = new ServiceProfile("http://wellcomelibrary.org/ld/ixif/0/alpha.json");
+        return ServiceProfile;
+    }(Manifesto.StringValue));
+    Manifesto.ServiceProfile = ServiceProfile;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var ViewingDirection = /** @class */ (function (_super) {
+        __extends(ViewingDirection, _super);
+        function ViewingDirection() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        // todo: use getters when ES3 target is no longer required.
+        ViewingDirection.prototype.leftToRight = function () {
+            return new ViewingDirection(ViewingDirection.LEFTTORIGHT.toString());
+        };
+        ViewingDirection.prototype.rightToLeft = function () {
+            return new ViewingDirection(ViewingDirection.RIGHTTOLEFT.toString());
+        };
+        ViewingDirection.prototype.topToBottom = function () {
+            return new ViewingDirection(ViewingDirection.TOPTOBOTTOM.toString());
+        };
+        ViewingDirection.prototype.bottomToTop = function () {
+            return new ViewingDirection(ViewingDirection.BOTTOMTOTOP.toString());
+        };
+        ViewingDirection.LEFTTORIGHT = new ViewingDirection("left-to-right");
+        ViewingDirection.RIGHTTOLEFT = new ViewingDirection("right-to-left");
+        ViewingDirection.TOPTOBOTTOM = new ViewingDirection("top-to-bottom");
+        ViewingDirection.BOTTOMTOTOP = new ViewingDirection("bottom-to-top");
+        return ViewingDirection;
+    }(Manifesto.StringValue));
+    Manifesto.ViewingDirection = ViewingDirection;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var ViewingHint = /** @class */ (function (_super) {
+        __extends(ViewingHint, _super);
+        function ViewingHint() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        // todo: use getters when ES3 target is no longer required.
+        ViewingHint.prototype.continuous = function () {
+            return new ViewingHint(ViewingHint.CONTINUOUS.toString());
+        };
+        ViewingHint.prototype.empty = function () {
+            return new ViewingHint(ViewingHint.EMPTY.toString());
+        };
+        ViewingHint.prototype.individuals = function () {
+            return new ViewingHint(ViewingHint.INDIVIDUALS.toString());
+        };
+        ViewingHint.prototype.nonPaged = function () {
+            return new ViewingHint(ViewingHint.NONPAGED.toString());
+        };
+        ViewingHint.prototype.paged = function () {
+            return new ViewingHint(ViewingHint.PAGED.toString());
+        };
+        ViewingHint.prototype.top = function () {
+            return new ViewingHint(ViewingHint.TOP.toString());
+        };
+        ViewingHint.CONTINUOUS = new ViewingHint("continuous");
+        ViewingHint.EMPTY = new ViewingHint("");
+        ViewingHint.INDIVIDUALS = new ViewingHint("individuals");
+        ViewingHint.NONPAGED = new ViewingHint("non-paged");
+        ViewingHint.PAGED = new ViewingHint("paged");
+        ViewingHint.TOP = new ViewingHint("top");
+        return ViewingHint;
+    }(Manifesto.StringValue));
+    Manifesto.ViewingHint = ViewingHint;
+})(Manifesto || (Manifesto = {}));
+
+var Manifesto;
+(function (Manifesto) {
+    var JSONLDResource = /** @class */ (function () {
+        function JSONLDResource(jsonld) {
+            this.__jsonld = jsonld;
+            this.context = this.getProperty('context');
+            this.id = this.getProperty('id');
+        }
+        JSONLDResource.prototype.getProperty = function (name) {
+            var prop = null;
+            if (this.__jsonld) {
+                prop = this.__jsonld[name];
+                if (!prop) {
+                    // property may have a prepended '@'
+                    prop = this.__jsonld['@' + name];
+                }
+            }
+            return prop;
+        };
+        return JSONLDResource;
+    }());
+    Manifesto.JSONLDResource = JSONLDResource;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var ManifestResource = /** @class */ (function (_super) {
+        __extends(ManifestResource, _super);
+        function ManifestResource(jsonld, options) {
+            var _this = _super.call(this, jsonld) || this;
+            _this.options = options;
+            return _this;
+        }
+        ManifestResource.prototype.getIIIFResourceType = function () {
+            return new Manifesto.IIIFResourceType(Manifesto.Utils.normaliseType(this.getProperty('type')));
+        };
+        ManifestResource.prototype.getLabel = function () {
+            var label = this.getProperty('label');
+            if (label) {
+                return Manifesto.LanguageMap.parse(label, this.options.locale);
+            }
+            return [];
+        };
+        ManifestResource.prototype.getDefaultLabel = function () {
+            return Manifesto.LanguageMap.getValue(this.getLabel());
+        };
+        ManifestResource.prototype.getMetadata = function () {
+            var _metadata = this.getProperty('metadata');
+            var metadata = [];
+            if (!_metadata)
+                return metadata;
+            for (var i = 0; i < _metadata.length; i++) {
+                var item = _metadata[i];
+                var metadataItem = new Manifesto.LabelValuePair(this.options.locale);
+                metadataItem.parse(item);
+                metadata.push(metadataItem);
+            }
+            return metadata;
+        };
+        ManifestResource.prototype.getRendering = function (format) {
+            var renderings = this.getRenderings();
+            // normalise format to string
+            if (typeof (format) !== 'string') {
+                format = format.toString();
+            }
+            for (var i = 0; i < renderings.length; i++) {
+                var rendering = renderings[i];
+                if (rendering.getFormat().toString() === format) {
+                    return rendering;
+                }
+            }
+            return null;
+        };
+        ManifestResource.prototype.getRenderings = function () {
+            var rendering;
+            // if passing a manifesto-parsed object, use the __jsonld.rendering property,
+            // otherwise look for a rendering property
+            if (this.__jsonld) {
+                rendering = this.__jsonld.rendering;
+            }
+            else {
+                rendering = this.rendering;
+            }
+            var renderings = [];
+            if (!rendering)
+                return renderings;
+            // coerce to array
+            if (!Array.isArray(rendering)) {
+                rendering = [rendering];
+            }
+            for (var i = 0; i < rendering.length; i++) {
+                var r = rendering[i];
+                renderings.push(new Manifesto.Rendering(r, this.options));
+            }
+            return renderings;
+        };
+        ManifestResource.prototype.getService = function (profile) {
+            return Manifesto.Utils.getService(this, profile);
+        };
+        ManifestResource.prototype.getServices = function () {
+            return Manifesto.Utils.getServices(this);
+        };
+        ManifestResource.prototype.getThumbnail = function () {
+            var thumbnail = this.getProperty('thumbnail');
+            if (Array.isArray(thumbnail)) {
+                thumbnail = thumbnail[0];
+            }
+            if (thumbnail) {
+                return new Manifesto.Thumbnail(thumbnail, this.options);
+            }
+            return null;
+        };
+        ManifestResource.prototype.isAnnotation = function () {
+            return this.getIIIFResourceType().toString() === Manifesto.IIIFResourceType.ANNOTATION.toString();
+        };
+        ManifestResource.prototype.isCanvas = function () {
+            return this.getIIIFResourceType().toString() === Manifesto.IIIFResourceType.CANVAS.toString();
+        };
+        ManifestResource.prototype.isCollection = function () {
+            return this.getIIIFResourceType().toString() === Manifesto.IIIFResourceType.COLLECTION.toString();
+        };
+        ManifestResource.prototype.isManifest = function () {
+            return this.getIIIFResourceType().toString() === Manifesto.IIIFResourceType.MANIFEST.toString();
+        };
+        ManifestResource.prototype.isRange = function () {
+            return this.getIIIFResourceType().toString() === Manifesto.IIIFResourceType.RANGE.toString();
+        };
+        ManifestResource.prototype.isSequence = function () {
+            return this.getIIIFResourceType().toString() === Manifesto.IIIFResourceType.SEQUENCE.toString();
+        };
+        return ManifestResource;
+    }(Manifesto.JSONLDResource));
+    Manifesto.ManifestResource = ManifestResource;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var Resource = /** @class */ (function (_super) {
+        __extends(Resource, _super);
+        function Resource(jsonld, options) {
+            return _super.call(this, jsonld, options) || this;
+        }
+        Resource.prototype.getFormat = function () {
+            var format = this.getProperty('format');
+            if (format) {
+                return new Manifesto.MediaType(format.toLowerCase());
+            }
+            return null;
+        };
+        Resource.prototype.getResources = function () {
+            var resources = [];
+            if (!this.__jsonld.resources)
+                return resources;
+            for (var i = 0; i < this.__jsonld.resources.length; i++) {
+                var a = this.__jsonld.resources[i];
+                var annotation = new Manifesto.Annotation(a, this.options);
+                resources.push(annotation);
+            }
+            return resources;
+        };
+        Resource.prototype.getType = function () {
+            var type = this.getProperty('type');
+            if (type) {
+                return new Manifesto.ResourceType(Manifesto.Utils.normaliseType(type));
+            }
+            return null;
+        };
+        Resource.prototype.getWidth = function () {
+            return this.getProperty('width');
+        };
+        Resource.prototype.getHeight = function () {
+            return this.getProperty('height');
+        };
+        Resource.prototype.getMaxWidth = function () {
+            return this.getProperty('maxWidth');
+        };
+        Resource.prototype.getMaxHeight = function () {
+            var maxHeight = this.getProperty('maxHeight');
+            // if a maxHeight hasn't been specified, default to maxWidth.
+            // maxWidth in essence becomes maxEdge
+            if (!maxHeight) {
+                return this.getMaxWidth();
+            }
+            return null;
+        };
+        return Resource;
+    }(Manifesto.ManifestResource));
+    Manifesto.Resource = Resource;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var Canvas = /** @class */ (function (_super) {
+        __extends(Canvas, _super);
+        function Canvas(jsonld, options) {
+            return _super.call(this, jsonld, options) || this;
+        }
+        // http://iiif.io/api/image/2.1/#canonical-uri-syntax
+        Canvas.prototype.getCanonicalImageUri = function (w) {
+            var id = null;
+            var region = 'full';
+            var rotation = 0;
+            var quality = 'default';
+            var width = w;
+            var size;
+            // if an info.json has been loaded
+            if (this.externalResource && this.externalResource.data && this.externalResource.data['@id']) {
+                id = this.externalResource.data['@id'];
+                if (!width) {
+                    width = this.externalResource.data.width;
+                }
+                if (this.externalResource.data['@context']) {
+                    if (this.externalResource.data['@context'].indexOf('/1.0/context.json') > -1 ||
+                        this.externalResource.data['@context'].indexOf('/1.1/context.json') > -1 ||
+                        this.externalResource.data['@context'].indexOf('/1/context.json') > -1) {
+                        quality = 'native';
+                    }
+                }
+            }
+            else {
+                // info.json hasn't been loaded yet
+                var images = this.getImages();
+                if (images && images.length) {
+                    var firstImage = images[0];
+                    var resource = firstImage.getResource();
+                    var services = resource.getServices();
+                    if (!width) {
+                        width = resource.getWidth();
+                    }
+                    if (services.length) {
+                        var service = services[0];
+                        id = service.id;
+                        quality = Manifesto.Utils.getImageQuality(service.getProfile());
+                    }
+                    else if (width === resource.getWidth()) {
+                        // if the passed width is the same as the resource width
+                        // i.e. not looking for a thumbnail
+                        // return the full size image.
+                        // used for download options when loading static images.
+                        return resource.id;
+                    }
+                }
+                // todo: should this be moved to getThumbUri?
+                if (!id) {
+                    var thumbnail = this.getProperty('thumbnail');
+                    if (thumbnail) {
+                        if (typeof (thumbnail) === 'string') {
+                            return thumbnail;
+                        }
+                        else {
+                            if (thumbnail['@id']) {
+                                return thumbnail['@id'];
+                            }
+                            else if (thumbnail.length) {
+                                return thumbnail[0].id;
+                            }
+                        }
+                    }
+                }
+            }
+            size = width + ',';
+            // trim off trailing '/'
+            if (id && id.endsWith('/')) {
+                id = id.substr(0, id.length - 1);
+            }
+            var uri = [id, region, size, rotation, quality + '.jpg'].join('/');
+            return uri;
+        };
+        Canvas.prototype.getMaxDimensions = function () {
+            var maxDimensions = null;
+            var profile;
+            if (this.externalResource && this.externalResource.data && this.externalResource.data.profile) {
+                profile = this.externalResource.data.profile;
+                if (Array.isArray(profile)) {
+                    profile = profile.filter(function (p) { return p["maxWidth" || "maxwidth"]; })[0];
+                    if (profile) {
+                        maxDimensions = new Manifesto.Size(profile.maxWidth, profile.maxHeight ? profile.maxHeight : profile.maxWidth);
+                    }
+                }
+            }
+            return maxDimensions;
+        };
+        // Presentation API 3.0
+        Canvas.prototype.getContent = function () {
+            var content = [];
+            var items = this.__jsonld.items || this.__jsonld.content;
+            if (!items)
+                return content;
+            // should be contained in an AnnotationPage
+            var annotationPage = null;
+            if (items.length) {
+                annotationPage = new Manifesto.AnnotationPage(items[0], this.options);
+            }
+            if (!annotationPage) {
+                return content;
+            }
+            var annotations = annotationPage.getItems();
+            for (var i = 0; i < annotations.length; i++) {
+                var a = annotations[i];
+                var annotation = new Manifesto.Annotation(a, this.options);
+                content.push(annotation);
+            }
+            return content;
+        };
+        Canvas.prototype.getDuration = function () {
+            return this.getProperty('duration');
+        };
+        Canvas.prototype.getImages = function () {
+            var images = [];
+            if (!this.__jsonld.images)
+                return images;
+            for (var i = 0; i < this.__jsonld.images.length; i++) {
+                var a = this.__jsonld.images[i];
+                var annotation = new Manifesto.Annotation(a, this.options);
+                images.push(annotation);
+            }
+            return images;
+        };
+        Canvas.prototype.getIndex = function () {
+            return this.getProperty('index');
+        };
+        Canvas.prototype.getOtherContent = function () {
+            var _this = this;
+            var otherContent = Array.isArray(this.getProperty('otherContent')) ?
+                this.getProperty('otherContent') :
+                [this.getProperty('otherContent')];
+            var canonicalComparison = function (typeA, typeB) {
+                if (typeof typeA !== 'string' || typeof typeB !== 'string') {
+                    return false;
+                }
+                return typeA.toLowerCase() === typeA.toLowerCase();
+            };
+            var otherPromises = otherContent
+                .filter(function (otherContent) { return otherContent && canonicalComparison(otherContent['@type'], 'sc:AnnotationList'); })
+                .map(function (annotationList, i) { return ((new Manifesto.AnnotationList(annotationList['label'] || "Annotation list " + i, annotationList, _this.options))); })
+                .map(function (annotationList) { return annotationList.load(); });
+            return Promise.all(otherPromises);
+        };
+        // Prefer thumbnail service to image service if supplied and if
+        // the thumbnail service can provide a satisfactory size +/- x pixels.
+        // this is used to get thumb URIs *before* the info.json has been requested
+        // and populate thumbnails in a viewer.
+        // the publisher may also provide pre-computed fixed-size thumbs for better performance.
+        //getThumbUri(width: number): string {
+        //
+        //    var uri;
+        //    var images: IAnnotation[] = this.getImages();
+        //
+        //    if (images && images.length) {
+        //        var firstImage = images[0];
+        //        var resource: IResource = firstImage.getResource();
+        //        var services: IService[] = resource.getServices();
+        //
+        //        for (let i = 0; i < services.length; i++) {
+        //            var service: IService = services[i];
+        //            var id = service.id;
+        //
+        //            if (!_endsWith(id, '/')) {
+        //                id += '/';
+        //            }
+        //
+        //            uri = id + 'full/' + width + ',/0/' + Utils.getImageQuality(service.getProfile()) + '.jpg';
+        //        }
+        //    }
+        //
+        //    return uri;
+        //}
+        //getType(): CanvasType {
+        //    return new CanvasType(this.getProperty('@type').toLowerCase());
+        //}
+        Canvas.prototype.getWidth = function () {
+            return this.getProperty('width');
+        };
+        Canvas.prototype.getHeight = function () {
+            return this.getProperty('height');
+        };
+        return Canvas;
+    }(Manifesto.Resource));
+    Manifesto.Canvas = Canvas;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var IIIFResource = /** @class */ (function (_super) {
+        __extends(IIIFResource, _super);
+        function IIIFResource(jsonld, options) {
+            var _this = _super.call(this, jsonld, options) || this;
+            _this.index = -1;
+            _this.isLoaded = false;
+            var defaultOptions = {
+                defaultLabel: '-',
+                locale: 'en-GB',
+                resource: _this,
+                pessimisticAccessControl: false
+            };
+            _this.options = Object.assign(defaultOptions, options);
+            return _this;
+        }
+        IIIFResource.prototype.getAttribution = function () {
+            console.warn('getAttribution will be deprecated, use getRequiredStatement instead.');
+            var attribution = this.getProperty('attribution');
+            if (attribution) {
+                return Manifesto.LanguageMap.parse(attribution, this.options.locale);
+            }
+            return [];
+        };
+        IIIFResource.prototype.getDescription = function () {
+            var description = this.getProperty('description');
+            if (description) {
+                return Manifesto.LanguageMap.parse(description, this.options.locale);
+            }
+            return [];
+        };
+        IIIFResource.prototype.getIIIFResourceType = function () {
+            return new Manifesto.IIIFResourceType(Manifesto.Utils.normaliseType(this.getProperty('type')));
+        };
+        IIIFResource.prototype.getLogo = function () {
+            var logo = this.getProperty('logo');
+            if (!logo)
+                return null;
+            if (typeof (logo) === 'string')
+                return logo;
+            if (Array.isArray(logo) && logo.length) {
+                logo = logo[0];
+            }
+            return logo['@id'] || logo.id;
+        };
+        IIIFResource.prototype.getLicense = function () {
+            return Manifesto.Utils.getLocalisedValue(this.getProperty('license'), this.options.locale);
+        };
+        IIIFResource.prototype.getNavDate = function () {
+            return new Date(this.getProperty('navDate'));
+        };
+        IIIFResource.prototype.getRelated = function () {
+            return this.getProperty('related');
+        };
+        IIIFResource.prototype.getSeeAlso = function () {
+            return this.getProperty('seeAlso');
+        };
+        IIIFResource.prototype.getTrackingLabel = function () {
+            var service = this.getService(Manifesto.ServiceProfile.TRACKINGEXTENSIONS);
+            if (service) {
+                return service.getProperty('trackingLabel');
+            }
+            return '';
+        };
+        IIIFResource.prototype.getDefaultTree = function () {
+            this.defaultTree = new Manifesto.TreeNode('root');
+            this.defaultTree.data = this;
+            return this.defaultTree;
+        };
+        IIIFResource.prototype.getRequiredStatement = function () {
+            var requiredStatement = null;
+            var _requiredStatement = this.getProperty('requiredStatement');
+            if (_requiredStatement) {
+                requiredStatement = new Manifesto.LabelValuePair(this.options.locale);
+                requiredStatement.parse(_requiredStatement);
+            }
+            else {
+                // fall back to attribution (if it exists)
+                var attribution = this.getAttribution();
+                if (attribution) {
+                    requiredStatement = new Manifesto.LabelValuePair(this.options.locale);
+                    requiredStatement.value = attribution;
+                }
+            }
+            return requiredStatement;
+        };
+        IIIFResource.prototype.isCollection = function () {
+            if (this.getIIIFResourceType().toString() === Manifesto.IIIFResourceType.COLLECTION.toString()) {
+                return true;
+            }
+            return false;
+        };
+        IIIFResource.prototype.isManifest = function () {
+            if (this.getIIIFResourceType().toString() === Manifesto.IIIFResourceType.MANIFEST.toString()) {
+                return true;
+            }
+            return false;
+        };
+        IIIFResource.prototype.load = function () {
+            var that = this;
+            return new Promise(function (resolve, reject) {
+                if (that.isLoaded) {
+                    resolve(that);
+                }
+                else {
+                    var options_1 = that.options;
+                    options_1.navDate = that.getNavDate();
+                    var id = that.__jsonld.id;
+                    if (!id) {
+                        id = that.__jsonld['@id'];
+                    }
+                    Manifesto.Utils.loadResource(id).then(function (data) {
+                        that.parentLabel = Manifesto.LanguageMap.getValue(that.getLabel(), options_1.locale);
+                        var parsed = Manifesto.Deserialiser.parse(data, options_1);
+                        that = Object.assign(that, parsed);
+                        //that.parentCollection = options.resource.parentCollection;
+                        that.index = options_1.index;
+                        resolve(that);
+                    });
+                }
+            });
+        };
+        return IIIFResource;
+    }(Manifesto.ManifestResource));
+    Manifesto.IIIFResource = IIIFResource;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var Manifest = /** @class */ (function (_super) {
+        __extends(Manifest, _super);
+        function Manifest(jsonld, options) {
+            var _this = _super.call(this, jsonld, options) || this;
+            _this.index = 0;
+            _this._allRanges = null;
+            _this.items = [];
+            _this._topRanges = [];
+            if (_this.__jsonld.structures && _this.__jsonld.structures.length) {
+                var topRanges = _this._getTopRanges();
+                for (var i = 0; i < topRanges.length; i++) {
+                    var range = topRanges[i];
+                    _this._parseRanges(range, String(i));
+                }
+            }
+            return _this;
+        }
+        Manifest.prototype.getPosterCanvas = function () {
+            var posterCanvas = this.getProperty('posterCanvas');
+            if (posterCanvas) {
+                posterCanvas = new Manifesto.Canvas(posterCanvas, this.options);
+            }
+            return posterCanvas;
+        };
+        Manifest.prototype.getBehavior = function () {
+            var behavior = this.getProperty('behavior');
+            if (Array.isArray(behavior)) {
+                behavior = behavior[0];
+            }
+            if (behavior) {
+                return new Manifesto.Behavior(behavior);
+            }
+            return null;
+        };
+        Manifest.prototype.getDefaultTree = function () {
+            _super.prototype.getDefaultTree.call(this);
+            this.defaultTree.data.type = Manifesto.Utils.normaliseType(Manifesto.TreeNodeType.MANIFEST.toString());
+            if (!this.isLoaded) {
+                return this.defaultTree;
+            }
+            var topRanges = this.getTopRanges();
+            // if there are any ranges in the manifest, default to the first 'top' range or generated placeholder
+            if (topRanges.length) {
+                topRanges[0].getTree(this.defaultTree);
+            }
+            Manifesto.Utils.generateTreeNodeIds(this.defaultTree);
+            return this.defaultTree;
+        };
+        Manifest.prototype._getTopRanges = function () {
+            var topRanges = [];
+            if (this.__jsonld.structures && this.__jsonld.structures.length) {
+                for (var i = 0; i < this.__jsonld.structures.length; i++) {
+                    var json = this.__jsonld.structures[i];
+                    if (json.viewingHint === Manifesto.ViewingHint.TOP.toString()) {
+                        topRanges.push(json);
+                    }
+                }
+                // if no viewingHint="top" range was found, create a default one
+                if (!topRanges.length) {
+                    var range = {};
+                    range.ranges = this.__jsonld.structures;
+                    topRanges.push(range);
+                }
+            }
+            return topRanges;
+        };
+        Manifest.prototype.getTopRanges = function () {
+            return this._topRanges;
+        };
+        Manifest.prototype._getRangeById = function (id) {
+            if (this.__jsonld.structures && this.__jsonld.structures.length) {
+                for (var i = 0; i < this.__jsonld.structures.length; i++) {
+                    var r = this.__jsonld.structures[i];
+                    if (r['@id'] === id || r.id === id) {
+                        return r;
+                    }
+                }
+            }
+            return null;
+        };
+        //private _parseRangeCanvas(json: any, range: IRange): void {
+        // todo: currently this isn't needed
+        //var canvas: IJSONLDResource = new JSONLDResource(json);
+        //range.items.push(<IManifestResource>canvas);
+        //}
+        Manifest.prototype._parseRanges = function (r, path, parentRange) {
+            var range;
+            var id = null;
+            if (typeof (r) === 'string') {
+                id = r;
+                r = this._getRangeById(id);
+            }
+            if (!r) {
+                console.warn("Range:", id, "does not exist");
+                return;
+            }
+            range = new Manifesto.Range(r, this.options);
+            range.parentRange = parentRange;
+            range.path = path;
+            if (!parentRange) {
+                this._topRanges.push(range);
+            }
+            else {
+                parentRange.items.push(range);
+            }
+            var items = r.items || r.members;
+            if (items) {
+                for (var i = 0; i < items.length; i++) {
+                    var item = items[i];
+                    // todo: use an ItemType constant?
+                    if (item['@type'] && item['@type'].toLowerCase() === 'sc:range' || item['type'] && item['type'].toLowerCase() === 'range') {
+                        this._parseRanges(item, path + '/' + i, range);
+                    }
+                    else if (item['@type'] && item['@type'].toLowerCase() === 'sc:canvas' || item['type'] && item['type'].toLowerCase() === 'canvas') {
+                        // store the ids on the __jsonld object to be used by Range.getCanvasIds()
+                        if (!range.canvases) {
+                            range.canvases = [];
+                        }
+                        var id_1 = item.id || item['@id'];
+                        range.canvases.push(id_1);
+                    }
+                }
+            }
+            else if (r.ranges) {
+                for (var i = 0; i < r.ranges.length; i++) {
+                    this._parseRanges(r.ranges[i], path + '/' + i, range);
+                }
+            }
+        };
+        Manifest.prototype.getAllRanges = function () {
+            if (this._allRanges != null)
+                return this._allRanges;
+            this._allRanges = [];
+            var topRanges = this.getTopRanges();
+            var _loop_1 = function (i) {
+                var topRange = topRanges[i];
+                if (topRange.id) {
+                    this_1._allRanges.push(topRange); // it might be a placeholder root range
+                }
+                var reducer = function (acc, next) {
+                    acc.add(next);
+                    var nextRanges = next.getRanges();
+                    if (nextRanges.length) {
+                        return nextRanges.reduce(reducer, acc);
+                    }
+                    return acc;
+                };
+                var subRanges = Array.from(topRange.getRanges().reduce(reducer, new Set()));
+                this_1._allRanges = this_1._allRanges.concat(subRanges);
+            };
+            var this_1 = this;
+            for (var i = 0; i < topRanges.length; i++) {
+                _loop_1(i);
+            }
+            return this._allRanges;
+        };
+        Manifest.prototype.getRangeById = function (id) {
+            var ranges = this.getAllRanges();
+            for (var i = 0; i < ranges.length; i++) {
+                var range = ranges[i];
+                if (range.id === id) {
+                    return range;
+                }
+            }
+            return null;
+        };
+        Manifest.prototype.getRangeByPath = function (path) {
+            var ranges = this.getAllRanges();
+            for (var i = 0; i < ranges.length; i++) {
+                var range = ranges[i];
+                if (range.path === path) {
+                    return range;
+                }
+            }
+            return null;
+        };
+        Manifest.prototype.getSequences = function () {
+            if (this.items.length) {
+                return this.items;
+            }
+            // IxIF mediaSequences overrode sequences, so need to be checked first.
+            // deprecate this when presentation 3 ships
+            var items = this.__jsonld.mediaSequences || this.__jsonld.sequences;
+            if (items) {
+                for (var i = 0; i < items.length; i++) {
+                    var s = items[i];
+                    var sequence = new Manifesto.Sequence(s, this.options);
+                    this.items.push(sequence);
+                }
+            }
+            else if (this.__jsonld.items) {
+                var sequence = new Manifesto.Sequence(this.__jsonld.items, this.options);
+                this.items.push(sequence);
+            }
+            return this.items;
+        };
+        Manifest.prototype.getSequenceByIndex = function (sequenceIndex) {
+            return this.getSequences()[sequenceIndex];
+        };
+        Manifest.prototype.getTotalSequences = function () {
+            return this.getSequences().length;
+        };
+        Manifest.prototype.getManifestType = function () {
+            var service = this.getService(Manifesto.ServiceProfile.UIEXTENSIONS);
+            if (service) {
+                return new Manifesto.ManifestType(service.getProperty('manifestType'));
+            }
+            return new Manifesto.ManifestType('');
+        };
+        Manifest.prototype.isMultiSequence = function () {
+            return this.getTotalSequences() > 1;
+        };
+        Manifest.prototype.isPagingEnabled = function () {
+            var viewingHint = this.getViewingHint();
+            if (viewingHint) {
+                return viewingHint.toString() === Manifesto.ViewingHint.PAGED.toString();
+            }
+            var behavior = this.getBehavior();
+            if (behavior) {
+                return behavior.toString() === Manifesto.Behavior.PAGED.toString();
+            }
+            return false;
+        };
+        Manifest.prototype.getViewingDirection = function () {
+            if (this.getProperty('viewingDirection')) {
+                return new Manifesto.ViewingDirection(this.getProperty('viewingDirection'));
+            }
+            return null;
+        };
+        Manifest.prototype.getViewingHint = function () {
+            if (this.getProperty('viewingHint')) {
+                return new Manifesto.ViewingHint(this.getProperty('viewingHint'));
+            }
+            return null;
+        };
+        return Manifest;
+    }(Manifesto.IIIFResource));
+    Manifesto.Manifest = Manifest;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var Collection = /** @class */ (function (_super) {
+        __extends(Collection, _super);
+        function Collection(jsonld, options) {
+            var _this = _super.call(this, jsonld, options) || this;
+            _this.items = [];
+            _this._collections = null;
+            _this._manifests = null;
+            jsonld.__collection = _this;
+            return _this;
+        }
+        Collection.prototype.getCollections = function () {
+            if (this._collections) {
+                return this._collections;
+            }
+            return this._collections = this.items.filter(function (m) { return m.isCollection(); });
+        };
+        Collection.prototype.getManifests = function () {
+            if (this._manifests) {
+                return this._manifests;
+            }
+            return this._manifests = this.items.filter(function (m) { return m.isManifest(); });
+        };
+        Collection.prototype.getCollectionByIndex = function (collectionIndex) {
+            var collections = this.getCollections();
+            var collection;
+            for (var i = 0; i < collections.length; i++) {
+                var c = collections[i];
+                if (c.index === collectionIndex) {
+                    collection = c;
+                }
+            }
+            if (collection) {
+                collection.options.index = collectionIndex;
+                // id for collection MUST be dereferenceable
+                return collection.load();
+            }
+            else {
+                throw new Error("Collection index not found");
+            }
+        };
+        Collection.prototype.getManifestByIndex = function (manifestIndex) {
+            var manifests = this.getManifests();
+            var manifest;
+            for (var i = 0; i < manifests.length; i++) {
+                var m = manifests[i];
+                if (m.index === manifestIndex) {
+                    manifest = m;
+                }
+            }
+            if (manifest) {
+                manifest.options.index = manifestIndex;
+                return manifest.load();
+            }
+            else {
+                throw new Error("Manifest index not found");
+            }
+        };
+        Collection.prototype.getTotalCollections = function () {
+            return this.getCollections().length;
+        };
+        Collection.prototype.getTotalManifests = function () {
+            return this.getManifests().length;
+        };
+        Collection.prototype.getTotalItems = function () {
+            return this.items.length;
+        };
+        Collection.prototype.getViewingDirection = function () {
+            if (this.getProperty('viewingDirection')) {
+                return new Manifesto.ViewingDirection(this.getProperty('viewingDirection'));
+            }
+            return Manifesto.ViewingDirection.LEFTTORIGHT;
+        };
+        /**
+         * Get a tree of sub collections and manifests, using each child manifest's first 'top' range.
+         */
+        Collection.prototype.getDefaultTree = function () {
+            _super.prototype.getDefaultTree.call(this);
+            //console.log("get default tree for ", this.id);
+            this.defaultTree.data.type = Manifesto.Utils.normaliseType(Manifesto.TreeNodeType.COLLECTION.toString());
+            this._parseManifests(this);
+            this._parseCollections(this);
+            Manifesto.Utils.generateTreeNodeIds(this.defaultTree);
+            return this.defaultTree;
+        };
+        Collection.prototype._parseManifests = function (parentCollection) {
+            //console.log("parse manifests for ", parentCollection.id);
+            if (parentCollection.getManifests() && parentCollection.getManifests().length) {
+                for (var i = 0; i < parentCollection.getManifests().length; i++) {
+                    var manifest = parentCollection.getManifests()[i];
+                    var tree = manifest.getDefaultTree();
+                    tree.label = manifest.parentLabel || Manifesto.LanguageMap.getValue(manifest.getLabel(), this.options.locale) || 'manifest ' + (i + 1);
+                    tree.navDate = manifest.getNavDate();
+                    tree.data.id = manifest.id;
+                    tree.data.type = Manifesto.Utils.normaliseType(Manifesto.TreeNodeType.MANIFEST.toString());
+                    parentCollection.defaultTree.addNode(tree);
+                }
+            }
+        };
+        Collection.prototype._parseCollections = function (parentCollection) {
+            //console.log("parse collections for ", parentCollection.id);
+            if (parentCollection.getCollections() && parentCollection.getCollections().length) {
+                for (var i = 0; i < parentCollection.getCollections().length; i++) {
+                    var collection = parentCollection.getCollections()[i];
+                    var tree = collection.getDefaultTree();
+                    tree.label = collection.parentLabel || Manifesto.LanguageMap.getValue(collection.getLabel(), this.options.locale) || 'collection ' + (i + 1);
+                    tree.navDate = collection.getNavDate();
+                    tree.data.id = collection.id;
+                    tree.data.type = Manifesto.Utils.normaliseType(Manifesto.TreeNodeType.COLLECTION.toString());
+                    parentCollection.defaultTree.addNode(tree);
+                }
+            }
+        };
+        return Collection;
+    }(Manifesto.IIIFResource));
+    Manifesto.Collection = Collection;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var Range = /** @class */ (function (_super) {
+        __extends(Range, _super);
+        function Range(jsonld, options) {
+            var _this = _super.call(this, jsonld, options) || this;
+            _this._ranges = null;
+            _this.canvases = null;
+            _this.items = [];
+            return _this;
+        }
+        Range.prototype.getCanvasIds = function () {
+            if (this.__jsonld.canvases) {
+                return this.__jsonld.canvases;
+            }
+            else if (this.canvases) {
+                return this.canvases;
+            }
+            return [];
+        };
+        Range.prototype.getDuration = function () {
+            var start;
+            var end;
+            if (this.canvases && this.canvases.length) {
+                for (var i = 0; i < this.canvases.length; i++) {
+                    var canvas = this.canvases[i];
+                    var temporal = Manifesto.Utils.getTemporalComponent(canvas);
+                    if (temporal && temporal.length > 1) {
+                        if (i === 0) {
+                            start = Number(temporal[0]);
+                        }
+                        if (i === this.canvases.length - 1) {
+                            end = Number(temporal[1]);
+                        }
+                    }
+                }
+            }
+            else {
+                // get child ranges and calculate the start and end based on them
+                var childRanges = this.getRanges();
+                for (var i = 0; i < childRanges.length; i++) {
+                    var childRange = childRanges[i];
+                    var duration = childRange.getDuration();
+                    if (duration) {
+                        if (i === 0) {
+                            start = duration.start;
+                        }
+                        if (i === childRanges.length - 1) {
+                            end = duration.end;
+                        }
+                    }
+                }
+            }
+            if (start !== undefined && end !== undefined) {
+                return new Manifesto.Duration(start, end);
+            }
+            return undefined;
+        };
+        // getCanvases(): ICanvas[] {
+        //     if (this._canvases) {
+        //         return this._canvases;
+        //     }
+        //     return this._canvases = <ICanvas[]>this.items.en().where(m => m.isCanvas()).toArray();
+        // }
+        Range.prototype.getRanges = function () {
+            if (this._ranges) {
+                return this._ranges;
+            }
+            return this._ranges = this.items.filter(function (m) { return m.isRange(); });
+        };
+        Range.prototype.getBehavior = function () {
+            var behavior = this.getProperty('behavior');
+            if (Array.isArray(behavior)) {
+                behavior = behavior[0];
+            }
+            if (behavior) {
+                return new Manifesto.Behavior(behavior);
+            }
+            return null;
+        };
+        Range.prototype.getViewingDirection = function () {
+            if (this.getProperty('viewingDirection')) {
+                return new Manifesto.ViewingDirection(this.getProperty('viewingDirection'));
+            }
+            return null;
+        };
+        Range.prototype.getViewingHint = function () {
+            if (this.getProperty('viewingHint')) {
+                return new Manifesto.ViewingHint(this.getProperty('viewingHint'));
+            }
+            return null;
+        };
+        Range.prototype.getTree = function (treeRoot) {
+            treeRoot.data = this;
+            this.treeNode = treeRoot;
+            var ranges = this.getRanges();
+            if (ranges && ranges.length) {
+                for (var i = 0; i < ranges.length; i++) {
+                    var range = ranges[i];
+                    var node = new Manifesto.TreeNode();
+                    treeRoot.addNode(node);
+                    this._parseTreeNode(node, range);
+                }
+            }
+            Manifesto.Utils.generateTreeNodeIds(treeRoot);
+            return treeRoot;
+        };
+        Range.prototype.spansTime = function (time) {
+            var duration = this.getDuration();
+            if (duration) {
+                if (time >= duration.start && time <= duration.end) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        Range.prototype._parseTreeNode = function (node, range) {
+            node.label = Manifesto.LanguageMap.getValue(range.getLabel(), this.options.locale);
+            node.data = range;
+            node.data.type = Manifesto.Utils.normaliseType(Manifesto.TreeNodeType.RANGE.toString());
+            range.treeNode = node;
+            var ranges = range.getRanges();
+            if (ranges && ranges.length) {
+                for (var i = 0; i < ranges.length; i++) {
+                    var childRange = ranges[i];
+                    var behavior = childRange.getBehavior();
+                    if (behavior && behavior.toString() === Manifesto.Behavior.NONAV.toString()) {
+                        continue;
+                    }
+                    else {
+                        var childNode = new Manifesto.TreeNode();
+                        node.addNode(childNode);
+                        this._parseTreeNode(childNode, childRange);
+                    }
+                }
+            }
+        };
+        return Range;
+    }(Manifesto.ManifestResource));
+    Manifesto.Range = Range;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var Rendering = /** @class */ (function (_super) {
+        __extends(Rendering, _super);
+        function Rendering(jsonld, options) {
+            return _super.call(this, jsonld, options) || this;
+        }
+        Rendering.prototype.getFormat = function () {
+            return new Manifesto.RenderingFormat(this.getProperty('format'));
+        };
+        return Rendering;
+    }(Manifesto.ManifestResource));
+    Manifesto.Rendering = Rendering;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var Sequence = /** @class */ (function (_super) {
+        __extends(Sequence, _super);
+        function Sequence(jsonld, options) {
+            var _this = _super.call(this, jsonld, options) || this;
+            _this.items = [];
+            _this._thumbnails = null;
+            return _this;
+        }
+        Sequence.prototype.getCanvases = function () {
+            if (this.items.length) {
+                return this.items;
+            }
+            var items = this.__jsonld.canvases || this.__jsonld.elements;
+            if (items) {
+                for (var i = 0; i < items.length; i++) {
+                    var c = items[i];
+                    var canvas = new Manifesto.Canvas(c, this.options);
+                    canvas.index = i;
+                    this.items.push(canvas);
+                }
+            }
+            else if (this.__jsonld) {
+                for (var i = 0; i < this.__jsonld.length; i++) {
+                    var c = this.__jsonld[i];
+                    var canvas = new Manifesto.Canvas(c, this.options);
+                    canvas.index = i;
+                    this.items.push(canvas);
+                }
+            }
+            return this.items;
+        };
+        Sequence.prototype.getCanvasById = function (id) {
+            for (var i = 0; i < this.getTotalCanvases(); i++) {
+                var canvas = this.getCanvasByIndex(i);
+                // normalise canvas id
+                var canvasId = Manifesto.Utils.normaliseUrl(canvas.id);
+                if (Manifesto.Utils.normaliseUrl(id) === canvasId) {
+                    return canvas;
+                }
+            }
+            return null;
+        };
+        Sequence.prototype.getCanvasByIndex = function (canvasIndex) {
+            return this.getCanvases()[canvasIndex];
+        };
+        Sequence.prototype.getCanvasIndexById = function (id) {
+            for (var i = 0; i < this.getTotalCanvases(); i++) {
+                var canvas = this.getCanvasByIndex(i);
+                if (canvas.id === id) {
+                    return i;
+                }
+            }
+            return null;
+        };
+        Sequence.prototype.getCanvasIndexByLabel = function (label, foliated) {
+            label = label.trim();
+            if (!isNaN(label)) { // if the label is numeric
+                label = parseInt(label, 10).toString(); // trim any preceding zeros.
+                if (foliated)
+                    label += 'r'; // default to recto
+            }
+            var doublePageRegExp = /(\d*)\D+(\d*)/;
+            var match, regExp, regStr, labelPart1, labelPart2;
+            for (var i = 0; i < this.getTotalCanvases(); i++) {
+                var canvas = this.getCanvasByIndex(i);
+                // check if there's a literal match
+                if (Manifesto.LanguageMap.getValue(canvas.getLabel(), this.options.locale) === label) {
+                    return i;
+                }
+                // check if there's a match for double-page spreads e.g. 100-101, 100_101, 100 101
+                match = doublePageRegExp.exec(label);
+                if (!match)
+                    continue;
+                labelPart1 = match[1];
+                labelPart2 = match[2];
+                if (!labelPart2)
+                    continue;
+                regStr = "^" + labelPart1 + "\\D+" + labelPart2 + "$";
+                regExp = new RegExp(regStr);
+                if (regExp.test(canvas.getLabel().toString())) {
+                    return i;
+                }
+            }
+            return -1;
+        };
+        Sequence.prototype.getLastCanvasLabel = function (alphanumeric) {
+            for (var i = this.getTotalCanvases() - 1; i >= 0; i--) {
+                var canvas = this.getCanvasByIndex(i);
+                var label = Manifesto.LanguageMap.getValue(canvas.getLabel(), this.options.locale);
+                if (alphanumeric) {
+                    var regExp = /^[a-zA-Z0-9]*$/;
+                    if (regExp.test(label)) {
+                        return label;
+                    }
+                }
+                else if (label) {
+                    return label;
+                }
+            }
+            return this.options.defaultLabel;
+        };
+        Sequence.prototype.getLastPageIndex = function () {
+            return this.getTotalCanvases() - 1;
+        };
+        Sequence.prototype.getNextPageIndex = function (canvasIndex, pagingEnabled) {
+            var index;
+            if (pagingEnabled) {
+                var indices = this.getPagedIndices(canvasIndex);
+                var viewingDirection = this.getViewingDirection();
+                if (viewingDirection && viewingDirection.toString() === Manifesto.ViewingDirection.RIGHTTOLEFT.toString()) {
+                    index = indices[0] + 1;
+                }
+                else {
+                    index = indices[indices.length - 1] + 1;
+                }
+            }
+            else {
+                index = canvasIndex + 1;
+            }
+            if (index > this.getLastPageIndex()) {
+                return -1;
+            }
+            return index;
+        };
+        Sequence.prototype.getPagedIndices = function (canvasIndex, pagingEnabled) {
+            var indices = [];
+            if (!pagingEnabled) {
+                indices.push(canvasIndex);
+            }
+            else {
+                if (this.isFirstCanvas(canvasIndex) || this.isLastCanvas(canvasIndex)) {
+                    indices = [canvasIndex];
+                }
+                else if (canvasIndex % 2) {
+                    indices = [canvasIndex, canvasIndex + 1];
+                }
+                else {
+                    indices = [canvasIndex - 1, canvasIndex];
+                }
+                var viewingDirection = this.getViewingDirection();
+                if (viewingDirection && viewingDirection.toString() === Manifesto.ViewingDirection.RIGHTTOLEFT.toString()) {
+                    indices = indices.reverse();
+                }
+            }
+            return indices;
+        };
+        Sequence.prototype.getPrevPageIndex = function (canvasIndex, pagingEnabled) {
+            var index;
+            if (pagingEnabled) {
+                var indices = this.getPagedIndices(canvasIndex);
+                var viewingDirection = this.getViewingDirection();
+                if (viewingDirection && viewingDirection.toString() === Manifesto.ViewingDirection.RIGHTTOLEFT.toString()) {
+                    index = indices[indices.length - 1] - 1;
+                }
+                else {
+                    index = indices[0] - 1;
+                }
+            }
+            else {
+                index = canvasIndex - 1;
+            }
+            return index;
+        };
+        Sequence.prototype.getStartCanvasIndex = function () {
+            var startCanvas = this.getStartCanvas();
+            if (startCanvas) {
+                // if there's a startCanvas attribute, loop through the canvases and return the matching index.
+                for (var i = 0; i < this.getTotalCanvases(); i++) {
+                    var canvas = this.getCanvasByIndex(i);
+                    if (canvas.id === startCanvas)
+                        return i;
+                }
+            }
+            // default to first canvas.
+            return 0;
+        };
+        // todo: deprecate
+        Sequence.prototype.getThumbs = function (width, height) {
+            console.warn('getThumbs will be deprecated, use getThumbnails instead');
+            var thumbs = [];
+            var totalCanvases = this.getTotalCanvases();
+            for (var i = 0; i < totalCanvases; i++) {
+                var canvas = this.getCanvasByIndex(i);
+                var thumb = new Manifesto.Thumb(width, canvas);
+                thumbs.push(thumb);
+            }
+            return thumbs;
+        };
+        Sequence.prototype.getThumbnails = function () {
+            if (this._thumbnails != null)
+                return this._thumbnails;
+            this._thumbnails = [];
+            var canvases = this.getCanvases();
+            for (var i = 0; i < canvases.length; i++) {
+                var thumbnail = canvases[i].getThumbnail();
+                if (thumbnail) {
+                    this._thumbnails.push(thumbnail);
+                }
+            }
+            return this._thumbnails;
+        };
+        Sequence.prototype.getStartCanvas = function () {
+            return this.getProperty('startCanvas');
+        };
+        Sequence.prototype.getTotalCanvases = function () {
+            return this.getCanvases().length;
+        };
+        Sequence.prototype.getViewingDirection = function () {
+            if (this.getProperty('viewingDirection')) {
+                return new Manifesto.ViewingDirection(this.getProperty('viewingDirection'));
+            }
+            else if (this.options.resource.getViewingDirection) {
+                return this.options.resource.getViewingDirection();
+            }
+            return null;
+        };
+        Sequence.prototype.getViewingHint = function () {
+            if (this.getProperty('viewingHint')) {
+                return new Manifesto.ViewingHint(this.getProperty('viewingHint'));
+            }
+            return null;
+        };
+        Sequence.prototype.isCanvasIndexOutOfRange = function (canvasIndex) {
+            return canvasIndex > this.getTotalCanvases() - 1;
+        };
+        Sequence.prototype.isFirstCanvas = function (canvasIndex) {
+            return canvasIndex === 0;
+        };
+        Sequence.prototype.isLastCanvas = function (canvasIndex) {
+            return canvasIndex === this.getTotalCanvases() - 1;
+        };
+        Sequence.prototype.isMultiCanvas = function () {
+            return this.getTotalCanvases() > 1;
+        };
+        Sequence.prototype.isPagingEnabled = function () {
+            var viewingHint = this.getViewingHint();
+            if (viewingHint) {
+                return viewingHint.toString() === Manifesto.ViewingHint.PAGED.toString();
+            }
+            return false;
+        };
+        // checks if the number of canvases is even - therefore has a front and back cover
+        Sequence.prototype.isTotalCanvasesEven = function () {
+            return this.getTotalCanvases() % 2 === 0;
+        };
+        return Sequence;
+    }(Manifesto.ManifestResource));
+    Manifesto.Sequence = Sequence;
+})(Manifesto || (Manifesto = {}));
+
+var Manifesto;
+(function (Manifesto) {
+    var Deserialiser = /** @class */ (function () {
+        function Deserialiser() {
+        }
+        Deserialiser.parse = function (manifest, options) {
+            if (typeof manifest === 'string') {
+                manifest = JSON.parse(manifest);
+            }
+            return this.parseJson(manifest, options);
+        };
+        Deserialiser.parseJson = function (json, options) {
+            var resource;
+            // have options been passed for the manifest to inherit?
+            if (options) {
+                if (options.navDate && !isNaN(options.navDate.getTime())) {
+                    json.navDate = options.navDate.toString();
+                }
+            }
+            if (json['@type']) {
+                switch (json['@type']) {
+                    case 'sc:Collection':
+                        resource = this.parseCollection(json, options);
+                        break;
+                    case 'sc:Manifest':
+                        resource = this.parseManifest(json, options);
+                        break;
+                    default:
+                        return null;
+                }
+            }
+            else {
+                // presentation 3
+                switch (json['type']) {
+                    case 'Collection':
+                        resource = this.parseCollection(json, options);
+                        break;
+                    case 'Manifest':
+                        resource = this.parseManifest(json, options);
+                        break;
+                    default:
+                        return null;
+                }
+            }
+            // Top-level resource was loaded from a URI, so flag it to prevent
+            // unnecessary reload:
+            resource.isLoaded = true;
+            return resource;
+        };
+        Deserialiser.parseCollection = function (json, options) {
+            var collection = new Manifesto.Collection(json, options);
+            if (options) {
+                collection.index = options.index || 0;
+                if (options.resource) {
+                    collection.parentCollection = options.resource.parentCollection;
+                }
+            }
+            else {
+                collection.index = 0;
+            }
+            this.parseCollections(collection, options);
+            this.parseManifests(collection, options);
+            this.parseItems(collection, options);
+            return collection;
+        };
+        Deserialiser.parseCollections = function (collection, options) {
+            var items;
+            if (collection.__jsonld.collections) {
+                items = collection.__jsonld.collections;
+            }
+            else if (collection.__jsonld.items) {
+                items = collection.__jsonld.items.filter(function (m) { return m.type.toLowerCase() === 'collection'; });
+            }
+            if (items) {
+                for (var i = 0; i < items.length; i++) {
+                    if (options) {
+                        options.index = i;
+                    }
+                    var item = this.parseCollection(items[i], options);
+                    item.index = i;
+                    item.parentCollection = collection;
+                    collection.items.push(item);
+                }
+            }
+        };
+        Deserialiser.parseManifest = function (json, options) {
+            var manifest = new Manifesto.Manifest(json, options);
+            return manifest;
+        };
+        Deserialiser.parseManifests = function (collection, options) {
+            var items;
+            if (collection.__jsonld.manifests) {
+                items = collection.__jsonld.manifests;
+            }
+            else if (collection.__jsonld.items) {
+                items = collection.__jsonld.items.filter(function (m) { return m.type.toLowerCase() === 'manifest'; });
+            }
+            if (items) {
+                for (var i = 0; i < items.length; i++) {
+                    var item = this.parseManifest(items[i], options);
+                    item.index = i;
+                    item.parentCollection = collection;
+                    collection.items.push(item);
+                }
+            }
+        };
+        Deserialiser.parseItem = function (json, options) {
+            if (json['@type']) {
+                if (json['@type'].toLowerCase() === 'sc:manifest') {
+                    return this.parseManifest(json, options);
+                }
+                else if (json['@type'].toLowerCase() === 'sc:collection') {
+                    return this.parseCollection(json, options);
+                }
+            }
+            else if (json.type) {
+                if (json.type.toLowerCase() === 'manifest') {
+                    return this.parseManifest(json, options);
+                }
+                else if (json.type.toLowerCase() === 'collection') {
+                    return this.parseCollection(json, options);
+                }
+            }
+            return null;
+        };
+        Deserialiser.parseItems = function (collection, options) {
+            var items = collection.__jsonld.members || collection.__jsonld.items;
+            if (items) {
+                var _loop_1 = function (i) {
+                    if (options) {
+                        options.index = i;
+                    }
+                    var item = this_1.parseItem(items[i], options);
+                    if (!item)
+                        return { value: void 0 };
+                    // only add to items if not already parsed from backwards-compatible collections/manifests arrays
+                    if (collection.items.filter(function (m) { return m.id === item.id; })[0]) {
+                        return "continue";
+                    }
+                    item.index = i;
+                    item.parentCollection = collection;
+                    collection.items.push(item);
+                };
+                var this_1 = this;
+                for (var i = 0; i < items.length; i++) {
+                    var state_1 = _loop_1(i);
+                    if (typeof state_1 === "object")
+                        return state_1.value;
+                }
+            }
+        };
+        return Deserialiser;
+    }());
+    Manifesto.Deserialiser = Deserialiser;
+    var Serialiser = /** @class */ (function () {
+        function Serialiser() {
+        }
+        Serialiser.serialise = function (manifest) {
+            // todo
+            return "";
+        };
+        return Serialiser;
+    }());
+    Manifesto.Serialiser = Serialiser;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var Service = /** @class */ (function (_super) {
+        __extends(Service, _super);
+        function Service(jsonld, options) {
+            return _super.call(this, jsonld, options) || this;
+        }
+        Service.prototype.getProfile = function () {
+            var profile = this.getProperty('profile');
+            if (!profile) {
+                profile = this.getProperty('dcterms:conformsTo');
+            }
+            if (Array.isArray(profile)) {
+                return new Manifesto.ServiceProfile(profile[0]);
+            }
+            return new Manifesto.ServiceProfile(profile);
+        };
+        Service.prototype.getConfirmLabel = function () {
+            return Manifesto.Utils.getLocalisedValue(this.getProperty('confirmLabel'), this.options.locale);
+        };
+        Service.prototype.getDescription = function () {
+            return Manifesto.Utils.getLocalisedValue(this.getProperty('description'), this.options.locale);
+        };
+        Service.prototype.getFailureDescription = function () {
+            return Manifesto.Utils.getLocalisedValue(this.getProperty('failureDescription'), this.options.locale);
+        };
+        Service.prototype.getFailureHeader = function () {
+            return Manifesto.Utils.getLocalisedValue(this.getProperty('failureHeader'), this.options.locale);
+        };
+        Service.prototype.getHeader = function () {
+            return Manifesto.Utils.getLocalisedValue(this.getProperty('header'), this.options.locale);
+        };
+        Service.prototype.getServiceLabel = function () {
+            return Manifesto.Utils.getLocalisedValue(this.getProperty('label'), this.options.locale);
+        };
+        Service.prototype.getInfoUri = function () {
+            var infoUri = this.id;
+            if (!infoUri.endsWith('/')) {
+                infoUri += '/';
+            }
+            infoUri += 'info.json';
+            return infoUri;
+        };
+        return Service;
+    }(Manifesto.ManifestResource));
+    Manifesto.Service = Service;
+})(Manifesto || (Manifesto = {}));
+
+
+var Manifesto;
+(function (Manifesto) {
+    // todo: deprecate
+    // this is used by Sequence.getThumbs
+    var Thumb = /** @class */ (function () {
+        function Thumb(width, canvas) {
+            this.data = canvas;
+            this.index = canvas.index;
+            this.width = width;
+            var heightRatio = canvas.getHeight() / canvas.getWidth();
+            if (heightRatio) {
+                this.height = Math.floor(this.width * heightRatio);
+            }
+            else {
+                this.height = width;
+            }
+            this.uri = canvas.getCanonicalImageUri(width);
+            this.label = Manifesto.LanguageMap.getValue(canvas.getLabel()); // todo: pass locale?
+        }
+        return Thumb;
+    }());
+    Manifesto.Thumb = Thumb;
+})(Manifesto || (Manifesto = {}));
+
+
+var Manifesto;
+(function (Manifesto) {
+    var TreeNode = /** @class */ (function () {
+        function TreeNode(label, data) {
+            this.label = label;
+            this.data = data || {};
+            this.nodes = [];
+        }
+        TreeNode.prototype.addNode = function (node) {
+            this.nodes.push(node);
+            node.parentNode = this;
+        };
+        TreeNode.prototype.isCollection = function () {
+            return this.data.type === Manifesto.Utils.normaliseType(Manifesto.TreeNodeType.COLLECTION.toString());
+        };
+        TreeNode.prototype.isManifest = function () {
+            return this.data.type === Manifesto.Utils.normaliseType(Manifesto.TreeNodeType.MANIFEST.toString());
+        };
+        TreeNode.prototype.isRange = function () {
+            return this.data.type === Manifesto.Utils.normaliseType(Manifesto.TreeNodeType.RANGE.toString());
+        };
+        return TreeNode;
+    }());
+    Manifesto.TreeNode = TreeNode;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var TreeNodeType = /** @class */ (function (_super) {
+        __extends(TreeNodeType, _super);
+        function TreeNodeType() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        // todo: use getters when ES3 target is no longer required.
+        TreeNodeType.prototype.collection = function () {
+            return new TreeNodeType(TreeNodeType.COLLECTION.toString());
+        };
+        TreeNodeType.prototype.manifest = function () {
+            return new TreeNodeType(TreeNodeType.MANIFEST.toString());
+        };
+        TreeNodeType.prototype.range = function () {
+            return new TreeNodeType(TreeNodeType.RANGE.toString());
+        };
+        TreeNodeType.COLLECTION = new TreeNodeType("collection");
+        TreeNodeType.MANIFEST = new TreeNodeType("manifest");
+        TreeNodeType.RANGE = new TreeNodeType("range");
+        return TreeNodeType;
+    }(Manifesto.StringValue));
+    Manifesto.TreeNodeType = TreeNodeType;
+})(Manifesto || (Manifesto = {}));
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+var http = require('http');
+var https = require('https');
+var url = require('url');
+var Manifesto;
+(function (Manifesto) {
+    var Utils = /** @class */ (function () {
+        function Utils() {
+        }
+        Utils.getMediaType = function (type) {
+            type = type.toLowerCase();
+            type = type.split(';')[0];
+            return type.trim();
+        };
+        Utils.getImageQuality = function (profile) {
+            var p = profile.toString();
+            if (p === Manifesto.ServiceProfile.STANFORDIIIFIMAGECOMPLIANCE1.toString() ||
+                p === Manifesto.ServiceProfile.STANFORDIIIFIMAGECOMPLIANCE2.toString() ||
+                p === Manifesto.ServiceProfile.STANFORDIIIF1IMAGECOMPLIANCE1.toString() ||
+                p === Manifesto.ServiceProfile.STANFORDIIIF1IMAGECOMPLIANCE2.toString() ||
+                p === Manifesto.ServiceProfile.STANFORDIIIFIMAGECONFORMANCE1.toString() ||
+                p === Manifesto.ServiceProfile.STANFORDIIIFIMAGECONFORMANCE2.toString() ||
+                p === Manifesto.ServiceProfile.STANFORDIIIF1IMAGECONFORMANCE1.toString() ||
+                p === Manifesto.ServiceProfile.STANFORDIIIF1IMAGECONFORMANCE2.toString() ||
+                p === Manifesto.ServiceProfile.IIIF1IMAGELEVEL1.toString() ||
+                p === Manifesto.ServiceProfile.IIIF1IMAGELEVEL1PROFILE.toString() ||
+                p === Manifesto.ServiceProfile.IIIF1IMAGELEVEL2.toString() ||
+                p === Manifesto.ServiceProfile.IIIF1IMAGELEVEL2PROFILE.toString()) {
+                return 'native';
+            }
+            return 'default';
+        };
+        Utils.getInexactLocale = function (locale) {
+            if (locale.indexOf('-') !== -1) {
+                return locale.substr(0, locale.indexOf('-'));
+            }
+            return locale;
+        };
+        Utils.getLocalisedValue = function (resource, locale) {
+            // if the resource is not an array of translations, return the string.
+            if (!Array.isArray(resource)) {
+                return resource;
+            }
+            // test for exact match
+            for (var i = 0; i < resource.length; i++) {
+                var value_1 = resource[i];
+                var language_1 = value_1['@language'];
+                if (locale === language_1) {
+                    return value_1['@value'];
+                }
+            }
+            // test for inexact match
+            var match = locale.substr(0, locale.indexOf('-'));
+            for (var i = 0; i < resource.length; i++) {
+                var value = resource[i];
+                var language = value['@language'];
+                if (language === match) {
+                    return value['@value'];
+                }
+            }
+            return null;
+        };
+        Utils.generateTreeNodeIds = function (treeNode, index) {
+            if (index === void 0) { index = 0; }
+            var id;
+            if (!treeNode.parentNode) {
+                id = '0';
+            }
+            else {
+                id = treeNode.parentNode.id + "-" + index;
+            }
+            treeNode.id = id;
+            for (var i = 0; i < treeNode.nodes.length; i++) {
+                var n = treeNode.nodes[i];
+                Utils.generateTreeNodeIds(n, i);
+            }
+        };
+        Utils.normaliseType = function (type) {
+            type = type.toLowerCase();
+            if (type.indexOf(':') !== -1) {
+                var split = type.split(':');
+                return split[1];
+            }
+            return type;
+        };
+        Utils.normaliseUrl = function (url) {
+            url = url.substr(url.indexOf('://'));
+            if (url.indexOf('#') !== -1) {
+                url = url.split('#')[0];
+            }
+            return url;
+        };
+        Utils.normalisedUrlsMatch = function (url1, url2) {
+            return Utils.normaliseUrl(url1) === Utils.normaliseUrl(url2);
+        };
+        Utils.isImageProfile = function (profile) {
+            if (typeof (profile) === 'string') {
+                profile = new Manifesto.ServiceProfile(profile);
+            }
+            if (Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIFIMAGECOMPLIANCE0.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIFIMAGECOMPLIANCE1.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIFIMAGECOMPLIANCE2.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIF1IMAGECOMPLIANCE0.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIF1IMAGECOMPLIANCE0.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIF1IMAGECOMPLIANCE0.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIF1IMAGECOMPLIANCE2.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIFIMAGECONFORMANCE0.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIFIMAGECONFORMANCE1.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIFIMAGECONFORMANCE2.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIF1IMAGECONFORMANCE1.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIF1IMAGECONFORMANCE2.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF1IMAGELEVEL0.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF1IMAGELEVEL0PROFILE.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF1IMAGELEVEL1.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF1IMAGELEVEL1PROFILE.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF1IMAGELEVEL2.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF1IMAGELEVEL2PROFILE.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF2IMAGELEVEL0.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF2IMAGELEVEL0PROFILE.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF2IMAGELEVEL1.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF2IMAGELEVEL1PROFILE.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF2IMAGELEVEL2.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF2IMAGELEVEL2PROFILE.toString())) {
+                return true;
+            }
+            return false;
+        };
+        Utils.isLevel0ImageProfile = function (profile) {
+            if (typeof (profile) === 'string') {
+                profile = new Manifesto.ServiceProfile(profile);
+            }
+            if (Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIFIMAGECOMPLIANCE0.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIF1IMAGECOMPLIANCE0.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIFIMAGECONFORMANCE0.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIF1IMAGECONFORMANCE0.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF1IMAGELEVEL0.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF1IMAGELEVEL0PROFILE.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF2IMAGELEVEL0.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF2IMAGELEVEL0PROFILE.toString())) {
+                return true;
+            }
+            return false;
+        };
+        Utils.isLevel1ImageProfile = function (profile) {
+            if (typeof (profile) === 'string') {
+                profile = new Manifesto.ServiceProfile(profile);
+            }
+            if (Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIFIMAGECOMPLIANCE1.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIF1IMAGECOMPLIANCE1.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIFIMAGECONFORMANCE1.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIF1IMAGECONFORMANCE1.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF1IMAGELEVEL1.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF1IMAGELEVEL1PROFILE.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF2IMAGELEVEL1.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF2IMAGELEVEL1PROFILE.toString())) {
+                return true;
+            }
+            return false;
+        };
+        Utils.isLevel2ImageProfile = function (profile) {
+            if (typeof (profile) === 'string') {
+                profile = new Manifesto.ServiceProfile(profile);
+            }
+            if (Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIFIMAGECOMPLIANCE2.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIF1IMAGECOMPLIANCE2.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIFIMAGECONFORMANCE2.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.STANFORDIIIF1IMAGECONFORMANCE2.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF1IMAGELEVEL2.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF1IMAGELEVEL2PROFILE.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF2IMAGELEVEL2.toString()) ||
+                Utils.normalisedUrlsMatch(profile.toString(), Manifesto.ServiceProfile.IIIF2IMAGELEVEL2PROFILE.toString())) {
+                return true;
+            }
+            return false;
+        };
+        Utils.loadResource = function (uri) {
+            return new Promise(function (resolve, reject) {
+                var u = url.parse(uri);
+                var req;
+                var opts = {
+                    host: u.hostname,
+                    port: u.port,
+                    path: u.path,
+                    method: "GET",
+                    withCredentials: false
+                };
+                switch (u.protocol) {
+                    case 'https:':
+                        req = https.request(opts, function (response) {
+                            var result = "";
+                            response.on('data', function (chunk) {
+                                result += chunk;
+                            });
+                            response.on('end', function () {
+                                resolve(result);
+                            });
+                        });
+                        req.on('error', function (error) {
+                            reject(error);
+                        });
+                        req.end();
+                        break;
+                    case 'dat:':
+                        var xhr_1 = new XMLHttpRequest();
+                        xhr_1.onreadystatechange = function () {
+                            if (xhr_1.readyState === 4) {
+                                resolve(xhr_1.response);
+                            }
+                        };
+                        xhr_1.open("GET", uri, true);
+                        xhr_1.send();
+                        break;
+                    default:
+                        req = http.request(opts, function (response) {
+                            var result = "";
+                            response.on('data', function (chunk) {
+                                result += chunk;
+                            });
+                            response.on('end', function () {
+                                resolve(result);
+                            });
+                        });
+                        req.on('error', function (error) {
+                            reject(error);
+                        });
+                        req.end();
+                        break;
+                }
+            });
+        };
+        Utils.loadExternalResourcesAuth1 = function (resources, openContentProviderInteraction, openTokenService, getStoredAccessToken, userInteractedWithContentProvider, getContentProviderInteraction, handleMovedTemporarily, showOutOfOptionsMessages) {
+            return new Promise(function (resolve, reject) {
+                var promises = resources.map(function (resource) {
+                    return Utils.loadExternalResourceAuth1(resource, openContentProviderInteraction, openTokenService, getStoredAccessToken, userInteractedWithContentProvider, getContentProviderInteraction, handleMovedTemporarily, showOutOfOptionsMessages);
+                });
+                Promise.all(promises)
+                    .then(function () {
+                    resolve(resources);
+                })["catch"](function (error) {
+                    reject(error);
+                });
+            });
+        };
+        Utils.loadExternalResourceAuth1 = function (resource, openContentProviderInteraction, openTokenService, getStoredAccessToken, userInteractedWithContentProvider, getContentProviderInteraction, handleMovedTemporarily, showOutOfOptionsMessages) {
+            return __awaiter(this, void 0, void 0, function () {
+                var storedAccessToken;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4 /*yield*/, getStoredAccessToken(resource)];
+                        case 1:
+                            storedAccessToken = _a.sent();
+                            if (!storedAccessToken) return [3 /*break*/, 6];
+                            return [4 /*yield*/, resource.getData(storedAccessToken)];
+                        case 2:
+                            _a.sent();
+                            if (!(resource.status === HTTPStatusCode.OK)) return [3 /*break*/, 3];
+                            return [2 /*return*/, resource];
+                        case 3: 
+                        // the stored token is no good for this resource
+                        return [4 /*yield*/, Utils.doAuthChain(resource, openContentProviderInteraction, openTokenService, userInteractedWithContentProvider, getContentProviderInteraction, handleMovedTemporarily, showOutOfOptionsMessages)];
+                        case 4:
+                            // the stored token is no good for this resource
+                            _a.sent();
+                            _a.label = 5;
+                        case 5:
+                            if (resource.status === HTTPStatusCode.OK || resource.status === HTTPStatusCode.MOVED_TEMPORARILY) {
+                                return [2 /*return*/, resource];
+                            }
+                            throw Utils.createAuthorizationFailedError();
+                        case 6: return [4 /*yield*/, resource.getData()];
+                        case 7:
+                            _a.sent();
+                            if (!(resource.status === HTTPStatusCode.MOVED_TEMPORARILY || resource.status === HTTPStatusCode.UNAUTHORIZED)) return [3 /*break*/, 9];
+                            return [4 /*yield*/, Utils.doAuthChain(resource, openContentProviderInteraction, openTokenService, userInteractedWithContentProvider, getContentProviderInteraction, handleMovedTemporarily, showOutOfOptionsMessages)];
+                        case 8:
+                            _a.sent();
+                            _a.label = 9;
+                        case 9:
+                            if (resource.status === HTTPStatusCode.OK || resource.status === HTTPStatusCode.MOVED_TEMPORARILY) {
+                                return [2 /*return*/, resource];
+                            }
+                            throw Utils.createAuthorizationFailedError();
+                    }
+                });
+            });
+        };
+        Utils.doAuthChain = function (resource, openContentProviderInteraction, openTokenService, userInteractedWithContentProvider, getContentProviderInteraction, handleMovedTemporarily, showOutOfOptionsMessages) {
+            return __awaiter(this, void 0, void 0, function () {
+                var externalService, kioskService, clickThroughService, loginService, serviceToTry, lastAttempted, kioskInteraction, contentProviderInteraction, contentProviderInteraction;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            // This function enters the flowchart at the < External? > junction
+                            // http://iiif.io/api/auth/1.0/#workflow-from-the-browser-client-perspective
+                            if (!resource.isAccessControlled()) {
+                                return [2 /*return*/, resource]; // no services found
+                            }
+                            externalService = resource.externalService;
+                            if (externalService) {
+                                externalService.options = resource.options;
+                            }
+                            kioskService = resource.kioskService;
+                            if (kioskService) {
+                                kioskService.options = resource.options;
+                            }
+                            clickThroughService = resource.clickThroughService;
+                            if (clickThroughService) {
+                                clickThroughService.options = resource.options;
+                            }
+                            loginService = resource.loginService;
+                            if (loginService) {
+                                loginService.options = resource.options;
+                            }
+                            if (!(!resource.isResponseHandled && resource.status === HTTPStatusCode.MOVED_TEMPORARILY)) return [3 /*break*/, 2];
+                            return [4 /*yield*/, handleMovedTemporarily(resource)];
+                        case 1:
+                            _a.sent();
+                            return [2 /*return*/, resource];
+                        case 2:
+                            serviceToTry = null;
+                            lastAttempted = null;
+                            // repetition of logic is left in these steps for clarity:
+                            // Looking for external pattern
+                            serviceToTry = externalService;
+                            if (!serviceToTry) return [3 /*break*/, 4];
+                            lastAttempted = serviceToTry;
+                            return [4 /*yield*/, Utils.attemptResourceWithToken(resource, openTokenService, serviceToTry)];
+                        case 3:
+                            _a.sent();
+                            return [2 /*return*/, resource];
+                        case 4:
+                            // Looking for kiosk pattern
+                            serviceToTry = kioskService;
+                            if (!serviceToTry) return [3 /*break*/, 7];
+                            lastAttempted = serviceToTry;
+                            kioskInteraction = openContentProviderInteraction(serviceToTry);
+                            if (!kioskInteraction) return [3 /*break*/, 7];
+                            return [4 /*yield*/, userInteractedWithContentProvider(kioskInteraction)];
+                        case 5:
+                            _a.sent();
+                            return [4 /*yield*/, Utils.attemptResourceWithToken(resource, openTokenService, serviceToTry)];
+                        case 6:
+                            _a.sent();
+                            return [2 /*return*/, resource];
+                        case 7:
+                            // The code for the next two patterns is identical (other than the profile name).
+                            // The difference is in the expected behaviour of
+                            //
+                            //    await userInteractedWithContentProvider(contentProviderInteraction);
+                            // 
+                            // For clickthrough the opened window should close immediately having established
+                            // a session, whereas for login the user might spend some time entering credentials etc.
+                            // Looking for clickthrough pattern
+                            serviceToTry = clickThroughService;
+                            if (!serviceToTry) return [3 /*break*/, 11];
+                            lastAttempted = serviceToTry;
+                            return [4 /*yield*/, getContentProviderInteraction(resource, serviceToTry)];
+                        case 8:
+                            contentProviderInteraction = _a.sent();
+                            if (!contentProviderInteraction) return [3 /*break*/, 11];
+                            // should close immediately
+                            return [4 /*yield*/, userInteractedWithContentProvider(contentProviderInteraction)];
+                        case 9:
+                            // should close immediately
+                            _a.sent();
+                            return [4 /*yield*/, Utils.attemptResourceWithToken(resource, openTokenService, serviceToTry)];
+                        case 10:
+                            _a.sent();
+                            return [2 /*return*/, resource];
+                        case 11:
+                            // Looking for login pattern
+                            serviceToTry = loginService;
+                            if (!serviceToTry) return [3 /*break*/, 15];
+                            lastAttempted = serviceToTry;
+                            return [4 /*yield*/, getContentProviderInteraction(resource, serviceToTry)];
+                        case 12:
+                            contentProviderInteraction = _a.sent();
+                            if (!contentProviderInteraction) return [3 /*break*/, 15];
+                            // we expect the user to spend some time interacting
+                            return [4 /*yield*/, userInteractedWithContentProvider(contentProviderInteraction)];
+                        case 13:
+                            // we expect the user to spend some time interacting
+                            _a.sent();
+                            return [4 /*yield*/, Utils.attemptResourceWithToken(resource, openTokenService, serviceToTry)];
+                        case 14:
+                            _a.sent();
+                            return [2 /*return*/, resource];
+                        case 15:
+                            // nothing worked! Use the most recently tried service as the source of
+                            // messages to show to the user.
+                            if (lastAttempted) {
+                                showOutOfOptionsMessages(resource, lastAttempted);
+                            }
+                            return [2 /*return*/];
+                    }
+                });
+            });
+        };
+        Utils.attemptResourceWithToken = function (resource, openTokenService, authService) {
+            return __awaiter(this, void 0, void 0, function () {
+                var tokenService, tokenMessage;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            tokenService = authService.getService(Manifesto.ServiceProfile.AUTH1TOKEN.toString());
+                            if (!tokenService) return [3 /*break*/, 3];
+                            return [4 /*yield*/, openTokenService(resource, tokenService)];
+                        case 1:
+                            tokenMessage = _a.sent();
+                            if (!(tokenMessage && tokenMessage.accessToken)) return [3 /*break*/, 3];
+                            return [4 /*yield*/, resource.getData(tokenMessage)];
+                        case 2:
+                            _a.sent();
+                            return [2 /*return*/, resource];
+                        case 3: return [2 /*return*/];
+                    }
+                });
+            });
+        };
+        Utils.loadExternalResourcesAuth09 = function (resources, tokenStorageStrategy, clickThrough, restricted, login, getAccessToken, storeAccessToken, getStoredAccessToken, handleResourceResponse, options) {
+            return new Promise(function (resolve, reject) {
+                var promises = resources.map(function (resource) {
+                    return Utils.loadExternalResourceAuth09(resource, tokenStorageStrategy, clickThrough, restricted, login, getAccessToken, storeAccessToken, getStoredAccessToken, handleResourceResponse, options);
+                });
+                Promise.all(promises)
+                    .then(function () {
+                    resolve(resources);
+                })["catch"](function (error) {
+                    reject(error);
+                });
+            });
+        };
+        // IIIF auth api pre v1.0
+        // Keeping this around for now until the auth 1.0 implementation is stable
+        Utils.loadExternalResourceAuth09 = function (resource, tokenStorageStrategy, clickThrough, restricted, login, getAccessToken, storeAccessToken, getStoredAccessToken, handleResourceResponse, options) {
+            return new Promise(function (resolve, reject) {
+                if (options && options.pessimisticAccessControl) {
+                    // pessimistic: access control cookies may have been deleted.
+                    // always request the access token for every access controlled info.json request
+                    // returned access tokens are not stored, therefore the login window flashes for every request.
+                    resource.getData().then(function () {
+                        if (resource.isAccessControlled()) {
+                            // if the resource has a click through service, use that.
+                            if (resource.clickThroughService) {
+                                resolve(clickThrough(resource));
+                                //} else if(resource.restrictedService) {
+                                resolve(restricted(resource));
+                            }
+                            else {
+                                login(resource).then(function () {
+                                    getAccessToken(resource, true).then(function (token) {
+                                        resource.getData(token).then(function () {
+                                            resolve(handleResourceResponse(resource));
+                                        })["catch"](function (message) {
+                                            reject(Utils.createInternalServerError(message));
+                                        });
+                                    })["catch"](function (message) {
+                                        reject(Utils.createInternalServerError(message));
+                                    });
+                                })["catch"](function (message) {
+                                    reject(Utils.createInternalServerError(message));
+                                });
+                            }
+                        }
+                        else {
+                            // this info.json isn't access controlled, therefore no need to request an access token.
+                            resolve(resource);
+                        }
+                    })["catch"](function (message) {
+                        reject(Utils.createInternalServerError(message));
+                    });
+                }
+                else {
+                    // optimistic: access control cookies may not have been deleted.
+                    // store access tokens to avoid login window flashes.
+                    // if cookies are deleted a page refresh is required.
+                    // try loading the resource using an access token that matches the info.json domain.
+                    // if an access token is found, request the resource using it regardless of whether it is access controlled.
+                    getStoredAccessToken(resource, tokenStorageStrategy).then(function (storedAccessToken) {
+                        if (storedAccessToken) {
+                            // try using the stored access token
+                            resource.getData(storedAccessToken).then(function () {
+                                // if the info.json loaded using the stored access token
+                                if (resource.status === HTTPStatusCode.OK) {
+                                    resolve(handleResourceResponse(resource));
+                                }
+                                else {
+                                    // otherwise, load the resource data to determine the correct access control services.
+                                    // if access controlled, do login.
+                                    Utils.authorize(resource, tokenStorageStrategy, clickThrough, restricted, login, getAccessToken, storeAccessToken, getStoredAccessToken).then(function () {
+                                        resolve(handleResourceResponse(resource));
+                                    })["catch"](function (error) {
+                                        // if (resource.restrictedService){
+                                        //     reject(Utils.createRestrictedError());
+                                        // } else {
+                                        reject(Utils.createAuthorizationFailedError());
+                                        //}
+                                    });
+                                }
+                            })["catch"](function (error) {
+                                reject(Utils.createAuthorizationFailedError());
+                            });
+                        }
+                        else {
+                            Utils.authorize(resource, tokenStorageStrategy, clickThrough, restricted, login, getAccessToken, storeAccessToken, getStoredAccessToken).then(function () {
+                                resolve(handleResourceResponse(resource));
+                            })["catch"](function (error) {
+                                reject(Utils.createAuthorizationFailedError());
+                            });
+                        }
+                    })["catch"](function (error) {
+                        reject(Utils.createAuthorizationFailedError());
+                    });
+                }
+            });
+        };
+        Utils.createError = function (name, message) {
+            var error = new Error();
+            error.message = message;
+            error.name = name;
+            return error;
+        };
+        Utils.createAuthorizationFailedError = function () {
+            return Utils.createError(manifesto.StatusCodes.AUTHORIZATION_FAILED.toString(), "Authorization failed");
+        };
+        Utils.createRestrictedError = function () {
+            return Utils.createError(manifesto.StatusCodes.RESTRICTED.toString(), "Restricted");
+        };
+        Utils.createInternalServerError = function (message) {
+            return Utils.createError(manifesto.StatusCodes.INTERNAL_SERVER_ERROR.toString(), message);
+        };
+        Utils.authorize = function (resource, tokenStorageStrategy, clickThrough, restricted, login, getAccessToken, storeAccessToken, getStoredAccessToken) {
+            return new Promise(function (resolve, reject) {
+                resource.getData().then(function () {
+                    if (resource.isAccessControlled()) {
+                        getStoredAccessToken(resource, tokenStorageStrategy).then(function (storedAccessToken) {
+                            if (storedAccessToken) {
+                                // try using the stored access token
+                                resource.getData(storedAccessToken).then(function () {
+                                    if (resource.status === HTTPStatusCode.OK) {
+                                        resolve(resource); // happy path ended
+                                    }
+                                    else {
+                                        // the stored token is no good for this resource
+                                        Utils.showAuthInteraction(resource, tokenStorageStrategy, clickThrough, restricted, login, getAccessToken, storeAccessToken, resolve, reject);
+                                    }
+                                })["catch"](function (message) {
+                                    reject(Utils.createInternalServerError(message));
+                                });
+                            }
+                            else {
+                                // There was no stored token, but the user might have a cookie that will grant a token
+                                getAccessToken(resource, false).then(function (accessToken) {
+                                    if (accessToken) {
+                                        storeAccessToken(resource, accessToken, tokenStorageStrategy).then(function () {
+                                            // try using the fresh access token
+                                            resource.getData(accessToken).then(function () {
+                                                if (resource.status === HTTPStatusCode.OK) {
+                                                    resolve(resource);
+                                                }
+                                                else {
+                                                    // User has a token, but it's not good enough
+                                                    Utils.showAuthInteraction(resource, tokenStorageStrategy, clickThrough, restricted, login, getAccessToken, storeAccessToken, resolve, reject);
+                                                }
+                                            })["catch"](function (message) {
+                                                reject(Utils.createInternalServerError(message));
+                                            });
+                                        })["catch"](function (message) {
+                                            // not able to store access token
+                                            reject(Utils.createInternalServerError(message));
+                                        });
+                                    }
+                                    else {
+                                        // The user did not have a cookie that granted a token
+                                        Utils.showAuthInteraction(resource, tokenStorageStrategy, clickThrough, restricted, login, getAccessToken, storeAccessToken, resolve, reject);
+                                    }
+                                });
+                            }
+                        })["catch"](function (message) {
+                            reject(Utils.createInternalServerError(message));
+                        });
+                    }
+                    else {
+                        // this info.json isn't access controlled, therefore there's no need to request an access token
+                        resolve(resource);
+                    }
+                });
+            });
+        };
+        Utils.showAuthInteraction = function (resource, tokenStorageStrategy, clickThrough, restricted, login, getAccessToken, storeAccessToken, resolve, reject) {
+            if (resource.status === HTTPStatusCode.MOVED_TEMPORARILY && !resource.isResponseHandled) {
+                // if the resource was redirected to a degraded version
+                // and the response hasn't been handled yet.
+                // if the client wishes to trigger a login, set resource.isResponseHandled to true
+                // and call loadExternalResources() again passing the resource.
+                resolve(resource);
+                // } else if (resource.restrictedService) {
+                //     resolve(restricted(resource));
+                //     // TODO: move to next etc
+            }
+            else if (resource.clickThroughService && !resource.isResponseHandled) {
+                // if the resource has a click through service, use that.
+                clickThrough(resource).then(function () {
+                    getAccessToken(resource, true).then(function (accessToken) {
+                        storeAccessToken(resource, accessToken, tokenStorageStrategy).then(function () {
+                            resource.getData(accessToken).then(function () {
+                                resolve(resource);
+                            })["catch"](function (message) {
+                                reject(Utils.createInternalServerError(message));
+                            });
+                        })["catch"](function (message) {
+                            reject(Utils.createInternalServerError(message));
+                        });
+                    })["catch"](function (message) {
+                        reject(Utils.createInternalServerError(message));
+                    });
+                });
+            }
+            else {
+                // get an access token
+                login(resource).then(function () {
+                    getAccessToken(resource, true).then(function (accessToken) {
+                        storeAccessToken(resource, accessToken, tokenStorageStrategy).then(function () {
+                            resource.getData(accessToken).then(function () {
+                                resolve(resource);
+                            })["catch"](function (message) {
+                                reject(Utils.createInternalServerError(message));
+                            });
+                        })["catch"](function (message) {
+                            reject(Utils.createInternalServerError(message));
+                        });
+                    })["catch"](function (message) {
+                        reject(Utils.createInternalServerError(message));
+                    });
+                });
+            }
+        };
+        ;
+        Utils.getService = function (resource, profile) {
+            var services = this.getServices(resource);
+            // coerce profile to string
+            if (typeof (profile) !== 'string') {
+                profile = profile.toString();
+            }
+            for (var i = 0; i < services.length; i++) {
+                var service = services[i];
+                if (service.getProfile().toString() === profile) {
+                    return service;
+                }
+            }
+            return null;
+        };
+        Utils.getResourceById = function (parentResource, id) {
+            return Utils.traverseAndFind(parentResource.__jsonld, '@id', id);
+        };
+        /**
+         * Does a depth first traversal of an Object, returning an Object that
+         * matches provided k and v arguments
+         * @example Utils.traverseAndFind({foo: 'bar'}, 'foo', 'bar')
+         */
+        Utils.traverseAndFind = function (object, k, v) {
+            if (object.hasOwnProperty(k) && object[k] === v) {
+                return object;
+            }
+            for (var i = 0; i < Object.keys(object).length; i++) {
+                if (typeof object[Object.keys(object)[i]] === "object") {
+                    var o = Utils.traverseAndFind(object[Object.keys(object)[i]], k, v);
+                    if (o != null) {
+                        return o;
+                    }
+                }
+            }
+        };
+        Utils.getServices = function (resource) {
+            var service;
+            // if passing a manifesto-parsed object, use the __jsonld.service property,
+            // otherwise look for a service property (info.json services)
+            if (resource.__jsonld) {
+                service = resource.__jsonld.service;
+            }
+            else {
+                service = resource.service;
+            }
+            var services = [];
+            if (!service)
+                return services;
+            // coerce to array
+            if (!Array.isArray(service)) {
+                service = [service];
+            }
+            for (var i = 0; i < service.length; i++) {
+                var s = service[i];
+                if (typeof (s) === 'string') {
+                    var r = this.getResourceById(resource.options.resource, s);
+                    if (r) {
+                        services.push(new Manifesto.Service(r.__jsonld || r, resource.options));
+                    }
+                }
+                else {
+                    services.push(new Manifesto.Service(s, resource.options));
+                }
+            }
+            return services;
+        };
+        Utils.getTemporalComponent = function (target) {
+            var temporal = /t=([^&]+)/g.exec(target);
+            var t = null;
+            if (temporal && temporal[1]) {
+                t = temporal[1].split(',');
+            }
+            return t;
+        };
+        return Utils;
+    }());
+    Manifesto.Utils = Utils;
+})(Manifesto || (Manifesto = {}));
+
+var Manifesto;
+(function (Manifesto) {
+    var Language = /** @class */ (function () {
+        function Language(value, locale) {
+            if (Array.isArray(value)) {
+                if (value.length === 1) {
+                    this.value = value[0];
+                }
+                else {
+                    // concatenate all of the values
+                    this.value = value.join('<br/>');
+                }
+            }
+            else {
+                this.value = value;
+            }
+            this.locale = locale;
+        }
+        return Language;
+    }());
+    Manifesto.Language = Language;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var LanguageMap = /** @class */ (function (_super) {
+        __extends(LanguageMap, _super);
+        function LanguageMap() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        LanguageMap.parse = function (language, defaultLocale) {
+            var tc = [];
+            var t;
+            if (!language) {
+                return tc;
+            }
+            else if (Array.isArray(language)) {
+                for (var i = 0; i < language.length; i++) {
+                    var value = language[i];
+                    if (typeof (value) === 'string') {
+                        t = new Manifesto.Language(value, defaultLocale);
+                    }
+                    else {
+                        t = new Manifesto.Language(value['@value'], value['@language'] || defaultLocale);
+                    }
+                    tc.push(t);
+                }
+            }
+            else if (typeof (language) === 'string') {
+                // if it's just a single string value, create one language in the configured locale
+                t = new Manifesto.Language(language, defaultLocale);
+                tc.push(t);
+                return tc;
+            }
+            else {
+                // it's an object
+                if (language['@value']) {
+                    // presentation 2
+                    t = new Manifesto.Language(language['@value'], language['@language'] || defaultLocale);
+                    tc.push(t);
+                }
+                else {
+                    // presentation 3
+                    Object.keys(language).forEach(function (key) {
+                        // todo: support multiple values in array
+                        if (language[key].length) {
+                            t = new Manifesto.Language(language[key], key);
+                            tc.push(t);
+                        }
+                        else {
+                            throw new Error('language must have a value');
+                        }
+                    });
+                }
+            }
+            return tc;
+        };
+        LanguageMap.getValue = function (languageCollection, locale) {
+            if (languageCollection.length) {
+                if (locale) {
+                    var language = languageCollection.filter(function (t) { return t.locale === locale || Manifesto.Utils.getInexactLocale(t.locale) === Manifesto.Utils.getInexactLocale(locale); })[0];
+                    if (language) {
+                        return language.value;
+                    }
+                }
+                // return the first valuel
+                return languageCollection[0].value;
+            }
+            return null;
+        };
+        return LanguageMap;
+    }(Array));
+    Manifesto.LanguageMap = LanguageMap;
+})(Manifesto || (Manifesto = {}));
+
+var Manifesto;
+(function (Manifesto) {
+    var LabelValuePair = /** @class */ (function () {
+        function LabelValuePair(defaultLocale) {
+            this.defaultLocale = defaultLocale;
+        }
+        LabelValuePair.prototype.parse = function (resource) {
+            this.resource = resource;
+            this.label = Manifesto.LanguageMap.parse(this.resource.label, this.defaultLocale);
+            this.value = Manifesto.LanguageMap.parse(this.resource.value, this.defaultLocale);
+        };
+        // shortcuts to get/set values based on default locale
+        LabelValuePair.prototype.getLabel = function () {
+            if (this.label) {
+                return Manifesto.LanguageMap.getValue(this.label, this.defaultLocale);
+            }
+            return null;
+        };
+        LabelValuePair.prototype.setLabel = function (value) {
+            var _this = this;
+            if (this.label && this.label.length) {
+                var t = this.label.filter(function (x) { return x.locale === _this.defaultLocale || x.locale === Manifesto.Utils.getInexactLocale(_this.defaultLocale); })[0];
+                if (t)
+                    t.value = value;
+            }
+        };
+        LabelValuePair.prototype.getValue = function () {
+            if (this.value) {
+                var locale = this.defaultLocale;
+                // if the label has a locale, prefer that to the default locale
+                if (this.label && this.label.length && this.label[0].locale) {
+                    locale = this.label[0].locale;
+                }
+                return Manifesto.LanguageMap.getValue(this.value, locale);
+            }
+            return null;
+        };
+        LabelValuePair.prototype.setValue = function (value) {
+            var _this = this;
+            if (this.value && this.value.length) {
+                var t = this.value.filter(function (x) { return x.locale === _this.defaultLocale || x.locale === Manifesto.Utils.getInexactLocale(_this.defaultLocale); })[0];
+                if (t)
+                    t.value = value;
+            }
+        };
+        return LabelValuePair;
+    }());
+    Manifesto.LabelValuePair = LabelValuePair;
+})(Manifesto || (Manifesto = {}));
+
+var Manifesto;
+(function (Manifesto) {
+    var Size = /** @class */ (function () {
+        function Size(width, height) {
+            this.width = width;
+            this.height = height;
+        }
+        return Size;
+    }());
+    Manifesto.Size = Size;
+})(Manifesto || (Manifesto = {}));
+
+global.manifesto = global.Manifesto = module.exports = {
+    AnnotationMotivation: new Manifesto.AnnotationMotivation(),
+    Behavior: new Manifesto.Behavior(),
+    IIIFResourceType: new Manifesto.IIIFResourceType(),
+    LabelValuePair: Manifesto.LabelValuePair,
+    Language: Manifesto.Language,
+    LanguageMap: Manifesto.LanguageMap,
+    ManifestType: new Manifesto.ManifestType(),
+    MediaType: new Manifesto.MediaType(),
+    RenderingFormat: new Manifesto.RenderingFormat(),
+    ResourceType: new Manifesto.ResourceType(),
+    ServiceProfile: new Manifesto.ServiceProfile(),
+    Size: Manifesto.Size,
+    TreeNode: Manifesto.TreeNode,
+    TreeNodeType: new Manifesto.TreeNodeType(),
+    Utils: Manifesto.Utils,
+    ViewingDirection: new Manifesto.ViewingDirection(),
+    ViewingHint: new Manifesto.ViewingHint(),
+    Annotation: Manifesto.Annotation,
+    AnnotationBody: Manifesto.AnnotationBody,
+    AnnotationList: Manifesto.AnnotationList,
+    AnnotationPage: Manifesto.AnnotationPage,
+    Canvas: Manifesto.Canvas,
+    Collection: Manifesto.Collection,
+    Duration: Manifesto.Duration,
+    Manifest: Manifesto.Manifest,
+    Range: Manifesto.Range,
+    Sequence: Manifesto.Sequence,
+    Service: Manifesto.Service,
+    Thumbnail: Manifesto.Thumbnail,
+    Thumb: Manifesto.Thumb,
+    StatusCodes: {
+        AUTHORIZATION_FAILED: 1,
+        FORBIDDEN: 2,
+        INTERNAL_SERVER_ERROR: 3,
+        RESTRICTED: 4
+    },
+    create: function (manifest, options) {
+        return Manifesto.Deserialiser.parse(manifest, options);
+    },
+    loadManifest: function (uri) {
+        return Manifesto.Utils.loadResource(uri);
+    }
+};
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var Annotation = /** @class */ (function (_super) {
+        __extends(Annotation, _super);
+        function Annotation(jsonld, options) {
+            return _super.call(this, jsonld, options) || this;
+        }
+        Annotation.prototype.getBody = function () {
+            var bodies = [];
+            var body = this.getProperty('body');
+            // todo: make this a generic "property that can be an object or array enumerator" util
+            if (body) {
+                if (Array.isArray(body)) {
+                    for (var i = 0; i < body.length; i++) {
+                        var b = body[i];
+                        if (b.items) {
+                            for (var i_1 = 0; i_1 < b.items.length; i_1++) { // todo: don't ignore that it's a choice. maybe add isChoice() to IAnnotationBody?
+                                var c = b.items[i_1];
+                                bodies.push(new Manifesto.AnnotationBody(c, this.options));
+                            }
+                        }
+                        else {
+                            bodies.push(new Manifesto.AnnotationBody(b, this.options));
+                        }
+                    }
+                }
+                else if (body.items) {
+                    for (var i = 0; i < body.items.length; i++) {
+                        var b = body.items[i];
+                        bodies.push(new Manifesto.AnnotationBody(b, this.options));
+                    }
+                }
+                else {
+                    bodies.push(new Manifesto.AnnotationBody(body, this.options));
+                }
+            }
+            return bodies;
+        };
+        Annotation.prototype.getMotivation = function () {
+            var motivation = this.getProperty('motivation');
+            if (motivation) {
+                return new Manifesto.AnnotationMotivation(motivation.toLowerCase());
+            }
+            return null;
+        };
+        // open annotation
+        Annotation.prototype.getOn = function () {
+            return this.getProperty('on');
+        };
+        Annotation.prototype.getTarget = function () {
+            return this.getProperty('target');
+        };
+        Annotation.prototype.getResource = function () {
+            return new Manifesto.Resource(this.getProperty('resource'), this.options);
+        };
+        return Annotation;
+    }(Manifesto.ManifestResource));
+    Manifesto.Annotation = Annotation;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var AnnotationBody = /** @class */ (function (_super) {
+        __extends(AnnotationBody, _super);
+        function AnnotationBody(jsonld, options) {
+            return _super.call(this, jsonld, options) || this;
+        }
+        AnnotationBody.prototype.getFormat = function () {
+            var format = this.getProperty('format');
+            if (format) {
+                return new Manifesto.MediaType(Manifesto.Utils.getMediaType(format));
+            }
+            return null;
+        };
+        AnnotationBody.prototype.getType = function () {
+            var type = this.getProperty('type');
+            if (type) {
+                return new Manifesto.ResourceType(Manifesto.Utils.normaliseType(this.getProperty('type')));
+            }
+            return null;
+        };
+        AnnotationBody.prototype.getWidth = function () {
+            return this.getProperty('width');
+        };
+        AnnotationBody.prototype.getHeight = function () {
+            return this.getProperty('height');
+        };
+        return AnnotationBody;
+    }(Manifesto.ManifestResource));
+    Manifesto.AnnotationBody = AnnotationBody;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var AnnotationList = /** @class */ (function (_super) {
+        __extends(AnnotationList, _super);
+        function AnnotationList(label, jsonld, options) {
+            var _this = _super.call(this, jsonld) || this;
+            _this.label = label;
+            _this.options = options;
+            return _this;
+        }
+        AnnotationList.prototype.getIIIFResourceType = function () {
+            return new Manifesto.IIIFResourceType(Manifesto.Utils.normaliseType(this.getProperty('type')));
+        };
+        AnnotationList.prototype.getLabel = function () {
+            return this.label;
+        };
+        AnnotationList.prototype.getResources = function () {
+            var _this = this;
+            var resources = this.getProperty('resources');
+            return resources.map(function (resource) { return new Manifesto.Annotation(resource, _this.options); });
+        };
+        AnnotationList.prototype.load = function () {
+            var _this = this;
+            return new Promise(function (resolve, reject) {
+                if (_this.isLoaded) {
+                    resolve(_this);
+                }
+                else {
+                    var id = _this.__jsonld.id;
+                    if (!id) {
+                        id = _this.__jsonld['@id'];
+                    }
+                    Manifesto.Utils.loadResource(id).then(function (data) {
+                        _this.__jsonld = JSON.parse(data);
+                        _this.context = _this.getProperty('context');
+                        _this.id = _this.getProperty('id');
+                        _this.isLoaded = true;
+                        resolve(_this);
+                    }).catch(reject);
+                }
+            });
+        };
+        return AnnotationList;
+    }(Manifesto.JSONLDResource));
+    Manifesto.AnnotationList = AnnotationList;
+})(Manifesto || (Manifesto = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var AnnotationPage = /** @class */ (function (_super) {
+        __extends(AnnotationPage, _super);
+        function AnnotationPage(jsonld, options) {
+            return _super.call(this, jsonld, options) || this;
+        }
+        AnnotationPage.prototype.getItems = function () {
+            return this.getProperty('items');
+        };
+        return AnnotationPage;
+    }(Manifesto.ManifestResource));
+    Manifesto.AnnotationPage = AnnotationPage;
+})(Manifesto || (Manifesto = {}));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Manifesto;
+(function (Manifesto) {
+    var Thumbnail = /** @class */ (function (_super) {
+        __extends(Thumbnail, _super);
+        function Thumbnail(jsonld, options) {
+            return _super.call(this, jsonld, options) || this;
+        }
+        return Thumbnail;
+    }(Manifesto.Resource));
+    Manifesto.Thumbnail = Thumbnail;
+})(Manifesto || (Manifesto = {}));
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"http":30,"https":9,"url":36}],2:[function(require,module,exports){
+'use strict'
+
+exports.byteLength = byteLength
+exports.toByteArray = toByteArray
+exports.fromByteArray = fromByteArray
+
+var lookup = []
+var revLookup = []
+var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
+
+var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+for (var i = 0, len = code.length; i < len; ++i) {
+  lookup[i] = code[i]
+  revLookup[code.charCodeAt(i)] = i
+}
+
+// Support decoding URL-safe base64 strings, as Node.js does.
+// See: https://en.wikipedia.org/wiki/Base64#URL_applications
+revLookup['-'.charCodeAt(0)] = 62
+revLookup['_'.charCodeAt(0)] = 63
+
+function getLens (b64) {
+  var len = b64.length
+
+  if (len % 4 > 0) {
+    throw new Error('Invalid string. Length must be a multiple of 4')
+  }
+
+  // Trim off extra bytes after placeholder bytes are found
+  // See: https://github.com/beatgammit/base64-js/issues/42
+  var validLen = b64.indexOf('=')
+  if (validLen === -1) validLen = len
+
+  var placeHoldersLen = validLen === len
+    ? 0
+    : 4 - (validLen % 4)
+
+  return [validLen, placeHoldersLen]
+}
+
+// base64 is 4/3 + up to two characters of the original data
+function byteLength (b64) {
+  var lens = getLens(b64)
+  var validLen = lens[0]
+  var placeHoldersLen = lens[1]
+  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+}
+
+function _byteLength (b64, validLen, placeHoldersLen) {
+  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+}
+
+function toByteArray (b64) {
+  var tmp
+  var lens = getLens(b64)
+  var validLen = lens[0]
+  var placeHoldersLen = lens[1]
+
+  var arr = new Arr(_byteLength(b64, validLen, placeHoldersLen))
+
+  var curByte = 0
+
+  // if there are placeholders, only get up to the last complete 4 chars
+  var len = placeHoldersLen > 0
+    ? validLen - 4
+    : validLen
+
+  for (var i = 0; i < len; i += 4) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 18) |
+      (revLookup[b64.charCodeAt(i + 1)] << 12) |
+      (revLookup[b64.charCodeAt(i + 2)] << 6) |
+      revLookup[b64.charCodeAt(i + 3)]
+    arr[curByte++] = (tmp >> 16) & 0xFF
+    arr[curByte++] = (tmp >> 8) & 0xFF
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  if (placeHoldersLen === 2) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 2) |
+      (revLookup[b64.charCodeAt(i + 1)] >> 4)
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  if (placeHoldersLen === 1) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 10) |
+      (revLookup[b64.charCodeAt(i + 1)] << 4) |
+      (revLookup[b64.charCodeAt(i + 2)] >> 2)
+    arr[curByte++] = (tmp >> 8) & 0xFF
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  return arr
+}
+
+function tripletToBase64 (num) {
+  return lookup[num >> 18 & 0x3F] +
+    lookup[num >> 12 & 0x3F] +
+    lookup[num >> 6 & 0x3F] +
+    lookup[num & 0x3F]
+}
+
+function encodeChunk (uint8, start, end) {
+  var tmp
+  var output = []
+  for (var i = start; i < end; i += 3) {
+    tmp =
+      ((uint8[i] << 16) & 0xFF0000) +
+      ((uint8[i + 1] << 8) & 0xFF00) +
+      (uint8[i + 2] & 0xFF)
+    output.push(tripletToBase64(tmp))
+  }
+  return output.join('')
+}
+
+function fromByteArray (uint8) {
+  var tmp
+  var len = uint8.length
+  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
+  var parts = []
+  var maxChunkLength = 16383 // must be multiple of 3
+
+  // go through the array every three bytes, we'll deal with trailing stuff later
+  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
+    parts.push(encodeChunk(
+      uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)
+    ))
+  }
+
+  // pad the end with zeros, but make sure to not forget the extra bytes
+  if (extraBytes === 1) {
+    tmp = uint8[len - 1]
+    parts.push(
+      lookup[tmp >> 2] +
+      lookup[(tmp << 4) & 0x3F] +
+      '=='
+    )
+  } else if (extraBytes === 2) {
+    tmp = (uint8[len - 2] << 8) + uint8[len - 1]
+    parts.push(
+      lookup[tmp >> 10] +
+      lookup[(tmp >> 4) & 0x3F] +
+      lookup[(tmp << 2) & 0x3F] +
+      '='
+    )
+  }
+
+  return parts.join('')
+}
+
+},{}],3:[function(require,module,exports){
+
+},{}],4:[function(require,module,exports){
+(function (global){
+/*! https://mths.be/punycode v1.4.1 by @mathias */
+;(function(root) {
+
+	/** Detect free variables */
+	var freeExports = typeof exports == 'object' && exports &&
+		!exports.nodeType && exports;
+	var freeModule = typeof module == 'object' && module &&
+		!module.nodeType && module;
+	var freeGlobal = typeof global == 'object' && global;
+	if (
+		freeGlobal.global === freeGlobal ||
+		freeGlobal.window === freeGlobal ||
+		freeGlobal.self === freeGlobal
+	) {
+		root = freeGlobal;
+	}
+
+	/**
+	 * The `punycode` object.
+	 * @name punycode
+	 * @type Object
+	 */
+	var punycode,
+
+	/** Highest positive signed 32-bit float value */
+	maxInt = 2147483647, // aka. 0x7FFFFFFF or 2^31-1
+
+	/** Bootstring parameters */
+	base = 36,
+	tMin = 1,
+	tMax = 26,
+	skew = 38,
+	damp = 700,
+	initialBias = 72,
+	initialN = 128, // 0x80
+	delimiter = '-', // '\x2D'
+
+	/** Regular expressions */
+	regexPunycode = /^xn--/,
+	regexNonASCII = /[^\x20-\x7E]/, // unprintable ASCII chars + non-ASCII chars
+	regexSeparators = /[\x2E\u3002\uFF0E\uFF61]/g, // RFC 3490 separators
+
+	/** Error messages */
+	errors = {
+		'overflow': 'Overflow: input needs wider integers to process',
+		'not-basic': 'Illegal input >= 0x80 (not a basic code point)',
+		'invalid-input': 'Invalid input'
+	},
+
+	/** Convenience shortcuts */
+	baseMinusTMin = base - tMin,
+	floor = Math.floor,
+	stringFromCharCode = String.fromCharCode,
+
+	/** Temporary variable */
+	key;
+
+	/*--------------------------------------------------------------------------*/
+
+	/**
+	 * A generic error utility function.
+	 * @private
+	 * @param {String} type The error type.
+	 * @returns {Error} Throws a `RangeError` with the applicable error message.
+	 */
+	function error(type) {
+		throw new RangeError(errors[type]);
+	}
+
+	/**
+	 * A generic `Array#map` utility function.
+	 * @private
+	 * @param {Array} array The array to iterate over.
+	 * @param {Function} callback The function that gets called for every array
+	 * item.
+	 * @returns {Array} A new array of values returned by the callback function.
+	 */
+	function map(array, fn) {
+		var length = array.length;
+		var result = [];
+		while (length--) {
+			result[length] = fn(array[length]);
+		}
+		return result;
+	}
+
+	/**
+	 * A simple `Array#map`-like wrapper to work with domain name strings or email
+	 * addresses.
+	 * @private
+	 * @param {String} domain The domain name or email address.
+	 * @param {Function} callback The function that gets called for every
+	 * character.
+	 * @returns {Array} A new string of characters returned by the callback
+	 * function.
+	 */
+	function mapDomain(string, fn) {
+		var parts = string.split('@');
+		var result = '';
+		if (parts.length > 1) {
+			// In email addresses, only the domain name should be punycoded. Leave
+			// the local part (i.e. everything up to `@`) intact.
+			result = parts[0] + '@';
+			string = parts[1];
+		}
+		// Avoid `split(regex)` for IE8 compatibility. See #17.
+		string = string.replace(regexSeparators, '\x2E');
+		var labels = string.split('.');
+		var encoded = map(labels, fn).join('.');
+		return result + encoded;
+	}
+
+	/**
+	 * Creates an array containing the numeric code points of each Unicode
+	 * character in the string. While JavaScript uses UCS-2 internally,
+	 * this function will convert a pair of surrogate halves (each of which
+	 * UCS-2 exposes as separate characters) into a single code point,
+	 * matching UTF-16.
+	 * @see `punycode.ucs2.encode`
+	 * @see <https://mathiasbynens.be/notes/javascript-encoding>
+	 * @memberOf punycode.ucs2
+	 * @name decode
+	 * @param {String} string The Unicode input string (UCS-2).
+	 * @returns {Array} The new array of code points.
+	 */
+	function ucs2decode(string) {
+		var output = [],
+		    counter = 0,
+		    length = string.length,
+		    value,
+		    extra;
+		while (counter < length) {
+			value = string.charCodeAt(counter++);
+			if (value >= 0xD800 && value <= 0xDBFF && counter < length) {
+				// high surrogate, and there is a next character
+				extra = string.charCodeAt(counter++);
+				if ((extra & 0xFC00) == 0xDC00) { // low surrogate
+					output.push(((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000);
+				} else {
+					// unmatched surrogate; only append this code unit, in case the next
+					// code unit is the high surrogate of a surrogate pair
+					output.push(value);
+					counter--;
+				}
+			} else {
+				output.push(value);
+			}
+		}
+		return output;
+	}
+
+	/**
+	 * Creates a string based on an array of numeric code points.
+	 * @see `punycode.ucs2.decode`
+	 * @memberOf punycode.ucs2
+	 * @name encode
+	 * @param {Array} codePoints The array of numeric code points.
+	 * @returns {String} The new Unicode string (UCS-2).
+	 */
+	function ucs2encode(array) {
+		return map(array, function(value) {
+			var output = '';
+			if (value > 0xFFFF) {
+				value -= 0x10000;
+				output += stringFromCharCode(value >>> 10 & 0x3FF | 0xD800);
+				value = 0xDC00 | value & 0x3FF;
+			}
+			output += stringFromCharCode(value);
+			return output;
+		}).join('');
+	}
+
+	/**
+	 * Converts a basic code point into a digit/integer.
+	 * @see `digitToBasic()`
+	 * @private
+	 * @param {Number} codePoint The basic numeric code point value.
+	 * @returns {Number} The numeric value of a basic code point (for use in
+	 * representing integers) in the range `0` to `base - 1`, or `base` if
+	 * the code point does not represent a value.
+	 */
+	function basicToDigit(codePoint) {
+		if (codePoint - 48 < 10) {
+			return codePoint - 22;
+		}
+		if (codePoint - 65 < 26) {
+			return codePoint - 65;
+		}
+		if (codePoint - 97 < 26) {
+			return codePoint - 97;
+		}
+		return base;
+	}
+
+	/**
+	 * Converts a digit/integer into a basic code point.
+	 * @see `basicToDigit()`
+	 * @private
+	 * @param {Number} digit The numeric value of a basic code point.
+	 * @returns {Number} The basic code point whose value (when used for
+	 * representing integers) is `digit`, which needs to be in the range
+	 * `0` to `base - 1`. If `flag` is non-zero, the uppercase form is
+	 * used; else, the lowercase form is used. The behavior is undefined
+	 * if `flag` is non-zero and `digit` has no uppercase form.
+	 */
+	function digitToBasic(digit, flag) {
+		//  0..25 map to ASCII a..z or A..Z
+		// 26..35 map to ASCII 0..9
+		return digit + 22 + 75 * (digit < 26) - ((flag != 0) << 5);
+	}
+
+	/**
+	 * Bias adaptation function as per section 3.4 of RFC 3492.
+	 * https://tools.ietf.org/html/rfc3492#section-3.4
+	 * @private
+	 */
+	function adapt(delta, numPoints, firstTime) {
+		var k = 0;
+		delta = firstTime ? floor(delta / damp) : delta >> 1;
+		delta += floor(delta / numPoints);
+		for (/* no initialization */; delta > baseMinusTMin * tMax >> 1; k += base) {
+			delta = floor(delta / baseMinusTMin);
+		}
+		return floor(k + (baseMinusTMin + 1) * delta / (delta + skew));
+	}
+
+	/**
+	 * Converts a Punycode string of ASCII-only symbols to a string of Unicode
+	 * symbols.
+	 * @memberOf punycode
+	 * @param {String} input The Punycode string of ASCII-only symbols.
+	 * @returns {String} The resulting string of Unicode symbols.
+	 */
+	function decode(input) {
+		// Don't use UCS-2
+		var output = [],
+		    inputLength = input.length,
+		    out,
+		    i = 0,
+		    n = initialN,
+		    bias = initialBias,
+		    basic,
+		    j,
+		    index,
+		    oldi,
+		    w,
+		    k,
+		    digit,
+		    t,
+		    /** Cached calculation results */
+		    baseMinusT;
+
+		// Handle the basic code points: let `basic` be the number of input code
+		// points before the last delimiter, or `0` if there is none, then copy
+		// the first basic code points to the output.
+
+		basic = input.lastIndexOf(delimiter);
+		if (basic < 0) {
+			basic = 0;
+		}
+
+		for (j = 0; j < basic; ++j) {
+			// if it's not a basic code point
+			if (input.charCodeAt(j) >= 0x80) {
+				error('not-basic');
+			}
+			output.push(input.charCodeAt(j));
+		}
+
+		// Main decoding loop: start just after the last delimiter if any basic code
+		// points were copied; start at the beginning otherwise.
+
+		for (index = basic > 0 ? basic + 1 : 0; index < inputLength; /* no final expression */) {
+
+			// `index` is the index of the next character to be consumed.
+			// Decode a generalized variable-length integer into `delta`,
+			// which gets added to `i`. The overflow checking is easier
+			// if we increase `i` as we go, then subtract off its starting
+			// value at the end to obtain `delta`.
+			for (oldi = i, w = 1, k = base; /* no condition */; k += base) {
+
+				if (index >= inputLength) {
+					error('invalid-input');
+				}
+
+				digit = basicToDigit(input.charCodeAt(index++));
+
+				if (digit >= base || digit > floor((maxInt - i) / w)) {
+					error('overflow');
+				}
+
+				i += digit * w;
+				t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
+
+				if (digit < t) {
+					break;
+				}
+
+				baseMinusT = base - t;
+				if (w > floor(maxInt / baseMinusT)) {
+					error('overflow');
+				}
+
+				w *= baseMinusT;
+
+			}
+
+			out = output.length + 1;
+			bias = adapt(i - oldi, out, oldi == 0);
+
+			// `i` was supposed to wrap around from `out` to `0`,
+			// incrementing `n` each time, so we'll fix that now:
+			if (floor(i / out) > maxInt - n) {
+				error('overflow');
+			}
+
+			n += floor(i / out);
+			i %= out;
+
+			// Insert `n` at position `i` of the output
+			output.splice(i++, 0, n);
+
+		}
+
+		return ucs2encode(output);
+	}
+
+	/**
+	 * Converts a string of Unicode symbols (e.g. a domain name label) to a
+	 * Punycode string of ASCII-only symbols.
+	 * @memberOf punycode
+	 * @param {String} input The string of Unicode symbols.
+	 * @returns {String} The resulting Punycode string of ASCII-only symbols.
+	 */
+	function encode(input) {
+		var n,
+		    delta,
+		    handledCPCount,
+		    basicLength,
+		    bias,
+		    j,
+		    m,
+		    q,
+		    k,
+		    t,
+		    currentValue,
+		    output = [],
+		    /** `inputLength` will hold the number of code points in `input`. */
+		    inputLength,
+		    /** Cached calculation results */
+		    handledCPCountPlusOne,
+		    baseMinusT,
+		    qMinusT;
+
+		// Convert the input in UCS-2 to Unicode
+		input = ucs2decode(input);
+
+		// Cache the length
+		inputLength = input.length;
+
+		// Initialize the state
+		n = initialN;
+		delta = 0;
+		bias = initialBias;
+
+		// Handle the basic code points
+		for (j = 0; j < inputLength; ++j) {
+			currentValue = input[j];
+			if (currentValue < 0x80) {
+				output.push(stringFromCharCode(currentValue));
+			}
+		}
+
+		handledCPCount = basicLength = output.length;
+
+		// `handledCPCount` is the number of code points that have been handled;
+		// `basicLength` is the number of basic code points.
+
+		// Finish the basic string - if it is not empty - with a delimiter
+		if (basicLength) {
+			output.push(delimiter);
+		}
+
+		// Main encoding loop:
+		while (handledCPCount < inputLength) {
+
+			// All non-basic code points < n have been handled already. Find the next
+			// larger one:
+			for (m = maxInt, j = 0; j < inputLength; ++j) {
+				currentValue = input[j];
+				if (currentValue >= n && currentValue < m) {
+					m = currentValue;
+				}
+			}
+
+			// Increase `delta` enough to advance the decoder's <n,i> state to <m,0>,
+			// but guard against overflow
+			handledCPCountPlusOne = handledCPCount + 1;
+			if (m - n > floor((maxInt - delta) / handledCPCountPlusOne)) {
+				error('overflow');
+			}
+
+			delta += (m - n) * handledCPCountPlusOne;
+			n = m;
+
+			for (j = 0; j < inputLength; ++j) {
+				currentValue = input[j];
+
+				if (currentValue < n && ++delta > maxInt) {
+					error('overflow');
+				}
+
+				if (currentValue == n) {
+					// Represent delta as a generalized variable-length integer
+					for (q = delta, k = base; /* no condition */; k += base) {
+						t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
+						if (q < t) {
+							break;
+						}
+						qMinusT = q - t;
+						baseMinusT = base - t;
+						output.push(
+							stringFromCharCode(digitToBasic(t + qMinusT % baseMinusT, 0))
+						);
+						q = floor(qMinusT / baseMinusT);
+					}
+
+					output.push(stringFromCharCode(digitToBasic(q, 0)));
+					bias = adapt(delta, handledCPCountPlusOne, handledCPCount == basicLength);
+					delta = 0;
+					++handledCPCount;
+				}
+			}
+
+			++delta;
+			++n;
+
+		}
+		return output.join('');
+	}
+
+	/**
+	 * Converts a Punycode string representing a domain name or an email address
+	 * to Unicode. Only the Punycoded parts of the input will be converted, i.e.
+	 * it doesn't matter if you call it on a string that has already been
+	 * converted to Unicode.
+	 * @memberOf punycode
+	 * @param {String} input The Punycoded domain name or email address to
+	 * convert to Unicode.
+	 * @returns {String} The Unicode representation of the given Punycode
+	 * string.
+	 */
+	function toUnicode(input) {
+		return mapDomain(input, function(string) {
+			return regexPunycode.test(string)
+				? decode(string.slice(4).toLowerCase())
+				: string;
+		});
+	}
+
+	/**
+	 * Converts a Unicode string representing a domain name or an email address to
+	 * Punycode. Only the non-ASCII parts of the domain name will be converted,
+	 * i.e. it doesn't matter if you call it with a domain that's already in
+	 * ASCII.
+	 * @memberOf punycode
+	 * @param {String} input The domain name or email address to convert, as a
+	 * Unicode string.
+	 * @returns {String} The Punycode representation of the given domain name or
+	 * email address.
+	 */
+	function toASCII(input) {
+		return mapDomain(input, function(string) {
+			return regexNonASCII.test(string)
+				? 'xn--' + encode(string)
+				: string;
+		});
+	}
+
+	/*--------------------------------------------------------------------------*/
+
+	/** Define the public API */
+	punycode = {
+		/**
+		 * A string representing the current Punycode.js version number.
+		 * @memberOf punycode
+		 * @type String
+		 */
+		'version': '1.4.1',
+		/**
+		 * An object of methods to convert from JavaScript's internal character
+		 * representation (UCS-2) to Unicode code points, and back.
+		 * @see <https://mathiasbynens.be/notes/javascript-encoding>
+		 * @memberOf punycode
+		 * @type Object
+		 */
+		'ucs2': {
+			'decode': ucs2decode,
+			'encode': ucs2encode
+		},
+		'decode': decode,
+		'encode': encode,
+		'toASCII': toASCII,
+		'toUnicode': toUnicode
+	};
+
+	/** Expose `punycode` */
+	// Some AMD build optimizers, like r.js, check for specific condition patterns
+	// like the following:
+	if (
+		typeof define == 'function' &&
+		typeof define.amd == 'object' &&
+		define.amd
+	) {
+		define('punycode', function() {
+			return punycode;
+		});
+	} else if (freeExports && freeModule) {
+		if (module.exports == freeExports) {
+			// in Node.js, io.js, or RingoJS v0.8.0+
+			freeModule.exports = punycode;
+		} else {
+			// in Narwhal or RingoJS v0.7.0-
+			for (key in punycode) {
+				punycode.hasOwnProperty(key) && (freeExports[key] = punycode[key]);
+			}
+		}
+	} else {
+		// in Rhino or a web browser
+		root.punycode = punycode;
+	}
+
+}(this));
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],5:[function(require,module,exports){
+(function (global){
 /*!
-  * Bootstrap v4.3.1 (https://getbootstrap.com/)
-  * Copyright 2011-2019 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
-  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-  */
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('jquery')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'jquery'], factory) :
-  (global = global || self, factory(global.bootstrap = {}, global.jQuery));
-}(this, function (exports, $) { 'use strict';
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * @license  MIT
+ */
+/* eslint-disable no-proto */
 
-  $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
+'use strict'
 
-  function _defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
+var base64 = require('base64-js')
+var ieee754 = require('ieee754')
+var isArray = require('isarray')
+
+exports.Buffer = Buffer
+exports.SlowBuffer = SlowBuffer
+exports.INSPECT_MAX_BYTES = 50
+
+/**
+ * If `Buffer.TYPED_ARRAY_SUPPORT`:
+ *   === true    Use Uint8Array implementation (fastest)
+ *   === false   Use Object implementation (most compatible, even IE6)
+ *
+ * Browsers that support typed arrays are IE 10+, Firefox 4+, Chrome 7+, Safari 5.1+,
+ * Opera 11.6+, iOS 4.2+.
+ *
+ * Due to various browser bugs, sometimes the Object implementation will be used even
+ * when the browser supports typed arrays.
+ *
+ * Note:
+ *
+ *   - Firefox 4-29 lacks support for adding new properties to `Uint8Array` instances,
+ *     See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
+ *
+ *   - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
+ *
+ *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
+ *     incorrect length in some situations.
+
+ * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
+ * get the Object implementation, which is slower but behaves correctly.
+ */
+Buffer.TYPED_ARRAY_SUPPORT = global.TYPED_ARRAY_SUPPORT !== undefined
+  ? global.TYPED_ARRAY_SUPPORT
+  : typedArraySupport()
+
+/*
+ * Export kMaxLength after typed array support is determined.
+ */
+exports.kMaxLength = kMaxLength()
+
+function typedArraySupport () {
+  try {
+    var arr = new Uint8Array(1)
+    arr.__proto__ = {__proto__: Uint8Array.prototype, foo: function () { return 42 }}
+    return arr.foo() === 42 && // typed array instances can be augmented
+        typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
+        arr.subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
+  } catch (e) {
+    return false
+  }
+}
+
+function kMaxLength () {
+  return Buffer.TYPED_ARRAY_SUPPORT
+    ? 0x7fffffff
+    : 0x3fffffff
+}
+
+function createBuffer (that, length) {
+  if (kMaxLength() < length) {
+    throw new RangeError('Invalid typed array length')
+  }
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    that = new Uint8Array(length)
+    that.__proto__ = Buffer.prototype
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    if (that === null) {
+      that = new Buffer(length)
+    }
+    that.length = length
+  }
+
+  return that
+}
+
+/**
+ * The Buffer constructor returns instances of `Uint8Array` that have their
+ * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
+ * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
+ * and the `Uint8Array` methods. Square bracket notation works as expected -- it
+ * returns a single octet.
+ *
+ * The `Uint8Array` prototype remains unmodified.
+ */
+
+function Buffer (arg, encodingOrOffset, length) {
+  if (!Buffer.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer)) {
+    return new Buffer(arg, encodingOrOffset, length)
+  }
+
+  // Common case.
+  if (typeof arg === 'number') {
+    if (typeof encodingOrOffset === 'string') {
+      throw new Error(
+        'If encoding is specified then the first argument must be a string'
+      )
+    }
+    return allocUnsafe(this, arg)
+  }
+  return from(this, arg, encodingOrOffset, length)
+}
+
+Buffer.poolSize = 8192 // not used by this implementation
+
+// TODO: Legacy, not needed anymore. Remove in next major version.
+Buffer._augment = function (arr) {
+  arr.__proto__ = Buffer.prototype
+  return arr
+}
+
+function from (that, value, encodingOrOffset, length) {
+  if (typeof value === 'number') {
+    throw new TypeError('"value" argument must not be a number')
+  }
+
+  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
+    return fromArrayBuffer(that, value, encodingOrOffset, length)
+  }
+
+  if (typeof value === 'string') {
+    return fromString(that, value, encodingOrOffset)
+  }
+
+  return fromObject(that, value)
+}
+
+/**
+ * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
+ * if value is a number.
+ * Buffer.from(str[, encoding])
+ * Buffer.from(array)
+ * Buffer.from(buffer)
+ * Buffer.from(arrayBuffer[, byteOffset[, length]])
+ **/
+Buffer.from = function (value, encodingOrOffset, length) {
+  return from(null, value, encodingOrOffset, length)
+}
+
+if (Buffer.TYPED_ARRAY_SUPPORT) {
+  Buffer.prototype.__proto__ = Uint8Array.prototype
+  Buffer.__proto__ = Uint8Array
+  if (typeof Symbol !== 'undefined' && Symbol.species &&
+      Buffer[Symbol.species] === Buffer) {
+    // Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
+    Object.defineProperty(Buffer, Symbol.species, {
+      value: null,
+      configurable: true
+    })
+  }
+}
+
+function assertSize (size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('"size" argument must be a number')
+  } else if (size < 0) {
+    throw new RangeError('"size" argument must not be negative')
+  }
+}
+
+function alloc (that, size, fill, encoding) {
+  assertSize(size)
+  if (size <= 0) {
+    return createBuffer(that, size)
+  }
+  if (fill !== undefined) {
+    // Only pay attention to encoding if it's a string. This
+    // prevents accidentally sending in a number that would
+    // be interpretted as a start offset.
+    return typeof encoding === 'string'
+      ? createBuffer(that, size).fill(fill, encoding)
+      : createBuffer(that, size).fill(fill)
+  }
+  return createBuffer(that, size)
+}
+
+/**
+ * Creates a new filled Buffer instance.
+ * alloc(size[, fill[, encoding]])
+ **/
+Buffer.alloc = function (size, fill, encoding) {
+  return alloc(null, size, fill, encoding)
+}
+
+function allocUnsafe (that, size) {
+  assertSize(size)
+  that = createBuffer(that, size < 0 ? 0 : checked(size) | 0)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) {
+    for (var i = 0; i < size; ++i) {
+      that[i] = 0
     }
   }
+  return that
+}
 
-  function _createClass(Constructor, protoProps, staticProps) {
-    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) _defineProperties(Constructor, staticProps);
-    return Constructor;
+/**
+ * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
+ * */
+Buffer.allocUnsafe = function (size) {
+  return allocUnsafe(null, size)
+}
+/**
+ * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
+ */
+Buffer.allocUnsafeSlow = function (size) {
+  return allocUnsafe(null, size)
+}
+
+function fromString (that, string, encoding) {
+  if (typeof encoding !== 'string' || encoding === '') {
+    encoding = 'utf8'
   }
 
-  function _defineProperty(obj, key, value) {
-    if (key in obj) {
-      Object.defineProperty(obj, key, {
-        value: value,
-        enumerable: true,
-        configurable: true,
-        writable: true
-      });
-    } else {
-      obj[key] = value;
+  if (!Buffer.isEncoding(encoding)) {
+    throw new TypeError('"encoding" must be a valid string encoding')
+  }
+
+  var length = byteLength(string, encoding) | 0
+  that = createBuffer(that, length)
+
+  var actual = that.write(string, encoding)
+
+  if (actual !== length) {
+    // Writing a hex string, for example, that contains invalid characters will
+    // cause everything after the first invalid character to be ignored. (e.g.
+    // 'abxxcd' will be treated as 'ab')
+    that = that.slice(0, actual)
+  }
+
+  return that
+}
+
+function fromArrayLike (that, array) {
+  var length = array.length < 0 ? 0 : checked(array.length) | 0
+  that = createBuffer(that, length)
+  for (var i = 0; i < length; i += 1) {
+    that[i] = array[i] & 255
+  }
+  return that
+}
+
+function fromArrayBuffer (that, array, byteOffset, length) {
+  array.byteLength // this throws if `array` is not a valid ArrayBuffer
+
+  if (byteOffset < 0 || array.byteLength < byteOffset) {
+    throw new RangeError('\'offset\' is out of bounds')
+  }
+
+  if (array.byteLength < byteOffset + (length || 0)) {
+    throw new RangeError('\'length\' is out of bounds')
+  }
+
+  if (byteOffset === undefined && length === undefined) {
+    array = new Uint8Array(array)
+  } else if (length === undefined) {
+    array = new Uint8Array(array, byteOffset)
+  } else {
+    array = new Uint8Array(array, byteOffset, length)
+  }
+
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    that = array
+    that.__proto__ = Buffer.prototype
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    that = fromArrayLike(that, array)
+  }
+  return that
+}
+
+function fromObject (that, obj) {
+  if (Buffer.isBuffer(obj)) {
+    var len = checked(obj.length) | 0
+    that = createBuffer(that, len)
+
+    if (that.length === 0) {
+      return that
     }
 
-    return obj;
+    obj.copy(that, 0, 0, len)
+    return that
   }
 
-  function _objectSpread(target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i] != null ? arguments[i] : {};
-      var ownKeys = Object.keys(source);
-
-      if (typeof Object.getOwnPropertySymbols === 'function') {
-        ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
-          return Object.getOwnPropertyDescriptor(source, sym).enumerable;
-        }));
+  if (obj) {
+    if ((typeof ArrayBuffer !== 'undefined' &&
+        obj.buffer instanceof ArrayBuffer) || 'length' in obj) {
+      if (typeof obj.length !== 'number' || isnan(obj.length)) {
+        return createBuffer(that, 0)
       }
-
-      ownKeys.forEach(function (key) {
-        _defineProperty(target, key, source[key]);
-      });
+      return fromArrayLike(that, obj)
     }
 
-    return target;
+    if (obj.type === 'Buffer' && isArray(obj.data)) {
+      return fromArrayLike(that, obj.data)
+    }
   }
 
-  function _inheritsLoose(subClass, superClass) {
-    subClass.prototype = Object.create(superClass.prototype);
-    subClass.prototype.constructor = subClass;
-    subClass.__proto__ = superClass;
+  throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.')
+}
+
+function checked (length) {
+  // Note: cannot use `length < kMaxLength()` here because that fails when
+  // length is NaN (which is otherwise coerced to zero.)
+  if (length >= kMaxLength()) {
+    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
+                         'size: 0x' + kMaxLength().toString(16) + ' bytes')
+  }
+  return length | 0
+}
+
+function SlowBuffer (length) {
+  if (+length != length) { // eslint-disable-line eqeqeq
+    length = 0
+  }
+  return Buffer.alloc(+length)
+}
+
+Buffer.isBuffer = function isBuffer (b) {
+  return !!(b != null && b._isBuffer)
+}
+
+Buffer.compare = function compare (a, b) {
+  if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
+    throw new TypeError('Arguments must be Buffers')
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * Bootstrap (v4.3.1): util.js
-   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-   * --------------------------------------------------------------------------
-   */
-  /**
-   * ------------------------------------------------------------------------
-   * Private TransitionEnd Helpers
-   * ------------------------------------------------------------------------
-   */
+  if (a === b) return 0
 
-  var TRANSITION_END = 'transitionend';
-  var MAX_UID = 1000000;
-  var MILLISECONDS_MULTIPLIER = 1000; // Shoutout AngusCroll (https://goo.gl/pxwQGp)
+  var x = a.length
+  var y = b.length
 
-  function toType(obj) {
-    return {}.toString.call(obj).match(/\s([a-z]+)/i)[1].toLowerCase();
+  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
+    if (a[i] !== b[i]) {
+      x = a[i]
+      y = b[i]
+      break
+    }
   }
 
-  function getSpecialTransitionEndEvent() {
-    return {
-      bindType: TRANSITION_END,
-      delegateType: TRANSITION_END,
-      handle: function handle(event) {
-        if ($(event.target).is(this)) {
-          return event.handleObj.handler.apply(this, arguments); // eslint-disable-line prefer-rest-params
+  if (x < y) return -1
+  if (y < x) return 1
+  return 0
+}
+
+Buffer.isEncoding = function isEncoding (encoding) {
+  switch (String(encoding).toLowerCase()) {
+    case 'hex':
+    case 'utf8':
+    case 'utf-8':
+    case 'ascii':
+    case 'latin1':
+    case 'binary':
+    case 'base64':
+    case 'ucs2':
+    case 'ucs-2':
+    case 'utf16le':
+    case 'utf-16le':
+      return true
+    default:
+      return false
+  }
+}
+
+Buffer.concat = function concat (list, length) {
+  if (!isArray(list)) {
+    throw new TypeError('"list" argument must be an Array of Buffers')
+  }
+
+  if (list.length === 0) {
+    return Buffer.alloc(0)
+  }
+
+  var i
+  if (length === undefined) {
+    length = 0
+    for (i = 0; i < list.length; ++i) {
+      length += list[i].length
+    }
+  }
+
+  var buffer = Buffer.allocUnsafe(length)
+  var pos = 0
+  for (i = 0; i < list.length; ++i) {
+    var buf = list[i]
+    if (!Buffer.isBuffer(buf)) {
+      throw new TypeError('"list" argument must be an Array of Buffers')
+    }
+    buf.copy(buffer, pos)
+    pos += buf.length
+  }
+  return buffer
+}
+
+function byteLength (string, encoding) {
+  if (Buffer.isBuffer(string)) {
+    return string.length
+  }
+  if (typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' &&
+      (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)) {
+    return string.byteLength
+  }
+  if (typeof string !== 'string') {
+    string = '' + string
+  }
+
+  var len = string.length
+  if (len === 0) return 0
+
+  // Use a for loop to avoid recursion
+  var loweredCase = false
+  for (;;) {
+    switch (encoding) {
+      case 'ascii':
+      case 'latin1':
+      case 'binary':
+        return len
+      case 'utf8':
+      case 'utf-8':
+      case undefined:
+        return utf8ToBytes(string).length
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return len * 2
+      case 'hex':
+        return len >>> 1
+      case 'base64':
+        return base64ToBytes(string).length
+      default:
+        if (loweredCase) return utf8ToBytes(string).length // assume utf8
+        encoding = ('' + encoding).toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+Buffer.byteLength = byteLength
+
+function slowToString (encoding, start, end) {
+  var loweredCase = false
+
+  // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
+  // property of a typed array.
+
+  // This behaves neither like String nor Uint8Array in that we set start/end
+  // to their upper/lower bounds if the value passed is out of range.
+  // undefined is handled specially as per ECMA-262 6th Edition,
+  // Section 13.3.3.7 Runtime Semantics: KeyedBindingInitialization.
+  if (start === undefined || start < 0) {
+    start = 0
+  }
+  // Return early if start > this.length. Done here to prevent potential uint32
+  // coercion fail below.
+  if (start > this.length) {
+    return ''
+  }
+
+  if (end === undefined || end > this.length) {
+    end = this.length
+  }
+
+  if (end <= 0) {
+    return ''
+  }
+
+  // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
+  end >>>= 0
+  start >>>= 0
+
+  if (end <= start) {
+    return ''
+  }
+
+  if (!encoding) encoding = 'utf8'
+
+  while (true) {
+    switch (encoding) {
+      case 'hex':
+        return hexSlice(this, start, end)
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Slice(this, start, end)
+
+      case 'ascii':
+        return asciiSlice(this, start, end)
+
+      case 'latin1':
+      case 'binary':
+        return latin1Slice(this, start, end)
+
+      case 'base64':
+        return base64Slice(this, start, end)
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return utf16leSlice(this, start, end)
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+        encoding = (encoding + '').toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+
+// The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
+// Buffer instances.
+Buffer.prototype._isBuffer = true
+
+function swap (b, n, m) {
+  var i = b[n]
+  b[n] = b[m]
+  b[m] = i
+}
+
+Buffer.prototype.swap16 = function swap16 () {
+  var len = this.length
+  if (len % 2 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 16-bits')
+  }
+  for (var i = 0; i < len; i += 2) {
+    swap(this, i, i + 1)
+  }
+  return this
+}
+
+Buffer.prototype.swap32 = function swap32 () {
+  var len = this.length
+  if (len % 4 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 32-bits')
+  }
+  for (var i = 0; i < len; i += 4) {
+    swap(this, i, i + 3)
+    swap(this, i + 1, i + 2)
+  }
+  return this
+}
+
+Buffer.prototype.swap64 = function swap64 () {
+  var len = this.length
+  if (len % 8 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 64-bits')
+  }
+  for (var i = 0; i < len; i += 8) {
+    swap(this, i, i + 7)
+    swap(this, i + 1, i + 6)
+    swap(this, i + 2, i + 5)
+    swap(this, i + 3, i + 4)
+  }
+  return this
+}
+
+Buffer.prototype.toString = function toString () {
+  var length = this.length | 0
+  if (length === 0) return ''
+  if (arguments.length === 0) return utf8Slice(this, 0, length)
+  return slowToString.apply(this, arguments)
+}
+
+Buffer.prototype.equals = function equals (b) {
+  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
+  if (this === b) return true
+  return Buffer.compare(this, b) === 0
+}
+
+Buffer.prototype.inspect = function inspect () {
+  var str = ''
+  var max = exports.INSPECT_MAX_BYTES
+  if (this.length > 0) {
+    str = this.toString('hex', 0, max).match(/.{2}/g).join(' ')
+    if (this.length > max) str += ' ... '
+  }
+  return '<Buffer ' + str + '>'
+}
+
+Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
+  if (!Buffer.isBuffer(target)) {
+    throw new TypeError('Argument must be a Buffer')
+  }
+
+  if (start === undefined) {
+    start = 0
+  }
+  if (end === undefined) {
+    end = target ? target.length : 0
+  }
+  if (thisStart === undefined) {
+    thisStart = 0
+  }
+  if (thisEnd === undefined) {
+    thisEnd = this.length
+  }
+
+  if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
+    throw new RangeError('out of range index')
+  }
+
+  if (thisStart >= thisEnd && start >= end) {
+    return 0
+  }
+  if (thisStart >= thisEnd) {
+    return -1
+  }
+  if (start >= end) {
+    return 1
+  }
+
+  start >>>= 0
+  end >>>= 0
+  thisStart >>>= 0
+  thisEnd >>>= 0
+
+  if (this === target) return 0
+
+  var x = thisEnd - thisStart
+  var y = end - start
+  var len = Math.min(x, y)
+
+  var thisCopy = this.slice(thisStart, thisEnd)
+  var targetCopy = target.slice(start, end)
+
+  for (var i = 0; i < len; ++i) {
+    if (thisCopy[i] !== targetCopy[i]) {
+      x = thisCopy[i]
+      y = targetCopy[i]
+      break
+    }
+  }
+
+  if (x < y) return -1
+  if (y < x) return 1
+  return 0
+}
+
+// Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
+// OR the last index of `val` in `buffer` at offset <= `byteOffset`.
+//
+// Arguments:
+// - buffer - a Buffer to search
+// - val - a string, Buffer, or number
+// - byteOffset - an index into `buffer`; will be clamped to an int32
+// - encoding - an optional encoding, relevant is val is a string
+// - dir - true for indexOf, false for lastIndexOf
+function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
+  // Empty buffer means no match
+  if (buffer.length === 0) return -1
+
+  // Normalize byteOffset
+  if (typeof byteOffset === 'string') {
+    encoding = byteOffset
+    byteOffset = 0
+  } else if (byteOffset > 0x7fffffff) {
+    byteOffset = 0x7fffffff
+  } else if (byteOffset < -0x80000000) {
+    byteOffset = -0x80000000
+  }
+  byteOffset = +byteOffset  // Coerce to Number.
+  if (isNaN(byteOffset)) {
+    // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
+    byteOffset = dir ? 0 : (buffer.length - 1)
+  }
+
+  // Normalize byteOffset: negative offsets start from the end of the buffer
+  if (byteOffset < 0) byteOffset = buffer.length + byteOffset
+  if (byteOffset >= buffer.length) {
+    if (dir) return -1
+    else byteOffset = buffer.length - 1
+  } else if (byteOffset < 0) {
+    if (dir) byteOffset = 0
+    else return -1
+  }
+
+  // Normalize val
+  if (typeof val === 'string') {
+    val = Buffer.from(val, encoding)
+  }
+
+  // Finally, search either indexOf (if dir is true) or lastIndexOf
+  if (Buffer.isBuffer(val)) {
+    // Special case: looking for empty string/buffer always fails
+    if (val.length === 0) {
+      return -1
+    }
+    return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
+  } else if (typeof val === 'number') {
+    val = val & 0xFF // Search for a byte value [0-255]
+    if (Buffer.TYPED_ARRAY_SUPPORT &&
+        typeof Uint8Array.prototype.indexOf === 'function') {
+      if (dir) {
+        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
+      } else {
+        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
+      }
+    }
+    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
+  }
+
+  throw new TypeError('val must be string, number or Buffer')
+}
+
+function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
+  var indexSize = 1
+  var arrLength = arr.length
+  var valLength = val.length
+
+  if (encoding !== undefined) {
+    encoding = String(encoding).toLowerCase()
+    if (encoding === 'ucs2' || encoding === 'ucs-2' ||
+        encoding === 'utf16le' || encoding === 'utf-16le') {
+      if (arr.length < 2 || val.length < 2) {
+        return -1
+      }
+      indexSize = 2
+      arrLength /= 2
+      valLength /= 2
+      byteOffset /= 2
+    }
+  }
+
+  function read (buf, i) {
+    if (indexSize === 1) {
+      return buf[i]
+    } else {
+      return buf.readUInt16BE(i * indexSize)
+    }
+  }
+
+  var i
+  if (dir) {
+    var foundIndex = -1
+    for (i = byteOffset; i < arrLength; i++) {
+      if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
+        if (foundIndex === -1) foundIndex = i
+        if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
+      } else {
+        if (foundIndex !== -1) i -= i - foundIndex
+        foundIndex = -1
+      }
+    }
+  } else {
+    if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength
+    for (i = byteOffset; i >= 0; i--) {
+      var found = true
+      for (var j = 0; j < valLength; j++) {
+        if (read(arr, i + j) !== read(val, j)) {
+          found = false
+          break
+        }
+      }
+      if (found) return i
+    }
+  }
+
+  return -1
+}
+
+Buffer.prototype.includes = function includes (val, byteOffset, encoding) {
+  return this.indexOf(val, byteOffset, encoding) !== -1
+}
+
+Buffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
+}
+
+Buffer.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
+}
+
+function hexWrite (buf, string, offset, length) {
+  offset = Number(offset) || 0
+  var remaining = buf.length - offset
+  if (!length) {
+    length = remaining
+  } else {
+    length = Number(length)
+    if (length > remaining) {
+      length = remaining
+    }
+  }
+
+  // must be an even number of digits
+  var strLen = string.length
+  if (strLen % 2 !== 0) throw new TypeError('Invalid hex string')
+
+  if (length > strLen / 2) {
+    length = strLen / 2
+  }
+  for (var i = 0; i < length; ++i) {
+    var parsed = parseInt(string.substr(i * 2, 2), 16)
+    if (isNaN(parsed)) return i
+    buf[offset + i] = parsed
+  }
+  return i
+}
+
+function utf8Write (buf, string, offset, length) {
+  return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
+}
+
+function asciiWrite (buf, string, offset, length) {
+  return blitBuffer(asciiToBytes(string), buf, offset, length)
+}
+
+function latin1Write (buf, string, offset, length) {
+  return asciiWrite(buf, string, offset, length)
+}
+
+function base64Write (buf, string, offset, length) {
+  return blitBuffer(base64ToBytes(string), buf, offset, length)
+}
+
+function ucs2Write (buf, string, offset, length) {
+  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
+}
+
+Buffer.prototype.write = function write (string, offset, length, encoding) {
+  // Buffer#write(string)
+  if (offset === undefined) {
+    encoding = 'utf8'
+    length = this.length
+    offset = 0
+  // Buffer#write(string, encoding)
+  } else if (length === undefined && typeof offset === 'string') {
+    encoding = offset
+    length = this.length
+    offset = 0
+  // Buffer#write(string, offset[, length][, encoding])
+  } else if (isFinite(offset)) {
+    offset = offset | 0
+    if (isFinite(length)) {
+      length = length | 0
+      if (encoding === undefined) encoding = 'utf8'
+    } else {
+      encoding = length
+      length = undefined
+    }
+  // legacy write(string, encoding, offset, length) - remove in v0.13
+  } else {
+    throw new Error(
+      'Buffer.write(string, encoding, offset[, length]) is no longer supported'
+    )
+  }
+
+  var remaining = this.length - offset
+  if (length === undefined || length > remaining) length = remaining
+
+  if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
+    throw new RangeError('Attempt to write outside buffer bounds')
+  }
+
+  if (!encoding) encoding = 'utf8'
+
+  var loweredCase = false
+  for (;;) {
+    switch (encoding) {
+      case 'hex':
+        return hexWrite(this, string, offset, length)
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Write(this, string, offset, length)
+
+      case 'ascii':
+        return asciiWrite(this, string, offset, length)
+
+      case 'latin1':
+      case 'binary':
+        return latin1Write(this, string, offset, length)
+
+      case 'base64':
+        // Warning: maxLength not taken into account in base64Write
+        return base64Write(this, string, offset, length)
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return ucs2Write(this, string, offset, length)
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+        encoding = ('' + encoding).toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+
+Buffer.prototype.toJSON = function toJSON () {
+  return {
+    type: 'Buffer',
+    data: Array.prototype.slice.call(this._arr || this, 0)
+  }
+}
+
+function base64Slice (buf, start, end) {
+  if (start === 0 && end === buf.length) {
+    return base64.fromByteArray(buf)
+  } else {
+    return base64.fromByteArray(buf.slice(start, end))
+  }
+}
+
+function utf8Slice (buf, start, end) {
+  end = Math.min(buf.length, end)
+  var res = []
+
+  var i = start
+  while (i < end) {
+    var firstByte = buf[i]
+    var codePoint = null
+    var bytesPerSequence = (firstByte > 0xEF) ? 4
+      : (firstByte > 0xDF) ? 3
+      : (firstByte > 0xBF) ? 2
+      : 1
+
+    if (i + bytesPerSequence <= end) {
+      var secondByte, thirdByte, fourthByte, tempCodePoint
+
+      switch (bytesPerSequence) {
+        case 1:
+          if (firstByte < 0x80) {
+            codePoint = firstByte
+          }
+          break
+        case 2:
+          secondByte = buf[i + 1]
+          if ((secondByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0x1F) << 0x6 | (secondByte & 0x3F)
+            if (tempCodePoint > 0x7F) {
+              codePoint = tempCodePoint
+            }
+          }
+          break
+        case 3:
+          secondByte = buf[i + 1]
+          thirdByte = buf[i + 2]
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | (thirdByte & 0x3F)
+            if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
+              codePoint = tempCodePoint
+            }
+          }
+          break
+        case 4:
+          secondByte = buf[i + 1]
+          thirdByte = buf[i + 2]
+          fourthByte = buf[i + 3]
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | (fourthByte & 0x3F)
+            if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
+              codePoint = tempCodePoint
+            }
+          }
+      }
+    }
+
+    if (codePoint === null) {
+      // we did not generate a valid codePoint so insert a
+      // replacement char (U+FFFD) and advance only 1 byte
+      codePoint = 0xFFFD
+      bytesPerSequence = 1
+    } else if (codePoint > 0xFFFF) {
+      // encode to utf16 (surrogate pair dance)
+      codePoint -= 0x10000
+      res.push(codePoint >>> 10 & 0x3FF | 0xD800)
+      codePoint = 0xDC00 | codePoint & 0x3FF
+    }
+
+    res.push(codePoint)
+    i += bytesPerSequence
+  }
+
+  return decodeCodePointsArray(res)
+}
+
+// Based on http://stackoverflow.com/a/22747272/680742, the browser with
+// the lowest limit is Chrome, with 0x10000 args.
+// We go 1 magnitude less, for safety
+var MAX_ARGUMENTS_LENGTH = 0x1000
+
+function decodeCodePointsArray (codePoints) {
+  var len = codePoints.length
+  if (len <= MAX_ARGUMENTS_LENGTH) {
+    return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
+  }
+
+  // Decode in chunks to avoid "call stack size exceeded".
+  var res = ''
+  var i = 0
+  while (i < len) {
+    res += String.fromCharCode.apply(
+      String,
+      codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH)
+    )
+  }
+  return res
+}
+
+function asciiSlice (buf, start, end) {
+  var ret = ''
+  end = Math.min(buf.length, end)
+
+  for (var i = start; i < end; ++i) {
+    ret += String.fromCharCode(buf[i] & 0x7F)
+  }
+  return ret
+}
+
+function latin1Slice (buf, start, end) {
+  var ret = ''
+  end = Math.min(buf.length, end)
+
+  for (var i = start; i < end; ++i) {
+    ret += String.fromCharCode(buf[i])
+  }
+  return ret
+}
+
+function hexSlice (buf, start, end) {
+  var len = buf.length
+
+  if (!start || start < 0) start = 0
+  if (!end || end < 0 || end > len) end = len
+
+  var out = ''
+  for (var i = start; i < end; ++i) {
+    out += toHex(buf[i])
+  }
+  return out
+}
+
+function utf16leSlice (buf, start, end) {
+  var bytes = buf.slice(start, end)
+  var res = ''
+  for (var i = 0; i < bytes.length; i += 2) {
+    res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256)
+  }
+  return res
+}
+
+Buffer.prototype.slice = function slice (start, end) {
+  var len = this.length
+  start = ~~start
+  end = end === undefined ? len : ~~end
+
+  if (start < 0) {
+    start += len
+    if (start < 0) start = 0
+  } else if (start > len) {
+    start = len
+  }
+
+  if (end < 0) {
+    end += len
+    if (end < 0) end = 0
+  } else if (end > len) {
+    end = len
+  }
+
+  if (end < start) end = start
+
+  var newBuf
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    newBuf = this.subarray(start, end)
+    newBuf.__proto__ = Buffer.prototype
+  } else {
+    var sliceLen = end - start
+    newBuf = new Buffer(sliceLen, undefined)
+    for (var i = 0; i < sliceLen; ++i) {
+      newBuf[i] = this[i + start]
+    }
+  }
+
+  return newBuf
+}
+
+/*
+ * Need to make sure that buffer isn't trying to write out of bounds.
+ */
+function checkOffset (offset, ext, length) {
+  if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
+  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
+}
+
+Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var val = this[offset]
+  var mul = 1
+  var i = 0
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul
+  }
+
+  return val
+}
+
+Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    checkOffset(offset, byteLength, this.length)
+  }
+
+  var val = this[offset + --byteLength]
+  var mul = 1
+  while (byteLength > 0 && (mul *= 0x100)) {
+    val += this[offset + --byteLength] * mul
+  }
+
+  return val
+}
+
+Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length)
+  return this[offset]
+}
+
+Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  return this[offset] | (this[offset + 1] << 8)
+}
+
+Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  return (this[offset] << 8) | this[offset + 1]
+}
+
+Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return ((this[offset]) |
+      (this[offset + 1] << 8) |
+      (this[offset + 2] << 16)) +
+      (this[offset + 3] * 0x1000000)
+}
+
+Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset] * 0x1000000) +
+    ((this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    this[offset + 3])
+}
+
+Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var val = this[offset]
+  var mul = 1
+  var i = 0
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul
+  }
+  mul *= 0x80
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
+
+  return val
+}
+
+Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var i = byteLength
+  var mul = 1
+  var val = this[offset + --i]
+  while (i > 0 && (mul *= 0x100)) {
+    val += this[offset + --i] * mul
+  }
+  mul *= 0x80
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
+
+  return val
+}
+
+Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length)
+  if (!(this[offset] & 0x80)) return (this[offset])
+  return ((0xff - this[offset] + 1) * -1)
+}
+
+Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  var val = this[offset] | (this[offset + 1] << 8)
+  return (val & 0x8000) ? val | 0xFFFF0000 : val
+}
+
+Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  var val = this[offset + 1] | (this[offset] << 8)
+  return (val & 0x8000) ? val | 0xFFFF0000 : val
+}
+
+Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset]) |
+    (this[offset + 1] << 8) |
+    (this[offset + 2] << 16) |
+    (this[offset + 3] << 24)
+}
+
+Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset] << 24) |
+    (this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    (this[offset + 3])
+}
+
+Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+  return ieee754.read(this, offset, true, 23, 4)
+}
+
+Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+  return ieee754.read(this, offset, false, 23, 4)
+}
+
+Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length)
+  return ieee754.read(this, offset, true, 52, 8)
+}
+
+Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length)
+  return ieee754.read(this, offset, false, 52, 8)
+}
+
+function checkInt (buf, value, offset, ext, max, min) {
+  if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
+  if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
+  if (offset + ext > buf.length) throw new RangeError('Index out of range')
+}
+
+Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1
+    checkInt(this, value, offset, byteLength, maxBytes, 0)
+  }
+
+  var mul = 1
+  var i = 0
+  this[offset] = value & 0xFF
+  while (++i < byteLength && (mul *= 0x100)) {
+    this[offset + i] = (value / mul) & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1
+    checkInt(this, value, offset, byteLength, maxBytes, 0)
+  }
+
+  var i = byteLength - 1
+  var mul = 1
+  this[offset + i] = value & 0xFF
+  while (--i >= 0 && (mul *= 0x100)) {
+    this[offset + i] = (value / mul) & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
+  this[offset] = (value & 0xff)
+  return offset + 1
+}
+
+function objectWriteUInt16 (buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffff + value + 1
+  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; ++i) {
+    buf[offset + i] = (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>>
+      (littleEndian ? i : 1 - i) * 8
+  }
+}
+
+Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+  } else {
+    objectWriteUInt16(this, value, offset, true)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 8)
+    this[offset + 1] = (value & 0xff)
+  } else {
+    objectWriteUInt16(this, value, offset, false)
+  }
+  return offset + 2
+}
+
+function objectWriteUInt32 (buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffffffff + value + 1
+  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; ++i) {
+    buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff
+  }
+}
+
+Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset + 3] = (value >>> 24)
+    this[offset + 2] = (value >>> 16)
+    this[offset + 1] = (value >>> 8)
+    this[offset] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, true)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 24)
+    this[offset + 1] = (value >>> 16)
+    this[offset + 2] = (value >>> 8)
+    this[offset + 3] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, false)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1)
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+  }
+
+  var i = 0
+  var mul = 1
+  var sub = 0
+  this[offset] = value & 0xFF
+  while (++i < byteLength && (mul *= 0x100)) {
+    if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
+      sub = 1
+    }
+    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1)
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+  }
+
+  var i = byteLength - 1
+  var mul = 1
+  var sub = 0
+  this[offset + i] = value & 0xFF
+  while (--i >= 0 && (mul *= 0x100)) {
+    if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
+      sub = 1
+    }
+    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
+  if (value < 0) value = 0xff + value + 1
+  this[offset] = (value & 0xff)
+  return offset + 1
+}
+
+Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+  } else {
+    objectWriteUInt16(this, value, offset, true)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 8)
+    this[offset + 1] = (value & 0xff)
+  } else {
+    objectWriteUInt16(this, value, offset, false)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+    this[offset + 2] = (value >>> 16)
+    this[offset + 3] = (value >>> 24)
+  } else {
+    objectWriteUInt32(this, value, offset, true)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+  if (value < 0) value = 0xffffffff + value + 1
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 24)
+    this[offset + 1] = (value >>> 16)
+    this[offset + 2] = (value >>> 8)
+    this[offset + 3] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, false)
+  }
+  return offset + 4
+}
+
+function checkIEEE754 (buf, value, offset, ext, max, min) {
+  if (offset + ext > buf.length) throw new RangeError('Index out of range')
+  if (offset < 0) throw new RangeError('Index out of range')
+}
+
+function writeFloat (buf, value, offset, littleEndian, noAssert) {
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38)
+  }
+  ieee754.write(buf, value, offset, littleEndian, 23, 4)
+  return offset + 4
+}
+
+Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
+  return writeFloat(this, value, offset, true, noAssert)
+}
+
+Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
+  return writeFloat(this, value, offset, false, noAssert)
+}
+
+function writeDouble (buf, value, offset, littleEndian, noAssert) {
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308)
+  }
+  ieee754.write(buf, value, offset, littleEndian, 52, 8)
+  return offset + 8
+}
+
+Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
+  return writeDouble(this, value, offset, true, noAssert)
+}
+
+Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
+  return writeDouble(this, value, offset, false, noAssert)
+}
+
+// copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
+Buffer.prototype.copy = function copy (target, targetStart, start, end) {
+  if (!start) start = 0
+  if (!end && end !== 0) end = this.length
+  if (targetStart >= target.length) targetStart = target.length
+  if (!targetStart) targetStart = 0
+  if (end > 0 && end < start) end = start
+
+  // Copy 0 bytes; we're done
+  if (end === start) return 0
+  if (target.length === 0 || this.length === 0) return 0
+
+  // Fatal error conditions
+  if (targetStart < 0) {
+    throw new RangeError('targetStart out of bounds')
+  }
+  if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds')
+  if (end < 0) throw new RangeError('sourceEnd out of bounds')
+
+  // Are we oob?
+  if (end > this.length) end = this.length
+  if (target.length - targetStart < end - start) {
+    end = target.length - targetStart + start
+  }
+
+  var len = end - start
+  var i
+
+  if (this === target && start < targetStart && targetStart < end) {
+    // descending copy from end
+    for (i = len - 1; i >= 0; --i) {
+      target[i + targetStart] = this[i + start]
+    }
+  } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
+    // ascending copy from start
+    for (i = 0; i < len; ++i) {
+      target[i + targetStart] = this[i + start]
+    }
+  } else {
+    Uint8Array.prototype.set.call(
+      target,
+      this.subarray(start, start + len),
+      targetStart
+    )
+  }
+
+  return len
+}
+
+// Usage:
+//    buffer.fill(number[, offset[, end]])
+//    buffer.fill(buffer[, offset[, end]])
+//    buffer.fill(string[, offset[, end]][, encoding])
+Buffer.prototype.fill = function fill (val, start, end, encoding) {
+  // Handle string cases:
+  if (typeof val === 'string') {
+    if (typeof start === 'string') {
+      encoding = start
+      start = 0
+      end = this.length
+    } else if (typeof end === 'string') {
+      encoding = end
+      end = this.length
+    }
+    if (val.length === 1) {
+      var code = val.charCodeAt(0)
+      if (code < 256) {
+        val = code
+      }
+    }
+    if (encoding !== undefined && typeof encoding !== 'string') {
+      throw new TypeError('encoding must be a string')
+    }
+    if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
+      throw new TypeError('Unknown encoding: ' + encoding)
+    }
+  } else if (typeof val === 'number') {
+    val = val & 255
+  }
+
+  // Invalid ranges are not set to a default, so can range check early.
+  if (start < 0 || this.length < start || this.length < end) {
+    throw new RangeError('Out of range index')
+  }
+
+  if (end <= start) {
+    return this
+  }
+
+  start = start >>> 0
+  end = end === undefined ? this.length : end >>> 0
+
+  if (!val) val = 0
+
+  var i
+  if (typeof val === 'number') {
+    for (i = start; i < end; ++i) {
+      this[i] = val
+    }
+  } else {
+    var bytes = Buffer.isBuffer(val)
+      ? val
+      : utf8ToBytes(new Buffer(val, encoding).toString())
+    var len = bytes.length
+    for (i = 0; i < end - start; ++i) {
+      this[i + start] = bytes[i % len]
+    }
+  }
+
+  return this
+}
+
+// HELPER FUNCTIONS
+// ================
+
+var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g
+
+function base64clean (str) {
+  // Node strips out invalid characters like \n and \t from the string, base64-js does not
+  str = stringtrim(str).replace(INVALID_BASE64_RE, '')
+  // Node converts strings with length < 2 to ''
+  if (str.length < 2) return ''
+  // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
+  while (str.length % 4 !== 0) {
+    str = str + '='
+  }
+  return str
+}
+
+function stringtrim (str) {
+  if (str.trim) return str.trim()
+  return str.replace(/^\s+|\s+$/g, '')
+}
+
+function toHex (n) {
+  if (n < 16) return '0' + n.toString(16)
+  return n.toString(16)
+}
+
+function utf8ToBytes (string, units) {
+  units = units || Infinity
+  var codePoint
+  var length = string.length
+  var leadSurrogate = null
+  var bytes = []
+
+  for (var i = 0; i < length; ++i) {
+    codePoint = string.charCodeAt(i)
+
+    // is surrogate component
+    if (codePoint > 0xD7FF && codePoint < 0xE000) {
+      // last char was a lead
+      if (!leadSurrogate) {
+        // no lead yet
+        if (codePoint > 0xDBFF) {
+          // unexpected trail
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          continue
+        } else if (i + 1 === length) {
+          // unpaired lead
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          continue
         }
 
-        return undefined; // eslint-disable-line no-undefined
+        // valid lead
+        leadSurrogate = codePoint
+
+        continue
       }
-    };
+
+      // 2 leads in a row
+      if (codePoint < 0xDC00) {
+        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+        leadSurrogate = codePoint
+        continue
+      }
+
+      // valid surrogate pair
+      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000
+    } else if (leadSurrogate) {
+      // valid bmp char, but last char was a lead
+      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+    }
+
+    leadSurrogate = null
+
+    // encode utf8
+    if (codePoint < 0x80) {
+      if ((units -= 1) < 0) break
+      bytes.push(codePoint)
+    } else if (codePoint < 0x800) {
+      if ((units -= 2) < 0) break
+      bytes.push(
+        codePoint >> 0x6 | 0xC0,
+        codePoint & 0x3F | 0x80
+      )
+    } else if (codePoint < 0x10000) {
+      if ((units -= 3) < 0) break
+      bytes.push(
+        codePoint >> 0xC | 0xE0,
+        codePoint >> 0x6 & 0x3F | 0x80,
+        codePoint & 0x3F | 0x80
+      )
+    } else if (codePoint < 0x110000) {
+      if ((units -= 4) < 0) break
+      bytes.push(
+        codePoint >> 0x12 | 0xF0,
+        codePoint >> 0xC & 0x3F | 0x80,
+        codePoint >> 0x6 & 0x3F | 0x80,
+        codePoint & 0x3F | 0x80
+      )
+    } else {
+      throw new Error('Invalid code point')
+    }
   }
 
-  function transitionEndEmulator(duration) {
-    var _this = this;
+  return bytes
+}
 
-    var called = false;
-    $(this).one(Util.TRANSITION_END, function () {
-      called = true;
-    });
-    setTimeout(function () {
-      if (!called) {
-        Util.triggerTransitionEnd(_this);
+function asciiToBytes (str) {
+  var byteArray = []
+  for (var i = 0; i < str.length; ++i) {
+    // Node's code seems to be doing this and not & 0x7F..
+    byteArray.push(str.charCodeAt(i) & 0xFF)
+  }
+  return byteArray
+}
+
+function utf16leToBytes (str, units) {
+  var c, hi, lo
+  var byteArray = []
+  for (var i = 0; i < str.length; ++i) {
+    if ((units -= 2) < 0) break
+
+    c = str.charCodeAt(i)
+    hi = c >> 8
+    lo = c % 256
+    byteArray.push(lo)
+    byteArray.push(hi)
+  }
+
+  return byteArray
+}
+
+function base64ToBytes (str) {
+  return base64.toByteArray(base64clean(str))
+}
+
+function blitBuffer (src, dst, offset, length) {
+  for (var i = 0; i < length; ++i) {
+    if ((i + offset >= dst.length) || (i >= src.length)) break
+    dst[i + offset] = src[i]
+  }
+  return i
+}
+
+function isnan (val) {
+  return val !== val // eslint-disable-line no-self-compare
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"base64-js":2,"ieee754":10,"isarray":13}],6:[function(require,module,exports){
+module.exports = {
+  "100": "Continue",
+  "101": "Switching Protocols",
+  "102": "Processing",
+  "200": "OK",
+  "201": "Created",
+  "202": "Accepted",
+  "203": "Non-Authoritative Information",
+  "204": "No Content",
+  "205": "Reset Content",
+  "206": "Partial Content",
+  "207": "Multi-Status",
+  "208": "Already Reported",
+  "226": "IM Used",
+  "300": "Multiple Choices",
+  "301": "Moved Permanently",
+  "302": "Found",
+  "303": "See Other",
+  "304": "Not Modified",
+  "305": "Use Proxy",
+  "307": "Temporary Redirect",
+  "308": "Permanent Redirect",
+  "400": "Bad Request",
+  "401": "Unauthorized",
+  "402": "Payment Required",
+  "403": "Forbidden",
+  "404": "Not Found",
+  "405": "Method Not Allowed",
+  "406": "Not Acceptable",
+  "407": "Proxy Authentication Required",
+  "408": "Request Timeout",
+  "409": "Conflict",
+  "410": "Gone",
+  "411": "Length Required",
+  "412": "Precondition Failed",
+  "413": "Payload Too Large",
+  "414": "URI Too Long",
+  "415": "Unsupported Media Type",
+  "416": "Range Not Satisfiable",
+  "417": "Expectation Failed",
+  "418": "I'm a teapot",
+  "421": "Misdirected Request",
+  "422": "Unprocessable Entity",
+  "423": "Locked",
+  "424": "Failed Dependency",
+  "425": "Unordered Collection",
+  "426": "Upgrade Required",
+  "428": "Precondition Required",
+  "429": "Too Many Requests",
+  "431": "Request Header Fields Too Large",
+  "451": "Unavailable For Legal Reasons",
+  "500": "Internal Server Error",
+  "501": "Not Implemented",
+  "502": "Bad Gateway",
+  "503": "Service Unavailable",
+  "504": "Gateway Timeout",
+  "505": "HTTP Version Not Supported",
+  "506": "Variant Also Negotiates",
+  "507": "Insufficient Storage",
+  "508": "Loop Detected",
+  "509": "Bandwidth Limit Exceeded",
+  "510": "Not Extended",
+  "511": "Network Authentication Required"
+}
+
+},{}],7:[function(require,module,exports){
+(function (Buffer){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// NOTE: These type checking functions intentionally don't use `instanceof`
+// because it is fragile and can be easily faked with `Object.create()`.
+
+function isArray(arg) {
+  if (Array.isArray) {
+    return Array.isArray(arg);
+  }
+  return objectToString(arg) === '[object Array]';
+}
+exports.isArray = isArray;
+
+function isBoolean(arg) {
+  return typeof arg === 'boolean';
+}
+exports.isBoolean = isBoolean;
+
+function isNull(arg) {
+  return arg === null;
+}
+exports.isNull = isNull;
+
+function isNullOrUndefined(arg) {
+  return arg == null;
+}
+exports.isNullOrUndefined = isNullOrUndefined;
+
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+exports.isNumber = isNumber;
+
+function isString(arg) {
+  return typeof arg === 'string';
+}
+exports.isString = isString;
+
+function isSymbol(arg) {
+  return typeof arg === 'symbol';
+}
+exports.isSymbol = isSymbol;
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
+exports.isUndefined = isUndefined;
+
+function isRegExp(re) {
+  return objectToString(re) === '[object RegExp]';
+}
+exports.isRegExp = isRegExp;
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+exports.isObject = isObject;
+
+function isDate(d) {
+  return objectToString(d) === '[object Date]';
+}
+exports.isDate = isDate;
+
+function isError(e) {
+  return (objectToString(e) === '[object Error]' || e instanceof Error);
+}
+exports.isError = isError;
+
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
+exports.isFunction = isFunction;
+
+function isPrimitive(arg) {
+  return arg === null ||
+         typeof arg === 'boolean' ||
+         typeof arg === 'number' ||
+         typeof arg === 'string' ||
+         typeof arg === 'symbol' ||  // ES6 symbol
+         typeof arg === 'undefined';
+}
+exports.isPrimitive = isPrimitive;
+
+exports.isBuffer = Buffer.isBuffer;
+
+function objectToString(o) {
+  return Object.prototype.toString.call(o);
+}
+
+}).call(this,{"isBuffer":require("../../is-buffer/index.js")})
+},{"../../is-buffer/index.js":12}],8:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+function EventEmitter() {
+  this._events = this._events || {};
+  this._maxListeners = this._maxListeners || undefined;
+}
+module.exports = EventEmitter;
+
+// Backwards-compat with node 0.10.x
+EventEmitter.EventEmitter = EventEmitter;
+
+EventEmitter.prototype._events = undefined;
+EventEmitter.prototype._maxListeners = undefined;
+
+// By default EventEmitters will print a warning if more than 10 listeners are
+// added to it. This is a useful default which helps finding memory leaks.
+EventEmitter.defaultMaxListeners = 10;
+
+// Obviously not all Emitters should be limited to 10. This function allows
+// that to be increased. Set to zero for unlimited.
+EventEmitter.prototype.setMaxListeners = function(n) {
+  if (!isNumber(n) || n < 0 || isNaN(n))
+    throw TypeError('n must be a positive number');
+  this._maxListeners = n;
+  return this;
+};
+
+EventEmitter.prototype.emit = function(type) {
+  var er, handler, len, args, i, listeners;
+
+  if (!this._events)
+    this._events = {};
+
+  // If there is no 'error' event listener then throw.
+  if (type === 'error') {
+    if (!this._events.error ||
+        (isObject(this._events.error) && !this._events.error.length)) {
+      er = arguments[1];
+      if (er instanceof Error) {
+        throw er; // Unhandled 'error' event
+      } else {
+        // At least give some kind of context to the user
+        var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
+        err.context = er;
+        throw err;
       }
-    }, duration);
+    }
+  }
+
+  handler = this._events[type];
+
+  if (isUndefined(handler))
+    return false;
+
+  if (isFunction(handler)) {
+    switch (arguments.length) {
+      // fast cases
+      case 1:
+        handler.call(this);
+        break;
+      case 2:
+        handler.call(this, arguments[1]);
+        break;
+      case 3:
+        handler.call(this, arguments[1], arguments[2]);
+        break;
+      // slower
+      default:
+        args = Array.prototype.slice.call(arguments, 1);
+        handler.apply(this, args);
+    }
+  } else if (isObject(handler)) {
+    args = Array.prototype.slice.call(arguments, 1);
+    listeners = handler.slice();
+    len = listeners.length;
+    for (i = 0; i < len; i++)
+      listeners[i].apply(this, args);
+  }
+
+  return true;
+};
+
+EventEmitter.prototype.addListener = function(type, listener) {
+  var m;
+
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  if (!this._events)
+    this._events = {};
+
+  // To avoid recursion in the case that type === "newListener"! Before
+  // adding it to the listeners, first emit "newListener".
+  if (this._events.newListener)
+    this.emit('newListener', type,
+              isFunction(listener.listener) ?
+              listener.listener : listener);
+
+  if (!this._events[type])
+    // Optimize the case of one listener. Don't need the extra array object.
+    this._events[type] = listener;
+  else if (isObject(this._events[type]))
+    // If we've already got an array, just append.
+    this._events[type].push(listener);
+  else
+    // Adding the second element, need to change to array.
+    this._events[type] = [this._events[type], listener];
+
+  // Check for listener leak
+  if (isObject(this._events[type]) && !this._events[type].warned) {
+    if (!isUndefined(this._maxListeners)) {
+      m = this._maxListeners;
+    } else {
+      m = EventEmitter.defaultMaxListeners;
+    }
+
+    if (m && m > 0 && this._events[type].length > m) {
+      this._events[type].warned = true;
+      console.error('(node) warning: possible EventEmitter memory ' +
+                    'leak detected. %d listeners added. ' +
+                    'Use emitter.setMaxListeners() to increase limit.',
+                    this._events[type].length);
+      if (typeof console.trace === 'function') {
+        // not supported in IE 10
+        console.trace();
+      }
+    }
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+EventEmitter.prototype.once = function(type, listener) {
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  var fired = false;
+
+  function g() {
+    this.removeListener(type, g);
+
+    if (!fired) {
+      fired = true;
+      listener.apply(this, arguments);
+    }
+  }
+
+  g.listener = listener;
+  this.on(type, g);
+
+  return this;
+};
+
+// emits a 'removeListener' event iff the listener was removed
+EventEmitter.prototype.removeListener = function(type, listener) {
+  var list, position, length, i;
+
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  if (!this._events || !this._events[type])
+    return this;
+
+  list = this._events[type];
+  length = list.length;
+  position = -1;
+
+  if (list === listener ||
+      (isFunction(list.listener) && list.listener === listener)) {
+    delete this._events[type];
+    if (this._events.removeListener)
+      this.emit('removeListener', type, listener);
+
+  } else if (isObject(list)) {
+    for (i = length; i-- > 0;) {
+      if (list[i] === listener ||
+          (list[i].listener && list[i].listener === listener)) {
+        position = i;
+        break;
+      }
+    }
+
+    if (position < 0)
+      return this;
+
+    if (list.length === 1) {
+      list.length = 0;
+      delete this._events[type];
+    } else {
+      list.splice(position, 1);
+    }
+
+    if (this._events.removeListener)
+      this.emit('removeListener', type, listener);
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.removeAllListeners = function(type) {
+  var key, listeners;
+
+  if (!this._events)
+    return this;
+
+  // not listening for removeListener, no need to emit
+  if (!this._events.removeListener) {
+    if (arguments.length === 0)
+      this._events = {};
+    else if (this._events[type])
+      delete this._events[type];
     return this;
   }
 
-  function setTransitionEndSupport() {
-    $.fn.emulateTransitionEnd = transitionEndEmulator;
-    $.event.special[Util.TRANSITION_END] = getSpecialTransitionEndEvent();
-  }
-  /**
-   * --------------------------------------------------------------------------
-   * Public Util Api
-   * --------------------------------------------------------------------------
-   */
-
-
-  var Util = {
-    TRANSITION_END: 'bsTransitionEnd',
-    getUID: function getUID(prefix) {
-      do {
-        // eslint-disable-next-line no-bitwise
-        prefix += ~~(Math.random() * MAX_UID); // "~~" acts like a faster Math.floor() here
-      } while (document.getElementById(prefix));
-
-      return prefix;
-    },
-    getSelectorFromElement: function getSelectorFromElement(element) {
-      var selector = element.getAttribute('data-target');
-
-      if (!selector || selector === '#') {
-        var hrefAttr = element.getAttribute('href');
-        selector = hrefAttr && hrefAttr !== '#' ? hrefAttr.trim() : '';
-      }
-
-      try {
-        return document.querySelector(selector) ? selector : null;
-      } catch (err) {
-        return null;
-      }
-    },
-    getTransitionDurationFromElement: function getTransitionDurationFromElement(element) {
-      if (!element) {
-        return 0;
-      } // Get transition-duration of the element
-
-
-      var transitionDuration = $(element).css('transition-duration');
-      var transitionDelay = $(element).css('transition-delay');
-      var floatTransitionDuration = parseFloat(transitionDuration);
-      var floatTransitionDelay = parseFloat(transitionDelay); // Return 0 if element or transition duration is not found
-
-      if (!floatTransitionDuration && !floatTransitionDelay) {
-        return 0;
-      } // If multiple durations are defined, take the first
-
-
-      transitionDuration = transitionDuration.split(',')[0];
-      transitionDelay = transitionDelay.split(',')[0];
-      return (parseFloat(transitionDuration) + parseFloat(transitionDelay)) * MILLISECONDS_MULTIPLIER;
-    },
-    reflow: function reflow(element) {
-      return element.offsetHeight;
-    },
-    triggerTransitionEnd: function triggerTransitionEnd(element) {
-      $(element).trigger(TRANSITION_END);
-    },
-    // TODO: Remove in v5
-    supportsTransitionEnd: function supportsTransitionEnd() {
-      return Boolean(TRANSITION_END);
-    },
-    isElement: function isElement(obj) {
-      return (obj[0] || obj).nodeType;
-    },
-    typeCheckConfig: function typeCheckConfig(componentName, config, configTypes) {
-      for (var property in configTypes) {
-        if (Object.prototype.hasOwnProperty.call(configTypes, property)) {
-          var expectedTypes = configTypes[property];
-          var value = config[property];
-          var valueType = value && Util.isElement(value) ? 'element' : toType(value);
-
-          if (!new RegExp(expectedTypes).test(valueType)) {
-            throw new Error(componentName.toUpperCase() + ": " + ("Option \"" + property + "\" provided type \"" + valueType + "\" ") + ("but expected type \"" + expectedTypes + "\"."));
-          }
-        }
-      }
-    },
-    findShadowRoot: function findShadowRoot(element) {
-      if (!document.documentElement.attachShadow) {
-        return null;
-      } // Can find the shadow root otherwise it'll return the document
-
-
-      if (typeof element.getRootNode === 'function') {
-        var root = element.getRootNode();
-        return root instanceof ShadowRoot ? root : null;
-      }
-
-      if (element instanceof ShadowRoot) {
-        return element;
-      } // when we don't find a shadow root
-
-
-      if (!element.parentNode) {
-        return null;
-      }
-
-      return Util.findShadowRoot(element.parentNode);
+  // emit removeListener for all listeners on all events
+  if (arguments.length === 0) {
+    for (key in this._events) {
+      if (key === 'removeListener') continue;
+      this.removeAllListeners(key);
     }
-  };
-  setTransitionEndSupport();
-
-  /**
-   * ------------------------------------------------------------------------
-   * Constants
-   * ------------------------------------------------------------------------
-   */
-
-  var NAME = 'alert';
-  var VERSION = '4.3.1';
-  var DATA_KEY = 'bs.alert';
-  var EVENT_KEY = "." + DATA_KEY;
-  var DATA_API_KEY = '.data-api';
-  var JQUERY_NO_CONFLICT = $.fn[NAME];
-  var Selector = {
-    DISMISS: '[data-dismiss="alert"]'
-  };
-  var Event = {
-    CLOSE: "close" + EVENT_KEY,
-    CLOSED: "closed" + EVENT_KEY,
-    CLICK_DATA_API: "click" + EVENT_KEY + DATA_API_KEY
-  };
-  var ClassName = {
-    ALERT: 'alert',
-    FADE: 'fade',
-    SHOW: 'show'
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
-  };
-
-  var Alert =
-  /*#__PURE__*/
-  function () {
-    function Alert(element) {
-      this._element = element;
-    } // Getters
-
-
-    var _proto = Alert.prototype;
-
-    // Public
-    _proto.close = function close(element) {
-      var rootElement = this._element;
-
-      if (element) {
-        rootElement = this._getRootElement(element);
-      }
-
-      var customEvent = this._triggerCloseEvent(rootElement);
-
-      if (customEvent.isDefaultPrevented()) {
-        return;
-      }
-
-      this._removeElement(rootElement);
-    };
-
-    _proto.dispose = function dispose() {
-      $.removeData(this._element, DATA_KEY);
-      this._element = null;
-    } // Private
-    ;
-
-    _proto._getRootElement = function _getRootElement(element) {
-      var selector = Util.getSelectorFromElement(element);
-      var parent = false;
-
-      if (selector) {
-        parent = document.querySelector(selector);
-      }
-
-      if (!parent) {
-        parent = $(element).closest("." + ClassName.ALERT)[0];
-      }
-
-      return parent;
-    };
-
-    _proto._triggerCloseEvent = function _triggerCloseEvent(element) {
-      var closeEvent = $.Event(Event.CLOSE);
-      $(element).trigger(closeEvent);
-      return closeEvent;
-    };
-
-    _proto._removeElement = function _removeElement(element) {
-      var _this = this;
-
-      $(element).removeClass(ClassName.SHOW);
-
-      if (!$(element).hasClass(ClassName.FADE)) {
-        this._destroyElement(element);
-
-        return;
-      }
-
-      var transitionDuration = Util.getTransitionDurationFromElement(element);
-      $(element).one(Util.TRANSITION_END, function (event) {
-        return _this._destroyElement(element, event);
-      }).emulateTransitionEnd(transitionDuration);
-    };
-
-    _proto._destroyElement = function _destroyElement(element) {
-      $(element).detach().trigger(Event.CLOSED).remove();
-    } // Static
-    ;
-
-    Alert._jQueryInterface = function _jQueryInterface(config) {
-      return this.each(function () {
-        var $element = $(this);
-        var data = $element.data(DATA_KEY);
-
-        if (!data) {
-          data = new Alert(this);
-          $element.data(DATA_KEY, data);
-        }
-
-        if (config === 'close') {
-          data[config](this);
-        }
-      });
-    };
-
-    Alert._handleDismiss = function _handleDismiss(alertInstance) {
-      return function (event) {
-        if (event) {
-          event.preventDefault();
-        }
-
-        alertInstance.close(this);
-      };
-    };
-
-    _createClass(Alert, null, [{
-      key: "VERSION",
-      get: function get() {
-        return VERSION;
-      }
-    }]);
-
-    return Alert;
-  }();
-  /**
-   * ------------------------------------------------------------------------
-   * Data Api implementation
-   * ------------------------------------------------------------------------
-   */
-
-
-  $(document).on(Event.CLICK_DATA_API, Selector.DISMISS, Alert._handleDismiss(new Alert()));
-  /**
-   * ------------------------------------------------------------------------
-   * jQuery
-   * ------------------------------------------------------------------------
-   */
-
-  $.fn[NAME] = Alert._jQueryInterface;
-  $.fn[NAME].Constructor = Alert;
-
-  $.fn[NAME].noConflict = function () {
-    $.fn[NAME] = JQUERY_NO_CONFLICT;
-    return Alert._jQueryInterface;
-  };
-
-  /**
-   * ------------------------------------------------------------------------
-   * Constants
-   * ------------------------------------------------------------------------
-   */
-
-  var NAME$1 = 'button';
-  var VERSION$1 = '4.3.1';
-  var DATA_KEY$1 = 'bs.button';
-  var EVENT_KEY$1 = "." + DATA_KEY$1;
-  var DATA_API_KEY$1 = '.data-api';
-  var JQUERY_NO_CONFLICT$1 = $.fn[NAME$1];
-  var ClassName$1 = {
-    ACTIVE: 'active',
-    BUTTON: 'btn',
-    FOCUS: 'focus'
-  };
-  var Selector$1 = {
-    DATA_TOGGLE_CARROT: '[data-toggle^="button"]',
-    DATA_TOGGLE: '[data-toggle="buttons"]',
-    INPUT: 'input:not([type="hidden"])',
-    ACTIVE: '.active',
-    BUTTON: '.btn'
-  };
-  var Event$1 = {
-    CLICK_DATA_API: "click" + EVENT_KEY$1 + DATA_API_KEY$1,
-    FOCUS_BLUR_DATA_API: "focus" + EVENT_KEY$1 + DATA_API_KEY$1 + " " + ("blur" + EVENT_KEY$1 + DATA_API_KEY$1)
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
-  };
-
-  var Button =
-  /*#__PURE__*/
-  function () {
-    function Button(element) {
-      this._element = element;
-    } // Getters
-
-
-    var _proto = Button.prototype;
-
-    // Public
-    _proto.toggle = function toggle() {
-      var triggerChangeEvent = true;
-      var addAriaPressed = true;
-      var rootElement = $(this._element).closest(Selector$1.DATA_TOGGLE)[0];
-
-      if (rootElement) {
-        var input = this._element.querySelector(Selector$1.INPUT);
-
-        if (input) {
-          if (input.type === 'radio') {
-            if (input.checked && this._element.classList.contains(ClassName$1.ACTIVE)) {
-              triggerChangeEvent = false;
-            } else {
-              var activeElement = rootElement.querySelector(Selector$1.ACTIVE);
-
-              if (activeElement) {
-                $(activeElement).removeClass(ClassName$1.ACTIVE);
-              }
-            }
-          }
-
-          if (triggerChangeEvent) {
-            if (input.hasAttribute('disabled') || rootElement.hasAttribute('disabled') || input.classList.contains('disabled') || rootElement.classList.contains('disabled')) {
-              return;
-            }
-
-            input.checked = !this._element.classList.contains(ClassName$1.ACTIVE);
-            $(input).trigger('change');
-          }
-
-          input.focus();
-          addAriaPressed = false;
-        }
-      }
-
-      if (addAriaPressed) {
-        this._element.setAttribute('aria-pressed', !this._element.classList.contains(ClassName$1.ACTIVE));
-      }
-
-      if (triggerChangeEvent) {
-        $(this._element).toggleClass(ClassName$1.ACTIVE);
-      }
-    };
-
-    _proto.dispose = function dispose() {
-      $.removeData(this._element, DATA_KEY$1);
-      this._element = null;
-    } // Static
-    ;
-
-    Button._jQueryInterface = function _jQueryInterface(config) {
-      return this.each(function () {
-        var data = $(this).data(DATA_KEY$1);
-
-        if (!data) {
-          data = new Button(this);
-          $(this).data(DATA_KEY$1, data);
-        }
-
-        if (config === 'toggle') {
-          data[config]();
-        }
-      });
-    };
-
-    _createClass(Button, null, [{
-      key: "VERSION",
-      get: function get() {
-        return VERSION$1;
-      }
-    }]);
-
-    return Button;
-  }();
-  /**
-   * ------------------------------------------------------------------------
-   * Data Api implementation
-   * ------------------------------------------------------------------------
-   */
-
-
-  $(document).on(Event$1.CLICK_DATA_API, Selector$1.DATA_TOGGLE_CARROT, function (event) {
-    event.preventDefault();
-    var button = event.target;
-
-    if (!$(button).hasClass(ClassName$1.BUTTON)) {
-      button = $(button).closest(Selector$1.BUTTON);
-    }
-
-    Button._jQueryInterface.call($(button), 'toggle');
-  }).on(Event$1.FOCUS_BLUR_DATA_API, Selector$1.DATA_TOGGLE_CARROT, function (event) {
-    var button = $(event.target).closest(Selector$1.BUTTON)[0];
-    $(button).toggleClass(ClassName$1.FOCUS, /^focus(in)?$/.test(event.type));
-  });
-  /**
-   * ------------------------------------------------------------------------
-   * jQuery
-   * ------------------------------------------------------------------------
-   */
-
-  $.fn[NAME$1] = Button._jQueryInterface;
-  $.fn[NAME$1].Constructor = Button;
-
-  $.fn[NAME$1].noConflict = function () {
-    $.fn[NAME$1] = JQUERY_NO_CONFLICT$1;
-    return Button._jQueryInterface;
-  };
-
-  /**
-   * ------------------------------------------------------------------------
-   * Constants
-   * ------------------------------------------------------------------------
-   */
-
-  var NAME$2 = 'carousel';
-  var VERSION$2 = '4.3.1';
-  var DATA_KEY$2 = 'bs.carousel';
-  var EVENT_KEY$2 = "." + DATA_KEY$2;
-  var DATA_API_KEY$2 = '.data-api';
-  var JQUERY_NO_CONFLICT$2 = $.fn[NAME$2];
-  var ARROW_LEFT_KEYCODE = 37; // KeyboardEvent.which value for left arrow key
-
-  var ARROW_RIGHT_KEYCODE = 39; // KeyboardEvent.which value for right arrow key
-
-  var TOUCHEVENT_COMPAT_WAIT = 500; // Time for mouse compat events to fire after touch
-
-  var SWIPE_THRESHOLD = 40;
-  var Default = {
-    interval: 5000,
-    keyboard: true,
-    slide: false,
-    pause: 'hover',
-    wrap: true,
-    touch: true
-  };
-  var DefaultType = {
-    interval: '(number|boolean)',
-    keyboard: 'boolean',
-    slide: '(boolean|string)',
-    pause: '(string|boolean)',
-    wrap: 'boolean',
-    touch: 'boolean'
-  };
-  var Direction = {
-    NEXT: 'next',
-    PREV: 'prev',
-    LEFT: 'left',
-    RIGHT: 'right'
-  };
-  var Event$2 = {
-    SLIDE: "slide" + EVENT_KEY$2,
-    SLID: "slid" + EVENT_KEY$2,
-    KEYDOWN: "keydown" + EVENT_KEY$2,
-    MOUSEENTER: "mouseenter" + EVENT_KEY$2,
-    MOUSELEAVE: "mouseleave" + EVENT_KEY$2,
-    TOUCHSTART: "touchstart" + EVENT_KEY$2,
-    TOUCHMOVE: "touchmove" + EVENT_KEY$2,
-    TOUCHEND: "touchend" + EVENT_KEY$2,
-    POINTERDOWN: "pointerdown" + EVENT_KEY$2,
-    POINTERUP: "pointerup" + EVENT_KEY$2,
-    DRAG_START: "dragstart" + EVENT_KEY$2,
-    LOAD_DATA_API: "load" + EVENT_KEY$2 + DATA_API_KEY$2,
-    CLICK_DATA_API: "click" + EVENT_KEY$2 + DATA_API_KEY$2
-  };
-  var ClassName$2 = {
-    CAROUSEL: 'carousel',
-    ACTIVE: 'active',
-    SLIDE: 'slide',
-    RIGHT: 'carousel-item-right',
-    LEFT: 'carousel-item-left',
-    NEXT: 'carousel-item-next',
-    PREV: 'carousel-item-prev',
-    ITEM: 'carousel-item',
-    POINTER_EVENT: 'pointer-event'
-  };
-  var Selector$2 = {
-    ACTIVE: '.active',
-    ACTIVE_ITEM: '.active.carousel-item',
-    ITEM: '.carousel-item',
-    ITEM_IMG: '.carousel-item img',
-    NEXT_PREV: '.carousel-item-next, .carousel-item-prev',
-    INDICATORS: '.carousel-indicators',
-    DATA_SLIDE: '[data-slide], [data-slide-to]',
-    DATA_RIDE: '[data-ride="carousel"]'
-  };
-  var PointerType = {
-    TOUCH: 'touch',
-    PEN: 'pen'
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
-  };
-
-  var Carousel =
-  /*#__PURE__*/
-  function () {
-    function Carousel(element, config) {
-      this._items = null;
-      this._interval = null;
-      this._activeElement = null;
-      this._isPaused = false;
-      this._isSliding = false;
-      this.touchTimeout = null;
-      this.touchStartX = 0;
-      this.touchDeltaX = 0;
-      this._config = this._getConfig(config);
-      this._element = element;
-      this._indicatorsElement = this._element.querySelector(Selector$2.INDICATORS);
-      this._touchSupported = 'ontouchstart' in document.documentElement || navigator.maxTouchPoints > 0;
-      this._pointerEvent = Boolean(window.PointerEvent || window.MSPointerEvent);
-
-      this._addEventListeners();
-    } // Getters
-
-
-    var _proto = Carousel.prototype;
-
-    // Public
-    _proto.next = function next() {
-      if (!this._isSliding) {
-        this._slide(Direction.NEXT);
-      }
-    };
-
-    _proto.nextWhenVisible = function nextWhenVisible() {
-      // Don't call next when the page isn't visible
-      // or the carousel or its parent isn't visible
-      if (!document.hidden && $(this._element).is(':visible') && $(this._element).css('visibility') !== 'hidden') {
-        this.next();
-      }
-    };
-
-    _proto.prev = function prev() {
-      if (!this._isSliding) {
-        this._slide(Direction.PREV);
-      }
-    };
-
-    _proto.pause = function pause(event) {
-      if (!event) {
-        this._isPaused = true;
-      }
-
-      if (this._element.querySelector(Selector$2.NEXT_PREV)) {
-        Util.triggerTransitionEnd(this._element);
-        this.cycle(true);
-      }
-
-      clearInterval(this._interval);
-      this._interval = null;
-    };
-
-    _proto.cycle = function cycle(event) {
-      if (!event) {
-        this._isPaused = false;
-      }
-
-      if (this._interval) {
-        clearInterval(this._interval);
-        this._interval = null;
-      }
-
-      if (this._config.interval && !this._isPaused) {
-        this._interval = setInterval((document.visibilityState ? this.nextWhenVisible : this.next).bind(this), this._config.interval);
-      }
-    };
-
-    _proto.to = function to(index) {
-      var _this = this;
-
-      this._activeElement = this._element.querySelector(Selector$2.ACTIVE_ITEM);
-
-      var activeIndex = this._getItemIndex(this._activeElement);
-
-      if (index > this._items.length - 1 || index < 0) {
-        return;
-      }
-
-      if (this._isSliding) {
-        $(this._element).one(Event$2.SLID, function () {
-          return _this.to(index);
-        });
-        return;
-      }
-
-      if (activeIndex === index) {
-        this.pause();
-        this.cycle();
-        return;
-      }
-
-      var direction = index > activeIndex ? Direction.NEXT : Direction.PREV;
-
-      this._slide(direction, this._items[index]);
-    };
-
-    _proto.dispose = function dispose() {
-      $(this._element).off(EVENT_KEY$2);
-      $.removeData(this._element, DATA_KEY$2);
-      this._items = null;
-      this._config = null;
-      this._element = null;
-      this._interval = null;
-      this._isPaused = null;
-      this._isSliding = null;
-      this._activeElement = null;
-      this._indicatorsElement = null;
-    } // Private
-    ;
-
-    _proto._getConfig = function _getConfig(config) {
-      config = _objectSpread({}, Default, config);
-      Util.typeCheckConfig(NAME$2, config, DefaultType);
-      return config;
-    };
-
-    _proto._handleSwipe = function _handleSwipe() {
-      var absDeltax = Math.abs(this.touchDeltaX);
-
-      if (absDeltax <= SWIPE_THRESHOLD) {
-        return;
-      }
-
-      var direction = absDeltax / this.touchDeltaX; // swipe left
-
-      if (direction > 0) {
-        this.prev();
-      } // swipe right
-
-
-      if (direction < 0) {
-        this.next();
-      }
-    };
-
-    _proto._addEventListeners = function _addEventListeners() {
-      var _this2 = this;
-
-      if (this._config.keyboard) {
-        $(this._element).on(Event$2.KEYDOWN, function (event) {
-          return _this2._keydown(event);
-        });
-      }
-
-      if (this._config.pause === 'hover') {
-        $(this._element).on(Event$2.MOUSEENTER, function (event) {
-          return _this2.pause(event);
-        }).on(Event$2.MOUSELEAVE, function (event) {
-          return _this2.cycle(event);
-        });
-      }
-
-      if (this._config.touch) {
-        this._addTouchEventListeners();
-      }
-    };
-
-    _proto._addTouchEventListeners = function _addTouchEventListeners() {
-      var _this3 = this;
-
-      if (!this._touchSupported) {
-        return;
-      }
-
-      var start = function start(event) {
-        if (_this3._pointerEvent && PointerType[event.originalEvent.pointerType.toUpperCase()]) {
-          _this3.touchStartX = event.originalEvent.clientX;
-        } else if (!_this3._pointerEvent) {
-          _this3.touchStartX = event.originalEvent.touches[0].clientX;
-        }
-      };
-
-      var move = function move(event) {
-        // ensure swiping with one touch and not pinching
-        if (event.originalEvent.touches && event.originalEvent.touches.length > 1) {
-          _this3.touchDeltaX = 0;
-        } else {
-          _this3.touchDeltaX = event.originalEvent.touches[0].clientX - _this3.touchStartX;
-        }
-      };
-
-      var end = function end(event) {
-        if (_this3._pointerEvent && PointerType[event.originalEvent.pointerType.toUpperCase()]) {
-          _this3.touchDeltaX = event.originalEvent.clientX - _this3.touchStartX;
-        }
-
-        _this3._handleSwipe();
-
-        if (_this3._config.pause === 'hover') {
-          // If it's a touch-enabled device, mouseenter/leave are fired as
-          // part of the mouse compatibility events on first tap - the carousel
-          // would stop cycling until user tapped out of it;
-          // here, we listen for touchend, explicitly pause the carousel
-          // (as if it's the second time we tap on it, mouseenter compat event
-          // is NOT fired) and after a timeout (to allow for mouse compatibility
-          // events to fire) we explicitly restart cycling
-          _this3.pause();
-
-          if (_this3.touchTimeout) {
-            clearTimeout(_this3.touchTimeout);
-          }
-
-          _this3.touchTimeout = setTimeout(function (event) {
-            return _this3.cycle(event);
-          }, TOUCHEVENT_COMPAT_WAIT + _this3._config.interval);
-        }
-      };
-
-      $(this._element.querySelectorAll(Selector$2.ITEM_IMG)).on(Event$2.DRAG_START, function (e) {
-        return e.preventDefault();
-      });
-
-      if (this._pointerEvent) {
-        $(this._element).on(Event$2.POINTERDOWN, function (event) {
-          return start(event);
-        });
-        $(this._element).on(Event$2.POINTERUP, function (event) {
-          return end(event);
-        });
-
-        this._element.classList.add(ClassName$2.POINTER_EVENT);
-      } else {
-        $(this._element).on(Event$2.TOUCHSTART, function (event) {
-          return start(event);
-        });
-        $(this._element).on(Event$2.TOUCHMOVE, function (event) {
-          return move(event);
-        });
-        $(this._element).on(Event$2.TOUCHEND, function (event) {
-          return end(event);
-        });
-      }
-    };
-
-    _proto._keydown = function _keydown(event) {
-      if (/input|textarea/i.test(event.target.tagName)) {
-        return;
-      }
-
-      switch (event.which) {
-        case ARROW_LEFT_KEYCODE:
-          event.preventDefault();
-          this.prev();
-          break;
-
-        case ARROW_RIGHT_KEYCODE:
-          event.preventDefault();
-          this.next();
-          break;
-
-        default:
-      }
-    };
-
-    _proto._getItemIndex = function _getItemIndex(element) {
-      this._items = element && element.parentNode ? [].slice.call(element.parentNode.querySelectorAll(Selector$2.ITEM)) : [];
-      return this._items.indexOf(element);
-    };
-
-    _proto._getItemByDirection = function _getItemByDirection(direction, activeElement) {
-      var isNextDirection = direction === Direction.NEXT;
-      var isPrevDirection = direction === Direction.PREV;
-
-      var activeIndex = this._getItemIndex(activeElement);
-
-      var lastItemIndex = this._items.length - 1;
-      var isGoingToWrap = isPrevDirection && activeIndex === 0 || isNextDirection && activeIndex === lastItemIndex;
-
-      if (isGoingToWrap && !this._config.wrap) {
-        return activeElement;
-      }
-
-      var delta = direction === Direction.PREV ? -1 : 1;
-      var itemIndex = (activeIndex + delta) % this._items.length;
-      return itemIndex === -1 ? this._items[this._items.length - 1] : this._items[itemIndex];
-    };
-
-    _proto._triggerSlideEvent = function _triggerSlideEvent(relatedTarget, eventDirectionName) {
-      var targetIndex = this._getItemIndex(relatedTarget);
-
-      var fromIndex = this._getItemIndex(this._element.querySelector(Selector$2.ACTIVE_ITEM));
-
-      var slideEvent = $.Event(Event$2.SLIDE, {
-        relatedTarget: relatedTarget,
-        direction: eventDirectionName,
-        from: fromIndex,
-        to: targetIndex
-      });
-      $(this._element).trigger(slideEvent);
-      return slideEvent;
-    };
-
-    _proto._setActiveIndicatorElement = function _setActiveIndicatorElement(element) {
-      if (this._indicatorsElement) {
-        var indicators = [].slice.call(this._indicatorsElement.querySelectorAll(Selector$2.ACTIVE));
-        $(indicators).removeClass(ClassName$2.ACTIVE);
-
-        var nextIndicator = this._indicatorsElement.children[this._getItemIndex(element)];
-
-        if (nextIndicator) {
-          $(nextIndicator).addClass(ClassName$2.ACTIVE);
-        }
-      }
-    };
-
-    _proto._slide = function _slide(direction, element) {
-      var _this4 = this;
-
-      var activeElement = this._element.querySelector(Selector$2.ACTIVE_ITEM);
-
-      var activeElementIndex = this._getItemIndex(activeElement);
-
-      var nextElement = element || activeElement && this._getItemByDirection(direction, activeElement);
-
-      var nextElementIndex = this._getItemIndex(nextElement);
-
-      var isCycling = Boolean(this._interval);
-      var directionalClassName;
-      var orderClassName;
-      var eventDirectionName;
-
-      if (direction === Direction.NEXT) {
-        directionalClassName = ClassName$2.LEFT;
-        orderClassName = ClassName$2.NEXT;
-        eventDirectionName = Direction.LEFT;
-      } else {
-        directionalClassName = ClassName$2.RIGHT;
-        orderClassName = ClassName$2.PREV;
-        eventDirectionName = Direction.RIGHT;
-      }
-
-      if (nextElement && $(nextElement).hasClass(ClassName$2.ACTIVE)) {
-        this._isSliding = false;
-        return;
-      }
-
-      var slideEvent = this._triggerSlideEvent(nextElement, eventDirectionName);
-
-      if (slideEvent.isDefaultPrevented()) {
-        return;
-      }
-
-      if (!activeElement || !nextElement) {
-        // Some weirdness is happening, so we bail
-        return;
-      }
-
-      this._isSliding = true;
-
-      if (isCycling) {
-        this.pause();
-      }
-
-      this._setActiveIndicatorElement(nextElement);
-
-      var slidEvent = $.Event(Event$2.SLID, {
-        relatedTarget: nextElement,
-        direction: eventDirectionName,
-        from: activeElementIndex,
-        to: nextElementIndex
-      });
-
-      if ($(this._element).hasClass(ClassName$2.SLIDE)) {
-        $(nextElement).addClass(orderClassName);
-        Util.reflow(nextElement);
-        $(activeElement).addClass(directionalClassName);
-        $(nextElement).addClass(directionalClassName);
-        var nextElementInterval = parseInt(nextElement.getAttribute('data-interval'), 10);
-
-        if (nextElementInterval) {
-          this._config.defaultInterval = this._config.defaultInterval || this._config.interval;
-          this._config.interval = nextElementInterval;
-        } else {
-          this._config.interval = this._config.defaultInterval || this._config.interval;
-        }
-
-        var transitionDuration = Util.getTransitionDurationFromElement(activeElement);
-        $(activeElement).one(Util.TRANSITION_END, function () {
-          $(nextElement).removeClass(directionalClassName + " " + orderClassName).addClass(ClassName$2.ACTIVE);
-          $(activeElement).removeClass(ClassName$2.ACTIVE + " " + orderClassName + " " + directionalClassName);
-          _this4._isSliding = false;
-          setTimeout(function () {
-            return $(_this4._element).trigger(slidEvent);
-          }, 0);
-        }).emulateTransitionEnd(transitionDuration);
-      } else {
-        $(activeElement).removeClass(ClassName$2.ACTIVE);
-        $(nextElement).addClass(ClassName$2.ACTIVE);
-        this._isSliding = false;
-        $(this._element).trigger(slidEvent);
-      }
-
-      if (isCycling) {
-        this.cycle();
-      }
-    } // Static
-    ;
-
-    Carousel._jQueryInterface = function _jQueryInterface(config) {
-      return this.each(function () {
-        var data = $(this).data(DATA_KEY$2);
-
-        var _config = _objectSpread({}, Default, $(this).data());
-
-        if (typeof config === 'object') {
-          _config = _objectSpread({}, _config, config);
-        }
-
-        var action = typeof config === 'string' ? config : _config.slide;
-
-        if (!data) {
-          data = new Carousel(this, _config);
-          $(this).data(DATA_KEY$2, data);
-        }
-
-        if (typeof config === 'number') {
-          data.to(config);
-        } else if (typeof action === 'string') {
-          if (typeof data[action] === 'undefined') {
-            throw new TypeError("No method named \"" + action + "\"");
-          }
-
-          data[action]();
-        } else if (_config.interval && _config.ride) {
-          data.pause();
-          data.cycle();
-        }
-      });
-    };
-
-    Carousel._dataApiClickHandler = function _dataApiClickHandler(event) {
-      var selector = Util.getSelectorFromElement(this);
-
-      if (!selector) {
-        return;
-      }
-
-      var target = $(selector)[0];
-
-      if (!target || !$(target).hasClass(ClassName$2.CAROUSEL)) {
-        return;
-      }
-
-      var config = _objectSpread({}, $(target).data(), $(this).data());
-
-      var slideIndex = this.getAttribute('data-slide-to');
-
-      if (slideIndex) {
-        config.interval = false;
-      }
-
-      Carousel._jQueryInterface.call($(target), config);
-
-      if (slideIndex) {
-        $(target).data(DATA_KEY$2).to(slideIndex);
-      }
-
-      event.preventDefault();
-    };
-
-    _createClass(Carousel, null, [{
-      key: "VERSION",
-      get: function get() {
-        return VERSION$2;
-      }
-    }, {
-      key: "Default",
-      get: function get() {
-        return Default;
-      }
-    }]);
-
-    return Carousel;
-  }();
-  /**
-   * ------------------------------------------------------------------------
-   * Data Api implementation
-   * ------------------------------------------------------------------------
-   */
-
-
-  $(document).on(Event$2.CLICK_DATA_API, Selector$2.DATA_SLIDE, Carousel._dataApiClickHandler);
-  $(window).on(Event$2.LOAD_DATA_API, function () {
-    var carousels = [].slice.call(document.querySelectorAll(Selector$2.DATA_RIDE));
-
-    for (var i = 0, len = carousels.length; i < len; i++) {
-      var $carousel = $(carousels[i]);
-
-      Carousel._jQueryInterface.call($carousel, $carousel.data());
-    }
-  });
-  /**
-   * ------------------------------------------------------------------------
-   * jQuery
-   * ------------------------------------------------------------------------
-   */
-
-  $.fn[NAME$2] = Carousel._jQueryInterface;
-  $.fn[NAME$2].Constructor = Carousel;
-
-  $.fn[NAME$2].noConflict = function () {
-    $.fn[NAME$2] = JQUERY_NO_CONFLICT$2;
-    return Carousel._jQueryInterface;
-  };
-
-  /**
-   * ------------------------------------------------------------------------
-   * Constants
-   * ------------------------------------------------------------------------
-   */
-
-  var NAME$3 = 'collapse';
-  var VERSION$3 = '4.3.1';
-  var DATA_KEY$3 = 'bs.collapse';
-  var EVENT_KEY$3 = "." + DATA_KEY$3;
-  var DATA_API_KEY$3 = '.data-api';
-  var JQUERY_NO_CONFLICT$3 = $.fn[NAME$3];
-  var Default$1 = {
-    toggle: true,
-    parent: ''
-  };
-  var DefaultType$1 = {
-    toggle: 'boolean',
-    parent: '(string|element)'
-  };
-  var Event$3 = {
-    SHOW: "show" + EVENT_KEY$3,
-    SHOWN: "shown" + EVENT_KEY$3,
-    HIDE: "hide" + EVENT_KEY$3,
-    HIDDEN: "hidden" + EVENT_KEY$3,
-    CLICK_DATA_API: "click" + EVENT_KEY$3 + DATA_API_KEY$3
-  };
-  var ClassName$3 = {
-    SHOW: 'show',
-    COLLAPSE: 'collapse',
-    COLLAPSING: 'collapsing',
-    COLLAPSED: 'collapsed'
-  };
-  var Dimension = {
-    WIDTH: 'width',
-    HEIGHT: 'height'
-  };
-  var Selector$3 = {
-    ACTIVES: '.show, .collapsing',
-    DATA_TOGGLE: '[data-toggle="collapse"]'
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
-  };
-
-  var Collapse =
-  /*#__PURE__*/
-  function () {
-    function Collapse(element, config) {
-      this._isTransitioning = false;
-      this._element = element;
-      this._config = this._getConfig(config);
-      this._triggerArray = [].slice.call(document.querySelectorAll("[data-toggle=\"collapse\"][href=\"#" + element.id + "\"]," + ("[data-toggle=\"collapse\"][data-target=\"#" + element.id + "\"]")));
-      var toggleList = [].slice.call(document.querySelectorAll(Selector$3.DATA_TOGGLE));
-
-      for (var i = 0, len = toggleList.length; i < len; i++) {
-        var elem = toggleList[i];
-        var selector = Util.getSelectorFromElement(elem);
-        var filterElement = [].slice.call(document.querySelectorAll(selector)).filter(function (foundElem) {
-          return foundElem === element;
-        });
-
-        if (selector !== null && filterElement.length > 0) {
-          this._selector = selector;
-
-          this._triggerArray.push(elem);
-        }
-      }
-
-      this._parent = this._config.parent ? this._getParent() : null;
-
-      if (!this._config.parent) {
-        this._addAriaAndCollapsedClass(this._element, this._triggerArray);
-      }
-
-      if (this._config.toggle) {
-        this.toggle();
-      }
-    } // Getters
-
-
-    var _proto = Collapse.prototype;
-
-    // Public
-    _proto.toggle = function toggle() {
-      if ($(this._element).hasClass(ClassName$3.SHOW)) {
-        this.hide();
-      } else {
-        this.show();
-      }
-    };
-
-    _proto.show = function show() {
-      var _this = this;
-
-      if (this._isTransitioning || $(this._element).hasClass(ClassName$3.SHOW)) {
-        return;
-      }
-
-      var actives;
-      var activesData;
-
-      if (this._parent) {
-        actives = [].slice.call(this._parent.querySelectorAll(Selector$3.ACTIVES)).filter(function (elem) {
-          if (typeof _this._config.parent === 'string') {
-            return elem.getAttribute('data-parent') === _this._config.parent;
-          }
-
-          return elem.classList.contains(ClassName$3.COLLAPSE);
-        });
-
-        if (actives.length === 0) {
-          actives = null;
-        }
-      }
-
-      if (actives) {
-        activesData = $(actives).not(this._selector).data(DATA_KEY$3);
-
-        if (activesData && activesData._isTransitioning) {
-          return;
-        }
-      }
-
-      var startEvent = $.Event(Event$3.SHOW);
-      $(this._element).trigger(startEvent);
-
-      if (startEvent.isDefaultPrevented()) {
-        return;
-      }
-
-      if (actives) {
-        Collapse._jQueryInterface.call($(actives).not(this._selector), 'hide');
-
-        if (!activesData) {
-          $(actives).data(DATA_KEY$3, null);
-        }
-      }
-
-      var dimension = this._getDimension();
-
-      $(this._element).removeClass(ClassName$3.COLLAPSE).addClass(ClassName$3.COLLAPSING);
-      this._element.style[dimension] = 0;
-
-      if (this._triggerArray.length) {
-        $(this._triggerArray).removeClass(ClassName$3.COLLAPSED).attr('aria-expanded', true);
-      }
-
-      this.setTransitioning(true);
-
-      var complete = function complete() {
-        $(_this._element).removeClass(ClassName$3.COLLAPSING).addClass(ClassName$3.COLLAPSE).addClass(ClassName$3.SHOW);
-        _this._element.style[dimension] = '';
-
-        _this.setTransitioning(false);
-
-        $(_this._element).trigger(Event$3.SHOWN);
-      };
-
-      var capitalizedDimension = dimension[0].toUpperCase() + dimension.slice(1);
-      var scrollSize = "scroll" + capitalizedDimension;
-      var transitionDuration = Util.getTransitionDurationFromElement(this._element);
-      $(this._element).one(Util.TRANSITION_END, complete).emulateTransitionEnd(transitionDuration);
-      this._element.style[dimension] = this._element[scrollSize] + "px";
-    };
-
-    _proto.hide = function hide() {
-      var _this2 = this;
-
-      if (this._isTransitioning || !$(this._element).hasClass(ClassName$3.SHOW)) {
-        return;
-      }
-
-      var startEvent = $.Event(Event$3.HIDE);
-      $(this._element).trigger(startEvent);
-
-      if (startEvent.isDefaultPrevented()) {
-        return;
-      }
-
-      var dimension = this._getDimension();
-
-      this._element.style[dimension] = this._element.getBoundingClientRect()[dimension] + "px";
-      Util.reflow(this._element);
-      $(this._element).addClass(ClassName$3.COLLAPSING).removeClass(ClassName$3.COLLAPSE).removeClass(ClassName$3.SHOW);
-      var triggerArrayLength = this._triggerArray.length;
-
-      if (triggerArrayLength > 0) {
-        for (var i = 0; i < triggerArrayLength; i++) {
-          var trigger = this._triggerArray[i];
-          var selector = Util.getSelectorFromElement(trigger);
-
-          if (selector !== null) {
-            var $elem = $([].slice.call(document.querySelectorAll(selector)));
-
-            if (!$elem.hasClass(ClassName$3.SHOW)) {
-              $(trigger).addClass(ClassName$3.COLLAPSED).attr('aria-expanded', false);
-            }
-          }
-        }
-      }
-
-      this.setTransitioning(true);
-
-      var complete = function complete() {
-        _this2.setTransitioning(false);
-
-        $(_this2._element).removeClass(ClassName$3.COLLAPSING).addClass(ClassName$3.COLLAPSE).trigger(Event$3.HIDDEN);
-      };
-
-      this._element.style[dimension] = '';
-      var transitionDuration = Util.getTransitionDurationFromElement(this._element);
-      $(this._element).one(Util.TRANSITION_END, complete).emulateTransitionEnd(transitionDuration);
-    };
-
-    _proto.setTransitioning = function setTransitioning(isTransitioning) {
-      this._isTransitioning = isTransitioning;
-    };
-
-    _proto.dispose = function dispose() {
-      $.removeData(this._element, DATA_KEY$3);
-      this._config = null;
-      this._parent = null;
-      this._element = null;
-      this._triggerArray = null;
-      this._isTransitioning = null;
-    } // Private
-    ;
-
-    _proto._getConfig = function _getConfig(config) {
-      config = _objectSpread({}, Default$1, config);
-      config.toggle = Boolean(config.toggle); // Coerce string values
-
-      Util.typeCheckConfig(NAME$3, config, DefaultType$1);
-      return config;
-    };
-
-    _proto._getDimension = function _getDimension() {
-      var hasWidth = $(this._element).hasClass(Dimension.WIDTH);
-      return hasWidth ? Dimension.WIDTH : Dimension.HEIGHT;
-    };
-
-    _proto._getParent = function _getParent() {
-      var _this3 = this;
-
-      var parent;
-
-      if (Util.isElement(this._config.parent)) {
-        parent = this._config.parent; // It's a jQuery object
-
-        if (typeof this._config.parent.jquery !== 'undefined') {
-          parent = this._config.parent[0];
-        }
-      } else {
-        parent = document.querySelector(this._config.parent);
-      }
-
-      var selector = "[data-toggle=\"collapse\"][data-parent=\"" + this._config.parent + "\"]";
-      var children = [].slice.call(parent.querySelectorAll(selector));
-      $(children).each(function (i, element) {
-        _this3._addAriaAndCollapsedClass(Collapse._getTargetFromElement(element), [element]);
-      });
-      return parent;
-    };
-
-    _proto._addAriaAndCollapsedClass = function _addAriaAndCollapsedClass(element, triggerArray) {
-      var isOpen = $(element).hasClass(ClassName$3.SHOW);
-
-      if (triggerArray.length) {
-        $(triggerArray).toggleClass(ClassName$3.COLLAPSED, !isOpen).attr('aria-expanded', isOpen);
-      }
-    } // Static
-    ;
-
-    Collapse._getTargetFromElement = function _getTargetFromElement(element) {
-      var selector = Util.getSelectorFromElement(element);
-      return selector ? document.querySelector(selector) : null;
-    };
-
-    Collapse._jQueryInterface = function _jQueryInterface(config) {
-      return this.each(function () {
-        var $this = $(this);
-        var data = $this.data(DATA_KEY$3);
-
-        var _config = _objectSpread({}, Default$1, $this.data(), typeof config === 'object' && config ? config : {});
-
-        if (!data && _config.toggle && /show|hide/.test(config)) {
-          _config.toggle = false;
-        }
-
-        if (!data) {
-          data = new Collapse(this, _config);
-          $this.data(DATA_KEY$3, data);
-        }
-
-        if (typeof config === 'string') {
-          if (typeof data[config] === 'undefined') {
-            throw new TypeError("No method named \"" + config + "\"");
-          }
-
-          data[config]();
-        }
-      });
-    };
-
-    _createClass(Collapse, null, [{
-      key: "VERSION",
-      get: function get() {
-        return VERSION$3;
-      }
-    }, {
-      key: "Default",
-      get: function get() {
-        return Default$1;
-      }
-    }]);
-
-    return Collapse;
-  }();
-  /**
-   * ------------------------------------------------------------------------
-   * Data Api implementation
-   * ------------------------------------------------------------------------
-   */
-
-
-  $(document).on(Event$3.CLICK_DATA_API, Selector$3.DATA_TOGGLE, function (event) {
-    // preventDefault only for <a> elements (which change the URL) not inside the collapsible element
-    if (event.currentTarget.tagName === 'A') {
-      event.preventDefault();
-    }
-
-    var $trigger = $(this);
-    var selector = Util.getSelectorFromElement(this);
-    var selectors = [].slice.call(document.querySelectorAll(selector));
-    $(selectors).each(function () {
-      var $target = $(this);
-      var data = $target.data(DATA_KEY$3);
-      var config = data ? 'toggle' : $trigger.data();
-
-      Collapse._jQueryInterface.call($target, config);
-    });
-  });
-  /**
-   * ------------------------------------------------------------------------
-   * jQuery
-   * ------------------------------------------------------------------------
-   */
-
-  $.fn[NAME$3] = Collapse._jQueryInterface;
-  $.fn[NAME$3].Constructor = Collapse;
-
-  $.fn[NAME$3].noConflict = function () {
-    $.fn[NAME$3] = JQUERY_NO_CONFLICT$3;
-    return Collapse._jQueryInterface;
-  };
-
-  /**!
-   * @fileOverview Kickass library to create and place poppers near their reference elements.
-   * @version 1.14.7
-   * @license
-   * Copyright (c) 2016 Federico Zivolo and contributors
-   *
-   * Permission is hereby granted, free of charge, to any person obtaining a copy
-   * of this software and associated documentation files (the "Software"), to deal
-   * in the Software without restriction, including without limitation the rights
-   * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-   * copies of the Software, and to permit persons to whom the Software is
-   * furnished to do so, subject to the following conditions:
-   *
-   * The above copyright notice and this permission notice shall be included in all
-   * copies or substantial portions of the Software.
-   *
-   * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-   * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-   * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-   * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-   * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-   * SOFTWARE.
-   */
-  var isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
-
-  var longerTimeoutBrowsers = ['Edge', 'Trident', 'Firefox'];
-  var timeoutDuration = 0;
-  for (var i = 0; i < longerTimeoutBrowsers.length; i += 1) {
-    if (isBrowser && navigator.userAgent.indexOf(longerTimeoutBrowsers[i]) >= 0) {
-      timeoutDuration = 1;
-      break;
-    }
+    this.removeAllListeners('removeListener');
+    this._events = {};
+    return this;
   }
 
-  function microtaskDebounce(fn) {
-    var called = false;
-    return function () {
-      if (called) {
-        return;
-      }
-      called = true;
-      window.Promise.resolve().then(function () {
-        called = false;
-        fn();
-      });
-    };
+  listeners = this._events[type];
+
+  if (isFunction(listeners)) {
+    this.removeListener(type, listeners);
+  } else if (listeners) {
+    // LIFO order
+    while (listeners.length)
+      this.removeListener(type, listeners[listeners.length - 1]);
   }
+  delete this._events[type];
 
-  function taskDebounce(fn) {
-    var scheduled = false;
-    return function () {
-      if (!scheduled) {
-        scheduled = true;
-        setTimeout(function () {
-          scheduled = false;
-          fn();
-        }, timeoutDuration);
-      }
-    };
+  return this;
+};
+
+EventEmitter.prototype.listeners = function(type) {
+  var ret;
+  if (!this._events || !this._events[type])
+    ret = [];
+  else if (isFunction(this._events[type]))
+    ret = [this._events[type]];
+  else
+    ret = this._events[type].slice();
+  return ret;
+};
+
+EventEmitter.prototype.listenerCount = function(type) {
+  if (this._events) {
+    var evlistener = this._events[type];
+
+    if (isFunction(evlistener))
+      return 1;
+    else if (evlistener)
+      return evlistener.length;
   }
+  return 0;
+};
 
-  var supportsMicroTasks = isBrowser && window.Promise;
+EventEmitter.listenerCount = function(emitter, type) {
+  return emitter.listenerCount(type);
+};
 
-  /**
-  * Create a debounced version of a method, that's asynchronously deferred
-  * but called in the minimum time possible.
-  *
-  * @method
-  * @memberof Popper.Utils
-  * @argument {Function} fn
-  * @returns {Function}
-  */
-  var debounce = supportsMicroTasks ? microtaskDebounce : taskDebounce;
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
 
-  /**
-   * Check if the given variable is a function
-   * @method
-   * @memberof Popper.Utils
-   * @argument {Any} functionToCheck - variable to check
-   * @returns {Boolean} answer to: is a function?
-   */
-  function isFunction(functionToCheck) {
-    var getType = {};
-    return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
+
+},{}],9:[function(require,module,exports){
+var http = require('http');
+
+var https = module.exports;
+
+for (var key in http) {
+    if (http.hasOwnProperty(key)) https[key] = http[key];
+};
+
+https.request = function (params, cb) {
+    if (!params) params = {};
+    params.scheme = 'https';
+    params.protocol = 'https:';
+    return http.request.call(this, params, cb);
+}
+
+},{"http":30}],10:[function(require,module,exports){
+exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+  var e, m
+  var eLen = (nBytes * 8) - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
+
+  i += d
+
+  e = s & ((1 << (-nBits)) - 1)
+  s >>= (-nBits)
+  nBits += eLen
+  for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+
+  m = e & ((1 << (-nBits)) - 1)
+  e >>= (-nBits)
+  nBits += mLen
+  for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+
+  if (e === 0) {
+    e = 1 - eBias
+  } else if (e === eMax) {
+    return m ? NaN : ((s ? -1 : 1) * Infinity)
+  } else {
+    m = m + Math.pow(2, mLen)
+    e = e - eBias
   }
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+}
 
-  /**
-   * Get CSS computed property of the given element
-   * @method
-   * @memberof Popper.Utils
-   * @argument {Eement} element
-   * @argument {String} property
-   */
-  function getStyleComputedProperty(element, property) {
-    if (element.nodeType !== 1) {
-      return [];
+exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+  var e, m, c
+  var eLen = (nBytes * 8) - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+
+  value = Math.abs(value)
+
+  if (isNaN(value) || value === Infinity) {
+    m = isNaN(value) ? 1 : 0
+    e = eMax
+  } else {
+    e = Math.floor(Math.log(value) / Math.LN2)
+    if (value * (c = Math.pow(2, -e)) < 1) {
+      e--
+      c *= 2
     }
-    // NOTE: 1 DOM access here
-    var window = element.ownerDocument.defaultView;
-    var css = window.getComputedStyle(element, null);
-    return property ? css[property] : css;
-  }
-
-  /**
-   * Returns the parentNode or the host of the element
-   * @method
-   * @memberof Popper.Utils
-   * @argument {Element} element
-   * @returns {Element} parent
-   */
-  function getParentNode(element) {
-    if (element.nodeName === 'HTML') {
-      return element;
-    }
-    return element.parentNode || element.host;
-  }
-
-  /**
-   * Returns the scrolling parent of the given element
-   * @method
-   * @memberof Popper.Utils
-   * @argument {Element} element
-   * @returns {Element} scroll parent
-   */
-  function getScrollParent(element) {
-    // Return body, `getScroll` will take care to get the correct `scrollTop` from it
-    if (!element) {
-      return document.body;
-    }
-
-    switch (element.nodeName) {
-      case 'HTML':
-      case 'BODY':
-        return element.ownerDocument.body;
-      case '#document':
-        return element.body;
-    }
-
-    // Firefox want us to check `-x` and `-y` variations as well
-
-    var _getStyleComputedProp = getStyleComputedProperty(element),
-        overflow = _getStyleComputedProp.overflow,
-        overflowX = _getStyleComputedProp.overflowX,
-        overflowY = _getStyleComputedProp.overflowY;
-
-    if (/(auto|scroll|overlay)/.test(overflow + overflowY + overflowX)) {
-      return element;
-    }
-
-    return getScrollParent(getParentNode(element));
-  }
-
-  var isIE11 = isBrowser && !!(window.MSInputMethodContext && document.documentMode);
-  var isIE10 = isBrowser && /MSIE 10/.test(navigator.userAgent);
-
-  /**
-   * Determines if the browser is Internet Explorer
-   * @method
-   * @memberof Popper.Utils
-   * @param {Number} version to check
-   * @returns {Boolean} isIE
-   */
-  function isIE(version) {
-    if (version === 11) {
-      return isIE11;
-    }
-    if (version === 10) {
-      return isIE10;
-    }
-    return isIE11 || isIE10;
-  }
-
-  /**
-   * Returns the offset parent of the given element
-   * @method
-   * @memberof Popper.Utils
-   * @argument {Element} element
-   * @returns {Element} offset parent
-   */
-  function getOffsetParent(element) {
-    if (!element) {
-      return document.documentElement;
-    }
-
-    var noOffsetParent = isIE(10) ? document.body : null;
-
-    // NOTE: 1 DOM access here
-    var offsetParent = element.offsetParent || null;
-    // Skip hidden elements which don't have an offsetParent
-    while (offsetParent === noOffsetParent && element.nextElementSibling) {
-      offsetParent = (element = element.nextElementSibling).offsetParent;
-    }
-
-    var nodeName = offsetParent && offsetParent.nodeName;
-
-    if (!nodeName || nodeName === 'BODY' || nodeName === 'HTML') {
-      return element ? element.ownerDocument.documentElement : document.documentElement;
-    }
-
-    // .offsetParent will return the closest TH, TD or TABLE in case
-    // no offsetParent is present, I hate this job...
-    if (['TH', 'TD', 'TABLE'].indexOf(offsetParent.nodeName) !== -1 && getStyleComputedProperty(offsetParent, 'position') === 'static') {
-      return getOffsetParent(offsetParent);
-    }
-
-    return offsetParent;
-  }
-
-  function isOffsetContainer(element) {
-    var nodeName = element.nodeName;
-
-    if (nodeName === 'BODY') {
-      return false;
-    }
-    return nodeName === 'HTML' || getOffsetParent(element.firstElementChild) === element;
-  }
-
-  /**
-   * Finds the root node (document, shadowDOM root) of the given element
-   * @method
-   * @memberof Popper.Utils
-   * @argument {Element} node
-   * @returns {Element} root node
-   */
-  function getRoot(node) {
-    if (node.parentNode !== null) {
-      return getRoot(node.parentNode);
-    }
-
-    return node;
-  }
-
-  /**
-   * Finds the offset parent common to the two provided nodes
-   * @method
-   * @memberof Popper.Utils
-   * @argument {Element} element1
-   * @argument {Element} element2
-   * @returns {Element} common offset parent
-   */
-  function findCommonOffsetParent(element1, element2) {
-    // This check is needed to avoid errors in case one of the elements isn't defined for any reason
-    if (!element1 || !element1.nodeType || !element2 || !element2.nodeType) {
-      return document.documentElement;
-    }
-
-    // Here we make sure to give as "start" the element that comes first in the DOM
-    var order = element1.compareDocumentPosition(element2) & Node.DOCUMENT_POSITION_FOLLOWING;
-    var start = order ? element1 : element2;
-    var end = order ? element2 : element1;
-
-    // Get common ancestor container
-    var range = document.createRange();
-    range.setStart(start, 0);
-    range.setEnd(end, 0);
-    var commonAncestorContainer = range.commonAncestorContainer;
-
-    // Both nodes are inside #document
-
-    if (element1 !== commonAncestorContainer && element2 !== commonAncestorContainer || start.contains(end)) {
-      if (isOffsetContainer(commonAncestorContainer)) {
-        return commonAncestorContainer;
-      }
-
-      return getOffsetParent(commonAncestorContainer);
-    }
-
-    // one of the nodes is inside shadowDOM, find which one
-    var element1root = getRoot(element1);
-    if (element1root.host) {
-      return findCommonOffsetParent(element1root.host, element2);
+    if (e + eBias >= 1) {
+      value += rt / c
     } else {
-      return findCommonOffsetParent(element1, getRoot(element2).host);
+      value += rt * Math.pow(2, 1 - eBias)
     }
-  }
-
-  /**
-   * Gets the scroll value of the given element in the given side (top and left)
-   * @method
-   * @memberof Popper.Utils
-   * @argument {Element} element
-   * @argument {String} side `top` or `left`
-   * @returns {number} amount of scrolled pixels
-   */
-  function getScroll(element) {
-    var side = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'top';
-
-    var upperSide = side === 'top' ? 'scrollTop' : 'scrollLeft';
-    var nodeName = element.nodeName;
-
-    if (nodeName === 'BODY' || nodeName === 'HTML') {
-      var html = element.ownerDocument.documentElement;
-      var scrollingElement = element.ownerDocument.scrollingElement || html;
-      return scrollingElement[upperSide];
+    if (value * c >= 2) {
+      e++
+      c /= 2
     }
 
-    return element[upperSide];
-  }
-
-  /*
-   * Sum or subtract the element scroll values (left and top) from a given rect object
-   * @method
-   * @memberof Popper.Utils
-   * @param {Object} rect - Rect object you want to change
-   * @param {HTMLElement} element - The element from the function reads the scroll values
-   * @param {Boolean} subtract - set to true if you want to subtract the scroll values
-   * @return {Object} rect - The modifier rect object
-   */
-  function includeScroll(rect, element) {
-    var subtract = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-
-    var scrollTop = getScroll(element, 'top');
-    var scrollLeft = getScroll(element, 'left');
-    var modifier = subtract ? -1 : 1;
-    rect.top += scrollTop * modifier;
-    rect.bottom += scrollTop * modifier;
-    rect.left += scrollLeft * modifier;
-    rect.right += scrollLeft * modifier;
-    return rect;
-  }
-
-  /*
-   * Helper to detect borders of a given element
-   * @method
-   * @memberof Popper.Utils
-   * @param {CSSStyleDeclaration} styles
-   * Result of `getStyleComputedProperty` on the given element
-   * @param {String} axis - `x` or `y`
-   * @return {number} borders - The borders size of the given axis
-   */
-
-  function getBordersSize(styles, axis) {
-    var sideA = axis === 'x' ? 'Left' : 'Top';
-    var sideB = sideA === 'Left' ? 'Right' : 'Bottom';
-
-    return parseFloat(styles['border' + sideA + 'Width'], 10) + parseFloat(styles['border' + sideB + 'Width'], 10);
-  }
-
-  function getSize(axis, body, html, computedStyle) {
-    return Math.max(body['offset' + axis], body['scroll' + axis], html['client' + axis], html['offset' + axis], html['scroll' + axis], isIE(10) ? parseInt(html['offset' + axis]) + parseInt(computedStyle['margin' + (axis === 'Height' ? 'Top' : 'Left')]) + parseInt(computedStyle['margin' + (axis === 'Height' ? 'Bottom' : 'Right')]) : 0);
-  }
-
-  function getWindowSizes(document) {
-    var body = document.body;
-    var html = document.documentElement;
-    var computedStyle = isIE(10) && getComputedStyle(html);
-
-    return {
-      height: getSize('Height', body, html, computedStyle),
-      width: getSize('Width', body, html, computedStyle)
-    };
-  }
-
-  var classCallCheck = function (instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  };
-
-  var createClass = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
-    }
-
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
-
-
-
-
-
-  var defineProperty = function (obj, key, value) {
-    if (key in obj) {
-      Object.defineProperty(obj, key, {
-        value: value,
-        enumerable: true,
-        configurable: true,
-        writable: true
-      });
+    if (e + eBias >= eMax) {
+      m = 0
+      e = eMax
+    } else if (e + eBias >= 1) {
+      m = ((value * c) - 1) * Math.pow(2, mLen)
+      e = e + eBias
     } else {
-      obj[key] = value;
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+      e = 0
     }
-
-    return obj;
-  };
-
-  var _extends = Object.assign || function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
-    }
-
-    return target;
-  };
-
-  /**
-   * Given element offsets, generate an output similar to getBoundingClientRect
-   * @method
-   * @memberof Popper.Utils
-   * @argument {Object} offsets
-   * @returns {Object} ClientRect like output
-   */
-  function getClientRect(offsets) {
-    return _extends({}, offsets, {
-      right: offsets.left + offsets.width,
-      bottom: offsets.top + offsets.height
-    });
   }
 
-  /**
-   * Get bounding client rect of given element
-   * @method
-   * @memberof Popper.Utils
-   * @param {HTMLElement} element
-   * @return {Object} client rect
-   */
-  function getBoundingClientRect(element) {
-    var rect = {};
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
 
-    // IE10 10 FIX: Please, don't ask, the element isn't
-    // considered in DOM in some circumstances...
-    // This isn't reproducible in IE10 compatibility mode of IE11
+  e = (e << mLen) | m
+  eLen += mLen
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+  buffer[offset + i - d] |= s * 128
+}
+
+},{}],11:[function(require,module,exports){
+if (typeof Object.create === 'function') {
+  // implementation from standard node.js 'util' module
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    ctor.prototype = Object.create(superCtor.prototype, {
+      constructor: {
+        value: ctor,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+  };
+} else {
+  // old school shim for old browsers
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    var TempCtor = function () {}
+    TempCtor.prototype = superCtor.prototype
+    ctor.prototype = new TempCtor()
+    ctor.prototype.constructor = ctor
+  }
+}
+
+},{}],12:[function(require,module,exports){
+/*!
+ * Determine if an object is a Buffer
+ *
+ * @author   Feross Aboukhadijeh <https://feross.org>
+ * @license  MIT
+ */
+
+// The _isBuffer check is for Safari 5-7 support, because it's missing
+// Object.prototype.constructor. Remove this eventually
+module.exports = function (obj) {
+  return obj != null && (isBuffer(obj) || isSlowBuffer(obj) || !!obj._isBuffer)
+}
+
+function isBuffer (obj) {
+  return !!obj.constructor && typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)
+}
+
+// For Node v0.10 support. Remove this eventually.
+function isSlowBuffer (obj) {
+  return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
+}
+
+},{}],13:[function(require,module,exports){
+var toString = {}.toString;
+
+module.exports = Array.isArray || function (arr) {
+  return toString.call(arr) == '[object Array]';
+};
+
+},{}],14:[function(require,module,exports){
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
     try {
-      if (isIE(10)) {
-        rect = element.getBoundingClientRect();
-        var scrollTop = getScroll(element, 'top');
-        var scrollLeft = getScroll(element, 'left');
-        rect.top += scrollTop;
-        rect.left += scrollLeft;
-        rect.bottom += scrollTop;
-        rect.right += scrollLeft;
-      } else {
-        rect = element.getBoundingClientRect();
-      }
-    } catch (e) {}
-
-    var result = {
-      left: rect.left,
-      top: rect.top,
-      width: rect.right - rect.left,
-      height: rect.bottom - rect.top
-    };
-
-    // subtract scrollbar size from sizes
-    var sizes = element.nodeName === 'HTML' ? getWindowSizes(element.ownerDocument) : {};
-    var width = sizes.width || element.clientWidth || result.right - result.left;
-    var height = sizes.height || element.clientHeight || result.bottom - result.top;
-
-    var horizScrollbar = element.offsetWidth - width;
-    var vertScrollbar = element.offsetHeight - height;
-
-    // if an hypothetical scrollbar is detected, we must be sure it's not a `border`
-    // we make this check conditional for performance reasons
-    if (horizScrollbar || vertScrollbar) {
-      var styles = getStyleComputedProperty(element);
-      horizScrollbar -= getBordersSize(styles, 'x');
-      vertScrollbar -= getBordersSize(styles, 'y');
-
-      result.width -= horizScrollbar;
-      result.height -= vertScrollbar;
-    }
-
-    return getClientRect(result);
-  }
-
-  function getOffsetRectRelativeToArbitraryNode(children, parent) {
-    var fixedPosition = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-
-    var isIE10 = isIE(10);
-    var isHTML = parent.nodeName === 'HTML';
-    var childrenRect = getBoundingClientRect(children);
-    var parentRect = getBoundingClientRect(parent);
-    var scrollParent = getScrollParent(children);
-
-    var styles = getStyleComputedProperty(parent);
-    var borderTopWidth = parseFloat(styles.borderTopWidth, 10);
-    var borderLeftWidth = parseFloat(styles.borderLeftWidth, 10);
-
-    // In cases where the parent is fixed, we must ignore negative scroll in offset calc
-    if (fixedPosition && isHTML) {
-      parentRect.top = Math.max(parentRect.top, 0);
-      parentRect.left = Math.max(parentRect.left, 0);
-    }
-    var offsets = getClientRect({
-      top: childrenRect.top - parentRect.top - borderTopWidth,
-      left: childrenRect.left - parentRect.left - borderLeftWidth,
-      width: childrenRect.width,
-      height: childrenRect.height
-    });
-    offsets.marginTop = 0;
-    offsets.marginLeft = 0;
-
-    // Subtract margins of documentElement in case it's being used as parent
-    // we do this only on HTML because it's the only element that behaves
-    // differently when margins are applied to it. The margins are included in
-    // the box of the documentElement, in the other cases not.
-    if (!isIE10 && isHTML) {
-      var marginTop = parseFloat(styles.marginTop, 10);
-      var marginLeft = parseFloat(styles.marginLeft, 10);
-
-      offsets.top -= borderTopWidth - marginTop;
-      offsets.bottom -= borderTopWidth - marginTop;
-      offsets.left -= borderLeftWidth - marginLeft;
-      offsets.right -= borderLeftWidth - marginLeft;
-
-      // Attach marginTop and marginLeft because in some circumstances we may need them
-      offsets.marginTop = marginTop;
-      offsets.marginLeft = marginLeft;
-    }
-
-    if (isIE10 && !fixedPosition ? parent.contains(scrollParent) : parent === scrollParent && scrollParent.nodeName !== 'BODY') {
-      offsets = includeScroll(offsets, parent);
-    }
-
-    return offsets;
-  }
-
-  function getViewportOffsetRectRelativeToArtbitraryNode(element) {
-    var excludeScroll = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-    var html = element.ownerDocument.documentElement;
-    var relativeOffset = getOffsetRectRelativeToArbitraryNode(element, html);
-    var width = Math.max(html.clientWidth, window.innerWidth || 0);
-    var height = Math.max(html.clientHeight, window.innerHeight || 0);
-
-    var scrollTop = !excludeScroll ? getScroll(html) : 0;
-    var scrollLeft = !excludeScroll ? getScroll(html, 'left') : 0;
-
-    var offset = {
-      top: scrollTop - relativeOffset.top + relativeOffset.marginTop,
-      left: scrollLeft - relativeOffset.left + relativeOffset.marginLeft,
-      width: width,
-      height: height
-    };
-
-    return getClientRect(offset);
-  }
-
-  /**
-   * Check if the given element is fixed or is inside a fixed parent
-   * @method
-   * @memberof Popper.Utils
-   * @argument {Element} element
-   * @argument {Element} customContainer
-   * @returns {Boolean} answer to "isFixed?"
-   */
-  function isFixed(element) {
-    var nodeName = element.nodeName;
-    if (nodeName === 'BODY' || nodeName === 'HTML') {
-      return false;
-    }
-    if (getStyleComputedProperty(element, 'position') === 'fixed') {
-      return true;
-    }
-    var parentNode = getParentNode(element);
-    if (!parentNode) {
-      return false;
-    }
-    return isFixed(parentNode);
-  }
-
-  /**
-   * Finds the first parent of an element that has a transformed property defined
-   * @method
-   * @memberof Popper.Utils
-   * @argument {Element} element
-   * @returns {Element} first transformed parent or documentElement
-   */
-
-  function getFixedPositionOffsetParent(element) {
-    // This check is needed to avoid errors in case one of the elements isn't defined for any reason
-    if (!element || !element.parentElement || isIE()) {
-      return document.documentElement;
-    }
-    var el = element.parentElement;
-    while (el && getStyleComputedProperty(el, 'transform') === 'none') {
-      el = el.parentElement;
-    }
-    return el || document.documentElement;
-  }
-
-  /**
-   * Computed the boundaries limits and return them
-   * @method
-   * @memberof Popper.Utils
-   * @param {HTMLElement} popper
-   * @param {HTMLElement} reference
-   * @param {number} padding
-   * @param {HTMLElement} boundariesElement - Element used to define the boundaries
-   * @param {Boolean} fixedPosition - Is in fixed position mode
-   * @returns {Object} Coordinates of the boundaries
-   */
-  function getBoundaries(popper, reference, padding, boundariesElement) {
-    var fixedPosition = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
-
-    // NOTE: 1 DOM access here
-
-    var boundaries = { top: 0, left: 0 };
-    var offsetParent = fixedPosition ? getFixedPositionOffsetParent(popper) : findCommonOffsetParent(popper, reference);
-
-    // Handle viewport case
-    if (boundariesElement === 'viewport') {
-      boundaries = getViewportOffsetRectRelativeToArtbitraryNode(offsetParent, fixedPosition);
-    } else {
-      // Handle other cases based on DOM element used as boundaries
-      var boundariesNode = void 0;
-      if (boundariesElement === 'scrollParent') {
-        boundariesNode = getScrollParent(getParentNode(reference));
-        if (boundariesNode.nodeName === 'BODY') {
-          boundariesNode = popper.ownerDocument.documentElement;
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
         }
-      } else if (boundariesElement === 'window') {
-        boundariesNode = popper.ownerDocument.documentElement;
-      } else {
-        boundariesNode = boundariesElement;
-      }
-
-      var offsets = getOffsetRectRelativeToArbitraryNode(boundariesNode, offsetParent, fixedPosition);
-
-      // In case of HTML, we need a different computation
-      if (boundariesNode.nodeName === 'HTML' && !isFixed(offsetParent)) {
-        var _getWindowSizes = getWindowSizes(popper.ownerDocument),
-            height = _getWindowSizes.height,
-            width = _getWindowSizes.width;
-
-        boundaries.top += offsets.top - offsets.marginTop;
-        boundaries.bottom = height + offsets.top;
-        boundaries.left += offsets.left - offsets.marginLeft;
-        boundaries.right = width + offsets.left;
-      } else {
-        // for all the other DOM elements, this one is good
-        boundaries = offsets;
-      }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
     }
 
-    // Add paddings
-    padding = padding || 0;
-    var isPaddingNumber = typeof padding === 'number';
-    boundaries.left += isPaddingNumber ? padding : padding.left || 0;
-    boundaries.top += isPaddingNumber ? padding : padding.top || 0;
-    boundaries.right -= isPaddingNumber ? padding : padding.right || 0;
-    boundaries.bottom -= isPaddingNumber ? padding : padding.bottom || 0;
 
-    return boundaries;
-  }
-
-  function getArea(_ref) {
-    var width = _ref.width,
-        height = _ref.height;
-
-    return width * height;
-  }
-
-  /**
-   * Utility used to transform the `auto` placement to the placement with more
-   * available space.
-   * @method
-   * @memberof Popper.Utils
-   * @argument {Object} data - The data object generated by update method
-   * @argument {Object} options - Modifiers configuration and options
-   * @returns {Object} The data object, properly modified
-   */
-  function computeAutoPlacement(placement, refRect, popper, reference, boundariesElement) {
-    var padding = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
-
-    if (placement.indexOf('auto') === -1) {
-      return placement;
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
     }
 
-    var boundaries = getBoundaries(popper, reference, padding, boundariesElement);
 
-    var rects = {
-      top: {
-        width: boundaries.width,
-        height: refRect.top - boundaries.top
-      },
-      right: {
-        width: boundaries.right - refRect.right,
-        height: boundaries.height
-      },
-      bottom: {
-        width: boundaries.width,
-        height: boundaries.bottom - refRect.bottom
-      },
-      left: {
-        width: refRect.left - boundaries.left,
-        height: boundaries.height
-      }
-    };
 
-    var sortedAreas = Object.keys(rects).map(function (key) {
-      return _extends({
-        key: key
-      }, rects[key], {
-        area: getArea(rects[key])
-      });
-    }).sort(function (a, b) {
-      return b.area - a.area;
-    });
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
 
-    var filteredAreas = sortedAreas.filter(function (_ref2) {
-      var width = _ref2.width,
-          height = _ref2.height;
-      return width >= popper.clientWidth && height >= popper.clientHeight;
-    });
-
-    var computedPlacement = filteredAreas.length > 0 ? filteredAreas[0].key : sortedAreas[0].key;
-
-    var variation = placement.split('-')[1];
-
-    return computedPlacement + (variation ? '-' + variation : '');
-  }
-
-  /**
-   * Get offsets to the reference element
-   * @method
-   * @memberof Popper.Utils
-   * @param {Object} state
-   * @param {Element} popper - the popper element
-   * @param {Element} reference - the reference element (the popper will be relative to this)
-   * @param {Element} fixedPosition - is in fixed position mode
-   * @returns {Object} An object containing the offsets which will be applied to the popper
-   */
-  function getReferenceOffsets(state, popper, reference) {
-    var fixedPosition = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-
-    var commonOffsetParent = fixedPosition ? getFixedPositionOffsetParent(popper) : findCommonOffsetParent(popper, reference);
-    return getOffsetRectRelativeToArbitraryNode(reference, commonOffsetParent, fixedPosition);
-  }
-
-  /**
-   * Get the outer sizes of the given element (offset size + margins)
-   * @method
-   * @memberof Popper.Utils
-   * @argument {Element} element
-   * @returns {Object} object containing width and height properties
-   */
-  function getOuterSizes(element) {
-    var window = element.ownerDocument.defaultView;
-    var styles = window.getComputedStyle(element);
-    var x = parseFloat(styles.marginTop || 0) + parseFloat(styles.marginBottom || 0);
-    var y = parseFloat(styles.marginLeft || 0) + parseFloat(styles.marginRight || 0);
-    var result = {
-      width: element.offsetWidth + y,
-      height: element.offsetHeight + x
-    };
-    return result;
-  }
-
-  /**
-   * Get the opposite placement of the given one
-   * @method
-   * @memberof Popper.Utils
-   * @argument {String} placement
-   * @returns {String} flipped placement
-   */
-  function getOppositePlacement(placement) {
-    var hash = { left: 'right', right: 'left', bottom: 'top', top: 'bottom' };
-    return placement.replace(/left|right|bottom|top/g, function (matched) {
-      return hash[matched];
-    });
-  }
-
-  /**
-   * Get offsets to the popper
-   * @method
-   * @memberof Popper.Utils
-   * @param {Object} position - CSS position the Popper will get applied
-   * @param {HTMLElement} popper - the popper element
-   * @param {Object} referenceOffsets - the reference offsets (the popper will be relative to this)
-   * @param {String} placement - one of the valid placement options
-   * @returns {Object} popperOffsets - An object containing the offsets which will be applied to the popper
-   */
-  function getPopperOffsets(popper, referenceOffsets, placement) {
-    placement = placement.split('-')[0];
-
-    // Get popper node sizes
-    var popperRect = getOuterSizes(popper);
-
-    // Add position, width and height to our offsets object
-    var popperOffsets = {
-      width: popperRect.width,
-      height: popperRect.height
-    };
-
-    // depending by the popper placement we have to compute its offsets slightly differently
-    var isHoriz = ['right', 'left'].indexOf(placement) !== -1;
-    var mainSide = isHoriz ? 'top' : 'left';
-    var secondarySide = isHoriz ? 'left' : 'top';
-    var measurement = isHoriz ? 'height' : 'width';
-    var secondaryMeasurement = !isHoriz ? 'height' : 'width';
-
-    popperOffsets[mainSide] = referenceOffsets[mainSide] + referenceOffsets[measurement] / 2 - popperRect[measurement] / 2;
-    if (placement === secondarySide) {
-      popperOffsets[secondarySide] = referenceOffsets[secondarySide] - popperRect[secondaryMeasurement];
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
     } else {
-      popperOffsets[secondarySide] = referenceOffsets[getOppositePlacement(secondarySide)];
+        queueIndex = -1;
     }
+    if (queue.length) {
+        drainQueue();
+    }
+}
 
-    return popperOffsets;
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+},{}],15:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+'use strict';
+
+// If obj.hasOwnProperty has been overridden, then calling
+// obj.hasOwnProperty(prop) will break.
+// See: https://github.com/joyent/node/issues/1707
+function hasOwnProperty(obj, prop) {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
+}
+
+module.exports = function(qs, sep, eq, options) {
+  sep = sep || '&';
+  eq = eq || '=';
+  var obj = {};
+
+  if (typeof qs !== 'string' || qs.length === 0) {
+    return obj;
   }
 
-  /**
-   * Mimics the `find` method of Array
-   * @method
-   * @memberof Popper.Utils
-   * @argument {Array} arr
-   * @argument prop
-   * @argument value
-   * @returns index or -1
-   */
-  function find(arr, check) {
-    // use native find if supported
-    if (Array.prototype.find) {
-      return arr.find(check);
-    }
+  var regexp = /\+/g;
+  qs = qs.split(sep);
 
-    // use `filter` to obtain the same behavior of `find`
-    return arr.filter(check)[0];
+  var maxKeys = 1000;
+  if (options && typeof options.maxKeys === 'number') {
+    maxKeys = options.maxKeys;
   }
 
-  /**
-   * Return the index of the matching object
-   * @method
-   * @memberof Popper.Utils
-   * @argument {Array} arr
-   * @argument prop
-   * @argument value
-   * @returns index or -1
-   */
-  function findIndex(arr, prop, value) {
-    // use native findIndex if supported
-    if (Array.prototype.findIndex) {
-      return arr.findIndex(function (cur) {
-        return cur[prop] === value;
-      });
-    }
-
-    // use `find` + `indexOf` if `findIndex` isn't supported
-    var match = find(arr, function (obj) {
-      return obj[prop] === value;
-    });
-    return arr.indexOf(match);
+  var len = qs.length;
+  // maxKeys <= 0 means that we should not limit keys count
+  if (maxKeys > 0 && len > maxKeys) {
+    len = maxKeys;
   }
 
-  /**
-   * Loop trough the list of modifiers and run them in order,
-   * each of them will then edit the data object.
-   * @method
-   * @memberof Popper.Utils
-   * @param {dataObject} data
-   * @param {Array} modifiers
-   * @param {String} ends - Optional modifier name used as stopper
-   * @returns {dataObject}
-   */
-  function runModifiers(modifiers, data, ends) {
-    var modifiersToRun = ends === undefined ? modifiers : modifiers.slice(0, findIndex(modifiers, 'name', ends));
+  for (var i = 0; i < len; ++i) {
+    var x = qs[i].replace(regexp, '%20'),
+        idx = x.indexOf(eq),
+        kstr, vstr, k, v;
 
-    modifiersToRun.forEach(function (modifier) {
-      if (modifier['function']) {
-        // eslint-disable-line dot-notation
-        console.warn('`modifier.function` is deprecated, use `modifier.fn`!');
+    if (idx >= 0) {
+      kstr = x.substr(0, idx);
+      vstr = x.substr(idx + 1);
+    } else {
+      kstr = x;
+      vstr = '';
+    }
+
+    k = decodeURIComponent(kstr);
+    v = decodeURIComponent(vstr);
+
+    if (!hasOwnProperty(obj, k)) {
+      obj[k] = v;
+    } else if (isArray(obj[k])) {
+      obj[k].push(v);
+    } else {
+      obj[k] = [obj[k], v];
+    }
+  }
+
+  return obj;
+};
+
+var isArray = Array.isArray || function (xs) {
+  return Object.prototype.toString.call(xs) === '[object Array]';
+};
+
+},{}],16:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+'use strict';
+
+var stringifyPrimitive = function(v) {
+  switch (typeof v) {
+    case 'string':
+      return v;
+
+    case 'boolean':
+      return v ? 'true' : 'false';
+
+    case 'number':
+      return isFinite(v) ? v : '';
+
+    default:
+      return '';
+  }
+};
+
+module.exports = function(obj, sep, eq, name) {
+  sep = sep || '&';
+  eq = eq || '=';
+  if (obj === null) {
+    obj = undefined;
+  }
+
+  if (typeof obj === 'object') {
+    return map(objectKeys(obj), function(k) {
+      var ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
+      if (isArray(obj[k])) {
+        return map(obj[k], function(v) {
+          return ks + encodeURIComponent(stringifyPrimitive(v));
+        }).join(sep);
+      } else {
+        return ks + encodeURIComponent(stringifyPrimitive(obj[k]));
       }
-      var fn = modifier['function'] || modifier.fn; // eslint-disable-line dot-notation
-      if (modifier.enabled && isFunction(fn)) {
-        // Add properties to offsets to make them a complete clientRect object
-        // we do this before each modifier to make sure the previous one doesn't
-        // mess with these values
-        data.offsets.popper = getClientRect(data.offsets.popper);
-        data.offsets.reference = getClientRect(data.offsets.reference);
+    }).join(sep);
 
-        data = fn(data, modifier);
-      }
-    });
-
-    return data;
   }
 
-  /**
-   * Updates the position of the popper, computing the new offsets and applying
-   * the new style.<br />
-   * Prefer `scheduleUpdate` over `update` because of performance reasons.
-   * @method
-   * @memberof Popper
-   */
-  function update() {
-    // if popper is destroyed, don't perform any further update
-    if (this.state.isDestroyed) {
+  if (!name) return '';
+  return encodeURIComponent(stringifyPrimitive(name)) + eq +
+         encodeURIComponent(stringifyPrimitive(obj));
+};
+
+var isArray = Array.isArray || function (xs) {
+  return Object.prototype.toString.call(xs) === '[object Array]';
+};
+
+function map (xs, f) {
+  if (xs.map) return xs.map(f);
+  var res = [];
+  for (var i = 0; i < xs.length; i++) {
+    res.push(f(xs[i], i));
+  }
+  return res;
+}
+
+var objectKeys = Object.keys || function (obj) {
+  var res = [];
+  for (var key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) res.push(key);
+  }
+  return res;
+};
+
+},{}],17:[function(require,module,exports){
+'use strict';
+
+exports.decode = exports.parse = require('./decode');
+exports.encode = exports.stringify = require('./encode');
+
+},{"./decode":15,"./encode":16}],18:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// a duplex stream is just a stream that is both readable and writable.
+// Since JS doesn't have multiple prototypal inheritance, this class
+// prototypally inherits from Readable, and then parasitically from
+// Writable.
+
+'use strict';
+
+/*<replacement>*/
+
+var pna = require('process-nextick-args');
+/*</replacement>*/
+
+/*<replacement>*/
+var objectKeys = Object.keys || function (obj) {
+  var keys = [];
+  for (var key in obj) {
+    keys.push(key);
+  }return keys;
+};
+/*</replacement>*/
+
+module.exports = Duplex;
+
+/*<replacement>*/
+var util = require('core-util-is');
+util.inherits = require('inherits');
+/*</replacement>*/
+
+var Readable = require('./_stream_readable');
+var Writable = require('./_stream_writable');
+
+util.inherits(Duplex, Readable);
+
+{
+  // avoid scope creep, the keys array can then be collected
+  var keys = objectKeys(Writable.prototype);
+  for (var v = 0; v < keys.length; v++) {
+    var method = keys[v];
+    if (!Duplex.prototype[method]) Duplex.prototype[method] = Writable.prototype[method];
+  }
+}
+
+function Duplex(options) {
+  if (!(this instanceof Duplex)) return new Duplex(options);
+
+  Readable.call(this, options);
+  Writable.call(this, options);
+
+  if (options && options.readable === false) this.readable = false;
+
+  if (options && options.writable === false) this.writable = false;
+
+  this.allowHalfOpen = true;
+  if (options && options.allowHalfOpen === false) this.allowHalfOpen = false;
+
+  this.once('end', onend);
+}
+
+Object.defineProperty(Duplex.prototype, 'writableHighWaterMark', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function () {
+    return this._writableState.highWaterMark;
+  }
+});
+
+// the no-half-open enforcer
+function onend() {
+  // if we allow half-open state, or if the writable side ended,
+  // then we're ok.
+  if (this.allowHalfOpen || this._writableState.ended) return;
+
+  // no more data can be written.
+  // But allow more writes to happen in this tick.
+  pna.nextTick(onEndNT, this);
+}
+
+function onEndNT(self) {
+  self.end();
+}
+
+Object.defineProperty(Duplex.prototype, 'destroyed', {
+  get: function () {
+    if (this._readableState === undefined || this._writableState === undefined) {
+      return false;
+    }
+    return this._readableState.destroyed && this._writableState.destroyed;
+  },
+  set: function (value) {
+    // we ignore the value if the stream
+    // has not been initialized yet
+    if (this._readableState === undefined || this._writableState === undefined) {
       return;
     }
 
-    var data = {
-      instance: this,
-      styles: {},
-      arrowStyles: {},
-      attributes: {},
-      flipped: false,
-      offsets: {}
-    };
+    // backward compatibility, the user is explicitly
+    // managing destroyed
+    this._readableState.destroyed = value;
+    this._writableState.destroyed = value;
+  }
+});
 
-    // compute reference element offsets
-    data.offsets.reference = getReferenceOffsets(this.state, this.popper, this.reference, this.options.positionFixed);
+Duplex.prototype._destroy = function (err, cb) {
+  this.push(null);
+  this.end();
 
-    // compute auto placement, store placement inside the data object,
-    // modifiers will be able to edit `placement` if needed
-    // and refer to originalPlacement to know the original value
-    data.placement = computeAutoPlacement(this.options.placement, data.offsets.reference, this.popper, this.reference, this.options.modifiers.flip.boundariesElement, this.options.modifiers.flip.padding);
+  pna.nextTick(cb, err);
+};
+},{"./_stream_readable":20,"./_stream_writable":22,"core-util-is":7,"inherits":11,"process-nextick-args":26}],19:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-    // store the computed placement inside `originalPlacement`
-    data.originalPlacement = data.placement;
+// a passthrough stream.
+// basically just the most minimal sort of Transform stream.
+// Every written chunk gets output as-is.
 
-    data.positionFixed = this.options.positionFixed;
+'use strict';
 
-    // compute the popper offsets
-    data.offsets.popper = getPopperOffsets(this.popper, data.offsets.reference, data.placement);
+module.exports = PassThrough;
 
-    data.offsets.popper.position = this.options.positionFixed ? 'fixed' : 'absolute';
+var Transform = require('./_stream_transform');
 
-    // run the modifiers
-    data = runModifiers(this.modifiers, data);
+/*<replacement>*/
+var util = require('core-util-is');
+util.inherits = require('inherits');
+/*</replacement>*/
 
-    // the first `update` will call `onCreate` callback
-    // the other ones will call `onUpdate` callback
-    if (!this.state.isCreated) {
-      this.state.isCreated = true;
-      this.options.onCreate(data);
-    } else {
-      this.options.onUpdate(data);
+util.inherits(PassThrough, Transform);
+
+function PassThrough(options) {
+  if (!(this instanceof PassThrough)) return new PassThrough(options);
+
+  Transform.call(this, options);
+}
+
+PassThrough.prototype._transform = function (chunk, encoding, cb) {
+  cb(null, chunk);
+};
+},{"./_stream_transform":21,"core-util-is":7,"inherits":11}],20:[function(require,module,exports){
+(function (process,global){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+'use strict';
+
+/*<replacement>*/
+
+var pna = require('process-nextick-args');
+/*</replacement>*/
+
+module.exports = Readable;
+
+/*<replacement>*/
+var isArray = require('isarray');
+/*</replacement>*/
+
+/*<replacement>*/
+var Duplex;
+/*</replacement>*/
+
+Readable.ReadableState = ReadableState;
+
+/*<replacement>*/
+var EE = require('events').EventEmitter;
+
+var EElistenerCount = function (emitter, type) {
+  return emitter.listeners(type).length;
+};
+/*</replacement>*/
+
+/*<replacement>*/
+var Stream = require('./internal/streams/stream');
+/*</replacement>*/
+
+/*<replacement>*/
+
+var Buffer = require('safe-buffer').Buffer;
+var OurUint8Array = global.Uint8Array || function () {};
+function _uint8ArrayToBuffer(chunk) {
+  return Buffer.from(chunk);
+}
+function _isUint8Array(obj) {
+  return Buffer.isBuffer(obj) || obj instanceof OurUint8Array;
+}
+
+/*</replacement>*/
+
+/*<replacement>*/
+var util = require('core-util-is');
+util.inherits = require('inherits');
+/*</replacement>*/
+
+/*<replacement>*/
+var debugUtil = require('util');
+var debug = void 0;
+if (debugUtil && debugUtil.debuglog) {
+  debug = debugUtil.debuglog('stream');
+} else {
+  debug = function () {};
+}
+/*</replacement>*/
+
+var BufferList = require('./internal/streams/BufferList');
+var destroyImpl = require('./internal/streams/destroy');
+var StringDecoder;
+
+util.inherits(Readable, Stream);
+
+var kProxyEvents = ['error', 'close', 'destroy', 'pause', 'resume'];
+
+function prependListener(emitter, event, fn) {
+  // Sadly this is not cacheable as some libraries bundle their own
+  // event emitter implementation with them.
+  if (typeof emitter.prependListener === 'function') return emitter.prependListener(event, fn);
+
+  // This is a hack to make sure that our error handler is attached before any
+  // userland ones.  NEVER DO THIS. This is here only because this code needs
+  // to continue to work with older versions of Node.js that do not include
+  // the prependListener() method. The goal is to eventually remove this hack.
+  if (!emitter._events || !emitter._events[event]) emitter.on(event, fn);else if (isArray(emitter._events[event])) emitter._events[event].unshift(fn);else emitter._events[event] = [fn, emitter._events[event]];
+}
+
+function ReadableState(options, stream) {
+  Duplex = Duplex || require('./_stream_duplex');
+
+  options = options || {};
+
+  // Duplex streams are both readable and writable, but share
+  // the same options object.
+  // However, some cases require setting options to different
+  // values for the readable and the writable sides of the duplex stream.
+  // These options can be provided separately as readableXXX and writableXXX.
+  var isDuplex = stream instanceof Duplex;
+
+  // object stream flag. Used to make read(n) ignore n and to
+  // make all the buffer merging and length checks go away
+  this.objectMode = !!options.objectMode;
+
+  if (isDuplex) this.objectMode = this.objectMode || !!options.readableObjectMode;
+
+  // the point at which it stops calling _read() to fill the buffer
+  // Note: 0 is a valid value, means "don't call _read preemptively ever"
+  var hwm = options.highWaterMark;
+  var readableHwm = options.readableHighWaterMark;
+  var defaultHwm = this.objectMode ? 16 : 16 * 1024;
+
+  if (hwm || hwm === 0) this.highWaterMark = hwm;else if (isDuplex && (readableHwm || readableHwm === 0)) this.highWaterMark = readableHwm;else this.highWaterMark = defaultHwm;
+
+  // cast to ints.
+  this.highWaterMark = Math.floor(this.highWaterMark);
+
+  // A linked list is used to store data chunks instead of an array because the
+  // linked list can remove elements from the beginning faster than
+  // array.shift()
+  this.buffer = new BufferList();
+  this.length = 0;
+  this.pipes = null;
+  this.pipesCount = 0;
+  this.flowing = null;
+  this.ended = false;
+  this.endEmitted = false;
+  this.reading = false;
+
+  // a flag to be able to tell if the event 'readable'/'data' is emitted
+  // immediately, or on a later tick.  We set this to true at first, because
+  // any actions that shouldn't happen until "later" should generally also
+  // not happen before the first read call.
+  this.sync = true;
+
+  // whenever we return null, then we set a flag to say
+  // that we're awaiting a 'readable' event emission.
+  this.needReadable = false;
+  this.emittedReadable = false;
+  this.readableListening = false;
+  this.resumeScheduled = false;
+
+  // has it been destroyed
+  this.destroyed = false;
+
+  // Crypto is kind of old and crusty.  Historically, its default string
+  // encoding is 'binary' so we have to make this configurable.
+  // Everything else in the universe uses 'utf8', though.
+  this.defaultEncoding = options.defaultEncoding || 'utf8';
+
+  // the number of writers that are awaiting a drain event in .pipe()s
+  this.awaitDrain = 0;
+
+  // if true, a maybeReadMore has been scheduled
+  this.readingMore = false;
+
+  this.decoder = null;
+  this.encoding = null;
+  if (options.encoding) {
+    if (!StringDecoder) StringDecoder = require('string_decoder/').StringDecoder;
+    this.decoder = new StringDecoder(options.encoding);
+    this.encoding = options.encoding;
+  }
+}
+
+function Readable(options) {
+  Duplex = Duplex || require('./_stream_duplex');
+
+  if (!(this instanceof Readable)) return new Readable(options);
+
+  this._readableState = new ReadableState(options, this);
+
+  // legacy
+  this.readable = true;
+
+  if (options) {
+    if (typeof options.read === 'function') this._read = options.read;
+
+    if (typeof options.destroy === 'function') this._destroy = options.destroy;
+  }
+
+  Stream.call(this);
+}
+
+Object.defineProperty(Readable.prototype, 'destroyed', {
+  get: function () {
+    if (this._readableState === undefined) {
+      return false;
     }
+    return this._readableState.destroyed;
+  },
+  set: function (value) {
+    // we ignore the value if the stream
+    // has not been initialized yet
+    if (!this._readableState) {
+      return;
+    }
+
+    // backward compatibility, the user is explicitly
+    // managing destroyed
+    this._readableState.destroyed = value;
   }
+});
 
-  /**
-   * Helper used to know if the given modifier is enabled.
-   * @method
-   * @memberof Popper.Utils
-   * @returns {Boolean}
-   */
-  function isModifierEnabled(modifiers, modifierName) {
-    return modifiers.some(function (_ref) {
-      var name = _ref.name,
-          enabled = _ref.enabled;
-      return enabled && name === modifierName;
-    });
-  }
+Readable.prototype.destroy = destroyImpl.destroy;
+Readable.prototype._undestroy = destroyImpl.undestroy;
+Readable.prototype._destroy = function (err, cb) {
+  this.push(null);
+  cb(err);
+};
 
-  /**
-   * Get the prefixed supported property name
-   * @method
-   * @memberof Popper.Utils
-   * @argument {String} property (camelCase)
-   * @returns {String} prefixed property (camelCase or PascalCase, depending on the vendor prefix)
-   */
-  function getSupportedPropertyName(property) {
-    var prefixes = [false, 'ms', 'Webkit', 'Moz', 'O'];
-    var upperProp = property.charAt(0).toUpperCase() + property.slice(1);
+// Manually shove something into the read() buffer.
+// This returns true if the highWaterMark has not been hit yet,
+// similar to how Writable.write() returns true if you should
+// write() some more.
+Readable.prototype.push = function (chunk, encoding) {
+  var state = this._readableState;
+  var skipChunkCheck;
 
-    for (var i = 0; i < prefixes.length; i++) {
-      var prefix = prefixes[i];
-      var toCheck = prefix ? '' + prefix + upperProp : property;
-      if (typeof document.body.style[toCheck] !== 'undefined') {
-        return toCheck;
+  if (!state.objectMode) {
+    if (typeof chunk === 'string') {
+      encoding = encoding || state.defaultEncoding;
+      if (encoding !== state.encoding) {
+        chunk = Buffer.from(chunk, encoding);
+        encoding = '';
       }
+      skipChunkCheck = true;
     }
+  } else {
+    skipChunkCheck = true;
+  }
+
+  return readableAddChunk(this, chunk, encoding, false, skipChunkCheck);
+};
+
+// Unshift should *always* be something directly out of read()
+Readable.prototype.unshift = function (chunk) {
+  return readableAddChunk(this, chunk, null, true, false);
+};
+
+function readableAddChunk(stream, chunk, encoding, addToFront, skipChunkCheck) {
+  var state = stream._readableState;
+  if (chunk === null) {
+    state.reading = false;
+    onEofChunk(stream, state);
+  } else {
+    var er;
+    if (!skipChunkCheck) er = chunkInvalid(state, chunk);
+    if (er) {
+      stream.emit('error', er);
+    } else if (state.objectMode || chunk && chunk.length > 0) {
+      if (typeof chunk !== 'string' && !state.objectMode && Object.getPrototypeOf(chunk) !== Buffer.prototype) {
+        chunk = _uint8ArrayToBuffer(chunk);
+      }
+
+      if (addToFront) {
+        if (state.endEmitted) stream.emit('error', new Error('stream.unshift() after end event'));else addChunk(stream, state, chunk, true);
+      } else if (state.ended) {
+        stream.emit('error', new Error('stream.push() after EOF'));
+      } else {
+        state.reading = false;
+        if (state.decoder && !encoding) {
+          chunk = state.decoder.write(chunk);
+          if (state.objectMode || chunk.length !== 0) addChunk(stream, state, chunk, false);else maybeReadMore(stream, state);
+        } else {
+          addChunk(stream, state, chunk, false);
+        }
+      }
+    } else if (!addToFront) {
+      state.reading = false;
+    }
+  }
+
+  return needMoreData(state);
+}
+
+function addChunk(stream, state, chunk, addToFront) {
+  if (state.flowing && state.length === 0 && !state.sync) {
+    stream.emit('data', chunk);
+    stream.read(0);
+  } else {
+    // update the buffer info.
+    state.length += state.objectMode ? 1 : chunk.length;
+    if (addToFront) state.buffer.unshift(chunk);else state.buffer.push(chunk);
+
+    if (state.needReadable) emitReadable(stream);
+  }
+  maybeReadMore(stream, state);
+}
+
+function chunkInvalid(state, chunk) {
+  var er;
+  if (!_isUint8Array(chunk) && typeof chunk !== 'string' && chunk !== undefined && !state.objectMode) {
+    er = new TypeError('Invalid non-string/buffer chunk');
+  }
+  return er;
+}
+
+// if it's past the high water mark, we can push in some more.
+// Also, if we have no data yet, we can stand some
+// more bytes.  This is to work around cases where hwm=0,
+// such as the repl.  Also, if the push() triggered a
+// readable event, and the user called read(largeNumber) such that
+// needReadable was set, then we ought to push more, so that another
+// 'readable' event will be triggered.
+function needMoreData(state) {
+  return !state.ended && (state.needReadable || state.length < state.highWaterMark || state.length === 0);
+}
+
+Readable.prototype.isPaused = function () {
+  return this._readableState.flowing === false;
+};
+
+// backwards compatibility.
+Readable.prototype.setEncoding = function (enc) {
+  if (!StringDecoder) StringDecoder = require('string_decoder/').StringDecoder;
+  this._readableState.decoder = new StringDecoder(enc);
+  this._readableState.encoding = enc;
+  return this;
+};
+
+// Don't raise the hwm > 8MB
+var MAX_HWM = 0x800000;
+function computeNewHighWaterMark(n) {
+  if (n >= MAX_HWM) {
+    n = MAX_HWM;
+  } else {
+    // Get the next highest power of 2 to prevent increasing hwm excessively in
+    // tiny amounts
+    n--;
+    n |= n >>> 1;
+    n |= n >>> 2;
+    n |= n >>> 4;
+    n |= n >>> 8;
+    n |= n >>> 16;
+    n++;
+  }
+  return n;
+}
+
+// This function is designed to be inlinable, so please take care when making
+// changes to the function body.
+function howMuchToRead(n, state) {
+  if (n <= 0 || state.length === 0 && state.ended) return 0;
+  if (state.objectMode) return 1;
+  if (n !== n) {
+    // Only flow one buffer at a time
+    if (state.flowing && state.length) return state.buffer.head.data.length;else return state.length;
+  }
+  // If we're asking for more than the current hwm, then raise the hwm.
+  if (n > state.highWaterMark) state.highWaterMark = computeNewHighWaterMark(n);
+  if (n <= state.length) return n;
+  // Don't have enough
+  if (!state.ended) {
+    state.needReadable = true;
+    return 0;
+  }
+  return state.length;
+}
+
+// you can override either this method, or the async _read(n) below.
+Readable.prototype.read = function (n) {
+  debug('read', n);
+  n = parseInt(n, 10);
+  var state = this._readableState;
+  var nOrig = n;
+
+  if (n !== 0) state.emittedReadable = false;
+
+  // if we're doing read(0) to trigger a readable event, but we
+  // already have a bunch of data in the buffer, then just trigger
+  // the 'readable' event and move on.
+  if (n === 0 && state.needReadable && (state.length >= state.highWaterMark || state.ended)) {
+    debug('read: emitReadable', state.length, state.ended);
+    if (state.length === 0 && state.ended) endReadable(this);else emitReadable(this);
     return null;
   }
 
-  /**
-   * Destroys the popper.
-   * @method
-   * @memberof Popper
-   */
-  function destroy() {
-    this.state.isDestroyed = true;
+  n = howMuchToRead(n, state);
 
-    // touch DOM only if `applyStyle` modifier is enabled
-    if (isModifierEnabled(this.modifiers, 'applyStyle')) {
-      this.popper.removeAttribute('x-placement');
-      this.popper.style.position = '';
-      this.popper.style.top = '';
-      this.popper.style.left = '';
-      this.popper.style.right = '';
-      this.popper.style.bottom = '';
-      this.popper.style.willChange = '';
-      this.popper.style[getSupportedPropertyName('transform')] = '';
+  // if we've ended, and we're now clear, then finish it up.
+  if (n === 0 && state.ended) {
+    if (state.length === 0) endReadable(this);
+    return null;
+  }
+
+  // All the actual chunk generation logic needs to be
+  // *below* the call to _read.  The reason is that in certain
+  // synthetic stream cases, such as passthrough streams, _read
+  // may be a completely synchronous operation which may change
+  // the state of the read buffer, providing enough data when
+  // before there was *not* enough.
+  //
+  // So, the steps are:
+  // 1. Figure out what the state of things will be after we do
+  // a read from the buffer.
+  //
+  // 2. If that resulting state will trigger a _read, then call _read.
+  // Note that this may be asynchronous, or synchronous.  Yes, it is
+  // deeply ugly to write APIs this way, but that still doesn't mean
+  // that the Readable class should behave improperly, as streams are
+  // designed to be sync/async agnostic.
+  // Take note if the _read call is sync or async (ie, if the read call
+  // has returned yet), so that we know whether or not it's safe to emit
+  // 'readable' etc.
+  //
+  // 3. Actually pull the requested chunks out of the buffer and return.
+
+  // if we need a readable event, then we need to do some reading.
+  var doRead = state.needReadable;
+  debug('need readable', doRead);
+
+  // if we currently have less than the highWaterMark, then also read some
+  if (state.length === 0 || state.length - n < state.highWaterMark) {
+    doRead = true;
+    debug('length less than watermark', doRead);
+  }
+
+  // however, if we've ended, then there's no point, and if we're already
+  // reading, then it's unnecessary.
+  if (state.ended || state.reading) {
+    doRead = false;
+    debug('reading or ended', doRead);
+  } else if (doRead) {
+    debug('do read');
+    state.reading = true;
+    state.sync = true;
+    // if the length is currently zero, then we *need* a readable event.
+    if (state.length === 0) state.needReadable = true;
+    // call internal read method
+    this._read(state.highWaterMark);
+    state.sync = false;
+    // If _read pushed data synchronously, then `reading` will be false,
+    // and we need to re-evaluate how much data we can return to the user.
+    if (!state.reading) n = howMuchToRead(nOrig, state);
+  }
+
+  var ret;
+  if (n > 0) ret = fromList(n, state);else ret = null;
+
+  if (ret === null) {
+    state.needReadable = true;
+    n = 0;
+  } else {
+    state.length -= n;
+  }
+
+  if (state.length === 0) {
+    // If we have nothing in the buffer, then we want to know
+    // as soon as we *do* get something into the buffer.
+    if (!state.ended) state.needReadable = true;
+
+    // If we tried to read() past the EOF, then emit end on the next tick.
+    if (nOrig !== n && state.ended) endReadable(this);
+  }
+
+  if (ret !== null) this.emit('data', ret);
+
+  return ret;
+};
+
+function onEofChunk(stream, state) {
+  if (state.ended) return;
+  if (state.decoder) {
+    var chunk = state.decoder.end();
+    if (chunk && chunk.length) {
+      state.buffer.push(chunk);
+      state.length += state.objectMode ? 1 : chunk.length;
+    }
+  }
+  state.ended = true;
+
+  // emit 'readable' now to make sure it gets picked up.
+  emitReadable(stream);
+}
+
+// Don't emit readable right away in sync mode, because this can trigger
+// another read() call => stack overflow.  This way, it might trigger
+// a nextTick recursion warning, but that's not so bad.
+function emitReadable(stream) {
+  var state = stream._readableState;
+  state.needReadable = false;
+  if (!state.emittedReadable) {
+    debug('emitReadable', state.flowing);
+    state.emittedReadable = true;
+    if (state.sync) pna.nextTick(emitReadable_, stream);else emitReadable_(stream);
+  }
+}
+
+function emitReadable_(stream) {
+  debug('emit readable');
+  stream.emit('readable');
+  flow(stream);
+}
+
+// at this point, the user has presumably seen the 'readable' event,
+// and called read() to consume some data.  that may have triggered
+// in turn another _read(n) call, in which case reading = true if
+// it's in progress.
+// However, if we're not ended, or reading, and the length < hwm,
+// then go ahead and try to read some more preemptively.
+function maybeReadMore(stream, state) {
+  if (!state.readingMore) {
+    state.readingMore = true;
+    pna.nextTick(maybeReadMore_, stream, state);
+  }
+}
+
+function maybeReadMore_(stream, state) {
+  var len = state.length;
+  while (!state.reading && !state.flowing && !state.ended && state.length < state.highWaterMark) {
+    debug('maybeReadMore read 0');
+    stream.read(0);
+    if (len === state.length)
+      // didn't get any data, stop spinning.
+      break;else len = state.length;
+  }
+  state.readingMore = false;
+}
+
+// abstract method.  to be overridden in specific implementation classes.
+// call cb(er, data) where data is <= n in length.
+// for virtual (non-string, non-buffer) streams, "length" is somewhat
+// arbitrary, and perhaps not very meaningful.
+Readable.prototype._read = function (n) {
+  this.emit('error', new Error('_read() is not implemented'));
+};
+
+Readable.prototype.pipe = function (dest, pipeOpts) {
+  var src = this;
+  var state = this._readableState;
+
+  switch (state.pipesCount) {
+    case 0:
+      state.pipes = dest;
+      break;
+    case 1:
+      state.pipes = [state.pipes, dest];
+      break;
+    default:
+      state.pipes.push(dest);
+      break;
+  }
+  state.pipesCount += 1;
+  debug('pipe count=%d opts=%j', state.pipesCount, pipeOpts);
+
+  var doEnd = (!pipeOpts || pipeOpts.end !== false) && dest !== process.stdout && dest !== process.stderr;
+
+  var endFn = doEnd ? onend : unpipe;
+  if (state.endEmitted) pna.nextTick(endFn);else src.once('end', endFn);
+
+  dest.on('unpipe', onunpipe);
+  function onunpipe(readable, unpipeInfo) {
+    debug('onunpipe');
+    if (readable === src) {
+      if (unpipeInfo && unpipeInfo.hasUnpiped === false) {
+        unpipeInfo.hasUnpiped = true;
+        cleanup();
+      }
+    }
+  }
+
+  function onend() {
+    debug('onend');
+    dest.end();
+  }
+
+  // when the dest drains, it reduces the awaitDrain counter
+  // on the source.  This would be more elegant with a .once()
+  // handler in flow(), but adding and removing repeatedly is
+  // too slow.
+  var ondrain = pipeOnDrain(src);
+  dest.on('drain', ondrain);
+
+  var cleanedUp = false;
+  function cleanup() {
+    debug('cleanup');
+    // cleanup event handlers once the pipe is broken
+    dest.removeListener('close', onclose);
+    dest.removeListener('finish', onfinish);
+    dest.removeListener('drain', ondrain);
+    dest.removeListener('error', onerror);
+    dest.removeListener('unpipe', onunpipe);
+    src.removeListener('end', onend);
+    src.removeListener('end', unpipe);
+    src.removeListener('data', ondata);
+
+    cleanedUp = true;
+
+    // if the reader is waiting for a drain event from this
+    // specific writer, then it would cause it to never start
+    // flowing again.
+    // So, if this is awaiting a drain, then we just call it now.
+    // If we don't know, then assume that we are waiting for one.
+    if (state.awaitDrain && (!dest._writableState || dest._writableState.needDrain)) ondrain();
+  }
+
+  // If the user pushes more data while we're writing to dest then we'll end up
+  // in ondata again. However, we only want to increase awaitDrain once because
+  // dest will only emit one 'drain' event for the multiple writes.
+  // => Introduce a guard on increasing awaitDrain.
+  var increasedAwaitDrain = false;
+  src.on('data', ondata);
+  function ondata(chunk) {
+    debug('ondata');
+    increasedAwaitDrain = false;
+    var ret = dest.write(chunk);
+    if (false === ret && !increasedAwaitDrain) {
+      // If the user unpiped during `dest.write()`, it is possible
+      // to get stuck in a permanently paused state if that write
+      // also returned false.
+      // => Check whether `dest` is still a piping destination.
+      if ((state.pipesCount === 1 && state.pipes === dest || state.pipesCount > 1 && indexOf(state.pipes, dest) !== -1) && !cleanedUp) {
+        debug('false write response, pause', src._readableState.awaitDrain);
+        src._readableState.awaitDrain++;
+        increasedAwaitDrain = true;
+      }
+      src.pause();
+    }
+  }
+
+  // if the dest has an error, then stop piping into it.
+  // however, don't suppress the throwing behavior for this.
+  function onerror(er) {
+    debug('onerror', er);
+    unpipe();
+    dest.removeListener('error', onerror);
+    if (EElistenerCount(dest, 'error') === 0) dest.emit('error', er);
+  }
+
+  // Make sure our error handler is attached before userland ones.
+  prependListener(dest, 'error', onerror);
+
+  // Both close and finish should trigger unpipe, but only once.
+  function onclose() {
+    dest.removeListener('finish', onfinish);
+    unpipe();
+  }
+  dest.once('close', onclose);
+  function onfinish() {
+    debug('onfinish');
+    dest.removeListener('close', onclose);
+    unpipe();
+  }
+  dest.once('finish', onfinish);
+
+  function unpipe() {
+    debug('unpipe');
+    src.unpipe(dest);
+  }
+
+  // tell the dest that it's being piped to
+  dest.emit('pipe', src);
+
+  // start the flow if it hasn't been started already.
+  if (!state.flowing) {
+    debug('pipe resume');
+    src.resume();
+  }
+
+  return dest;
+};
+
+function pipeOnDrain(src) {
+  return function () {
+    var state = src._readableState;
+    debug('pipeOnDrain', state.awaitDrain);
+    if (state.awaitDrain) state.awaitDrain--;
+    if (state.awaitDrain === 0 && EElistenerCount(src, 'data')) {
+      state.flowing = true;
+      flow(src);
+    }
+  };
+}
+
+Readable.prototype.unpipe = function (dest) {
+  var state = this._readableState;
+  var unpipeInfo = { hasUnpiped: false };
+
+  // if we're not piping anywhere, then do nothing.
+  if (state.pipesCount === 0) return this;
+
+  // just one destination.  most common case.
+  if (state.pipesCount === 1) {
+    // passed in one, but it's not the right one.
+    if (dest && dest !== state.pipes) return this;
+
+    if (!dest) dest = state.pipes;
+
+    // got a match.
+    state.pipes = null;
+    state.pipesCount = 0;
+    state.flowing = false;
+    if (dest) dest.emit('unpipe', this, unpipeInfo);
+    return this;
+  }
+
+  // slow case. multiple pipe destinations.
+
+  if (!dest) {
+    // remove all.
+    var dests = state.pipes;
+    var len = state.pipesCount;
+    state.pipes = null;
+    state.pipesCount = 0;
+    state.flowing = false;
+
+    for (var i = 0; i < len; i++) {
+      dests[i].emit('unpipe', this, unpipeInfo);
+    }return this;
+  }
+
+  // try to find the right one.
+  var index = indexOf(state.pipes, dest);
+  if (index === -1) return this;
+
+  state.pipes.splice(index, 1);
+  state.pipesCount -= 1;
+  if (state.pipesCount === 1) state.pipes = state.pipes[0];
+
+  dest.emit('unpipe', this, unpipeInfo);
+
+  return this;
+};
+
+// set up data events if they are asked for
+// Ensure readable listeners eventually get something
+Readable.prototype.on = function (ev, fn) {
+  var res = Stream.prototype.on.call(this, ev, fn);
+
+  if (ev === 'data') {
+    // Start flowing on next tick if stream isn't explicitly paused
+    if (this._readableState.flowing !== false) this.resume();
+  } else if (ev === 'readable') {
+    var state = this._readableState;
+    if (!state.endEmitted && !state.readableListening) {
+      state.readableListening = state.needReadable = true;
+      state.emittedReadable = false;
+      if (!state.reading) {
+        pna.nextTick(nReadingNextTick, this);
+      } else if (state.length) {
+        emitReadable(this);
+      }
+    }
+  }
+
+  return res;
+};
+Readable.prototype.addListener = Readable.prototype.on;
+
+function nReadingNextTick(self) {
+  debug('readable nexttick read 0');
+  self.read(0);
+}
+
+// pause() and resume() are remnants of the legacy readable stream API
+// If the user uses them, then switch into old mode.
+Readable.prototype.resume = function () {
+  var state = this._readableState;
+  if (!state.flowing) {
+    debug('resume');
+    state.flowing = true;
+    resume(this, state);
+  }
+  return this;
+};
+
+function resume(stream, state) {
+  if (!state.resumeScheduled) {
+    state.resumeScheduled = true;
+    pna.nextTick(resume_, stream, state);
+  }
+}
+
+function resume_(stream, state) {
+  if (!state.reading) {
+    debug('resume read 0');
+    stream.read(0);
+  }
+
+  state.resumeScheduled = false;
+  state.awaitDrain = 0;
+  stream.emit('resume');
+  flow(stream);
+  if (state.flowing && !state.reading) stream.read(0);
+}
+
+Readable.prototype.pause = function () {
+  debug('call pause flowing=%j', this._readableState.flowing);
+  if (false !== this._readableState.flowing) {
+    debug('pause');
+    this._readableState.flowing = false;
+    this.emit('pause');
+  }
+  return this;
+};
+
+function flow(stream) {
+  var state = stream._readableState;
+  debug('flow', state.flowing);
+  while (state.flowing && stream.read() !== null) {}
+}
+
+// wrap an old-style stream as the async data source.
+// This is *not* part of the readable stream interface.
+// It is an ugly unfortunate mess of history.
+Readable.prototype.wrap = function (stream) {
+  var _this = this;
+
+  var state = this._readableState;
+  var paused = false;
+
+  stream.on('end', function () {
+    debug('wrapped end');
+    if (state.decoder && !state.ended) {
+      var chunk = state.decoder.end();
+      if (chunk && chunk.length) _this.push(chunk);
     }
 
-    this.disableEventListeners();
+    _this.push(null);
+  });
 
-    // remove the popper if user explicity asked for the deletion on destroy
-    // do not use `remove` because IE11 doesn't support it
-    if (this.options.removeOnDestroy) {
-      this.popper.parentNode.removeChild(this.popper);
+  stream.on('data', function (chunk) {
+    debug('wrapped data');
+    if (state.decoder) chunk = state.decoder.write(chunk);
+
+    // don't skip over falsy values in objectMode
+    if (state.objectMode && (chunk === null || chunk === undefined)) return;else if (!state.objectMode && (!chunk || !chunk.length)) return;
+
+    var ret = _this.push(chunk);
+    if (!ret) {
+      paused = true;
+      stream.pause();
+    }
+  });
+
+  // proxy all the other methods.
+  // important when wrapping filters and duplexes.
+  for (var i in stream) {
+    if (this[i] === undefined && typeof stream[i] === 'function') {
+      this[i] = function (method) {
+        return function () {
+          return stream[method].apply(stream, arguments);
+        };
+      }(i);
+    }
+  }
+
+  // proxy certain important events.
+  for (var n = 0; n < kProxyEvents.length; n++) {
+    stream.on(kProxyEvents[n], this.emit.bind(this, kProxyEvents[n]));
+  }
+
+  // when we try to consume some more bytes, simply unpause the
+  // underlying stream.
+  this._read = function (n) {
+    debug('wrapped _read', n);
+    if (paused) {
+      paused = false;
+      stream.resume();
+    }
+  };
+
+  return this;
+};
+
+Object.defineProperty(Readable.prototype, 'readableHighWaterMark', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function () {
+    return this._readableState.highWaterMark;
+  }
+});
+
+// exposed for testing purposes only.
+Readable._fromList = fromList;
+
+// Pluck off n bytes from an array of buffers.
+// Length is the combined lengths of all the buffers in the list.
+// This function is designed to be inlinable, so please take care when making
+// changes to the function body.
+function fromList(n, state) {
+  // nothing buffered
+  if (state.length === 0) return null;
+
+  var ret;
+  if (state.objectMode) ret = state.buffer.shift();else if (!n || n >= state.length) {
+    // read it all, truncate the list
+    if (state.decoder) ret = state.buffer.join('');else if (state.buffer.length === 1) ret = state.buffer.head.data;else ret = state.buffer.concat(state.length);
+    state.buffer.clear();
+  } else {
+    // read part of list
+    ret = fromListPartial(n, state.buffer, state.decoder);
+  }
+
+  return ret;
+}
+
+// Extracts only enough buffered data to satisfy the amount requested.
+// This function is designed to be inlinable, so please take care when making
+// changes to the function body.
+function fromListPartial(n, list, hasStrings) {
+  var ret;
+  if (n < list.head.data.length) {
+    // slice is the same for buffers and strings
+    ret = list.head.data.slice(0, n);
+    list.head.data = list.head.data.slice(n);
+  } else if (n === list.head.data.length) {
+    // first chunk is a perfect match
+    ret = list.shift();
+  } else {
+    // result spans more than one buffer
+    ret = hasStrings ? copyFromBufferString(n, list) : copyFromBuffer(n, list);
+  }
+  return ret;
+}
+
+// Copies a specified amount of characters from the list of buffered data
+// chunks.
+// This function is designed to be inlinable, so please take care when making
+// changes to the function body.
+function copyFromBufferString(n, list) {
+  var p = list.head;
+  var c = 1;
+  var ret = p.data;
+  n -= ret.length;
+  while (p = p.next) {
+    var str = p.data;
+    var nb = n > str.length ? str.length : n;
+    if (nb === str.length) ret += str;else ret += str.slice(0, n);
+    n -= nb;
+    if (n === 0) {
+      if (nb === str.length) {
+        ++c;
+        if (p.next) list.head = p.next;else list.head = list.tail = null;
+      } else {
+        list.head = p;
+        p.data = str.slice(nb);
+      }
+      break;
+    }
+    ++c;
+  }
+  list.length -= c;
+  return ret;
+}
+
+// Copies a specified amount of bytes from the list of buffered data chunks.
+// This function is designed to be inlinable, so please take care when making
+// changes to the function body.
+function copyFromBuffer(n, list) {
+  var ret = Buffer.allocUnsafe(n);
+  var p = list.head;
+  var c = 1;
+  p.data.copy(ret);
+  n -= p.data.length;
+  while (p = p.next) {
+    var buf = p.data;
+    var nb = n > buf.length ? buf.length : n;
+    buf.copy(ret, ret.length - n, 0, nb);
+    n -= nb;
+    if (n === 0) {
+      if (nb === buf.length) {
+        ++c;
+        if (p.next) list.head = p.next;else list.head = list.tail = null;
+      } else {
+        list.head = p;
+        p.data = buf.slice(nb);
+      }
+      break;
+    }
+    ++c;
+  }
+  list.length -= c;
+  return ret;
+}
+
+function endReadable(stream) {
+  var state = stream._readableState;
+
+  // If we get here before consuming all the bytes, then that is a
+  // bug in node.  Should never happen.
+  if (state.length > 0) throw new Error('"endReadable()" called on non-empty stream');
+
+  if (!state.endEmitted) {
+    state.ended = true;
+    pna.nextTick(endReadableNT, state, stream);
+  }
+}
+
+function endReadableNT(state, stream) {
+  // Check that we didn't get one last unshift.
+  if (!state.endEmitted && state.length === 0) {
+    state.endEmitted = true;
+    stream.readable = false;
+    stream.emit('end');
+  }
+}
+
+function indexOf(xs, x) {
+  for (var i = 0, l = xs.length; i < l; i++) {
+    if (xs[i] === x) return i;
+  }
+  return -1;
+}
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./_stream_duplex":18,"./internal/streams/BufferList":23,"./internal/streams/destroy":24,"./internal/streams/stream":25,"_process":14,"core-util-is":7,"events":8,"inherits":11,"isarray":13,"process-nextick-args":26,"safe-buffer":29,"string_decoder/":27,"util":3}],21:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// a transform stream is a readable/writable stream where you do
+// something with the data.  Sometimes it's called a "filter",
+// but that's not a great name for it, since that implies a thing where
+// some bits pass through, and others are simply ignored.  (That would
+// be a valid example of a transform, of course.)
+//
+// While the output is causally related to the input, it's not a
+// necessarily symmetric or synchronous transformation.  For example,
+// a zlib stream might take multiple plain-text writes(), and then
+// emit a single compressed chunk some time in the future.
+//
+// Here's how this works:
+//
+// The Transform stream has all the aspects of the readable and writable
+// stream classes.  When you write(chunk), that calls _write(chunk,cb)
+// internally, and returns false if there's a lot of pending writes
+// buffered up.  When you call read(), that calls _read(n) until
+// there's enough pending readable data buffered up.
+//
+// In a transform stream, the written data is placed in a buffer.  When
+// _read(n) is called, it transforms the queued up data, calling the
+// buffered _write cb's as it consumes chunks.  If consuming a single
+// written chunk would result in multiple output chunks, then the first
+// outputted bit calls the readcb, and subsequent chunks just go into
+// the read buffer, and will cause it to emit 'readable' if necessary.
+//
+// This way, back-pressure is actually determined by the reading side,
+// since _read has to be called to start processing a new chunk.  However,
+// a pathological inflate type of transform can cause excessive buffering
+// here.  For example, imagine a stream where every byte of input is
+// interpreted as an integer from 0-255, and then results in that many
+// bytes of output.  Writing the 4 bytes {ff,ff,ff,ff} would result in
+// 1kb of data being output.  In this case, you could write a very small
+// amount of input, and end up with a very large amount of output.  In
+// such a pathological inflating mechanism, there'd be no way to tell
+// the system to stop doing the transform.  A single 4MB write could
+// cause the system to run out of memory.
+//
+// However, even in such a pathological case, only a single written chunk
+// would be consumed, and then the rest would wait (un-transformed) until
+// the results of the previous transformed chunk were consumed.
+
+'use strict';
+
+module.exports = Transform;
+
+var Duplex = require('./_stream_duplex');
+
+/*<replacement>*/
+var util = require('core-util-is');
+util.inherits = require('inherits');
+/*</replacement>*/
+
+util.inherits(Transform, Duplex);
+
+function afterTransform(er, data) {
+  var ts = this._transformState;
+  ts.transforming = false;
+
+  var cb = ts.writecb;
+
+  if (!cb) {
+    return this.emit('error', new Error('write callback called multiple times'));
+  }
+
+  ts.writechunk = null;
+  ts.writecb = null;
+
+  if (data != null) // single equals check for both `null` and `undefined`
+    this.push(data);
+
+  cb(er);
+
+  var rs = this._readableState;
+  rs.reading = false;
+  if (rs.needReadable || rs.length < rs.highWaterMark) {
+    this._read(rs.highWaterMark);
+  }
+}
+
+function Transform(options) {
+  if (!(this instanceof Transform)) return new Transform(options);
+
+  Duplex.call(this, options);
+
+  this._transformState = {
+    afterTransform: afterTransform.bind(this),
+    needTransform: false,
+    transforming: false,
+    writecb: null,
+    writechunk: null,
+    writeencoding: null
+  };
+
+  // start out asking for a readable event once data is transformed.
+  this._readableState.needReadable = true;
+
+  // we have implemented the _read method, and done the other things
+  // that Readable wants before the first _read call, so unset the
+  // sync guard flag.
+  this._readableState.sync = false;
+
+  if (options) {
+    if (typeof options.transform === 'function') this._transform = options.transform;
+
+    if (typeof options.flush === 'function') this._flush = options.flush;
+  }
+
+  // When the writable side finishes, then flush out anything remaining.
+  this.on('prefinish', prefinish);
+}
+
+function prefinish() {
+  var _this = this;
+
+  if (typeof this._flush === 'function') {
+    this._flush(function (er, data) {
+      done(_this, er, data);
+    });
+  } else {
+    done(this, null, null);
+  }
+}
+
+Transform.prototype.push = function (chunk, encoding) {
+  this._transformState.needTransform = false;
+  return Duplex.prototype.push.call(this, chunk, encoding);
+};
+
+// This is the part where you do stuff!
+// override this function in implementation classes.
+// 'chunk' is an input chunk.
+//
+// Call `push(newChunk)` to pass along transformed output
+// to the readable side.  You may call 'push' zero or more times.
+//
+// Call `cb(err)` when you are done with this chunk.  If you pass
+// an error, then that'll put the hurt on the whole operation.  If you
+// never call cb(), then you'll never get another chunk.
+Transform.prototype._transform = function (chunk, encoding, cb) {
+  throw new Error('_transform() is not implemented');
+};
+
+Transform.prototype._write = function (chunk, encoding, cb) {
+  var ts = this._transformState;
+  ts.writecb = cb;
+  ts.writechunk = chunk;
+  ts.writeencoding = encoding;
+  if (!ts.transforming) {
+    var rs = this._readableState;
+    if (ts.needTransform || rs.needReadable || rs.length < rs.highWaterMark) this._read(rs.highWaterMark);
+  }
+};
+
+// Doesn't matter what the args are here.
+// _transform does all the work.
+// That we got here means that the readable side wants more data.
+Transform.prototype._read = function (n) {
+  var ts = this._transformState;
+
+  if (ts.writechunk !== null && ts.writecb && !ts.transforming) {
+    ts.transforming = true;
+    this._transform(ts.writechunk, ts.writeencoding, ts.afterTransform);
+  } else {
+    // mark that we need a transform, so that any data that comes in
+    // will get processed, now that we've asked for it.
+    ts.needTransform = true;
+  }
+};
+
+Transform.prototype._destroy = function (err, cb) {
+  var _this2 = this;
+
+  Duplex.prototype._destroy.call(this, err, function (err2) {
+    cb(err2);
+    _this2.emit('close');
+  });
+};
+
+function done(stream, er, data) {
+  if (er) return stream.emit('error', er);
+
+  if (data != null) // single equals check for both `null` and `undefined`
+    stream.push(data);
+
+  // if there's nothing in the write buffer, then that means
+  // that nothing more will ever be provided
+  if (stream._writableState.length) throw new Error('Calling transform done when ws.length != 0');
+
+  if (stream._transformState.transforming) throw new Error('Calling transform done when still transforming');
+
+  return stream.push(null);
+}
+},{"./_stream_duplex":18,"core-util-is":7,"inherits":11}],22:[function(require,module,exports){
+(function (process,global,setImmediate){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// A bit simpler than readable streams.
+// Implement an async ._write(chunk, encoding, cb), and it'll handle all
+// the drain event emission and buffering.
+
+'use strict';
+
+/*<replacement>*/
+
+var pna = require('process-nextick-args');
+/*</replacement>*/
+
+module.exports = Writable;
+
+/* <replacement> */
+function WriteReq(chunk, encoding, cb) {
+  this.chunk = chunk;
+  this.encoding = encoding;
+  this.callback = cb;
+  this.next = null;
+}
+
+// It seems a linked list but it is not
+// there will be only 2 of these for each stream
+function CorkedRequest(state) {
+  var _this = this;
+
+  this.next = null;
+  this.entry = null;
+  this.finish = function () {
+    onCorkedFinish(_this, state);
+  };
+}
+/* </replacement> */
+
+/*<replacement>*/
+var asyncWrite = !process.browser && ['v0.10', 'v0.9.'].indexOf(process.version.slice(0, 5)) > -1 ? setImmediate : pna.nextTick;
+/*</replacement>*/
+
+/*<replacement>*/
+var Duplex;
+/*</replacement>*/
+
+Writable.WritableState = WritableState;
+
+/*<replacement>*/
+var util = require('core-util-is');
+util.inherits = require('inherits');
+/*</replacement>*/
+
+/*<replacement>*/
+var internalUtil = {
+  deprecate: require('util-deprecate')
+};
+/*</replacement>*/
+
+/*<replacement>*/
+var Stream = require('./internal/streams/stream');
+/*</replacement>*/
+
+/*<replacement>*/
+
+var Buffer = require('safe-buffer').Buffer;
+var OurUint8Array = global.Uint8Array || function () {};
+function _uint8ArrayToBuffer(chunk) {
+  return Buffer.from(chunk);
+}
+function _isUint8Array(obj) {
+  return Buffer.isBuffer(obj) || obj instanceof OurUint8Array;
+}
+
+/*</replacement>*/
+
+var destroyImpl = require('./internal/streams/destroy');
+
+util.inherits(Writable, Stream);
+
+function nop() {}
+
+function WritableState(options, stream) {
+  Duplex = Duplex || require('./_stream_duplex');
+
+  options = options || {};
+
+  // Duplex streams are both readable and writable, but share
+  // the same options object.
+  // However, some cases require setting options to different
+  // values for the readable and the writable sides of the duplex stream.
+  // These options can be provided separately as readableXXX and writableXXX.
+  var isDuplex = stream instanceof Duplex;
+
+  // object stream flag to indicate whether or not this stream
+  // contains buffers or objects.
+  this.objectMode = !!options.objectMode;
+
+  if (isDuplex) this.objectMode = this.objectMode || !!options.writableObjectMode;
+
+  // the point at which write() starts returning false
+  // Note: 0 is a valid value, means that we always return false if
+  // the entire buffer is not flushed immediately on write()
+  var hwm = options.highWaterMark;
+  var writableHwm = options.writableHighWaterMark;
+  var defaultHwm = this.objectMode ? 16 : 16 * 1024;
+
+  if (hwm || hwm === 0) this.highWaterMark = hwm;else if (isDuplex && (writableHwm || writableHwm === 0)) this.highWaterMark = writableHwm;else this.highWaterMark = defaultHwm;
+
+  // cast to ints.
+  this.highWaterMark = Math.floor(this.highWaterMark);
+
+  // if _final has been called
+  this.finalCalled = false;
+
+  // drain event flag.
+  this.needDrain = false;
+  // at the start of calling end()
+  this.ending = false;
+  // when end() has been called, and returned
+  this.ended = false;
+  // when 'finish' is emitted
+  this.finished = false;
+
+  // has it been destroyed
+  this.destroyed = false;
+
+  // should we decode strings into buffers before passing to _write?
+  // this is here so that some node-core streams can optimize string
+  // handling at a lower level.
+  var noDecode = options.decodeStrings === false;
+  this.decodeStrings = !noDecode;
+
+  // Crypto is kind of old and crusty.  Historically, its default string
+  // encoding is 'binary' so we have to make this configurable.
+  // Everything else in the universe uses 'utf8', though.
+  this.defaultEncoding = options.defaultEncoding || 'utf8';
+
+  // not an actual buffer we keep track of, but a measurement
+  // of how much we're waiting to get pushed to some underlying
+  // socket or file.
+  this.length = 0;
+
+  // a flag to see when we're in the middle of a write.
+  this.writing = false;
+
+  // when true all writes will be buffered until .uncork() call
+  this.corked = 0;
+
+  // a flag to be able to tell if the onwrite cb is called immediately,
+  // or on a later tick.  We set this to true at first, because any
+  // actions that shouldn't happen until "later" should generally also
+  // not happen before the first write call.
+  this.sync = true;
+
+  // a flag to know if we're processing previously buffered items, which
+  // may call the _write() callback in the same tick, so that we don't
+  // end up in an overlapped onwrite situation.
+  this.bufferProcessing = false;
+
+  // the callback that's passed to _write(chunk,cb)
+  this.onwrite = function (er) {
+    onwrite(stream, er);
+  };
+
+  // the callback that the user supplies to write(chunk,encoding,cb)
+  this.writecb = null;
+
+  // the amount that is being written when _write is called.
+  this.writelen = 0;
+
+  this.bufferedRequest = null;
+  this.lastBufferedRequest = null;
+
+  // number of pending user-supplied write callbacks
+  // this must be 0 before 'finish' can be emitted
+  this.pendingcb = 0;
+
+  // emit prefinish if the only thing we're waiting for is _write cbs
+  // This is relevant for synchronous Transform streams
+  this.prefinished = false;
+
+  // True if the error was already emitted and should not be thrown again
+  this.errorEmitted = false;
+
+  // count buffered requests
+  this.bufferedRequestCount = 0;
+
+  // allocate the first CorkedRequest, there is always
+  // one allocated and free to use, and we maintain at most two
+  this.corkedRequestsFree = new CorkedRequest(this);
+}
+
+WritableState.prototype.getBuffer = function getBuffer() {
+  var current = this.bufferedRequest;
+  var out = [];
+  while (current) {
+    out.push(current);
+    current = current.next;
+  }
+  return out;
+};
+
+(function () {
+  try {
+    Object.defineProperty(WritableState.prototype, 'buffer', {
+      get: internalUtil.deprecate(function () {
+        return this.getBuffer();
+      }, '_writableState.buffer is deprecated. Use _writableState.getBuffer ' + 'instead.', 'DEP0003')
+    });
+  } catch (_) {}
+})();
+
+// Test _writableState for inheritance to account for Duplex streams,
+// whose prototype chain only points to Readable.
+var realHasInstance;
+if (typeof Symbol === 'function' && Symbol.hasInstance && typeof Function.prototype[Symbol.hasInstance] === 'function') {
+  realHasInstance = Function.prototype[Symbol.hasInstance];
+  Object.defineProperty(Writable, Symbol.hasInstance, {
+    value: function (object) {
+      if (realHasInstance.call(this, object)) return true;
+      if (this !== Writable) return false;
+
+      return object && object._writableState instanceof WritableState;
+    }
+  });
+} else {
+  realHasInstance = function (object) {
+    return object instanceof this;
+  };
+}
+
+function Writable(options) {
+  Duplex = Duplex || require('./_stream_duplex');
+
+  // Writable ctor is applied to Duplexes, too.
+  // `realHasInstance` is necessary because using plain `instanceof`
+  // would return false, as no `_writableState` property is attached.
+
+  // Trying to use the custom `instanceof` for Writable here will also break the
+  // Node.js LazyTransform implementation, which has a non-trivial getter for
+  // `_writableState` that would lead to infinite recursion.
+  if (!realHasInstance.call(Writable, this) && !(this instanceof Duplex)) {
+    return new Writable(options);
+  }
+
+  this._writableState = new WritableState(options, this);
+
+  // legacy.
+  this.writable = true;
+
+  if (options) {
+    if (typeof options.write === 'function') this._write = options.write;
+
+    if (typeof options.writev === 'function') this._writev = options.writev;
+
+    if (typeof options.destroy === 'function') this._destroy = options.destroy;
+
+    if (typeof options.final === 'function') this._final = options.final;
+  }
+
+  Stream.call(this);
+}
+
+// Otherwise people can pipe Writable streams, which is just wrong.
+Writable.prototype.pipe = function () {
+  this.emit('error', new Error('Cannot pipe, not readable'));
+};
+
+function writeAfterEnd(stream, cb) {
+  var er = new Error('write after end');
+  // TODO: defer error events consistently everywhere, not just the cb
+  stream.emit('error', er);
+  pna.nextTick(cb, er);
+}
+
+// Checks that a user-supplied chunk is valid, especially for the particular
+// mode the stream is in. Currently this means that `null` is never accepted
+// and undefined/non-string values are only allowed in object mode.
+function validChunk(stream, state, chunk, cb) {
+  var valid = true;
+  var er = false;
+
+  if (chunk === null) {
+    er = new TypeError('May not write null values to stream');
+  } else if (typeof chunk !== 'string' && chunk !== undefined && !state.objectMode) {
+    er = new TypeError('Invalid non-string/buffer chunk');
+  }
+  if (er) {
+    stream.emit('error', er);
+    pna.nextTick(cb, er);
+    valid = false;
+  }
+  return valid;
+}
+
+Writable.prototype.write = function (chunk, encoding, cb) {
+  var state = this._writableState;
+  var ret = false;
+  var isBuf = !state.objectMode && _isUint8Array(chunk);
+
+  if (isBuf && !Buffer.isBuffer(chunk)) {
+    chunk = _uint8ArrayToBuffer(chunk);
+  }
+
+  if (typeof encoding === 'function') {
+    cb = encoding;
+    encoding = null;
+  }
+
+  if (isBuf) encoding = 'buffer';else if (!encoding) encoding = state.defaultEncoding;
+
+  if (typeof cb !== 'function') cb = nop;
+
+  if (state.ended) writeAfterEnd(this, cb);else if (isBuf || validChunk(this, state, chunk, cb)) {
+    state.pendingcb++;
+    ret = writeOrBuffer(this, state, isBuf, chunk, encoding, cb);
+  }
+
+  return ret;
+};
+
+Writable.prototype.cork = function () {
+  var state = this._writableState;
+
+  state.corked++;
+};
+
+Writable.prototype.uncork = function () {
+  var state = this._writableState;
+
+  if (state.corked) {
+    state.corked--;
+
+    if (!state.writing && !state.corked && !state.finished && !state.bufferProcessing && state.bufferedRequest) clearBuffer(this, state);
+  }
+};
+
+Writable.prototype.setDefaultEncoding = function setDefaultEncoding(encoding) {
+  // node::ParseEncoding() requires lower case.
+  if (typeof encoding === 'string') encoding = encoding.toLowerCase();
+  if (!(['hex', 'utf8', 'utf-8', 'ascii', 'binary', 'base64', 'ucs2', 'ucs-2', 'utf16le', 'utf-16le', 'raw'].indexOf((encoding + '').toLowerCase()) > -1)) throw new TypeError('Unknown encoding: ' + encoding);
+  this._writableState.defaultEncoding = encoding;
+  return this;
+};
+
+function decodeChunk(state, chunk, encoding) {
+  if (!state.objectMode && state.decodeStrings !== false && typeof chunk === 'string') {
+    chunk = Buffer.from(chunk, encoding);
+  }
+  return chunk;
+}
+
+Object.defineProperty(Writable.prototype, 'writableHighWaterMark', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function () {
+    return this._writableState.highWaterMark;
+  }
+});
+
+// if we're already writing something, then just put this
+// in the queue, and wait our turn.  Otherwise, call _write
+// If we return false, then we need a drain event, so set that flag.
+function writeOrBuffer(stream, state, isBuf, chunk, encoding, cb) {
+  if (!isBuf) {
+    var newChunk = decodeChunk(state, chunk, encoding);
+    if (chunk !== newChunk) {
+      isBuf = true;
+      encoding = 'buffer';
+      chunk = newChunk;
+    }
+  }
+  var len = state.objectMode ? 1 : chunk.length;
+
+  state.length += len;
+
+  var ret = state.length < state.highWaterMark;
+  // we must ensure that previous needDrain will not be reset to false.
+  if (!ret) state.needDrain = true;
+
+  if (state.writing || state.corked) {
+    var last = state.lastBufferedRequest;
+    state.lastBufferedRequest = {
+      chunk: chunk,
+      encoding: encoding,
+      isBuf: isBuf,
+      callback: cb,
+      next: null
+    };
+    if (last) {
+      last.next = state.lastBufferedRequest;
+    } else {
+      state.bufferedRequest = state.lastBufferedRequest;
+    }
+    state.bufferedRequestCount += 1;
+  } else {
+    doWrite(stream, state, false, len, chunk, encoding, cb);
+  }
+
+  return ret;
+}
+
+function doWrite(stream, state, writev, len, chunk, encoding, cb) {
+  state.writelen = len;
+  state.writecb = cb;
+  state.writing = true;
+  state.sync = true;
+  if (writev) stream._writev(chunk, state.onwrite);else stream._write(chunk, encoding, state.onwrite);
+  state.sync = false;
+}
+
+function onwriteError(stream, state, sync, er, cb) {
+  --state.pendingcb;
+
+  if (sync) {
+    // defer the callback if we are being called synchronously
+    // to avoid piling up things on the stack
+    pna.nextTick(cb, er);
+    // this can emit finish, and it will always happen
+    // after error
+    pna.nextTick(finishMaybe, stream, state);
+    stream._writableState.errorEmitted = true;
+    stream.emit('error', er);
+  } else {
+    // the caller expect this to happen before if
+    // it is async
+    cb(er);
+    stream._writableState.errorEmitted = true;
+    stream.emit('error', er);
+    // this can emit finish, but finish must
+    // always follow error
+    finishMaybe(stream, state);
+  }
+}
+
+function onwriteStateUpdate(state) {
+  state.writing = false;
+  state.writecb = null;
+  state.length -= state.writelen;
+  state.writelen = 0;
+}
+
+function onwrite(stream, er) {
+  var state = stream._writableState;
+  var sync = state.sync;
+  var cb = state.writecb;
+
+  onwriteStateUpdate(state);
+
+  if (er) onwriteError(stream, state, sync, er, cb);else {
+    // Check if we're actually ready to finish, but don't emit yet
+    var finished = needFinish(state);
+
+    if (!finished && !state.corked && !state.bufferProcessing && state.bufferedRequest) {
+      clearBuffer(stream, state);
+    }
+
+    if (sync) {
+      /*<replacement>*/
+      asyncWrite(afterWrite, stream, state, finished, cb);
+      /*</replacement>*/
+    } else {
+      afterWrite(stream, state, finished, cb);
+    }
+  }
+}
+
+function afterWrite(stream, state, finished, cb) {
+  if (!finished) onwriteDrain(stream, state);
+  state.pendingcb--;
+  cb();
+  finishMaybe(stream, state);
+}
+
+// Must force callback to be called on nextTick, so that we don't
+// emit 'drain' before the write() consumer gets the 'false' return
+// value, and has a chance to attach a 'drain' listener.
+function onwriteDrain(stream, state) {
+  if (state.length === 0 && state.needDrain) {
+    state.needDrain = false;
+    stream.emit('drain');
+  }
+}
+
+// if there's something in the buffer waiting, then process it
+function clearBuffer(stream, state) {
+  state.bufferProcessing = true;
+  var entry = state.bufferedRequest;
+
+  if (stream._writev && entry && entry.next) {
+    // Fast case, write everything using _writev()
+    var l = state.bufferedRequestCount;
+    var buffer = new Array(l);
+    var holder = state.corkedRequestsFree;
+    holder.entry = entry;
+
+    var count = 0;
+    var allBuffers = true;
+    while (entry) {
+      buffer[count] = entry;
+      if (!entry.isBuf) allBuffers = false;
+      entry = entry.next;
+      count += 1;
+    }
+    buffer.allBuffers = allBuffers;
+
+    doWrite(stream, state, true, state.length, buffer, '', holder.finish);
+
+    // doWrite is almost always async, defer these to save a bit of time
+    // as the hot path ends with doWrite
+    state.pendingcb++;
+    state.lastBufferedRequest = null;
+    if (holder.next) {
+      state.corkedRequestsFree = holder.next;
+      holder.next = null;
+    } else {
+      state.corkedRequestsFree = new CorkedRequest(state);
+    }
+    state.bufferedRequestCount = 0;
+  } else {
+    // Slow case, write chunks one-by-one
+    while (entry) {
+      var chunk = entry.chunk;
+      var encoding = entry.encoding;
+      var cb = entry.callback;
+      var len = state.objectMode ? 1 : chunk.length;
+
+      doWrite(stream, state, false, len, chunk, encoding, cb);
+      entry = entry.next;
+      state.bufferedRequestCount--;
+      // if we didn't call the onwrite immediately, then
+      // it means that we need to wait until it does.
+      // also, that means that the chunk and cb are currently
+      // being processed, so move the buffer counter past them.
+      if (state.writing) {
+        break;
+      }
+    }
+
+    if (entry === null) state.lastBufferedRequest = null;
+  }
+
+  state.bufferedRequest = entry;
+  state.bufferProcessing = false;
+}
+
+Writable.prototype._write = function (chunk, encoding, cb) {
+  cb(new Error('_write() is not implemented'));
+};
+
+Writable.prototype._writev = null;
+
+Writable.prototype.end = function (chunk, encoding, cb) {
+  var state = this._writableState;
+
+  if (typeof chunk === 'function') {
+    cb = chunk;
+    chunk = null;
+    encoding = null;
+  } else if (typeof encoding === 'function') {
+    cb = encoding;
+    encoding = null;
+  }
+
+  if (chunk !== null && chunk !== undefined) this.write(chunk, encoding);
+
+  // .end() fully uncorks
+  if (state.corked) {
+    state.corked = 1;
+    this.uncork();
+  }
+
+  // ignore unnecessary end() calls.
+  if (!state.ending && !state.finished) endWritable(this, state, cb);
+};
+
+function needFinish(state) {
+  return state.ending && state.length === 0 && state.bufferedRequest === null && !state.finished && !state.writing;
+}
+function callFinal(stream, state) {
+  stream._final(function (err) {
+    state.pendingcb--;
+    if (err) {
+      stream.emit('error', err);
+    }
+    state.prefinished = true;
+    stream.emit('prefinish');
+    finishMaybe(stream, state);
+  });
+}
+function prefinish(stream, state) {
+  if (!state.prefinished && !state.finalCalled) {
+    if (typeof stream._final === 'function') {
+      state.pendingcb++;
+      state.finalCalled = true;
+      pna.nextTick(callFinal, stream, state);
+    } else {
+      state.prefinished = true;
+      stream.emit('prefinish');
+    }
+  }
+}
+
+function finishMaybe(stream, state) {
+  var need = needFinish(state);
+  if (need) {
+    prefinish(stream, state);
+    if (state.pendingcb === 0) {
+      state.finished = true;
+      stream.emit('finish');
+    }
+  }
+  return need;
+}
+
+function endWritable(stream, state, cb) {
+  state.ending = true;
+  finishMaybe(stream, state);
+  if (cb) {
+    if (state.finished) pna.nextTick(cb);else stream.once('finish', cb);
+  }
+  state.ended = true;
+  stream.writable = false;
+}
+
+function onCorkedFinish(corkReq, state, err) {
+  var entry = corkReq.entry;
+  corkReq.entry = null;
+  while (entry) {
+    var cb = entry.callback;
+    state.pendingcb--;
+    cb(err);
+    entry = entry.next;
+  }
+  if (state.corkedRequestsFree) {
+    state.corkedRequestsFree.next = corkReq;
+  } else {
+    state.corkedRequestsFree = corkReq;
+  }
+}
+
+Object.defineProperty(Writable.prototype, 'destroyed', {
+  get: function () {
+    if (this._writableState === undefined) {
+      return false;
+    }
+    return this._writableState.destroyed;
+  },
+  set: function (value) {
+    // we ignore the value if the stream
+    // has not been initialized yet
+    if (!this._writableState) {
+      return;
+    }
+
+    // backward compatibility, the user is explicitly
+    // managing destroyed
+    this._writableState.destroyed = value;
+  }
+});
+
+Writable.prototype.destroy = destroyImpl.destroy;
+Writable.prototype._undestroy = destroyImpl.undestroy;
+Writable.prototype._destroy = function (err, cb) {
+  this.end();
+  cb(err);
+};
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("timers").setImmediate)
+},{"./_stream_duplex":18,"./internal/streams/destroy":24,"./internal/streams/stream":25,"_process":14,"core-util-is":7,"inherits":11,"process-nextick-args":26,"safe-buffer":29,"timers":34,"util-deprecate":38}],23:[function(require,module,exports){
+'use strict';
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Buffer = require('safe-buffer').Buffer;
+var util = require('util');
+
+function copyBuffer(src, target, offset) {
+  src.copy(target, offset);
+}
+
+module.exports = function () {
+  function BufferList() {
+    _classCallCheck(this, BufferList);
+
+    this.head = null;
+    this.tail = null;
+    this.length = 0;
+  }
+
+  BufferList.prototype.push = function push(v) {
+    var entry = { data: v, next: null };
+    if (this.length > 0) this.tail.next = entry;else this.head = entry;
+    this.tail = entry;
+    ++this.length;
+  };
+
+  BufferList.prototype.unshift = function unshift(v) {
+    var entry = { data: v, next: this.head };
+    if (this.length === 0) this.tail = entry;
+    this.head = entry;
+    ++this.length;
+  };
+
+  BufferList.prototype.shift = function shift() {
+    if (this.length === 0) return;
+    var ret = this.head.data;
+    if (this.length === 1) this.head = this.tail = null;else this.head = this.head.next;
+    --this.length;
+    return ret;
+  };
+
+  BufferList.prototype.clear = function clear() {
+    this.head = this.tail = null;
+    this.length = 0;
+  };
+
+  BufferList.prototype.join = function join(s) {
+    if (this.length === 0) return '';
+    var p = this.head;
+    var ret = '' + p.data;
+    while (p = p.next) {
+      ret += s + p.data;
+    }return ret;
+  };
+
+  BufferList.prototype.concat = function concat(n) {
+    if (this.length === 0) return Buffer.alloc(0);
+    if (this.length === 1) return this.head.data;
+    var ret = Buffer.allocUnsafe(n >>> 0);
+    var p = this.head;
+    var i = 0;
+    while (p) {
+      copyBuffer(p.data, ret, i);
+      i += p.data.length;
+      p = p.next;
+    }
+    return ret;
+  };
+
+  return BufferList;
+}();
+
+if (util && util.inspect && util.inspect.custom) {
+  module.exports.prototype[util.inspect.custom] = function () {
+    var obj = util.inspect({ length: this.length });
+    return this.constructor.name + ' ' + obj;
+  };
+}
+},{"safe-buffer":29,"util":3}],24:[function(require,module,exports){
+'use strict';
+
+/*<replacement>*/
+
+var pna = require('process-nextick-args');
+/*</replacement>*/
+
+// undocumented cb() API, needed for core, not for public API
+function destroy(err, cb) {
+  var _this = this;
+
+  var readableDestroyed = this._readableState && this._readableState.destroyed;
+  var writableDestroyed = this._writableState && this._writableState.destroyed;
+
+  if (readableDestroyed || writableDestroyed) {
+    if (cb) {
+      cb(err);
+    } else if (err && (!this._writableState || !this._writableState.errorEmitted)) {
+      pna.nextTick(emitErrorNT, this, err);
     }
     return this;
   }
 
-  /**
-   * Get the window associated with the element
-   * @argument {Element} element
-   * @returns {Window}
-   */
-  function getWindow(element) {
-    var ownerDocument = element.ownerDocument;
-    return ownerDocument ? ownerDocument.defaultView : window;
+  // we set destroyed to true before firing error callbacks in order
+  // to make it re-entrance safe in case destroy() is called within callbacks
+
+  if (this._readableState) {
+    this._readableState.destroyed = true;
   }
 
-  function attachToScrollParents(scrollParent, event, callback, scrollParents) {
-    var isBody = scrollParent.nodeName === 'BODY';
-    var target = isBody ? scrollParent.ownerDocument.defaultView : scrollParent;
-    target.addEventListener(event, callback, { passive: true });
-
-    if (!isBody) {
-      attachToScrollParents(getScrollParent(target.parentNode), event, callback, scrollParents);
-    }
-    scrollParents.push(target);
+  // if this is a duplex stream mark the writable part as destroyed as well
+  if (this._writableState) {
+    this._writableState.destroyed = true;
   }
 
-  /**
-   * Setup needed event listeners used to update the popper position
-   * @method
-   * @memberof Popper.Utils
-   * @private
-   */
-  function setupEventListeners(reference, options, state, updateBound) {
-    // Resize event listener on window
-    state.updateBound = updateBound;
-    getWindow(reference).addEventListener('resize', state.updateBound, { passive: true });
-
-    // Scroll event listener on scroll parents
-    var scrollElement = getScrollParent(reference);
-    attachToScrollParents(scrollElement, 'scroll', state.updateBound, state.scrollParents);
-    state.scrollElement = scrollElement;
-    state.eventsEnabled = true;
-
-    return state;
-  }
-
-  /**
-   * It will add resize/scroll events and start recalculating
-   * position of the popper element when they are triggered.
-   * @method
-   * @memberof Popper
-   */
-  function enableEventListeners() {
-    if (!this.state.eventsEnabled) {
-      this.state = setupEventListeners(this.reference, this.options, this.state, this.scheduleUpdate);
+  this._destroy(err || null, function (err) {
+    if (!cb && err) {
+      pna.nextTick(emitErrorNT, _this, err);
+      if (_this._writableState) {
+        _this._writableState.errorEmitted = true;
+      }
+    } else if (cb) {
+      cb(err);
     }
-  }
-
-  /**
-   * Remove event listeners used to update the popper position
-   * @method
-   * @memberof Popper.Utils
-   * @private
-   */
-  function removeEventListeners(reference, state) {
-    // Remove resize event listener on window
-    getWindow(reference).removeEventListener('resize', state.updateBound);
-
-    // Remove scroll event listener on scroll parents
-    state.scrollParents.forEach(function (target) {
-      target.removeEventListener('scroll', state.updateBound);
-    });
-
-    // Reset state
-    state.updateBound = null;
-    state.scrollParents = [];
-    state.scrollElement = null;
-    state.eventsEnabled = false;
-    return state;
-  }
-
-  /**
-   * It will remove resize/scroll events and won't recalculate popper position
-   * when they are triggered. It also won't trigger `onUpdate` callback anymore,
-   * unless you call `update` method manually.
-   * @method
-   * @memberof Popper
-   */
-  function disableEventListeners() {
-    if (this.state.eventsEnabled) {
-      cancelAnimationFrame(this.scheduleUpdate);
-      this.state = removeEventListeners(this.reference, this.state);
-    }
-  }
-
-  /**
-   * Tells if a given input is a number
-   * @method
-   * @memberof Popper.Utils
-   * @param {*} input to check
-   * @return {Boolean}
-   */
-  function isNumeric(n) {
-    return n !== '' && !isNaN(parseFloat(n)) && isFinite(n);
-  }
-
-  /**
-   * Set the style to the given popper
-   * @method
-   * @memberof Popper.Utils
-   * @argument {Element} element - Element to apply the style to
-   * @argument {Object} styles
-   * Object with a list of properties and values which will be applied to the element
-   */
-  function setStyles(element, styles) {
-    Object.keys(styles).forEach(function (prop) {
-      var unit = '';
-      // add unit if the value is numeric and is one of the following
-      if (['width', 'height', 'top', 'right', 'bottom', 'left'].indexOf(prop) !== -1 && isNumeric(styles[prop])) {
-        unit = 'px';
-      }
-      element.style[prop] = styles[prop] + unit;
-    });
-  }
-
-  /**
-   * Set the attributes to the given popper
-   * @method
-   * @memberof Popper.Utils
-   * @argument {Element} element - Element to apply the attributes to
-   * @argument {Object} styles
-   * Object with a list of properties and values which will be applied to the element
-   */
-  function setAttributes(element, attributes) {
-    Object.keys(attributes).forEach(function (prop) {
-      var value = attributes[prop];
-      if (value !== false) {
-        element.setAttribute(prop, attributes[prop]);
-      } else {
-        element.removeAttribute(prop);
-      }
-    });
-  }
-
-  /**
-   * @function
-   * @memberof Modifiers
-   * @argument {Object} data - The data object generated by `update` method
-   * @argument {Object} data.styles - List of style properties - values to apply to popper element
-   * @argument {Object} data.attributes - List of attribute properties - values to apply to popper element
-   * @argument {Object} options - Modifiers configuration and options
-   * @returns {Object} The same data object
-   */
-  function applyStyle(data) {
-    // any property present in `data.styles` will be applied to the popper,
-    // in this way we can make the 3rd party modifiers add custom styles to it
-    // Be aware, modifiers could override the properties defined in the previous
-    // lines of this modifier!
-    setStyles(data.instance.popper, data.styles);
-
-    // any property present in `data.attributes` will be applied to the popper,
-    // they will be set as HTML attributes of the element
-    setAttributes(data.instance.popper, data.attributes);
-
-    // if arrowElement is defined and arrowStyles has some properties
-    if (data.arrowElement && Object.keys(data.arrowStyles).length) {
-      setStyles(data.arrowElement, data.arrowStyles);
-    }
-
-    return data;
-  }
-
-  /**
-   * Set the x-placement attribute before everything else because it could be used
-   * to add margins to the popper margins needs to be calculated to get the
-   * correct popper offsets.
-   * @method
-   * @memberof Popper.modifiers
-   * @param {HTMLElement} reference - The reference element used to position the popper
-   * @param {HTMLElement} popper - The HTML element used as popper
-   * @param {Object} options - Popper.js options
-   */
-  function applyStyleOnLoad(reference, popper, options, modifierOptions, state) {
-    // compute reference element offsets
-    var referenceOffsets = getReferenceOffsets(state, popper, reference, options.positionFixed);
-
-    // compute auto placement, store placement inside the data object,
-    // modifiers will be able to edit `placement` if needed
-    // and refer to originalPlacement to know the original value
-    var placement = computeAutoPlacement(options.placement, referenceOffsets, popper, reference, options.modifiers.flip.boundariesElement, options.modifiers.flip.padding);
-
-    popper.setAttribute('x-placement', placement);
-
-    // Apply `position` to popper before anything else because
-    // without the position applied we can't guarantee correct computations
-    setStyles(popper, { position: options.positionFixed ? 'fixed' : 'absolute' });
-
-    return options;
-  }
-
-  /**
-   * @function
-   * @memberof Popper.Utils
-   * @argument {Object} data - The data object generated by `update` method
-   * @argument {Boolean} shouldRound - If the offsets should be rounded at all
-   * @returns {Object} The popper's position offsets rounded
-   *
-   * The tale of pixel-perfect positioning. It's still not 100% perfect, but as
-   * good as it can be within reason.
-   * Discussion here: https://github.com/FezVrasta/popper.js/pull/715
-   *
-   * Low DPI screens cause a popper to be blurry if not using full pixels (Safari
-   * as well on High DPI screens).
-   *
-   * Firefox prefers no rounding for positioning and does not have blurriness on
-   * high DPI screens.
-   *
-   * Only horizontal placement and left/right values need to be considered.
-   */
-  function getRoundedOffsets(data, shouldRound) {
-    var _data$offsets = data.offsets,
-        popper = _data$offsets.popper,
-        reference = _data$offsets.reference;
-    var round = Math.round,
-        floor = Math.floor;
-
-    var noRound = function noRound(v) {
-      return v;
-    };
-
-    var referenceWidth = round(reference.width);
-    var popperWidth = round(popper.width);
-
-    var isVertical = ['left', 'right'].indexOf(data.placement) !== -1;
-    var isVariation = data.placement.indexOf('-') !== -1;
-    var sameWidthParity = referenceWidth % 2 === popperWidth % 2;
-    var bothOddWidth = referenceWidth % 2 === 1 && popperWidth % 2 === 1;
-
-    var horizontalToInteger = !shouldRound ? noRound : isVertical || isVariation || sameWidthParity ? round : floor;
-    var verticalToInteger = !shouldRound ? noRound : round;
-
-    return {
-      left: horizontalToInteger(bothOddWidth && !isVariation && shouldRound ? popper.left - 1 : popper.left),
-      top: verticalToInteger(popper.top),
-      bottom: verticalToInteger(popper.bottom),
-      right: horizontalToInteger(popper.right)
-    };
-  }
-
-  var isFirefox = isBrowser && /Firefox/i.test(navigator.userAgent);
-
-  /**
-   * @function
-   * @memberof Modifiers
-   * @argument {Object} data - The data object generated by `update` method
-   * @argument {Object} options - Modifiers configuration and options
-   * @returns {Object} The data object, properly modified
-   */
-  function computeStyle(data, options) {
-    var x = options.x,
-        y = options.y;
-    var popper = data.offsets.popper;
-
-    // Remove this legacy support in Popper.js v2
-
-    var legacyGpuAccelerationOption = find(data.instance.modifiers, function (modifier) {
-      return modifier.name === 'applyStyle';
-    }).gpuAcceleration;
-    if (legacyGpuAccelerationOption !== undefined) {
-      console.warn('WARNING: `gpuAcceleration` option moved to `computeStyle` modifier and will not be supported in future versions of Popper.js!');
-    }
-    var gpuAcceleration = legacyGpuAccelerationOption !== undefined ? legacyGpuAccelerationOption : options.gpuAcceleration;
-
-    var offsetParent = getOffsetParent(data.instance.popper);
-    var offsetParentRect = getBoundingClientRect(offsetParent);
-
-    // Styles
-    var styles = {
-      position: popper.position
-    };
-
-    var offsets = getRoundedOffsets(data, window.devicePixelRatio < 2 || !isFirefox);
-
-    var sideA = x === 'bottom' ? 'top' : 'bottom';
-    var sideB = y === 'right' ? 'left' : 'right';
-
-    // if gpuAcceleration is set to `true` and transform is supported,
-    //  we use `translate3d` to apply the position to the popper we
-    // automatically use the supported prefixed version if needed
-    var prefixedProperty = getSupportedPropertyName('transform');
-
-    // now, let's make a step back and look at this code closely (wtf?)
-    // If the content of the popper grows once it's been positioned, it
-    // may happen that the popper gets misplaced because of the new content
-    // overflowing its reference element
-    // To avoid this problem, we provide two options (x and y), which allow
-    // the consumer to define the offset origin.
-    // If we position a popper on top of a reference element, we can set
-    // `x` to `top` to make the popper grow towards its top instead of
-    // its bottom.
-    var left = void 0,
-        top = void 0;
-    if (sideA === 'bottom') {
-      // when offsetParent is <html> the positioning is relative to the bottom of the screen (excluding the scrollbar)
-      // and not the bottom of the html element
-      if (offsetParent.nodeName === 'HTML') {
-        top = -offsetParent.clientHeight + offsets.bottom;
-      } else {
-        top = -offsetParentRect.height + offsets.bottom;
-      }
-    } else {
-      top = offsets.top;
-    }
-    if (sideB === 'right') {
-      if (offsetParent.nodeName === 'HTML') {
-        left = -offsetParent.clientWidth + offsets.right;
-      } else {
-        left = -offsetParentRect.width + offsets.right;
-      }
-    } else {
-      left = offsets.left;
-    }
-    if (gpuAcceleration && prefixedProperty) {
-      styles[prefixedProperty] = 'translate3d(' + left + 'px, ' + top + 'px, 0)';
-      styles[sideA] = 0;
-      styles[sideB] = 0;
-      styles.willChange = 'transform';
-    } else {
-      // othwerise, we use the standard `top`, `left`, `bottom` and `right` properties
-      var invertTop = sideA === 'bottom' ? -1 : 1;
-      var invertLeft = sideB === 'right' ? -1 : 1;
-      styles[sideA] = top * invertTop;
-      styles[sideB] = left * invertLeft;
-      styles.willChange = sideA + ', ' + sideB;
-    }
-
-    // Attributes
-    var attributes = {
-      'x-placement': data.placement
-    };
-
-    // Update `data` attributes, styles and arrowStyles
-    data.attributes = _extends({}, attributes, data.attributes);
-    data.styles = _extends({}, styles, data.styles);
-    data.arrowStyles = _extends({}, data.offsets.arrow, data.arrowStyles);
-
-    return data;
-  }
-
-  /**
-   * Helper used to know if the given modifier depends from another one.<br />
-   * It checks if the needed modifier is listed and enabled.
-   * @method
-   * @memberof Popper.Utils
-   * @param {Array} modifiers - list of modifiers
-   * @param {String} requestingName - name of requesting modifier
-   * @param {String} requestedName - name of requested modifier
-   * @returns {Boolean}
-   */
-  function isModifierRequired(modifiers, requestingName, requestedName) {
-    var requesting = find(modifiers, function (_ref) {
-      var name = _ref.name;
-      return name === requestingName;
-    });
-
-    var isRequired = !!requesting && modifiers.some(function (modifier) {
-      return modifier.name === requestedName && modifier.enabled && modifier.order < requesting.order;
-    });
-
-    if (!isRequired) {
-      var _requesting = '`' + requestingName + '`';
-      var requested = '`' + requestedName + '`';
-      console.warn(requested + ' modifier is required by ' + _requesting + ' modifier in order to work, be sure to include it before ' + _requesting + '!');
-    }
-    return isRequired;
-  }
-
-  /**
-   * @function
-   * @memberof Modifiers
-   * @argument {Object} data - The data object generated by update method
-   * @argument {Object} options - Modifiers configuration and options
-   * @returns {Object} The data object, properly modified
-   */
-  function arrow(data, options) {
-    var _data$offsets$arrow;
-
-    // arrow depends on keepTogether in order to work
-    if (!isModifierRequired(data.instance.modifiers, 'arrow', 'keepTogether')) {
-      return data;
-    }
-
-    var arrowElement = options.element;
-
-    // if arrowElement is a string, suppose it's a CSS selector
-    if (typeof arrowElement === 'string') {
-      arrowElement = data.instance.popper.querySelector(arrowElement);
-
-      // if arrowElement is not found, don't run the modifier
-      if (!arrowElement) {
-        return data;
-      }
-    } else {
-      // if the arrowElement isn't a query selector we must check that the
-      // provided DOM node is child of its popper node
-      if (!data.instance.popper.contains(arrowElement)) {
-        console.warn('WARNING: `arrow.element` must be child of its popper element!');
-        return data;
-      }
-    }
-
-    var placement = data.placement.split('-')[0];
-    var _data$offsets = data.offsets,
-        popper = _data$offsets.popper,
-        reference = _data$offsets.reference;
-
-    var isVertical = ['left', 'right'].indexOf(placement) !== -1;
-
-    var len = isVertical ? 'height' : 'width';
-    var sideCapitalized = isVertical ? 'Top' : 'Left';
-    var side = sideCapitalized.toLowerCase();
-    var altSide = isVertical ? 'left' : 'top';
-    var opSide = isVertical ? 'bottom' : 'right';
-    var arrowElementSize = getOuterSizes(arrowElement)[len];
-
-    //
-    // extends keepTogether behavior making sure the popper and its
-    // reference have enough pixels in conjunction
-    //
-
-    // top/left side
-    if (reference[opSide] - arrowElementSize < popper[side]) {
-      data.offsets.popper[side] -= popper[side] - (reference[opSide] - arrowElementSize);
-    }
-    // bottom/right side
-    if (reference[side] + arrowElementSize > popper[opSide]) {
-      data.offsets.popper[side] += reference[side] + arrowElementSize - popper[opSide];
-    }
-    data.offsets.popper = getClientRect(data.offsets.popper);
-
-    // compute center of the popper
-    var center = reference[side] + reference[len] / 2 - arrowElementSize / 2;
-
-    // Compute the sideValue using the updated popper offsets
-    // take popper margin in account because we don't have this info available
-    var css = getStyleComputedProperty(data.instance.popper);
-    var popperMarginSide = parseFloat(css['margin' + sideCapitalized], 10);
-    var popperBorderSide = parseFloat(css['border' + sideCapitalized + 'Width'], 10);
-    var sideValue = center - data.offsets.popper[side] - popperMarginSide - popperBorderSide;
-
-    // prevent arrowElement from being placed not contiguously to its popper
-    sideValue = Math.max(Math.min(popper[len] - arrowElementSize, sideValue), 0);
-
-    data.arrowElement = arrowElement;
-    data.offsets.arrow = (_data$offsets$arrow = {}, defineProperty(_data$offsets$arrow, side, Math.round(sideValue)), defineProperty(_data$offsets$arrow, altSide, ''), _data$offsets$arrow);
-
-    return data;
-  }
-
-  /**
-   * Get the opposite placement variation of the given one
-   * @method
-   * @memberof Popper.Utils
-   * @argument {String} placement variation
-   * @returns {String} flipped placement variation
-   */
-  function getOppositeVariation(variation) {
-    if (variation === 'end') {
-      return 'start';
-    } else if (variation === 'start') {
-      return 'end';
-    }
-    return variation;
-  }
-
-  /**
-   * List of accepted placements to use as values of the `placement` option.<br />
-   * Valid placements are:
-   * - `auto`
-   * - `top`
-   * - `right`
-   * - `bottom`
-   * - `left`
-   *
-   * Each placement can have a variation from this list:
-   * - `-start`
-   * - `-end`
-   *
-   * Variations are interpreted easily if you think of them as the left to right
-   * written languages. Horizontally (`top` and `bottom`), `start` is left and `end`
-   * is right.<br />
-   * Vertically (`left` and `right`), `start` is top and `end` is bottom.
-   *
-   * Some valid examples are:
-   * - `top-end` (on top of reference, right aligned)
-   * - `right-start` (on right of reference, top aligned)
-   * - `bottom` (on bottom, centered)
-   * - `auto-end` (on the side with more space available, alignment depends by placement)
-   *
-   * @static
-   * @type {Array}
-   * @enum {String}
-   * @readonly
-   * @method placements
-   * @memberof Popper
-   */
-  var placements = ['auto-start', 'auto', 'auto-end', 'top-start', 'top', 'top-end', 'right-start', 'right', 'right-end', 'bottom-end', 'bottom', 'bottom-start', 'left-end', 'left', 'left-start'];
-
-  // Get rid of `auto` `auto-start` and `auto-end`
-  var validPlacements = placements.slice(3);
-
-  /**
-   * Given an initial placement, returns all the subsequent placements
-   * clockwise (or counter-clockwise).
-   *
-   * @method
-   * @memberof Popper.Utils
-   * @argument {String} placement - A valid placement (it accepts variations)
-   * @argument {Boolean} counter - Set to true to walk the placements counterclockwise
-   * @returns {Array} placements including their variations
-   */
-  function clockwise(placement) {
-    var counter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-    var index = validPlacements.indexOf(placement);
-    var arr = validPlacements.slice(index + 1).concat(validPlacements.slice(0, index));
-    return counter ? arr.reverse() : arr;
-  }
-
-  var BEHAVIORS = {
-    FLIP: 'flip',
-    CLOCKWISE: 'clockwise',
-    COUNTERCLOCKWISE: 'counterclockwise'
-  };
-
-  /**
-   * @function
-   * @memberof Modifiers
-   * @argument {Object} data - The data object generated by update method
-   * @argument {Object} options - Modifiers configuration and options
-   * @returns {Object} The data object, properly modified
-   */
-  function flip(data, options) {
-    // if `inner` modifier is enabled, we can't use the `flip` modifier
-    if (isModifierEnabled(data.instance.modifiers, 'inner')) {
-      return data;
-    }
-
-    if (data.flipped && data.placement === data.originalPlacement) {
-      // seems like flip is trying to loop, probably there's not enough space on any of the flippable sides
-      return data;
-    }
-
-    var boundaries = getBoundaries(data.instance.popper, data.instance.reference, options.padding, options.boundariesElement, data.positionFixed);
-
-    var placement = data.placement.split('-')[0];
-    var placementOpposite = getOppositePlacement(placement);
-    var variation = data.placement.split('-')[1] || '';
-
-    var flipOrder = [];
-
-    switch (options.behavior) {
-      case BEHAVIORS.FLIP:
-        flipOrder = [placement, placementOpposite];
-        break;
-      case BEHAVIORS.CLOCKWISE:
-        flipOrder = clockwise(placement);
-        break;
-      case BEHAVIORS.COUNTERCLOCKWISE:
-        flipOrder = clockwise(placement, true);
-        break;
-      default:
-        flipOrder = options.behavior;
-    }
-
-    flipOrder.forEach(function (step, index) {
-      if (placement !== step || flipOrder.length === index + 1) {
-        return data;
-      }
-
-      placement = data.placement.split('-')[0];
-      placementOpposite = getOppositePlacement(placement);
-
-      var popperOffsets = data.offsets.popper;
-      var refOffsets = data.offsets.reference;
-
-      // using floor because the reference offsets may contain decimals we are not going to consider here
-      var floor = Math.floor;
-      var overlapsRef = placement === 'left' && floor(popperOffsets.right) > floor(refOffsets.left) || placement === 'right' && floor(popperOffsets.left) < floor(refOffsets.right) || placement === 'top' && floor(popperOffsets.bottom) > floor(refOffsets.top) || placement === 'bottom' && floor(popperOffsets.top) < floor(refOffsets.bottom);
-
-      var overflowsLeft = floor(popperOffsets.left) < floor(boundaries.left);
-      var overflowsRight = floor(popperOffsets.right) > floor(boundaries.right);
-      var overflowsTop = floor(popperOffsets.top) < floor(boundaries.top);
-      var overflowsBottom = floor(popperOffsets.bottom) > floor(boundaries.bottom);
-
-      var overflowsBoundaries = placement === 'left' && overflowsLeft || placement === 'right' && overflowsRight || placement === 'top' && overflowsTop || placement === 'bottom' && overflowsBottom;
-
-      // flip the variation if required
-      var isVertical = ['top', 'bottom'].indexOf(placement) !== -1;
-      var flippedVariation = !!options.flipVariations && (isVertical && variation === 'start' && overflowsLeft || isVertical && variation === 'end' && overflowsRight || !isVertical && variation === 'start' && overflowsTop || !isVertical && variation === 'end' && overflowsBottom);
-
-      if (overlapsRef || overflowsBoundaries || flippedVariation) {
-        // this boolean to detect any flip loop
-        data.flipped = true;
-
-        if (overlapsRef || overflowsBoundaries) {
-          placement = flipOrder[index + 1];
-        }
-
-        if (flippedVariation) {
-          variation = getOppositeVariation(variation);
-        }
-
-        data.placement = placement + (variation ? '-' + variation : '');
-
-        // this object contains `position`, we want to preserve it along with
-        // any additional property we may add in the future
-        data.offsets.popper = _extends({}, data.offsets.popper, getPopperOffsets(data.instance.popper, data.offsets.reference, data.placement));
-
-        data = runModifiers(data.instance.modifiers, data, 'flip');
-      }
-    });
-    return data;
-  }
-
-  /**
-   * @function
-   * @memberof Modifiers
-   * @argument {Object} data - The data object generated by update method
-   * @argument {Object} options - Modifiers configuration and options
-   * @returns {Object} The data object, properly modified
-   */
-  function keepTogether(data) {
-    var _data$offsets = data.offsets,
-        popper = _data$offsets.popper,
-        reference = _data$offsets.reference;
-
-    var placement = data.placement.split('-')[0];
-    var floor = Math.floor;
-    var isVertical = ['top', 'bottom'].indexOf(placement) !== -1;
-    var side = isVertical ? 'right' : 'bottom';
-    var opSide = isVertical ? 'left' : 'top';
-    var measurement = isVertical ? 'width' : 'height';
-
-    if (popper[side] < floor(reference[opSide])) {
-      data.offsets.popper[opSide] = floor(reference[opSide]) - popper[measurement];
-    }
-    if (popper[opSide] > floor(reference[side])) {
-      data.offsets.popper[opSide] = floor(reference[side]);
-    }
-
-    return data;
-  }
-
-  /**
-   * Converts a string containing value + unit into a px value number
-   * @function
-   * @memberof {modifiers~offset}
-   * @private
-   * @argument {String} str - Value + unit string
-   * @argument {String} measurement - `height` or `width`
-   * @argument {Object} popperOffsets
-   * @argument {Object} referenceOffsets
-   * @returns {Number|String}
-   * Value in pixels, or original string if no values were extracted
-   */
-  function toValue(str, measurement, popperOffsets, referenceOffsets) {
-    // separate value from unit
-    var split = str.match(/((?:\-|\+)?\d*\.?\d*)(.*)/);
-    var value = +split[1];
-    var unit = split[2];
-
-    // If it's not a number it's an operator, I guess
-    if (!value) {
-      return str;
-    }
-
-    if (unit.indexOf('%') === 0) {
-      var element = void 0;
-      switch (unit) {
-        case '%p':
-          element = popperOffsets;
-          break;
-        case '%':
-        case '%r':
-        default:
-          element = referenceOffsets;
-      }
-
-      var rect = getClientRect(element);
-      return rect[measurement] / 100 * value;
-    } else if (unit === 'vh' || unit === 'vw') {
-      // if is a vh or vw, we calculate the size based on the viewport
-      var size = void 0;
-      if (unit === 'vh') {
-        size = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-      } else {
-        size = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-      }
-      return size / 100 * value;
-    } else {
-      // if is an explicit pixel unit, we get rid of the unit and keep the value
-      // if is an implicit unit, it's px, and we return just the value
-      return value;
-    }
-  }
-
-  /**
-   * Parse an `offset` string to extrapolate `x` and `y` numeric offsets.
-   * @function
-   * @memberof {modifiers~offset}
-   * @private
-   * @argument {String} offset
-   * @argument {Object} popperOffsets
-   * @argument {Object} referenceOffsets
-   * @argument {String} basePlacement
-   * @returns {Array} a two cells array with x and y offsets in numbers
-   */
-  function parseOffset(offset, popperOffsets, referenceOffsets, basePlacement) {
-    var offsets = [0, 0];
-
-    // Use height if placement is left or right and index is 0 otherwise use width
-    // in this way the first offset will use an axis and the second one
-    // will use the other one
-    var useHeight = ['right', 'left'].indexOf(basePlacement) !== -1;
-
-    // Split the offset string to obtain a list of values and operands
-    // The regex addresses values with the plus or minus sign in front (+10, -20, etc)
-    var fragments = offset.split(/(\+|\-)/).map(function (frag) {
-      return frag.trim();
-    });
-
-    // Detect if the offset string contains a pair of values or a single one
-    // they could be separated by comma or space
-    var divider = fragments.indexOf(find(fragments, function (frag) {
-      return frag.search(/,|\s/) !== -1;
-    }));
-
-    if (fragments[divider] && fragments[divider].indexOf(',') === -1) {
-      console.warn('Offsets separated by white space(s) are deprecated, use a comma (,) instead.');
-    }
-
-    // If divider is found, we divide the list of values and operands to divide
-    // them by ofset X and Y.
-    var splitRegex = /\s*,\s*|\s+/;
-    var ops = divider !== -1 ? [fragments.slice(0, divider).concat([fragments[divider].split(splitRegex)[0]]), [fragments[divider].split(splitRegex)[1]].concat(fragments.slice(divider + 1))] : [fragments];
-
-    // Convert the values with units to absolute pixels to allow our computations
-    ops = ops.map(function (op, index) {
-      // Most of the units rely on the orientation of the popper
-      var measurement = (index === 1 ? !useHeight : useHeight) ? 'height' : 'width';
-      var mergeWithPrevious = false;
-      return op
-      // This aggregates any `+` or `-` sign that aren't considered operators
-      // e.g.: 10 + +5 => [10, +, +5]
-      .reduce(function (a, b) {
-        if (a[a.length - 1] === '' && ['+', '-'].indexOf(b) !== -1) {
-          a[a.length - 1] = b;
-          mergeWithPrevious = true;
-          return a;
-        } else if (mergeWithPrevious) {
-          a[a.length - 1] += b;
-          mergeWithPrevious = false;
-          return a;
-        } else {
-          return a.concat(b);
-        }
-      }, [])
-      // Here we convert the string values into number values (in px)
-      .map(function (str) {
-        return toValue(str, measurement, popperOffsets, referenceOffsets);
-      });
-    });
-
-    // Loop trough the offsets arrays and execute the operations
-    ops.forEach(function (op, index) {
-      op.forEach(function (frag, index2) {
-        if (isNumeric(frag)) {
-          offsets[index] += frag * (op[index2 - 1] === '-' ? -1 : 1);
-        }
-      });
-    });
-    return offsets;
-  }
-
-  /**
-   * @function
-   * @memberof Modifiers
-   * @argument {Object} data - The data object generated by update method
-   * @argument {Object} options - Modifiers configuration and options
-   * @argument {Number|String} options.offset=0
-   * The offset value as described in the modifier description
-   * @returns {Object} The data object, properly modified
-   */
-  function offset(data, _ref) {
-    var offset = _ref.offset;
-    var placement = data.placement,
-        _data$offsets = data.offsets,
-        popper = _data$offsets.popper,
-        reference = _data$offsets.reference;
-
-    var basePlacement = placement.split('-')[0];
-
-    var offsets = void 0;
-    if (isNumeric(+offset)) {
-      offsets = [+offset, 0];
-    } else {
-      offsets = parseOffset(offset, popper, reference, basePlacement);
-    }
-
-    if (basePlacement === 'left') {
-      popper.top += offsets[0];
-      popper.left -= offsets[1];
-    } else if (basePlacement === 'right') {
-      popper.top += offsets[0];
-      popper.left += offsets[1];
-    } else if (basePlacement === 'top') {
-      popper.left += offsets[0];
-      popper.top -= offsets[1];
-    } else if (basePlacement === 'bottom') {
-      popper.left += offsets[0];
-      popper.top += offsets[1];
-    }
-
-    data.popper = popper;
-    return data;
-  }
-
-  /**
-   * @function
-   * @memberof Modifiers
-   * @argument {Object} data - The data object generated by `update` method
-   * @argument {Object} options - Modifiers configuration and options
-   * @returns {Object} The data object, properly modified
-   */
-  function preventOverflow(data, options) {
-    var boundariesElement = options.boundariesElement || getOffsetParent(data.instance.popper);
-
-    // If offsetParent is the reference element, we really want to
-    // go one step up and use the next offsetParent as reference to
-    // avoid to make this modifier completely useless and look like broken
-    if (data.instance.reference === boundariesElement) {
-      boundariesElement = getOffsetParent(boundariesElement);
-    }
-
-    // NOTE: DOM access here
-    // resets the popper's position so that the document size can be calculated excluding
-    // the size of the popper element itself
-    var transformProp = getSupportedPropertyName('transform');
-    var popperStyles = data.instance.popper.style; // assignment to help minification
-    var top = popperStyles.top,
-        left = popperStyles.left,
-        transform = popperStyles[transformProp];
-
-    popperStyles.top = '';
-    popperStyles.left = '';
-    popperStyles[transformProp] = '';
-
-    var boundaries = getBoundaries(data.instance.popper, data.instance.reference, options.padding, boundariesElement, data.positionFixed);
-
-    // NOTE: DOM access here
-    // restores the original style properties after the offsets have been computed
-    popperStyles.top = top;
-    popperStyles.left = left;
-    popperStyles[transformProp] = transform;
-
-    options.boundaries = boundaries;
-
-    var order = options.priority;
-    var popper = data.offsets.popper;
-
-    var check = {
-      primary: function primary(placement) {
-        var value = popper[placement];
-        if (popper[placement] < boundaries[placement] && !options.escapeWithReference) {
-          value = Math.max(popper[placement], boundaries[placement]);
-        }
-        return defineProperty({}, placement, value);
-      },
-      secondary: function secondary(placement) {
-        var mainSide = placement === 'right' ? 'left' : 'top';
-        var value = popper[mainSide];
-        if (popper[placement] > boundaries[placement] && !options.escapeWithReference) {
-          value = Math.min(popper[mainSide], boundaries[placement] - (placement === 'right' ? popper.width : popper.height));
-        }
-        return defineProperty({}, mainSide, value);
-      }
-    };
-
-    order.forEach(function (placement) {
-      var side = ['left', 'top'].indexOf(placement) !== -1 ? 'primary' : 'secondary';
-      popper = _extends({}, popper, check[side](placement));
-    });
-
-    data.offsets.popper = popper;
-
-    return data;
-  }
-
-  /**
-   * @function
-   * @memberof Modifiers
-   * @argument {Object} data - The data object generated by `update` method
-   * @argument {Object} options - Modifiers configuration and options
-   * @returns {Object} The data object, properly modified
-   */
-  function shift(data) {
-    var placement = data.placement;
-    var basePlacement = placement.split('-')[0];
-    var shiftvariation = placement.split('-')[1];
-
-    // if shift shiftvariation is specified, run the modifier
-    if (shiftvariation) {
-      var _data$offsets = data.offsets,
-          reference = _data$offsets.reference,
-          popper = _data$offsets.popper;
-
-      var isVertical = ['bottom', 'top'].indexOf(basePlacement) !== -1;
-      var side = isVertical ? 'left' : 'top';
-      var measurement = isVertical ? 'width' : 'height';
-
-      var shiftOffsets = {
-        start: defineProperty({}, side, reference[side]),
-        end: defineProperty({}, side, reference[side] + reference[measurement] - popper[measurement])
-      };
-
-      data.offsets.popper = _extends({}, popper, shiftOffsets[shiftvariation]);
-    }
-
-    return data;
-  }
-
-  /**
-   * @function
-   * @memberof Modifiers
-   * @argument {Object} data - The data object generated by update method
-   * @argument {Object} options - Modifiers configuration and options
-   * @returns {Object} The data object, properly modified
-   */
-  function hide(data) {
-    if (!isModifierRequired(data.instance.modifiers, 'hide', 'preventOverflow')) {
-      return data;
-    }
-
-    var refRect = data.offsets.reference;
-    var bound = find(data.instance.modifiers, function (modifier) {
-      return modifier.name === 'preventOverflow';
-    }).boundaries;
-
-    if (refRect.bottom < bound.top || refRect.left > bound.right || refRect.top > bound.bottom || refRect.right < bound.left) {
-      // Avoid unnecessary DOM access if visibility hasn't changed
-      if (data.hide === true) {
-        return data;
-      }
-
-      data.hide = true;
-      data.attributes['x-out-of-boundaries'] = '';
-    } else {
-      // Avoid unnecessary DOM access if visibility hasn't changed
-      if (data.hide === false) {
-        return data;
-      }
-
-      data.hide = false;
-      data.attributes['x-out-of-boundaries'] = false;
-    }
-
-    return data;
-  }
-
-  /**
-   * @function
-   * @memberof Modifiers
-   * @argument {Object} data - The data object generated by `update` method
-   * @argument {Object} options - Modifiers configuration and options
-   * @returns {Object} The data object, properly modified
-   */
-  function inner(data) {
-    var placement = data.placement;
-    var basePlacement = placement.split('-')[0];
-    var _data$offsets = data.offsets,
-        popper = _data$offsets.popper,
-        reference = _data$offsets.reference;
-
-    var isHoriz = ['left', 'right'].indexOf(basePlacement) !== -1;
-
-    var subtractLength = ['top', 'left'].indexOf(basePlacement) === -1;
-
-    popper[isHoriz ? 'left' : 'top'] = reference[basePlacement] - (subtractLength ? popper[isHoriz ? 'width' : 'height'] : 0);
-
-    data.placement = getOppositePlacement(placement);
-    data.offsets.popper = getClientRect(popper);
-
-    return data;
-  }
-
-  /**
-   * Modifier function, each modifier can have a function of this type assigned
-   * to its `fn` property.<br />
-   * These functions will be called on each update, this means that you must
-   * make sure they are performant enough to avoid performance bottlenecks.
-   *
-   * @function ModifierFn
-   * @argument {dataObject} data - The data object generated by `update` method
-   * @argument {Object} options - Modifiers configuration and options
-   * @returns {dataObject} The data object, properly modified
-   */
-
-  /**
-   * Modifiers are plugins used to alter the behavior of your poppers.<br />
-   * Popper.js uses a set of 9 modifiers to provide all the basic functionalities
-   * needed by the library.
-   *
-   * Usually you don't want to override the `order`, `fn` and `onLoad` props.
-   * All the other properties are configurations that could be tweaked.
-   * @namespace modifiers
-   */
-  var modifiers = {
-    /**
-     * Modifier used to shift the popper on the start or end of its reference
-     * element.<br />
-     * It will read the variation of the `placement` property.<br />
-     * It can be one either `-end` or `-start`.
-     * @memberof modifiers
-     * @inner
-     */
-    shift: {
-      /** @prop {number} order=100 - Index used to define the order of execution */
-      order: 100,
-      /** @prop {Boolean} enabled=true - Whether the modifier is enabled or not */
-      enabled: true,
-      /** @prop {ModifierFn} */
-      fn: shift
-    },
-
-    /**
-     * The `offset` modifier can shift your popper on both its axis.
-     *
-     * It accepts the following units:
-     * - `px` or unit-less, interpreted as pixels
-     * - `%` or `%r`, percentage relative to the length of the reference element
-     * - `%p`, percentage relative to the length of the popper element
-     * - `vw`, CSS viewport width unit
-     * - `vh`, CSS viewport height unit
-     *
-     * For length is intended the main axis relative to the placement of the popper.<br />
-     * This means that if the placement is `top` or `bottom`, the length will be the
-     * `width`. In case of `left` or `right`, it will be the `height`.
-     *
-     * You can provide a single value (as `Number` or `String`), or a pair of values
-     * as `String` divided by a comma or one (or more) white spaces.<br />
-     * The latter is a deprecated method because it leads to confusion and will be
-     * removed in v2.<br />
-     * Additionally, it accepts additions and subtractions between different units.
-     * Note that multiplications and divisions aren't supported.
-     *
-     * Valid examples are:
-     * ```
-     * 10
-     * '10%'
-     * '10, 10'
-     * '10%, 10'
-     * '10 + 10%'
-     * '10 - 5vh + 3%'
-     * '-10px + 5vh, 5px - 6%'
-     * ```
-     * > **NB**: If you desire to apply offsets to your poppers in a way that may make them overlap
-     * > with their reference element, unfortunately, you will have to disable the `flip` modifier.
-     * > You can read more on this at this [issue](https://github.com/FezVrasta/popper.js/issues/373).
-     *
-     * @memberof modifiers
-     * @inner
-     */
-    offset: {
-      /** @prop {number} order=200 - Index used to define the order of execution */
-      order: 200,
-      /** @prop {Boolean} enabled=true - Whether the modifier is enabled or not */
-      enabled: true,
-      /** @prop {ModifierFn} */
-      fn: offset,
-      /** @prop {Number|String} offset=0
-       * The offset value as described in the modifier description
-       */
-      offset: 0
-    },
-
-    /**
-     * Modifier used to prevent the popper from being positioned outside the boundary.
-     *
-     * A scenario exists where the reference itself is not within the boundaries.<br />
-     * We can say it has "escaped the boundaries" — or just "escaped".<br />
-     * In this case we need to decide whether the popper should either:
-     *
-     * - detach from the reference and remain "trapped" in the boundaries, or
-     * - if it should ignore the boundary and "escape with its reference"
-     *
-     * When `escapeWithReference` is set to`true` and reference is completely
-     * outside its boundaries, the popper will overflow (or completely leave)
-     * the boundaries in order to remain attached to the edge of the reference.
-     *
-     * @memberof modifiers
-     * @inner
-     */
-    preventOverflow: {
-      /** @prop {number} order=300 - Index used to define the order of execution */
-      order: 300,
-      /** @prop {Boolean} enabled=true - Whether the modifier is enabled or not */
-      enabled: true,
-      /** @prop {ModifierFn} */
-      fn: preventOverflow,
-      /**
-       * @prop {Array} [priority=['left','right','top','bottom']]
-       * Popper will try to prevent overflow following these priorities by default,
-       * then, it could overflow on the left and on top of the `boundariesElement`
-       */
-      priority: ['left', 'right', 'top', 'bottom'],
-      /**
-       * @prop {number} padding=5
-       * Amount of pixel used to define a minimum distance between the boundaries
-       * and the popper. This makes sure the popper always has a little padding
-       * between the edges of its container
-       */
-      padding: 5,
-      /**
-       * @prop {String|HTMLElement} boundariesElement='scrollParent'
-       * Boundaries used by the modifier. Can be `scrollParent`, `window`,
-       * `viewport` or any DOM element.
-       */
-      boundariesElement: 'scrollParent'
-    },
-
-    /**
-     * Modifier used to make sure the reference and its popper stay near each other
-     * without leaving any gap between the two. Especially useful when the arrow is
-     * enabled and you want to ensure that it points to its reference element.
-     * It cares only about the first axis. You can still have poppers with margin
-     * between the popper and its reference element.
-     * @memberof modifiers
-     * @inner
-     */
-    keepTogether: {
-      /** @prop {number} order=400 - Index used to define the order of execution */
-      order: 400,
-      /** @prop {Boolean} enabled=true - Whether the modifier is enabled or not */
-      enabled: true,
-      /** @prop {ModifierFn} */
-      fn: keepTogether
-    },
-
-    /**
-     * This modifier is used to move the `arrowElement` of the popper to make
-     * sure it is positioned between the reference element and its popper element.
-     * It will read the outer size of the `arrowElement` node to detect how many
-     * pixels of conjunction are needed.
-     *
-     * It has no effect if no `arrowElement` is provided.
-     * @memberof modifiers
-     * @inner
-     */
-    arrow: {
-      /** @prop {number} order=500 - Index used to define the order of execution */
-      order: 500,
-      /** @prop {Boolean} enabled=true - Whether the modifier is enabled or not */
-      enabled: true,
-      /** @prop {ModifierFn} */
-      fn: arrow,
-      /** @prop {String|HTMLElement} element='[x-arrow]' - Selector or node used as arrow */
-      element: '[x-arrow]'
-    },
-
-    /**
-     * Modifier used to flip the popper's placement when it starts to overlap its
-     * reference element.
-     *
-     * Requires the `preventOverflow` modifier before it in order to work.
-     *
-     * **NOTE:** this modifier will interrupt the current update cycle and will
-     * restart it if it detects the need to flip the placement.
-     * @memberof modifiers
-     * @inner
-     */
-    flip: {
-      /** @prop {number} order=600 - Index used to define the order of execution */
-      order: 600,
-      /** @prop {Boolean} enabled=true - Whether the modifier is enabled or not */
-      enabled: true,
-      /** @prop {ModifierFn} */
-      fn: flip,
-      /**
-       * @prop {String|Array} behavior='flip'
-       * The behavior used to change the popper's placement. It can be one of
-       * `flip`, `clockwise`, `counterclockwise` or an array with a list of valid
-       * placements (with optional variations)
-       */
-      behavior: 'flip',
-      /**
-       * @prop {number} padding=5
-       * The popper will flip if it hits the edges of the `boundariesElement`
-       */
-      padding: 5,
-      /**
-       * @prop {String|HTMLElement} boundariesElement='viewport'
-       * The element which will define the boundaries of the popper position.
-       * The popper will never be placed outside of the defined boundaries
-       * (except if `keepTogether` is enabled)
-       */
-      boundariesElement: 'viewport'
-    },
-
-    /**
-     * Modifier used to make the popper flow toward the inner of the reference element.
-     * By default, when this modifier is disabled, the popper will be placed outside
-     * the reference element.
-     * @memberof modifiers
-     * @inner
-     */
-    inner: {
-      /** @prop {number} order=700 - Index used to define the order of execution */
-      order: 700,
-      /** @prop {Boolean} enabled=false - Whether the modifier is enabled or not */
-      enabled: false,
-      /** @prop {ModifierFn} */
-      fn: inner
-    },
-
-    /**
-     * Modifier used to hide the popper when its reference element is outside of the
-     * popper boundaries. It will set a `x-out-of-boundaries` attribute which can
-     * be used to hide with a CSS selector the popper when its reference is
-     * out of boundaries.
-     *
-     * Requires the `preventOverflow` modifier before it in order to work.
-     * @memberof modifiers
-     * @inner
-     */
-    hide: {
-      /** @prop {number} order=800 - Index used to define the order of execution */
-      order: 800,
-      /** @prop {Boolean} enabled=true - Whether the modifier is enabled or not */
-      enabled: true,
-      /** @prop {ModifierFn} */
-      fn: hide
-    },
-
-    /**
-     * Computes the style that will be applied to the popper element to gets
-     * properly positioned.
-     *
-     * Note that this modifier will not touch the DOM, it just prepares the styles
-     * so that `applyStyle` modifier can apply it. This separation is useful
-     * in case you need to replace `applyStyle` with a custom implementation.
-     *
-     * This modifier has `850` as `order` value to maintain backward compatibility
-     * with previous versions of Popper.js. Expect the modifiers ordering method
-     * to change in future major versions of the library.
-     *
-     * @memberof modifiers
-     * @inner
-     */
-    computeStyle: {
-      /** @prop {number} order=850 - Index used to define the order of execution */
-      order: 850,
-      /** @prop {Boolean} enabled=true - Whether the modifier is enabled or not */
-      enabled: true,
-      /** @prop {ModifierFn} */
-      fn: computeStyle,
-      /**
-       * @prop {Boolean} gpuAcceleration=true
-       * If true, it uses the CSS 3D transformation to position the popper.
-       * Otherwise, it will use the `top` and `left` properties
-       */
-      gpuAcceleration: true,
-      /**
-       * @prop {string} [x='bottom']
-       * Where to anchor the X axis (`bottom` or `top`). AKA X offset origin.
-       * Change this if your popper should grow in a direction different from `bottom`
-       */
-      x: 'bottom',
-      /**
-       * @prop {string} [x='left']
-       * Where to anchor the Y axis (`left` or `right`). AKA Y offset origin.
-       * Change this if your popper should grow in a direction different from `right`
-       */
-      y: 'right'
-    },
-
-    /**
-     * Applies the computed styles to the popper element.
-     *
-     * All the DOM manipulations are limited to this modifier. This is useful in case
-     * you want to integrate Popper.js inside a framework or view library and you
-     * want to delegate all the DOM manipulations to it.
-     *
-     * Note that if you disable this modifier, you must make sure the popper element
-     * has its position set to `absolute` before Popper.js can do its work!
-     *
-     * Just disable this modifier and define your own to achieve the desired effect.
-     *
-     * @memberof modifiers
-     * @inner
-     */
-    applyStyle: {
-      /** @prop {number} order=900 - Index used to define the order of execution */
-      order: 900,
-      /** @prop {Boolean} enabled=true - Whether the modifier is enabled or not */
-      enabled: true,
-      /** @prop {ModifierFn} */
-      fn: applyStyle,
-      /** @prop {Function} */
-      onLoad: applyStyleOnLoad,
-      /**
-       * @deprecated since version 1.10.0, the property moved to `computeStyle` modifier
-       * @prop {Boolean} gpuAcceleration=true
-       * If true, it uses the CSS 3D transformation to position the popper.
-       * Otherwise, it will use the `top` and `left` properties
-       */
-      gpuAcceleration: undefined
-    }
-  };
-
-  /**
-   * The `dataObject` is an object containing all the information used by Popper.js.
-   * This object is passed to modifiers and to the `onCreate` and `onUpdate` callbacks.
-   * @name dataObject
-   * @property {Object} data.instance The Popper.js instance
-   * @property {String} data.placement Placement applied to popper
-   * @property {String} data.originalPlacement Placement originally defined on init
-   * @property {Boolean} data.flipped True if popper has been flipped by flip modifier
-   * @property {Boolean} data.hide True if the reference element is out of boundaries, useful to know when to hide the popper
-   * @property {HTMLElement} data.arrowElement Node used as arrow by arrow modifier
-   * @property {Object} data.styles Any CSS property defined here will be applied to the popper. It expects the JavaScript nomenclature (eg. `marginBottom`)
-   * @property {Object} data.arrowStyles Any CSS property defined here will be applied to the popper arrow. It expects the JavaScript nomenclature (eg. `marginBottom`)
-   * @property {Object} data.boundaries Offsets of the popper boundaries
-   * @property {Object} data.offsets The measurements of popper, reference and arrow elements
-   * @property {Object} data.offsets.popper `top`, `left`, `width`, `height` values
-   * @property {Object} data.offsets.reference `top`, `left`, `width`, `height` values
-   * @property {Object} data.offsets.arrow] `top` and `left` offsets, only one of them will be different from 0
-   */
-
-  /**
-   * Default options provided to Popper.js constructor.<br />
-   * These can be overridden using the `options` argument of Popper.js.<br />
-   * To override an option, simply pass an object with the same
-   * structure of the `options` object, as the 3rd argument. For example:
-   * ```
-   * new Popper(ref, pop, {
-   *   modifiers: {
-   *     preventOverflow: { enabled: false }
-   *   }
-   * })
-   * ```
-   * @type {Object}
-   * @static
-   * @memberof Popper
-   */
-  var Defaults = {
-    /**
-     * Popper's placement.
-     * @prop {Popper.placements} placement='bottom'
-     */
-    placement: 'bottom',
-
-    /**
-     * Set this to true if you want popper to position it self in 'fixed' mode
-     * @prop {Boolean} positionFixed=false
-     */
-    positionFixed: false,
-
-    /**
-     * Whether events (resize, scroll) are initially enabled.
-     * @prop {Boolean} eventsEnabled=true
-     */
-    eventsEnabled: true,
-
-    /**
-     * Set to true if you want to automatically remove the popper when
-     * you call the `destroy` method.
-     * @prop {Boolean} removeOnDestroy=false
-     */
-    removeOnDestroy: false,
-
-    /**
-     * Callback called when the popper is created.<br />
-     * By default, it is set to no-op.<br />
-     * Access Popper.js instance with `data.instance`.
-     * @prop {onCreate}
-     */
-    onCreate: function onCreate() {},
-
-    /**
-     * Callback called when the popper is updated. This callback is not called
-     * on the initialization/creation of the popper, but only on subsequent
-     * updates.<br />
-     * By default, it is set to no-op.<br />
-     * Access Popper.js instance with `data.instance`.
-     * @prop {onUpdate}
-     */
-    onUpdate: function onUpdate() {},
-
-    /**
-     * List of modifiers used to modify the offsets before they are applied to the popper.
-     * They provide most of the functionalities of Popper.js.
-     * @prop {modifiers}
-     */
-    modifiers: modifiers
-  };
-
-  /**
-   * @callback onCreate
-   * @param {dataObject} data
-   */
-
-  /**
-   * @callback onUpdate
-   * @param {dataObject} data
-   */
-
-  // Utils
-  // Methods
-  var Popper = function () {
-    /**
-     * Creates a new Popper.js instance.
-     * @class Popper
-     * @param {HTMLElement|referenceObject} reference - The reference element used to position the popper
-     * @param {HTMLElement} popper - The HTML element used as the popper
-     * @param {Object} options - Your custom options to override the ones defined in [Defaults](#defaults)
-     * @return {Object} instance - The generated Popper.js instance
-     */
-    function Popper(reference, popper) {
-      var _this = this;
-
-      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-      classCallCheck(this, Popper);
-
-      this.scheduleUpdate = function () {
-        return requestAnimationFrame(_this.update);
-      };
-
-      // make update() debounced, so that it only runs at most once-per-tick
-      this.update = debounce(this.update.bind(this));
-
-      // with {} we create a new object with the options inside it
-      this.options = _extends({}, Popper.Defaults, options);
-
-      // init state
-      this.state = {
-        isDestroyed: false,
-        isCreated: false,
-        scrollParents: []
-      };
-
-      // get reference and popper elements (allow jQuery wrappers)
-      this.reference = reference && reference.jquery ? reference[0] : reference;
-      this.popper = popper && popper.jquery ? popper[0] : popper;
-
-      // Deep merge modifiers options
-      this.options.modifiers = {};
-      Object.keys(_extends({}, Popper.Defaults.modifiers, options.modifiers)).forEach(function (name) {
-        _this.options.modifiers[name] = _extends({}, Popper.Defaults.modifiers[name] || {}, options.modifiers ? options.modifiers[name] : {});
-      });
-
-      // Refactoring modifiers' list (Object => Array)
-      this.modifiers = Object.keys(this.options.modifiers).map(function (name) {
-        return _extends({
-          name: name
-        }, _this.options.modifiers[name]);
-      })
-      // sort the modifiers by order
-      .sort(function (a, b) {
-        return a.order - b.order;
-      });
-
-      // modifiers have the ability to execute arbitrary code when Popper.js get inited
-      // such code is executed in the same order of its modifier
-      // they could add new properties to their options configuration
-      // BE AWARE: don't add options to `options.modifiers.name` but to `modifierOptions`!
-      this.modifiers.forEach(function (modifierOptions) {
-        if (modifierOptions.enabled && isFunction(modifierOptions.onLoad)) {
-          modifierOptions.onLoad(_this.reference, _this.popper, _this.options, modifierOptions, _this.state);
-        }
-      });
-
-      // fire the first update to position the popper in the right place
-      this.update();
-
-      var eventsEnabled = this.options.eventsEnabled;
-      if (eventsEnabled) {
-        // setup event listeners, they will take care of update the position in specific situations
-        this.enableEventListeners();
-      }
-
-      this.state.eventsEnabled = eventsEnabled;
-    }
-
-    // We can't use class properties because they don't get listed in the
-    // class prototype and break stuff like Sinon stubs
-
-
-    createClass(Popper, [{
-      key: 'update',
-      value: function update$$1() {
-        return update.call(this);
-      }
-    }, {
-      key: 'destroy',
-      value: function destroy$$1() {
-        return destroy.call(this);
-      }
-    }, {
-      key: 'enableEventListeners',
-      value: function enableEventListeners$$1() {
-        return enableEventListeners.call(this);
-      }
-    }, {
-      key: 'disableEventListeners',
-      value: function disableEventListeners$$1() {
-        return disableEventListeners.call(this);
-      }
-
-      /**
-       * Schedules an update. It will run on the next UI update available.
-       * @method scheduleUpdate
-       * @memberof Popper
-       */
-
-
-      /**
-       * Collection of utilities useful when writing custom modifiers.
-       * Starting from version 1.7, this method is available only if you
-       * include `popper-utils.js` before `popper.js`.
-       *
-       * **DEPRECATION**: This way to access PopperUtils is deprecated
-       * and will be removed in v2! Use the PopperUtils module directly instead.
-       * Due to the high instability of the methods contained in Utils, we can't
-       * guarantee them to follow semver. Use them at your own risk!
-       * @static
-       * @private
-       * @type {Object}
-       * @deprecated since version 1.8
-       * @member Utils
-       * @memberof Popper
-       */
-
-    }]);
-    return Popper;
-  }();
-
-  /**
-   * The `referenceObject` is an object that provides an interface compatible with Popper.js
-   * and lets you use it as replacement of a real DOM node.<br />
-   * You can use this method to position a popper relatively to a set of coordinates
-   * in case you don't have a DOM node to use as reference.
-   *
-   * ```
-   * new Popper(referenceObject, popperNode);
-   * ```
-   *
-   * NB: This feature isn't supported in Internet Explorer 10.
-   * @name referenceObject
-   * @property {Function} data.getBoundingClientRect
-   * A function that returns a set of coordinates compatible with the native `getBoundingClientRect` method.
-   * @property {number} data.clientWidth
-   * An ES6 getter that will return the width of the virtual reference element.
-   * @property {number} data.clientHeight
-   * An ES6 getter that will return the height of the virtual reference element.
-   */
-
-
-  Popper.Utils = (typeof window !== 'undefined' ? window : global).PopperUtils;
-  Popper.placements = placements;
-  Popper.Defaults = Defaults;
-
-  /**
-   * ------------------------------------------------------------------------
-   * Constants
-   * ------------------------------------------------------------------------
-   */
-
-  var NAME$4 = 'dropdown';
-  var VERSION$4 = '4.3.1';
-  var DATA_KEY$4 = 'bs.dropdown';
-  var EVENT_KEY$4 = "." + DATA_KEY$4;
-  var DATA_API_KEY$4 = '.data-api';
-  var JQUERY_NO_CONFLICT$4 = $.fn[NAME$4];
-  var ESCAPE_KEYCODE = 27; // KeyboardEvent.which value for Escape (Esc) key
-
-  var SPACE_KEYCODE = 32; // KeyboardEvent.which value for space key
-
-  var TAB_KEYCODE = 9; // KeyboardEvent.which value for tab key
-
-  var ARROW_UP_KEYCODE = 38; // KeyboardEvent.which value for up arrow key
-
-  var ARROW_DOWN_KEYCODE = 40; // KeyboardEvent.which value for down arrow key
-
-  var RIGHT_MOUSE_BUTTON_WHICH = 3; // MouseEvent.which value for the right button (assuming a right-handed mouse)
-
-  var REGEXP_KEYDOWN = new RegExp(ARROW_UP_KEYCODE + "|" + ARROW_DOWN_KEYCODE + "|" + ESCAPE_KEYCODE);
-  var Event$4 = {
-    HIDE: "hide" + EVENT_KEY$4,
-    HIDDEN: "hidden" + EVENT_KEY$4,
-    SHOW: "show" + EVENT_KEY$4,
-    SHOWN: "shown" + EVENT_KEY$4,
-    CLICK: "click" + EVENT_KEY$4,
-    CLICK_DATA_API: "click" + EVENT_KEY$4 + DATA_API_KEY$4,
-    KEYDOWN_DATA_API: "keydown" + EVENT_KEY$4 + DATA_API_KEY$4,
-    KEYUP_DATA_API: "keyup" + EVENT_KEY$4 + DATA_API_KEY$4
-  };
-  var ClassName$4 = {
-    DISABLED: 'disabled',
-    SHOW: 'show',
-    DROPUP: 'dropup',
-    DROPRIGHT: 'dropright',
-    DROPLEFT: 'dropleft',
-    MENURIGHT: 'dropdown-menu-right',
-    MENULEFT: 'dropdown-menu-left',
-    POSITION_STATIC: 'position-static'
-  };
-  var Selector$4 = {
-    DATA_TOGGLE: '[data-toggle="dropdown"]',
-    FORM_CHILD: '.dropdown form',
-    MENU: '.dropdown-menu',
-    NAVBAR_NAV: '.navbar-nav',
-    VISIBLE_ITEMS: '.dropdown-menu .dropdown-item:not(.disabled):not(:disabled)'
-  };
-  var AttachmentMap = {
-    TOP: 'top-start',
-    TOPEND: 'top-end',
-    BOTTOM: 'bottom-start',
-    BOTTOMEND: 'bottom-end',
-    RIGHT: 'right-start',
-    RIGHTEND: 'right-end',
-    LEFT: 'left-start',
-    LEFTEND: 'left-end'
-  };
-  var Default$2 = {
-    offset: 0,
-    flip: true,
-    boundary: 'scrollParent',
-    reference: 'toggle',
-    display: 'dynamic'
-  };
-  var DefaultType$2 = {
-    offset: '(number|string|function)',
-    flip: 'boolean',
-    boundary: '(string|element)',
-    reference: '(string|element)',
-    display: 'string'
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
-  };
-
-  var Dropdown =
-  /*#__PURE__*/
-  function () {
-    function Dropdown(element, config) {
-      this._element = element;
-      this._popper = null;
-      this._config = this._getConfig(config);
-      this._menu = this._getMenuElement();
-      this._inNavbar = this._detectNavbar();
-
-      this._addEventListeners();
-    } // Getters
-
-
-    var _proto = Dropdown.prototype;
-
-    // Public
-    _proto.toggle = function toggle() {
-      if (this._element.disabled || $(this._element).hasClass(ClassName$4.DISABLED)) {
-        return;
-      }
-
-      var parent = Dropdown._getParentFromElement(this._element);
-
-      var isActive = $(this._menu).hasClass(ClassName$4.SHOW);
-
-      Dropdown._clearMenus();
-
-      if (isActive) {
-        return;
-      }
-
-      var relatedTarget = {
-        relatedTarget: this._element
-      };
-      var showEvent = $.Event(Event$4.SHOW, relatedTarget);
-      $(parent).trigger(showEvent);
-
-      if (showEvent.isDefaultPrevented()) {
-        return;
-      } // Disable totally Popper.js for Dropdown in Navbar
-
-
-      if (!this._inNavbar) {
-        /**
-         * Check for Popper dependency
-         * Popper - https://popper.js.org
-         */
-        if (typeof Popper === 'undefined') {
-          throw new TypeError('Bootstrap\'s dropdowns require Popper.js (https://popper.js.org/)');
-        }
-
-        var referenceElement = this._element;
-
-        if (this._config.reference === 'parent') {
-          referenceElement = parent;
-        } else if (Util.isElement(this._config.reference)) {
-          referenceElement = this._config.reference; // Check if it's jQuery element
-
-          if (typeof this._config.reference.jquery !== 'undefined') {
-            referenceElement = this._config.reference[0];
-          }
-        } // If boundary is not `scrollParent`, then set position to `static`
-        // to allow the menu to "escape" the scroll parent's boundaries
-        // https://github.com/twbs/bootstrap/issues/24251
-
-
-        if (this._config.boundary !== 'scrollParent') {
-          $(parent).addClass(ClassName$4.POSITION_STATIC);
-        }
-
-        this._popper = new Popper(referenceElement, this._menu, this._getPopperConfig());
-      } // If this is a touch-enabled device we add extra
-      // empty mouseover listeners to the body's immediate children;
-      // only needed because of broken event delegation on iOS
-      // https://www.quirksmode.org/blog/archives/2014/02/mouse_event_bub.html
-
-
-      if ('ontouchstart' in document.documentElement && $(parent).closest(Selector$4.NAVBAR_NAV).length === 0) {
-        $(document.body).children().on('mouseover', null, $.noop);
-      }
-
-      this._element.focus();
-
-      this._element.setAttribute('aria-expanded', true);
-
-      $(this._menu).toggleClass(ClassName$4.SHOW);
-      $(parent).toggleClass(ClassName$4.SHOW).trigger($.Event(Event$4.SHOWN, relatedTarget));
-    };
-
-    _proto.show = function show() {
-      if (this._element.disabled || $(this._element).hasClass(ClassName$4.DISABLED) || $(this._menu).hasClass(ClassName$4.SHOW)) {
-        return;
-      }
-
-      var relatedTarget = {
-        relatedTarget: this._element
-      };
-      var showEvent = $.Event(Event$4.SHOW, relatedTarget);
-
-      var parent = Dropdown._getParentFromElement(this._element);
-
-      $(parent).trigger(showEvent);
-
-      if (showEvent.isDefaultPrevented()) {
-        return;
-      }
-
-      $(this._menu).toggleClass(ClassName$4.SHOW);
-      $(parent).toggleClass(ClassName$4.SHOW).trigger($.Event(Event$4.SHOWN, relatedTarget));
-    };
-
-    _proto.hide = function hide() {
-      if (this._element.disabled || $(this._element).hasClass(ClassName$4.DISABLED) || !$(this._menu).hasClass(ClassName$4.SHOW)) {
-        return;
-      }
-
-      var relatedTarget = {
-        relatedTarget: this._element
-      };
-      var hideEvent = $.Event(Event$4.HIDE, relatedTarget);
-
-      var parent = Dropdown._getParentFromElement(this._element);
-
-      $(parent).trigger(hideEvent);
-
-      if (hideEvent.isDefaultPrevented()) {
-        return;
-      }
-
-      $(this._menu).toggleClass(ClassName$4.SHOW);
-      $(parent).toggleClass(ClassName$4.SHOW).trigger($.Event(Event$4.HIDDEN, relatedTarget));
-    };
-
-    _proto.dispose = function dispose() {
-      $.removeData(this._element, DATA_KEY$4);
-      $(this._element).off(EVENT_KEY$4);
-      this._element = null;
-      this._menu = null;
-
-      if (this._popper !== null) {
-        this._popper.destroy();
-
-        this._popper = null;
-      }
-    };
-
-    _proto.update = function update() {
-      this._inNavbar = this._detectNavbar();
-
-      if (this._popper !== null) {
-        this._popper.scheduleUpdate();
-      }
-    } // Private
-    ;
-
-    _proto._addEventListeners = function _addEventListeners() {
-      var _this = this;
-
-      $(this._element).on(Event$4.CLICK, function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-
-        _this.toggle();
-      });
-    };
-
-    _proto._getConfig = function _getConfig(config) {
-      config = _objectSpread({}, this.constructor.Default, $(this._element).data(), config);
-      Util.typeCheckConfig(NAME$4, config, this.constructor.DefaultType);
-      return config;
-    };
-
-    _proto._getMenuElement = function _getMenuElement() {
-      if (!this._menu) {
-        var parent = Dropdown._getParentFromElement(this._element);
-
-        if (parent) {
-          this._menu = parent.querySelector(Selector$4.MENU);
-        }
-      }
-
-      return this._menu;
-    };
-
-    _proto._getPlacement = function _getPlacement() {
-      var $parentDropdown = $(this._element.parentNode);
-      var placement = AttachmentMap.BOTTOM; // Handle dropup
-
-      if ($parentDropdown.hasClass(ClassName$4.DROPUP)) {
-        placement = AttachmentMap.TOP;
-
-        if ($(this._menu).hasClass(ClassName$4.MENURIGHT)) {
-          placement = AttachmentMap.TOPEND;
-        }
-      } else if ($parentDropdown.hasClass(ClassName$4.DROPRIGHT)) {
-        placement = AttachmentMap.RIGHT;
-      } else if ($parentDropdown.hasClass(ClassName$4.DROPLEFT)) {
-        placement = AttachmentMap.LEFT;
-      } else if ($(this._menu).hasClass(ClassName$4.MENURIGHT)) {
-        placement = AttachmentMap.BOTTOMEND;
-      }
-
-      return placement;
-    };
-
-    _proto._detectNavbar = function _detectNavbar() {
-      return $(this._element).closest('.navbar').length > 0;
-    };
-
-    _proto._getOffset = function _getOffset() {
-      var _this2 = this;
-
-      var offset = {};
-
-      if (typeof this._config.offset === 'function') {
-        offset.fn = function (data) {
-          data.offsets = _objectSpread({}, data.offsets, _this2._config.offset(data.offsets, _this2._element) || {});
-          return data;
-        };
-      } else {
-        offset.offset = this._config.offset;
-      }
-
-      return offset;
-    };
-
-    _proto._getPopperConfig = function _getPopperConfig() {
-      var popperConfig = {
-        placement: this._getPlacement(),
-        modifiers: {
-          offset: this._getOffset(),
-          flip: {
-            enabled: this._config.flip
-          },
-          preventOverflow: {
-            boundariesElement: this._config.boundary
-          }
-        } // Disable Popper.js if we have a static display
-
-      };
-
-      if (this._config.display === 'static') {
-        popperConfig.modifiers.applyStyle = {
-          enabled: false
-        };
-      }
-
-      return popperConfig;
-    } // Static
-    ;
-
-    Dropdown._jQueryInterface = function _jQueryInterface(config) {
-      return this.each(function () {
-        var data = $(this).data(DATA_KEY$4);
-
-        var _config = typeof config === 'object' ? config : null;
-
-        if (!data) {
-          data = new Dropdown(this, _config);
-          $(this).data(DATA_KEY$4, data);
-        }
-
-        if (typeof config === 'string') {
-          if (typeof data[config] === 'undefined') {
-            throw new TypeError("No method named \"" + config + "\"");
-          }
-
-          data[config]();
-        }
-      });
-    };
-
-    Dropdown._clearMenus = function _clearMenus(event) {
-      if (event && (event.which === RIGHT_MOUSE_BUTTON_WHICH || event.type === 'keyup' && event.which !== TAB_KEYCODE)) {
-        return;
-      }
-
-      var toggles = [].slice.call(document.querySelectorAll(Selector$4.DATA_TOGGLE));
-
-      for (var i = 0, len = toggles.length; i < len; i++) {
-        var parent = Dropdown._getParentFromElement(toggles[i]);
-
-        var context = $(toggles[i]).data(DATA_KEY$4);
-        var relatedTarget = {
-          relatedTarget: toggles[i]
-        };
-
-        if (event && event.type === 'click') {
-          relatedTarget.clickEvent = event;
-        }
-
-        if (!context) {
-          continue;
-        }
-
-        var dropdownMenu = context._menu;
-
-        if (!$(parent).hasClass(ClassName$4.SHOW)) {
-          continue;
-        }
-
-        if (event && (event.type === 'click' && /input|textarea/i.test(event.target.tagName) || event.type === 'keyup' && event.which === TAB_KEYCODE) && $.contains(parent, event.target)) {
-          continue;
-        }
-
-        var hideEvent = $.Event(Event$4.HIDE, relatedTarget);
-        $(parent).trigger(hideEvent);
-
-        if (hideEvent.isDefaultPrevented()) {
-          continue;
-        } // If this is a touch-enabled device we remove the extra
-        // empty mouseover listeners we added for iOS support
-
-
-        if ('ontouchstart' in document.documentElement) {
-          $(document.body).children().off('mouseover', null, $.noop);
-        }
-
-        toggles[i].setAttribute('aria-expanded', 'false');
-        $(dropdownMenu).removeClass(ClassName$4.SHOW);
-        $(parent).removeClass(ClassName$4.SHOW).trigger($.Event(Event$4.HIDDEN, relatedTarget));
-      }
-    };
-
-    Dropdown._getParentFromElement = function _getParentFromElement(element) {
-      var parent;
-      var selector = Util.getSelectorFromElement(element);
-
-      if (selector) {
-        parent = document.querySelector(selector);
-      }
-
-      return parent || element.parentNode;
-    } // eslint-disable-next-line complexity
-    ;
-
-    Dropdown._dataApiKeydownHandler = function _dataApiKeydownHandler(event) {
-      // If not input/textarea:
-      //  - And not a key in REGEXP_KEYDOWN => not a dropdown command
-      // If input/textarea:
-      //  - If space key => not a dropdown command
-      //  - If key is other than escape
-      //    - If key is not up or down => not a dropdown command
-      //    - If trigger inside the menu => not a dropdown command
-      if (/input|textarea/i.test(event.target.tagName) ? event.which === SPACE_KEYCODE || event.which !== ESCAPE_KEYCODE && (event.which !== ARROW_DOWN_KEYCODE && event.which !== ARROW_UP_KEYCODE || $(event.target).closest(Selector$4.MENU).length) : !REGEXP_KEYDOWN.test(event.which)) {
-        return;
-      }
-
-      event.preventDefault();
-      event.stopPropagation();
-
-      if (this.disabled || $(this).hasClass(ClassName$4.DISABLED)) {
-        return;
-      }
-
-      var parent = Dropdown._getParentFromElement(this);
-
-      var isActive = $(parent).hasClass(ClassName$4.SHOW);
-
-      if (!isActive || isActive && (event.which === ESCAPE_KEYCODE || event.which === SPACE_KEYCODE)) {
-        if (event.which === ESCAPE_KEYCODE) {
-          var toggle = parent.querySelector(Selector$4.DATA_TOGGLE);
-          $(toggle).trigger('focus');
-        }
-
-        $(this).trigger('click');
-        return;
-      }
-
-      var items = [].slice.call(parent.querySelectorAll(Selector$4.VISIBLE_ITEMS));
-
-      if (items.length === 0) {
-        return;
-      }
-
-      var index = items.indexOf(event.target);
-
-      if (event.which === ARROW_UP_KEYCODE && index > 0) {
-        // Up
-        index--;
-      }
-
-      if (event.which === ARROW_DOWN_KEYCODE && index < items.length - 1) {
-        // Down
-        index++;
-      }
-
-      if (index < 0) {
-        index = 0;
-      }
-
-      items[index].focus();
-    };
-
-    _createClass(Dropdown, null, [{
-      key: "VERSION",
-      get: function get() {
-        return VERSION$4;
-      }
-    }, {
-      key: "Default",
-      get: function get() {
-        return Default$2;
-      }
-    }, {
-      key: "DefaultType",
-      get: function get() {
-        return DefaultType$2;
-      }
-    }]);
-
-    return Dropdown;
-  }();
-  /**
-   * ------------------------------------------------------------------------
-   * Data Api implementation
-   * ------------------------------------------------------------------------
-   */
-
-
-  $(document).on(Event$4.KEYDOWN_DATA_API, Selector$4.DATA_TOGGLE, Dropdown._dataApiKeydownHandler).on(Event$4.KEYDOWN_DATA_API, Selector$4.MENU, Dropdown._dataApiKeydownHandler).on(Event$4.CLICK_DATA_API + " " + Event$4.KEYUP_DATA_API, Dropdown._clearMenus).on(Event$4.CLICK_DATA_API, Selector$4.DATA_TOGGLE, function (event) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    Dropdown._jQueryInterface.call($(this), 'toggle');
-  }).on(Event$4.CLICK_DATA_API, Selector$4.FORM_CHILD, function (e) {
-    e.stopPropagation();
   });
-  /**
-   * ------------------------------------------------------------------------
-   * jQuery
-   * ------------------------------------------------------------------------
-   */
 
-  $.fn[NAME$4] = Dropdown._jQueryInterface;
-  $.fn[NAME$4].Constructor = Dropdown;
-
-  $.fn[NAME$4].noConflict = function () {
-    $.fn[NAME$4] = JQUERY_NO_CONFLICT$4;
-    return Dropdown._jQueryInterface;
-  };
-
-  /**
-   * ------------------------------------------------------------------------
-   * Constants
-   * ------------------------------------------------------------------------
-   */
-
-  var NAME$5 = 'modal';
-  var VERSION$5 = '4.3.1';
-  var DATA_KEY$5 = 'bs.modal';
-  var EVENT_KEY$5 = "." + DATA_KEY$5;
-  var DATA_API_KEY$5 = '.data-api';
-  var JQUERY_NO_CONFLICT$5 = $.fn[NAME$5];
-  var ESCAPE_KEYCODE$1 = 27; // KeyboardEvent.which value for Escape (Esc) key
-
-  var Default$3 = {
-    backdrop: true,
-    keyboard: true,
-    focus: true,
-    show: true
-  };
-  var DefaultType$3 = {
-    backdrop: '(boolean|string)',
-    keyboard: 'boolean',
-    focus: 'boolean',
-    show: 'boolean'
-  };
-  var Event$5 = {
-    HIDE: "hide" + EVENT_KEY$5,
-    HIDDEN: "hidden" + EVENT_KEY$5,
-    SHOW: "show" + EVENT_KEY$5,
-    SHOWN: "shown" + EVENT_KEY$5,
-    FOCUSIN: "focusin" + EVENT_KEY$5,
-    RESIZE: "resize" + EVENT_KEY$5,
-    CLICK_DISMISS: "click.dismiss" + EVENT_KEY$5,
-    KEYDOWN_DISMISS: "keydown.dismiss" + EVENT_KEY$5,
-    MOUSEUP_DISMISS: "mouseup.dismiss" + EVENT_KEY$5,
-    MOUSEDOWN_DISMISS: "mousedown.dismiss" + EVENT_KEY$5,
-    CLICK_DATA_API: "click" + EVENT_KEY$5 + DATA_API_KEY$5
-  };
-  var ClassName$5 = {
-    SCROLLABLE: 'modal-dialog-scrollable',
-    SCROLLBAR_MEASURER: 'modal-scrollbar-measure',
-    BACKDROP: 'modal-backdrop',
-    OPEN: 'modal-open',
-    FADE: 'fade',
-    SHOW: 'show'
-  };
-  var Selector$5 = {
-    DIALOG: '.modal-dialog',
-    MODAL_BODY: '.modal-body',
-    DATA_TOGGLE: '[data-toggle="modal"]',
-    DATA_DISMISS: '[data-dismiss="modal"]',
-    FIXED_CONTENT: '.fixed-top, .fixed-bottom, .is-fixed, .sticky-top',
-    STICKY_CONTENT: '.sticky-top'
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
-  };
-
-  var Modal =
-  /*#__PURE__*/
-  function () {
-    function Modal(element, config) {
-      this._config = this._getConfig(config);
-      this._element = element;
-      this._dialog = element.querySelector(Selector$5.DIALOG);
-      this._backdrop = null;
-      this._isShown = false;
-      this._isBodyOverflowing = false;
-      this._ignoreBackdropClick = false;
-      this._isTransitioning = false;
-      this._scrollbarWidth = 0;
-    } // Getters
-
-
-    var _proto = Modal.prototype;
-
-    // Public
-    _proto.toggle = function toggle(relatedTarget) {
-      return this._isShown ? this.hide() : this.show(relatedTarget);
-    };
-
-    _proto.show = function show(relatedTarget) {
-      var _this = this;
-
-      if (this._isShown || this._isTransitioning) {
-        return;
-      }
-
-      if ($(this._element).hasClass(ClassName$5.FADE)) {
-        this._isTransitioning = true;
-      }
-
-      var showEvent = $.Event(Event$5.SHOW, {
-        relatedTarget: relatedTarget
-      });
-      $(this._element).trigger(showEvent);
-
-      if (this._isShown || showEvent.isDefaultPrevented()) {
-        return;
-      }
-
-      this._isShown = true;
-
-      this._checkScrollbar();
-
-      this._setScrollbar();
-
-      this._adjustDialog();
-
-      this._setEscapeEvent();
-
-      this._setResizeEvent();
-
-      $(this._element).on(Event$5.CLICK_DISMISS, Selector$5.DATA_DISMISS, function (event) {
-        return _this.hide(event);
-      });
-      $(this._dialog).on(Event$5.MOUSEDOWN_DISMISS, function () {
-        $(_this._element).one(Event$5.MOUSEUP_DISMISS, function (event) {
-          if ($(event.target).is(_this._element)) {
-            _this._ignoreBackdropClick = true;
-          }
-        });
-      });
-
-      this._showBackdrop(function () {
-        return _this._showElement(relatedTarget);
-      });
-    };
-
-    _proto.hide = function hide(event) {
-      var _this2 = this;
-
-      if (event) {
-        event.preventDefault();
-      }
-
-      if (!this._isShown || this._isTransitioning) {
-        return;
-      }
-
-      var hideEvent = $.Event(Event$5.HIDE);
-      $(this._element).trigger(hideEvent);
-
-      if (!this._isShown || hideEvent.isDefaultPrevented()) {
-        return;
-      }
-
-      this._isShown = false;
-      var transition = $(this._element).hasClass(ClassName$5.FADE);
-
-      if (transition) {
-        this._isTransitioning = true;
-      }
-
-      this._setEscapeEvent();
-
-      this._setResizeEvent();
-
-      $(document).off(Event$5.FOCUSIN);
-      $(this._element).removeClass(ClassName$5.SHOW);
-      $(this._element).off(Event$5.CLICK_DISMISS);
-      $(this._dialog).off(Event$5.MOUSEDOWN_DISMISS);
-
-      if (transition) {
-        var transitionDuration = Util.getTransitionDurationFromElement(this._element);
-        $(this._element).one(Util.TRANSITION_END, function (event) {
-          return _this2._hideModal(event);
-        }).emulateTransitionEnd(transitionDuration);
-      } else {
-        this._hideModal();
-      }
-    };
-
-    _proto.dispose = function dispose() {
-      [window, this._element, this._dialog].forEach(function (htmlElement) {
-        return $(htmlElement).off(EVENT_KEY$5);
-      });
-      /**
-       * `document` has 2 events `Event.FOCUSIN` and `Event.CLICK_DATA_API`
-       * Do not move `document` in `htmlElements` array
-       * It will remove `Event.CLICK_DATA_API` event that should remain
-       */
-
-      $(document).off(Event$5.FOCUSIN);
-      $.removeData(this._element, DATA_KEY$5);
-      this._config = null;
-      this._element = null;
-      this._dialog = null;
-      this._backdrop = null;
-      this._isShown = null;
-      this._isBodyOverflowing = null;
-      this._ignoreBackdropClick = null;
-      this._isTransitioning = null;
-      this._scrollbarWidth = null;
-    };
-
-    _proto.handleUpdate = function handleUpdate() {
-      this._adjustDialog();
-    } // Private
-    ;
-
-    _proto._getConfig = function _getConfig(config) {
-      config = _objectSpread({}, Default$3, config);
-      Util.typeCheckConfig(NAME$5, config, DefaultType$3);
-      return config;
-    };
-
-    _proto._showElement = function _showElement(relatedTarget) {
-      var _this3 = this;
-
-      var transition = $(this._element).hasClass(ClassName$5.FADE);
-
-      if (!this._element.parentNode || this._element.parentNode.nodeType !== Node.ELEMENT_NODE) {
-        // Don't move modal's DOM position
-        document.body.appendChild(this._element);
-      }
-
-      this._element.style.display = 'block';
-
-      this._element.removeAttribute('aria-hidden');
-
-      this._element.setAttribute('aria-modal', true);
-
-      if ($(this._dialog).hasClass(ClassName$5.SCROLLABLE)) {
-        this._dialog.querySelector(Selector$5.MODAL_BODY).scrollTop = 0;
-      } else {
-        this._element.scrollTop = 0;
-      }
-
-      if (transition) {
-        Util.reflow(this._element);
-      }
-
-      $(this._element).addClass(ClassName$5.SHOW);
-
-      if (this._config.focus) {
-        this._enforceFocus();
-      }
-
-      var shownEvent = $.Event(Event$5.SHOWN, {
-        relatedTarget: relatedTarget
-      });
-
-      var transitionComplete = function transitionComplete() {
-        if (_this3._config.focus) {
-          _this3._element.focus();
-        }
-
-        _this3._isTransitioning = false;
-        $(_this3._element).trigger(shownEvent);
-      };
-
-      if (transition) {
-        var transitionDuration = Util.getTransitionDurationFromElement(this._dialog);
-        $(this._dialog).one(Util.TRANSITION_END, transitionComplete).emulateTransitionEnd(transitionDuration);
-      } else {
-        transitionComplete();
-      }
-    };
-
-    _proto._enforceFocus = function _enforceFocus() {
-      var _this4 = this;
-
-      $(document).off(Event$5.FOCUSIN) // Guard against infinite focus loop
-      .on(Event$5.FOCUSIN, function (event) {
-        if (document !== event.target && _this4._element !== event.target && $(_this4._element).has(event.target).length === 0) {
-          _this4._element.focus();
-        }
-      });
-    };
-
-    _proto._setEscapeEvent = function _setEscapeEvent() {
-      var _this5 = this;
-
-      if (this._isShown && this._config.keyboard) {
-        $(this._element).on(Event$5.KEYDOWN_DISMISS, function (event) {
-          if (event.which === ESCAPE_KEYCODE$1) {
-            event.preventDefault();
-
-            _this5.hide();
-          }
-        });
-      } else if (!this._isShown) {
-        $(this._element).off(Event$5.KEYDOWN_DISMISS);
-      }
-    };
-
-    _proto._setResizeEvent = function _setResizeEvent() {
-      var _this6 = this;
-
-      if (this._isShown) {
-        $(window).on(Event$5.RESIZE, function (event) {
-          return _this6.handleUpdate(event);
-        });
-      } else {
-        $(window).off(Event$5.RESIZE);
-      }
-    };
-
-    _proto._hideModal = function _hideModal() {
-      var _this7 = this;
-
-      this._element.style.display = 'none';
-
-      this._element.setAttribute('aria-hidden', true);
-
-      this._element.removeAttribute('aria-modal');
-
-      this._isTransitioning = false;
-
-      this._showBackdrop(function () {
-        $(document.body).removeClass(ClassName$5.OPEN);
-
-        _this7._resetAdjustments();
-
-        _this7._resetScrollbar();
-
-        $(_this7._element).trigger(Event$5.HIDDEN);
-      });
-    };
-
-    _proto._removeBackdrop = function _removeBackdrop() {
-      if (this._backdrop) {
-        $(this._backdrop).remove();
-        this._backdrop = null;
-      }
-    };
-
-    _proto._showBackdrop = function _showBackdrop(callback) {
-      var _this8 = this;
-
-      var animate = $(this._element).hasClass(ClassName$5.FADE) ? ClassName$5.FADE : '';
-
-      if (this._isShown && this._config.backdrop) {
-        this._backdrop = document.createElement('div');
-        this._backdrop.className = ClassName$5.BACKDROP;
-
-        if (animate) {
-          this._backdrop.classList.add(animate);
-        }
-
-        $(this._backdrop).appendTo(document.body);
-        $(this._element).on(Event$5.CLICK_DISMISS, function (event) {
-          if (_this8._ignoreBackdropClick) {
-            _this8._ignoreBackdropClick = false;
-            return;
-          }
-
-          if (event.target !== event.currentTarget) {
-            return;
-          }
-
-          if (_this8._config.backdrop === 'static') {
-            _this8._element.focus();
-          } else {
-            _this8.hide();
-          }
-        });
-
-        if (animate) {
-          Util.reflow(this._backdrop);
-        }
-
-        $(this._backdrop).addClass(ClassName$5.SHOW);
-
-        if (!callback) {
-          return;
-        }
-
-        if (!animate) {
-          callback();
-          return;
-        }
-
-        var backdropTransitionDuration = Util.getTransitionDurationFromElement(this._backdrop);
-        $(this._backdrop).one(Util.TRANSITION_END, callback).emulateTransitionEnd(backdropTransitionDuration);
-      } else if (!this._isShown && this._backdrop) {
-        $(this._backdrop).removeClass(ClassName$5.SHOW);
-
-        var callbackRemove = function callbackRemove() {
-          _this8._removeBackdrop();
-
-          if (callback) {
-            callback();
-          }
-        };
-
-        if ($(this._element).hasClass(ClassName$5.FADE)) {
-          var _backdropTransitionDuration = Util.getTransitionDurationFromElement(this._backdrop);
-
-          $(this._backdrop).one(Util.TRANSITION_END, callbackRemove).emulateTransitionEnd(_backdropTransitionDuration);
-        } else {
-          callbackRemove();
-        }
-      } else if (callback) {
-        callback();
-      }
-    } // ----------------------------------------------------------------------
-    // the following methods are used to handle overflowing modals
-    // todo (fat): these should probably be refactored out of modal.js
-    // ----------------------------------------------------------------------
-    ;
-
-    _proto._adjustDialog = function _adjustDialog() {
-      var isModalOverflowing = this._element.scrollHeight > document.documentElement.clientHeight;
-
-      if (!this._isBodyOverflowing && isModalOverflowing) {
-        this._element.style.paddingLeft = this._scrollbarWidth + "px";
-      }
-
-      if (this._isBodyOverflowing && !isModalOverflowing) {
-        this._element.style.paddingRight = this._scrollbarWidth + "px";
-      }
-    };
-
-    _proto._resetAdjustments = function _resetAdjustments() {
-      this._element.style.paddingLeft = '';
-      this._element.style.paddingRight = '';
-    };
-
-    _proto._checkScrollbar = function _checkScrollbar() {
-      var rect = document.body.getBoundingClientRect();
-      this._isBodyOverflowing = rect.left + rect.right < window.innerWidth;
-      this._scrollbarWidth = this._getScrollbarWidth();
-    };
-
-    _proto._setScrollbar = function _setScrollbar() {
-      var _this9 = this;
-
-      if (this._isBodyOverflowing) {
-        // Note: DOMNode.style.paddingRight returns the actual value or '' if not set
-        //   while $(DOMNode).css('padding-right') returns the calculated value or 0 if not set
-        var fixedContent = [].slice.call(document.querySelectorAll(Selector$5.FIXED_CONTENT));
-        var stickyContent = [].slice.call(document.querySelectorAll(Selector$5.STICKY_CONTENT)); // Adjust fixed content padding
-
-        $(fixedContent).each(function (index, element) {
-          var actualPadding = element.style.paddingRight;
-          var calculatedPadding = $(element).css('padding-right');
-          $(element).data('padding-right', actualPadding).css('padding-right', parseFloat(calculatedPadding) + _this9._scrollbarWidth + "px");
-        }); // Adjust sticky content margin
-
-        $(stickyContent).each(function (index, element) {
-          var actualMargin = element.style.marginRight;
-          var calculatedMargin = $(element).css('margin-right');
-          $(element).data('margin-right', actualMargin).css('margin-right', parseFloat(calculatedMargin) - _this9._scrollbarWidth + "px");
-        }); // Adjust body padding
-
-        var actualPadding = document.body.style.paddingRight;
-        var calculatedPadding = $(document.body).css('padding-right');
-        $(document.body).data('padding-right', actualPadding).css('padding-right', parseFloat(calculatedPadding) + this._scrollbarWidth + "px");
-      }
-
-      $(document.body).addClass(ClassName$5.OPEN);
-    };
-
-    _proto._resetScrollbar = function _resetScrollbar() {
-      // Restore fixed content padding
-      var fixedContent = [].slice.call(document.querySelectorAll(Selector$5.FIXED_CONTENT));
-      $(fixedContent).each(function (index, element) {
-        var padding = $(element).data('padding-right');
-        $(element).removeData('padding-right');
-        element.style.paddingRight = padding ? padding : '';
-      }); // Restore sticky content
-
-      var elements = [].slice.call(document.querySelectorAll("" + Selector$5.STICKY_CONTENT));
-      $(elements).each(function (index, element) {
-        var margin = $(element).data('margin-right');
-
-        if (typeof margin !== 'undefined') {
-          $(element).css('margin-right', margin).removeData('margin-right');
-        }
-      }); // Restore body padding
-
-      var padding = $(document.body).data('padding-right');
-      $(document.body).removeData('padding-right');
-      document.body.style.paddingRight = padding ? padding : '';
-    };
-
-    _proto._getScrollbarWidth = function _getScrollbarWidth() {
-      // thx d.walsh
-      var scrollDiv = document.createElement('div');
-      scrollDiv.className = ClassName$5.SCROLLBAR_MEASURER;
-      document.body.appendChild(scrollDiv);
-      var scrollbarWidth = scrollDiv.getBoundingClientRect().width - scrollDiv.clientWidth;
-      document.body.removeChild(scrollDiv);
-      return scrollbarWidth;
-    } // Static
-    ;
-
-    Modal._jQueryInterface = function _jQueryInterface(config, relatedTarget) {
-      return this.each(function () {
-        var data = $(this).data(DATA_KEY$5);
-
-        var _config = _objectSpread({}, Default$3, $(this).data(), typeof config === 'object' && config ? config : {});
-
-        if (!data) {
-          data = new Modal(this, _config);
-          $(this).data(DATA_KEY$5, data);
-        }
-
-        if (typeof config === 'string') {
-          if (typeof data[config] === 'undefined') {
-            throw new TypeError("No method named \"" + config + "\"");
-          }
-
-          data[config](relatedTarget);
-        } else if (_config.show) {
-          data.show(relatedTarget);
-        }
-      });
-    };
-
-    _createClass(Modal, null, [{
-      key: "VERSION",
-      get: function get() {
-        return VERSION$5;
-      }
-    }, {
-      key: "Default",
-      get: function get() {
-        return Default$3;
-      }
-    }]);
-
-    return Modal;
-  }();
-  /**
-   * ------------------------------------------------------------------------
-   * Data Api implementation
-   * ------------------------------------------------------------------------
-   */
-
-
-  $(document).on(Event$5.CLICK_DATA_API, Selector$5.DATA_TOGGLE, function (event) {
-    var _this10 = this;
-
-    var target;
-    var selector = Util.getSelectorFromElement(this);
-
-    if (selector) {
-      target = document.querySelector(selector);
-    }
-
-    var config = $(target).data(DATA_KEY$5) ? 'toggle' : _objectSpread({}, $(target).data(), $(this).data());
-
-    if (this.tagName === 'A' || this.tagName === 'AREA') {
-      event.preventDefault();
-    }
-
-    var $target = $(target).one(Event$5.SHOW, function (showEvent) {
-      if (showEvent.isDefaultPrevented()) {
-        // Only register focus restorer if modal will actually get shown
-        return;
-      }
-
-      $target.one(Event$5.HIDDEN, function () {
-        if ($(_this10).is(':visible')) {
-          _this10.focus();
-        }
-      });
+  return this;
+}
+
+function undestroy() {
+  if (this._readableState) {
+    this._readableState.destroyed = false;
+    this._readableState.reading = false;
+    this._readableState.ended = false;
+    this._readableState.endEmitted = false;
+  }
+
+  if (this._writableState) {
+    this._writableState.destroyed = false;
+    this._writableState.ended = false;
+    this._writableState.ending = false;
+    this._writableState.finished = false;
+    this._writableState.errorEmitted = false;
+  }
+}
+
+function emitErrorNT(self, err) {
+  self.emit('error', err);
+}
+
+module.exports = {
+  destroy: destroy,
+  undestroy: undestroy
+};
+},{"process-nextick-args":26}],25:[function(require,module,exports){
+module.exports = require('events').EventEmitter;
+
+},{"events":8}],26:[function(require,module,exports){
+(function (process){
+'use strict';
+
+if (!process.version ||
+    process.version.indexOf('v0.') === 0 ||
+    process.version.indexOf('v1.') === 0 && process.version.indexOf('v1.8.') !== 0) {
+  module.exports = { nextTick: nextTick };
+} else {
+  module.exports = process
+}
+
+function nextTick(fn, arg1, arg2, arg3) {
+  if (typeof fn !== 'function') {
+    throw new TypeError('"callback" argument must be a function');
+  }
+  var len = arguments.length;
+  var args, i;
+  switch (len) {
+  case 0:
+  case 1:
+    return process.nextTick(fn);
+  case 2:
+    return process.nextTick(function afterTickOne() {
+      fn.call(null, arg1);
     });
+  case 3:
+    return process.nextTick(function afterTickTwo() {
+      fn.call(null, arg1, arg2);
+    });
+  case 4:
+    return process.nextTick(function afterTickThree() {
+      fn.call(null, arg1, arg2, arg3);
+    });
+  default:
+    args = new Array(len - 1);
+    i = 0;
+    while (i < args.length) {
+      args[i++] = arguments[i];
+    }
+    return process.nextTick(function afterTick() {
+      fn.apply(null, args);
+    });
+  }
+}
 
-    Modal._jQueryInterface.call($(target), config, this);
-  });
-  /**
-   * ------------------------------------------------------------------------
-   * jQuery
-   * ------------------------------------------------------------------------
-   */
 
-  $.fn[NAME$5] = Modal._jQueryInterface;
-  $.fn[NAME$5].Constructor = Modal;
+}).call(this,require('_process'))
+},{"_process":14}],27:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-  $.fn[NAME$5].noConflict = function () {
-    $.fn[NAME$5] = JQUERY_NO_CONFLICT$5;
-    return Modal._jQueryInterface;
-  };
+'use strict';
 
-  /**
-   * --------------------------------------------------------------------------
-   * Bootstrap (v4.3.1): tools/sanitizer.js
-   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-   * --------------------------------------------------------------------------
-   */
-  var uriAttrs = ['background', 'cite', 'href', 'itemtype', 'longdesc', 'poster', 'src', 'xlink:href'];
-  var ARIA_ATTRIBUTE_PATTERN = /^aria-[\w-]*$/i;
-  var DefaultWhitelist = {
-    // Global attributes allowed on any supplied element below.
-    '*': ['class', 'dir', 'id', 'lang', 'role', ARIA_ATTRIBUTE_PATTERN],
-    a: ['target', 'href', 'title', 'rel'],
-    area: [],
-    b: [],
-    br: [],
-    col: [],
-    code: [],
-    div: [],
-    em: [],
-    hr: [],
-    h1: [],
-    h2: [],
-    h3: [],
-    h4: [],
-    h5: [],
-    h6: [],
-    i: [],
-    img: ['src', 'alt', 'title', 'width', 'height'],
-    li: [],
-    ol: [],
-    p: [],
-    pre: [],
-    s: [],
-    small: [],
-    span: [],
-    sub: [],
-    sup: [],
-    strong: [],
-    u: [],
-    ul: []
-    /**
-     * A pattern that recognizes a commonly useful subset of URLs that are safe.
-     *
-     * Shoutout to Angular 7 https://github.com/angular/angular/blob/7.2.4/packages/core/src/sanitization/url_sanitizer.ts
-     */
+/*<replacement>*/
 
-  };
-  var SAFE_URL_PATTERN = /^(?:(?:https?|mailto|ftp|tel|file):|[^&:/?#]*(?:[/?#]|$))/gi;
-  /**
-   * A pattern that matches safe data URLs. Only matches image, video and audio types.
-   *
-   * Shoutout to Angular 7 https://github.com/angular/angular/blob/7.2.4/packages/core/src/sanitization/url_sanitizer.ts
-   */
+var Buffer = require('safe-buffer').Buffer;
+/*</replacement>*/
 
-  var DATA_URL_PATTERN = /^data:(?:image\/(?:bmp|gif|jpeg|jpg|png|tiff|webp)|video\/(?:mpeg|mp4|ogg|webm)|audio\/(?:mp3|oga|ogg|opus));base64,[a-z0-9+/]+=*$/i;
-
-  function allowedAttribute(attr, allowedAttributeList) {
-    var attrName = attr.nodeName.toLowerCase();
-
-    if (allowedAttributeList.indexOf(attrName) !== -1) {
-      if (uriAttrs.indexOf(attrName) !== -1) {
-        return Boolean(attr.nodeValue.match(SAFE_URL_PATTERN) || attr.nodeValue.match(DATA_URL_PATTERN));
-      }
-
+var isEncoding = Buffer.isEncoding || function (encoding) {
+  encoding = '' + encoding;
+  switch (encoding && encoding.toLowerCase()) {
+    case 'hex':case 'utf8':case 'utf-8':case 'ascii':case 'binary':case 'base64':case 'ucs2':case 'ucs-2':case 'utf16le':case 'utf-16le':case 'raw':
       return true;
-    }
-
-    var regExp = allowedAttributeList.filter(function (attrRegex) {
-      return attrRegex instanceof RegExp;
-    }); // Check if a regular expression validates the attribute.
-
-    for (var i = 0, l = regExp.length; i < l; i++) {
-      if (attrName.match(regExp[i])) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  function sanitizeHtml(unsafeHtml, whiteList, sanitizeFn) {
-    if (unsafeHtml.length === 0) {
-      return unsafeHtml;
-    }
-
-    if (sanitizeFn && typeof sanitizeFn === 'function') {
-      return sanitizeFn(unsafeHtml);
-    }
-
-    var domParser = new window.DOMParser();
-    var createdDocument = domParser.parseFromString(unsafeHtml, 'text/html');
-    var whitelistKeys = Object.keys(whiteList);
-    var elements = [].slice.call(createdDocument.body.querySelectorAll('*'));
-
-    var _loop = function _loop(i, len) {
-      var el = elements[i];
-      var elName = el.nodeName.toLowerCase();
-
-      if (whitelistKeys.indexOf(el.nodeName.toLowerCase()) === -1) {
-        el.parentNode.removeChild(el);
-        return "continue";
-      }
-
-      var attributeList = [].slice.call(el.attributes);
-      var whitelistedAttributes = [].concat(whiteList['*'] || [], whiteList[elName] || []);
-      attributeList.forEach(function (attr) {
-        if (!allowedAttribute(attr, whitelistedAttributes)) {
-          el.removeAttribute(attr.nodeName);
-        }
-      });
-    };
-
-    for (var i = 0, len = elements.length; i < len; i++) {
-      var _ret = _loop(i, len);
-
-      if (_ret === "continue") continue;
-    }
-
-    return createdDocument.body.innerHTML;
-  }
-
-  /**
-   * ------------------------------------------------------------------------
-   * Constants
-   * ------------------------------------------------------------------------
-   */
-
-  var NAME$6 = 'tooltip';
-  var VERSION$6 = '4.3.1';
-  var DATA_KEY$6 = 'bs.tooltip';
-  var EVENT_KEY$6 = "." + DATA_KEY$6;
-  var JQUERY_NO_CONFLICT$6 = $.fn[NAME$6];
-  var CLASS_PREFIX = 'bs-tooltip';
-  var BSCLS_PREFIX_REGEX = new RegExp("(^|\\s)" + CLASS_PREFIX + "\\S+", 'g');
-  var DISALLOWED_ATTRIBUTES = ['sanitize', 'whiteList', 'sanitizeFn'];
-  var DefaultType$4 = {
-    animation: 'boolean',
-    template: 'string',
-    title: '(string|element|function)',
-    trigger: 'string',
-    delay: '(number|object)',
-    html: 'boolean',
-    selector: '(string|boolean)',
-    placement: '(string|function)',
-    offset: '(number|string|function)',
-    container: '(string|element|boolean)',
-    fallbackPlacement: '(string|array)',
-    boundary: '(string|element)',
-    sanitize: 'boolean',
-    sanitizeFn: '(null|function)',
-    whiteList: 'object'
-  };
-  var AttachmentMap$1 = {
-    AUTO: 'auto',
-    TOP: 'top',
-    RIGHT: 'right',
-    BOTTOM: 'bottom',
-    LEFT: 'left'
-  };
-  var Default$4 = {
-    animation: true,
-    template: '<div class="tooltip" role="tooltip">' + '<div class="arrow"></div>' + '<div class="tooltip-inner"></div></div>',
-    trigger: 'hover focus',
-    title: '',
-    delay: 0,
-    html: false,
-    selector: false,
-    placement: 'top',
-    offset: 0,
-    container: false,
-    fallbackPlacement: 'flip',
-    boundary: 'scrollParent',
-    sanitize: true,
-    sanitizeFn: null,
-    whiteList: DefaultWhitelist
-  };
-  var HoverState = {
-    SHOW: 'show',
-    OUT: 'out'
-  };
-  var Event$6 = {
-    HIDE: "hide" + EVENT_KEY$6,
-    HIDDEN: "hidden" + EVENT_KEY$6,
-    SHOW: "show" + EVENT_KEY$6,
-    SHOWN: "shown" + EVENT_KEY$6,
-    INSERTED: "inserted" + EVENT_KEY$6,
-    CLICK: "click" + EVENT_KEY$6,
-    FOCUSIN: "focusin" + EVENT_KEY$6,
-    FOCUSOUT: "focusout" + EVENT_KEY$6,
-    MOUSEENTER: "mouseenter" + EVENT_KEY$6,
-    MOUSELEAVE: "mouseleave" + EVENT_KEY$6
-  };
-  var ClassName$6 = {
-    FADE: 'fade',
-    SHOW: 'show'
-  };
-  var Selector$6 = {
-    TOOLTIP: '.tooltip',
-    TOOLTIP_INNER: '.tooltip-inner',
-    ARROW: '.arrow'
-  };
-  var Trigger = {
-    HOVER: 'hover',
-    FOCUS: 'focus',
-    CLICK: 'click',
-    MANUAL: 'manual'
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
-  };
-
-  var Tooltip =
-  /*#__PURE__*/
-  function () {
-    function Tooltip(element, config) {
-      /**
-       * Check for Popper dependency
-       * Popper - https://popper.js.org
-       */
-      if (typeof Popper === 'undefined') {
-        throw new TypeError('Bootstrap\'s tooltips require Popper.js (https://popper.js.org/)');
-      } // private
-
-
-      this._isEnabled = true;
-      this._timeout = 0;
-      this._hoverState = '';
-      this._activeTrigger = {};
-      this._popper = null; // Protected
-
-      this.element = element;
-      this.config = this._getConfig(config);
-      this.tip = null;
-
-      this._setListeners();
-    } // Getters
-
-
-    var _proto = Tooltip.prototype;
-
-    // Public
-    _proto.enable = function enable() {
-      this._isEnabled = true;
-    };
-
-    _proto.disable = function disable() {
-      this._isEnabled = false;
-    };
-
-    _proto.toggleEnabled = function toggleEnabled() {
-      this._isEnabled = !this._isEnabled;
-    };
-
-    _proto.toggle = function toggle(event) {
-      if (!this._isEnabled) {
-        return;
-      }
-
-      if (event) {
-        var dataKey = this.constructor.DATA_KEY;
-        var context = $(event.currentTarget).data(dataKey);
-
-        if (!context) {
-          context = new this.constructor(event.currentTarget, this._getDelegateConfig());
-          $(event.currentTarget).data(dataKey, context);
-        }
-
-        context._activeTrigger.click = !context._activeTrigger.click;
-
-        if (context._isWithActiveTrigger()) {
-          context._enter(null, context);
-        } else {
-          context._leave(null, context);
-        }
-      } else {
-        if ($(this.getTipElement()).hasClass(ClassName$6.SHOW)) {
-          this._leave(null, this);
-
-          return;
-        }
-
-        this._enter(null, this);
-      }
-    };
-
-    _proto.dispose = function dispose() {
-      clearTimeout(this._timeout);
-      $.removeData(this.element, this.constructor.DATA_KEY);
-      $(this.element).off(this.constructor.EVENT_KEY);
-      $(this.element).closest('.modal').off('hide.bs.modal');
-
-      if (this.tip) {
-        $(this.tip).remove();
-      }
-
-      this._isEnabled = null;
-      this._timeout = null;
-      this._hoverState = null;
-      this._activeTrigger = null;
-
-      if (this._popper !== null) {
-        this._popper.destroy();
-      }
-
-      this._popper = null;
-      this.element = null;
-      this.config = null;
-      this.tip = null;
-    };
-
-    _proto.show = function show() {
-      var _this = this;
-
-      if ($(this.element).css('display') === 'none') {
-        throw new Error('Please use show on visible elements');
-      }
-
-      var showEvent = $.Event(this.constructor.Event.SHOW);
-
-      if (this.isWithContent() && this._isEnabled) {
-        $(this.element).trigger(showEvent);
-        var shadowRoot = Util.findShadowRoot(this.element);
-        var isInTheDom = $.contains(shadowRoot !== null ? shadowRoot : this.element.ownerDocument.documentElement, this.element);
-
-        if (showEvent.isDefaultPrevented() || !isInTheDom) {
-          return;
-        }
-
-        var tip = this.getTipElement();
-        var tipId = Util.getUID(this.constructor.NAME);
-        tip.setAttribute('id', tipId);
-        this.element.setAttribute('aria-describedby', tipId);
-        this.setContent();
-
-        if (this.config.animation) {
-          $(tip).addClass(ClassName$6.FADE);
-        }
-
-        var placement = typeof this.config.placement === 'function' ? this.config.placement.call(this, tip, this.element) : this.config.placement;
-
-        var attachment = this._getAttachment(placement);
-
-        this.addAttachmentClass(attachment);
-
-        var container = this._getContainer();
-
-        $(tip).data(this.constructor.DATA_KEY, this);
-
-        if (!$.contains(this.element.ownerDocument.documentElement, this.tip)) {
-          $(tip).appendTo(container);
-        }
-
-        $(this.element).trigger(this.constructor.Event.INSERTED);
-        this._popper = new Popper(this.element, tip, {
-          placement: attachment,
-          modifiers: {
-            offset: this._getOffset(),
-            flip: {
-              behavior: this.config.fallbackPlacement
-            },
-            arrow: {
-              element: Selector$6.ARROW
-            },
-            preventOverflow: {
-              boundariesElement: this.config.boundary
-            }
-          },
-          onCreate: function onCreate(data) {
-            if (data.originalPlacement !== data.placement) {
-              _this._handlePopperPlacementChange(data);
-            }
-          },
-          onUpdate: function onUpdate(data) {
-            return _this._handlePopperPlacementChange(data);
-          }
-        });
-        $(tip).addClass(ClassName$6.SHOW); // If this is a touch-enabled device we add extra
-        // empty mouseover listeners to the body's immediate children;
-        // only needed because of broken event delegation on iOS
-        // https://www.quirksmode.org/blog/archives/2014/02/mouse_event_bub.html
-
-        if ('ontouchstart' in document.documentElement) {
-          $(document.body).children().on('mouseover', null, $.noop);
-        }
-
-        var complete = function complete() {
-          if (_this.config.animation) {
-            _this._fixTransition();
-          }
-
-          var prevHoverState = _this._hoverState;
-          _this._hoverState = null;
-          $(_this.element).trigger(_this.constructor.Event.SHOWN);
-
-          if (prevHoverState === HoverState.OUT) {
-            _this._leave(null, _this);
-          }
-        };
-
-        if ($(this.tip).hasClass(ClassName$6.FADE)) {
-          var transitionDuration = Util.getTransitionDurationFromElement(this.tip);
-          $(this.tip).one(Util.TRANSITION_END, complete).emulateTransitionEnd(transitionDuration);
-        } else {
-          complete();
-        }
-      }
-    };
-
-    _proto.hide = function hide(callback) {
-      var _this2 = this;
-
-      var tip = this.getTipElement();
-      var hideEvent = $.Event(this.constructor.Event.HIDE);
-
-      var complete = function complete() {
-        if (_this2._hoverState !== HoverState.SHOW && tip.parentNode) {
-          tip.parentNode.removeChild(tip);
-        }
-
-        _this2._cleanTipClass();
-
-        _this2.element.removeAttribute('aria-describedby');
-
-        $(_this2.element).trigger(_this2.constructor.Event.HIDDEN);
-
-        if (_this2._popper !== null) {
-          _this2._popper.destroy();
-        }
-
-        if (callback) {
-          callback();
-        }
-      };
-
-      $(this.element).trigger(hideEvent);
-
-      if (hideEvent.isDefaultPrevented()) {
-        return;
-      }
-
-      $(tip).removeClass(ClassName$6.SHOW); // If this is a touch-enabled device we remove the extra
-      // empty mouseover listeners we added for iOS support
-
-      if ('ontouchstart' in document.documentElement) {
-        $(document.body).children().off('mouseover', null, $.noop);
-      }
-
-      this._activeTrigger[Trigger.CLICK] = false;
-      this._activeTrigger[Trigger.FOCUS] = false;
-      this._activeTrigger[Trigger.HOVER] = false;
-
-      if ($(this.tip).hasClass(ClassName$6.FADE)) {
-        var transitionDuration = Util.getTransitionDurationFromElement(tip);
-        $(tip).one(Util.TRANSITION_END, complete).emulateTransitionEnd(transitionDuration);
-      } else {
-        complete();
-      }
-
-      this._hoverState = '';
-    };
-
-    _proto.update = function update() {
-      if (this._popper !== null) {
-        this._popper.scheduleUpdate();
-      }
-    } // Protected
-    ;
-
-    _proto.isWithContent = function isWithContent() {
-      return Boolean(this.getTitle());
-    };
-
-    _proto.addAttachmentClass = function addAttachmentClass(attachment) {
-      $(this.getTipElement()).addClass(CLASS_PREFIX + "-" + attachment);
-    };
-
-    _proto.getTipElement = function getTipElement() {
-      this.tip = this.tip || $(this.config.template)[0];
-      return this.tip;
-    };
-
-    _proto.setContent = function setContent() {
-      var tip = this.getTipElement();
-      this.setElementContent($(tip.querySelectorAll(Selector$6.TOOLTIP_INNER)), this.getTitle());
-      $(tip).removeClass(ClassName$6.FADE + " " + ClassName$6.SHOW);
-    };
-
-    _proto.setElementContent = function setElementContent($element, content) {
-      if (typeof content === 'object' && (content.nodeType || content.jquery)) {
-        // Content is a DOM node or a jQuery
-        if (this.config.html) {
-          if (!$(content).parent().is($element)) {
-            $element.empty().append(content);
-          }
-        } else {
-          $element.text($(content).text());
-        }
-
-        return;
-      }
-
-      if (this.config.html) {
-        if (this.config.sanitize) {
-          content = sanitizeHtml(content, this.config.whiteList, this.config.sanitizeFn);
-        }
-
-        $element.html(content);
-      } else {
-        $element.text(content);
-      }
-    };
-
-    _proto.getTitle = function getTitle() {
-      var title = this.element.getAttribute('data-original-title');
-
-      if (!title) {
-        title = typeof this.config.title === 'function' ? this.config.title.call(this.element) : this.config.title;
-      }
-
-      return title;
-    } // Private
-    ;
-
-    _proto._getOffset = function _getOffset() {
-      var _this3 = this;
-
-      var offset = {};
-
-      if (typeof this.config.offset === 'function') {
-        offset.fn = function (data) {
-          data.offsets = _objectSpread({}, data.offsets, _this3.config.offset(data.offsets, _this3.element) || {});
-          return data;
-        };
-      } else {
-        offset.offset = this.config.offset;
-      }
-
-      return offset;
-    };
-
-    _proto._getContainer = function _getContainer() {
-      if (this.config.container === false) {
-        return document.body;
-      }
-
-      if (Util.isElement(this.config.container)) {
-        return $(this.config.container);
-      }
-
-      return $(document).find(this.config.container);
-    };
-
-    _proto._getAttachment = function _getAttachment(placement) {
-      return AttachmentMap$1[placement.toUpperCase()];
-    };
-
-    _proto._setListeners = function _setListeners() {
-      var _this4 = this;
-
-      var triggers = this.config.trigger.split(' ');
-      triggers.forEach(function (trigger) {
-        if (trigger === 'click') {
-          $(_this4.element).on(_this4.constructor.Event.CLICK, _this4.config.selector, function (event) {
-            return _this4.toggle(event);
-          });
-        } else if (trigger !== Trigger.MANUAL) {
-          var eventIn = trigger === Trigger.HOVER ? _this4.constructor.Event.MOUSEENTER : _this4.constructor.Event.FOCUSIN;
-          var eventOut = trigger === Trigger.HOVER ? _this4.constructor.Event.MOUSELEAVE : _this4.constructor.Event.FOCUSOUT;
-          $(_this4.element).on(eventIn, _this4.config.selector, function (event) {
-            return _this4._enter(event);
-          }).on(eventOut, _this4.config.selector, function (event) {
-            return _this4._leave(event);
-          });
-        }
-      });
-      $(this.element).closest('.modal').on('hide.bs.modal', function () {
-        if (_this4.element) {
-          _this4.hide();
-        }
-      });
-
-      if (this.config.selector) {
-        this.config = _objectSpread({}, this.config, {
-          trigger: 'manual',
-          selector: ''
-        });
-      } else {
-        this._fixTitle();
-      }
-    };
-
-    _proto._fixTitle = function _fixTitle() {
-      var titleType = typeof this.element.getAttribute('data-original-title');
-
-      if (this.element.getAttribute('title') || titleType !== 'string') {
-        this.element.setAttribute('data-original-title', this.element.getAttribute('title') || '');
-        this.element.setAttribute('title', '');
-      }
-    };
-
-    _proto._enter = function _enter(event, context) {
-      var dataKey = this.constructor.DATA_KEY;
-      context = context || $(event.currentTarget).data(dataKey);
-
-      if (!context) {
-        context = new this.constructor(event.currentTarget, this._getDelegateConfig());
-        $(event.currentTarget).data(dataKey, context);
-      }
-
-      if (event) {
-        context._activeTrigger[event.type === 'focusin' ? Trigger.FOCUS : Trigger.HOVER] = true;
-      }
-
-      if ($(context.getTipElement()).hasClass(ClassName$6.SHOW) || context._hoverState === HoverState.SHOW) {
-        context._hoverState = HoverState.SHOW;
-        return;
-      }
-
-      clearTimeout(context._timeout);
-      context._hoverState = HoverState.SHOW;
-
-      if (!context.config.delay || !context.config.delay.show) {
-        context.show();
-        return;
-      }
-
-      context._timeout = setTimeout(function () {
-        if (context._hoverState === HoverState.SHOW) {
-          context.show();
-        }
-      }, context.config.delay.show);
-    };
-
-    _proto._leave = function _leave(event, context) {
-      var dataKey = this.constructor.DATA_KEY;
-      context = context || $(event.currentTarget).data(dataKey);
-
-      if (!context) {
-        context = new this.constructor(event.currentTarget, this._getDelegateConfig());
-        $(event.currentTarget).data(dataKey, context);
-      }
-
-      if (event) {
-        context._activeTrigger[event.type === 'focusout' ? Trigger.FOCUS : Trigger.HOVER] = false;
-      }
-
-      if (context._isWithActiveTrigger()) {
-        return;
-      }
-
-      clearTimeout(context._timeout);
-      context._hoverState = HoverState.OUT;
-
-      if (!context.config.delay || !context.config.delay.hide) {
-        context.hide();
-        return;
-      }
-
-      context._timeout = setTimeout(function () {
-        if (context._hoverState === HoverState.OUT) {
-          context.hide();
-        }
-      }, context.config.delay.hide);
-    };
-
-    _proto._isWithActiveTrigger = function _isWithActiveTrigger() {
-      for (var trigger in this._activeTrigger) {
-        if (this._activeTrigger[trigger]) {
-          return true;
-        }
-      }
-
+    default:
       return false;
-    };
-
-    _proto._getConfig = function _getConfig(config) {
-      var dataAttributes = $(this.element).data();
-      Object.keys(dataAttributes).forEach(function (dataAttr) {
-        if (DISALLOWED_ATTRIBUTES.indexOf(dataAttr) !== -1) {
-          delete dataAttributes[dataAttr];
-        }
-      });
-      config = _objectSpread({}, this.constructor.Default, dataAttributes, typeof config === 'object' && config ? config : {});
-
-      if (typeof config.delay === 'number') {
-        config.delay = {
-          show: config.delay,
-          hide: config.delay
-        };
-      }
-
-      if (typeof config.title === 'number') {
-        config.title = config.title.toString();
-      }
-
-      if (typeof config.content === 'number') {
-        config.content = config.content.toString();
-      }
-
-      Util.typeCheckConfig(NAME$6, config, this.constructor.DefaultType);
-
-      if (config.sanitize) {
-        config.template = sanitizeHtml(config.template, config.whiteList, config.sanitizeFn);
-      }
-
-      return config;
-    };
-
-    _proto._getDelegateConfig = function _getDelegateConfig() {
-      var config = {};
-
-      if (this.config) {
-        for (var key in this.config) {
-          if (this.constructor.Default[key] !== this.config[key]) {
-            config[key] = this.config[key];
-          }
-        }
-      }
-
-      return config;
-    };
-
-    _proto._cleanTipClass = function _cleanTipClass() {
-      var $tip = $(this.getTipElement());
-      var tabClass = $tip.attr('class').match(BSCLS_PREFIX_REGEX);
-
-      if (tabClass !== null && tabClass.length) {
-        $tip.removeClass(tabClass.join(''));
-      }
-    };
-
-    _proto._handlePopperPlacementChange = function _handlePopperPlacementChange(popperData) {
-      var popperInstance = popperData.instance;
-      this.tip = popperInstance.popper;
-
-      this._cleanTipClass();
-
-      this.addAttachmentClass(this._getAttachment(popperData.placement));
-    };
-
-    _proto._fixTransition = function _fixTransition() {
-      var tip = this.getTipElement();
-      var initConfigAnimation = this.config.animation;
-
-      if (tip.getAttribute('x-placement') !== null) {
-        return;
-      }
-
-      $(tip).removeClass(ClassName$6.FADE);
-      this.config.animation = false;
-      this.hide();
-      this.show();
-      this.config.animation = initConfigAnimation;
-    } // Static
-    ;
-
-    Tooltip._jQueryInterface = function _jQueryInterface(config) {
-      return this.each(function () {
-        var data = $(this).data(DATA_KEY$6);
-
-        var _config = typeof config === 'object' && config;
-
-        if (!data && /dispose|hide/.test(config)) {
-          return;
-        }
-
-        if (!data) {
-          data = new Tooltip(this, _config);
-          $(this).data(DATA_KEY$6, data);
-        }
-
-        if (typeof config === 'string') {
-          if (typeof data[config] === 'undefined') {
-            throw new TypeError("No method named \"" + config + "\"");
-          }
-
-          data[config]();
-        }
-      });
-    };
-
-    _createClass(Tooltip, null, [{
-      key: "VERSION",
-      get: function get() {
-        return VERSION$6;
-      }
-    }, {
-      key: "Default",
-      get: function get() {
-        return Default$4;
-      }
-    }, {
-      key: "NAME",
-      get: function get() {
-        return NAME$6;
-      }
-    }, {
-      key: "DATA_KEY",
-      get: function get() {
-        return DATA_KEY$6;
-      }
-    }, {
-      key: "Event",
-      get: function get() {
-        return Event$6;
-      }
-    }, {
-      key: "EVENT_KEY",
-      get: function get() {
-        return EVENT_KEY$6;
-      }
-    }, {
-      key: "DefaultType",
-      get: function get() {
-        return DefaultType$4;
-      }
-    }]);
-
-    return Tooltip;
-  }();
-  /**
-   * ------------------------------------------------------------------------
-   * jQuery
-   * ------------------------------------------------------------------------
-   */
-
-
-  $.fn[NAME$6] = Tooltip._jQueryInterface;
-  $.fn[NAME$6].Constructor = Tooltip;
-
-  $.fn[NAME$6].noConflict = function () {
-    $.fn[NAME$6] = JQUERY_NO_CONFLICT$6;
-    return Tooltip._jQueryInterface;
-  };
-
-  /**
-   * ------------------------------------------------------------------------
-   * Constants
-   * ------------------------------------------------------------------------
-   */
-
-  var NAME$7 = 'popover';
-  var VERSION$7 = '4.3.1';
-  var DATA_KEY$7 = 'bs.popover';
-  var EVENT_KEY$7 = "." + DATA_KEY$7;
-  var JQUERY_NO_CONFLICT$7 = $.fn[NAME$7];
-  var CLASS_PREFIX$1 = 'bs-popover';
-  var BSCLS_PREFIX_REGEX$1 = new RegExp("(^|\\s)" + CLASS_PREFIX$1 + "\\S+", 'g');
-
-  var Default$5 = _objectSpread({}, Tooltip.Default, {
-    placement: 'right',
-    trigger: 'click',
-    content: '',
-    template: '<div class="popover" role="tooltip">' + '<div class="arrow"></div>' + '<h3 class="popover-header"></h3>' + '<div class="popover-body"></div></div>'
-  });
-
-  var DefaultType$5 = _objectSpread({}, Tooltip.DefaultType, {
-    content: '(string|element|function)'
-  });
-
-  var ClassName$7 = {
-    FADE: 'fade',
-    SHOW: 'show'
-  };
-  var Selector$7 = {
-    TITLE: '.popover-header',
-    CONTENT: '.popover-body'
-  };
-  var Event$7 = {
-    HIDE: "hide" + EVENT_KEY$7,
-    HIDDEN: "hidden" + EVENT_KEY$7,
-    SHOW: "show" + EVENT_KEY$7,
-    SHOWN: "shown" + EVENT_KEY$7,
-    INSERTED: "inserted" + EVENT_KEY$7,
-    CLICK: "click" + EVENT_KEY$7,
-    FOCUSIN: "focusin" + EVENT_KEY$7,
-    FOCUSOUT: "focusout" + EVENT_KEY$7,
-    MOUSEENTER: "mouseenter" + EVENT_KEY$7,
-    MOUSELEAVE: "mouseleave" + EVENT_KEY$7
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
-  };
-
-  var Popover =
-  /*#__PURE__*/
-  function (_Tooltip) {
-    _inheritsLoose(Popover, _Tooltip);
-
-    function Popover() {
-      return _Tooltip.apply(this, arguments) || this;
-    }
-
-    var _proto = Popover.prototype;
-
-    // Overrides
-    _proto.isWithContent = function isWithContent() {
-      return this.getTitle() || this._getContent();
-    };
-
-    _proto.addAttachmentClass = function addAttachmentClass(attachment) {
-      $(this.getTipElement()).addClass(CLASS_PREFIX$1 + "-" + attachment);
-    };
-
-    _proto.getTipElement = function getTipElement() {
-      this.tip = this.tip || $(this.config.template)[0];
-      return this.tip;
-    };
-
-    _proto.setContent = function setContent() {
-      var $tip = $(this.getTipElement()); // We use append for html objects to maintain js events
-
-      this.setElementContent($tip.find(Selector$7.TITLE), this.getTitle());
-
-      var content = this._getContent();
-
-      if (typeof content === 'function') {
-        content = content.call(this.element);
-      }
-
-      this.setElementContent($tip.find(Selector$7.CONTENT), content);
-      $tip.removeClass(ClassName$7.FADE + " " + ClassName$7.SHOW);
-    } // Private
-    ;
-
-    _proto._getContent = function _getContent() {
-      return this.element.getAttribute('data-content') || this.config.content;
-    };
-
-    _proto._cleanTipClass = function _cleanTipClass() {
-      var $tip = $(this.getTipElement());
-      var tabClass = $tip.attr('class').match(BSCLS_PREFIX_REGEX$1);
-
-      if (tabClass !== null && tabClass.length > 0) {
-        $tip.removeClass(tabClass.join(''));
-      }
-    } // Static
-    ;
-
-    Popover._jQueryInterface = function _jQueryInterface(config) {
-      return this.each(function () {
-        var data = $(this).data(DATA_KEY$7);
-
-        var _config = typeof config === 'object' ? config : null;
-
-        if (!data && /dispose|hide/.test(config)) {
-          return;
-        }
-
-        if (!data) {
-          data = new Popover(this, _config);
-          $(this).data(DATA_KEY$7, data);
-        }
-
-        if (typeof config === 'string') {
-          if (typeof data[config] === 'undefined') {
-            throw new TypeError("No method named \"" + config + "\"");
-          }
-
-          data[config]();
-        }
-      });
-    };
-
-    _createClass(Popover, null, [{
-      key: "VERSION",
-      // Getters
-      get: function get() {
-        return VERSION$7;
-      }
-    }, {
-      key: "Default",
-      get: function get() {
-        return Default$5;
-      }
-    }, {
-      key: "NAME",
-      get: function get() {
-        return NAME$7;
-      }
-    }, {
-      key: "DATA_KEY",
-      get: function get() {
-        return DATA_KEY$7;
-      }
-    }, {
-      key: "Event",
-      get: function get() {
-        return Event$7;
-      }
-    }, {
-      key: "EVENT_KEY",
-      get: function get() {
-        return EVENT_KEY$7;
-      }
-    }, {
-      key: "DefaultType",
-      get: function get() {
-        return DefaultType$5;
-      }
-    }]);
-
-    return Popover;
-  }(Tooltip);
-  /**
-   * ------------------------------------------------------------------------
-   * jQuery
-   * ------------------------------------------------------------------------
-   */
-
-
-  $.fn[NAME$7] = Popover._jQueryInterface;
-  $.fn[NAME$7].Constructor = Popover;
-
-  $.fn[NAME$7].noConflict = function () {
-    $.fn[NAME$7] = JQUERY_NO_CONFLICT$7;
-    return Popover._jQueryInterface;
-  };
-
-  /**
-   * ------------------------------------------------------------------------
-   * Constants
-   * ------------------------------------------------------------------------
-   */
-
-  var NAME$8 = 'scrollspy';
-  var VERSION$8 = '4.3.1';
-  var DATA_KEY$8 = 'bs.scrollspy';
-  var EVENT_KEY$8 = "." + DATA_KEY$8;
-  var DATA_API_KEY$6 = '.data-api';
-  var JQUERY_NO_CONFLICT$8 = $.fn[NAME$8];
-  var Default$6 = {
-    offset: 10,
-    method: 'auto',
-    target: ''
-  };
-  var DefaultType$6 = {
-    offset: 'number',
-    method: 'string',
-    target: '(string|element)'
-  };
-  var Event$8 = {
-    ACTIVATE: "activate" + EVENT_KEY$8,
-    SCROLL: "scroll" + EVENT_KEY$8,
-    LOAD_DATA_API: "load" + EVENT_KEY$8 + DATA_API_KEY$6
-  };
-  var ClassName$8 = {
-    DROPDOWN_ITEM: 'dropdown-item',
-    DROPDOWN_MENU: 'dropdown-menu',
-    ACTIVE: 'active'
-  };
-  var Selector$8 = {
-    DATA_SPY: '[data-spy="scroll"]',
-    ACTIVE: '.active',
-    NAV_LIST_GROUP: '.nav, .list-group',
-    NAV_LINKS: '.nav-link',
-    NAV_ITEMS: '.nav-item',
-    LIST_ITEMS: '.list-group-item',
-    DROPDOWN: '.dropdown',
-    DROPDOWN_ITEMS: '.dropdown-item',
-    DROPDOWN_TOGGLE: '.dropdown-toggle'
-  };
-  var OffsetMethod = {
-    OFFSET: 'offset',
-    POSITION: 'position'
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
-  };
-
-  var ScrollSpy =
-  /*#__PURE__*/
-  function () {
-    function ScrollSpy(element, config) {
-      var _this = this;
-
-      this._element = element;
-      this._scrollElement = element.tagName === 'BODY' ? window : element;
-      this._config = this._getConfig(config);
-      this._selector = this._config.target + " " + Selector$8.NAV_LINKS + "," + (this._config.target + " " + Selector$8.LIST_ITEMS + ",") + (this._config.target + " " + Selector$8.DROPDOWN_ITEMS);
-      this._offsets = [];
-      this._targets = [];
-      this._activeTarget = null;
-      this._scrollHeight = 0;
-      $(this._scrollElement).on(Event$8.SCROLL, function (event) {
-        return _this._process(event);
-      });
-      this.refresh();
-
-      this._process();
-    } // Getters
-
-
-    var _proto = ScrollSpy.prototype;
-
-    // Public
-    _proto.refresh = function refresh() {
-      var _this2 = this;
-
-      var autoMethod = this._scrollElement === this._scrollElement.window ? OffsetMethod.OFFSET : OffsetMethod.POSITION;
-      var offsetMethod = this._config.method === 'auto' ? autoMethod : this._config.method;
-      var offsetBase = offsetMethod === OffsetMethod.POSITION ? this._getScrollTop() : 0;
-      this._offsets = [];
-      this._targets = [];
-      this._scrollHeight = this._getScrollHeight();
-      var targets = [].slice.call(document.querySelectorAll(this._selector));
-      targets.map(function (element) {
-        var target;
-        var targetSelector = Util.getSelectorFromElement(element);
-
-        if (targetSelector) {
-          target = document.querySelector(targetSelector);
-        }
-
-        if (target) {
-          var targetBCR = target.getBoundingClientRect();
-
-          if (targetBCR.width || targetBCR.height) {
-            // TODO (fat): remove sketch reliance on jQuery position/offset
-            return [$(target)[offsetMethod]().top + offsetBase, targetSelector];
-          }
-        }
-
-        return null;
-      }).filter(function (item) {
-        return item;
-      }).sort(function (a, b) {
-        return a[0] - b[0];
-      }).forEach(function (item) {
-        _this2._offsets.push(item[0]);
-
-        _this2._targets.push(item[1]);
-      });
-    };
-
-    _proto.dispose = function dispose() {
-      $.removeData(this._element, DATA_KEY$8);
-      $(this._scrollElement).off(EVENT_KEY$8);
-      this._element = null;
-      this._scrollElement = null;
-      this._config = null;
-      this._selector = null;
-      this._offsets = null;
-      this._targets = null;
-      this._activeTarget = null;
-      this._scrollHeight = null;
-    } // Private
-    ;
-
-    _proto._getConfig = function _getConfig(config) {
-      config = _objectSpread({}, Default$6, typeof config === 'object' && config ? config : {});
-
-      if (typeof config.target !== 'string') {
-        var id = $(config.target).attr('id');
-
-        if (!id) {
-          id = Util.getUID(NAME$8);
-          $(config.target).attr('id', id);
-        }
-
-        config.target = "#" + id;
-      }
-
-      Util.typeCheckConfig(NAME$8, config, DefaultType$6);
-      return config;
-    };
-
-    _proto._getScrollTop = function _getScrollTop() {
-      return this._scrollElement === window ? this._scrollElement.pageYOffset : this._scrollElement.scrollTop;
-    };
-
-    _proto._getScrollHeight = function _getScrollHeight() {
-      return this._scrollElement.scrollHeight || Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
-    };
-
-    _proto._getOffsetHeight = function _getOffsetHeight() {
-      return this._scrollElement === window ? window.innerHeight : this._scrollElement.getBoundingClientRect().height;
-    };
-
-    _proto._process = function _process() {
-      var scrollTop = this._getScrollTop() + this._config.offset;
-
-      var scrollHeight = this._getScrollHeight();
-
-      var maxScroll = this._config.offset + scrollHeight - this._getOffsetHeight();
-
-      if (this._scrollHeight !== scrollHeight) {
-        this.refresh();
-      }
-
-      if (scrollTop >= maxScroll) {
-        var target = this._targets[this._targets.length - 1];
-
-        if (this._activeTarget !== target) {
-          this._activate(target);
-        }
-
-        return;
-      }
-
-      if (this._activeTarget && scrollTop < this._offsets[0] && this._offsets[0] > 0) {
-        this._activeTarget = null;
-
-        this._clear();
-
-        return;
-      }
-
-      var offsetLength = this._offsets.length;
-
-      for (var i = offsetLength; i--;) {
-        var isActiveTarget = this._activeTarget !== this._targets[i] && scrollTop >= this._offsets[i] && (typeof this._offsets[i + 1] === 'undefined' || scrollTop < this._offsets[i + 1]);
-
-        if (isActiveTarget) {
-          this._activate(this._targets[i]);
-        }
-      }
-    };
-
-    _proto._activate = function _activate(target) {
-      this._activeTarget = target;
-
-      this._clear();
-
-      var queries = this._selector.split(',').map(function (selector) {
-        return selector + "[data-target=\"" + target + "\"]," + selector + "[href=\"" + target + "\"]";
-      });
-
-      var $link = $([].slice.call(document.querySelectorAll(queries.join(','))));
-
-      if ($link.hasClass(ClassName$8.DROPDOWN_ITEM)) {
-        $link.closest(Selector$8.DROPDOWN).find(Selector$8.DROPDOWN_TOGGLE).addClass(ClassName$8.ACTIVE);
-        $link.addClass(ClassName$8.ACTIVE);
-      } else {
-        // Set triggered link as active
-        $link.addClass(ClassName$8.ACTIVE); // Set triggered links parents as active
-        // With both <ul> and <nav> markup a parent is the previous sibling of any nav ancestor
-
-        $link.parents(Selector$8.NAV_LIST_GROUP).prev(Selector$8.NAV_LINKS + ", " + Selector$8.LIST_ITEMS).addClass(ClassName$8.ACTIVE); // Handle special case when .nav-link is inside .nav-item
-
-        $link.parents(Selector$8.NAV_LIST_GROUP).prev(Selector$8.NAV_ITEMS).children(Selector$8.NAV_LINKS).addClass(ClassName$8.ACTIVE);
-      }
-
-      $(this._scrollElement).trigger(Event$8.ACTIVATE, {
-        relatedTarget: target
-      });
-    };
-
-    _proto._clear = function _clear() {
-      [].slice.call(document.querySelectorAll(this._selector)).filter(function (node) {
-        return node.classList.contains(ClassName$8.ACTIVE);
-      }).forEach(function (node) {
-        return node.classList.remove(ClassName$8.ACTIVE);
-      });
-    } // Static
-    ;
-
-    ScrollSpy._jQueryInterface = function _jQueryInterface(config) {
-      return this.each(function () {
-        var data = $(this).data(DATA_KEY$8);
-
-        var _config = typeof config === 'object' && config;
-
-        if (!data) {
-          data = new ScrollSpy(this, _config);
-          $(this).data(DATA_KEY$8, data);
-        }
-
-        if (typeof config === 'string') {
-          if (typeof data[config] === 'undefined') {
-            throw new TypeError("No method named \"" + config + "\"");
-          }
-
-          data[config]();
-        }
-      });
-    };
-
-    _createClass(ScrollSpy, null, [{
-      key: "VERSION",
-      get: function get() {
-        return VERSION$8;
-      }
-    }, {
-      key: "Default",
-      get: function get() {
-        return Default$6;
-      }
-    }]);
-
-    return ScrollSpy;
-  }();
-  /**
-   * ------------------------------------------------------------------------
-   * Data Api implementation
-   * ------------------------------------------------------------------------
-   */
-
-
-  $(window).on(Event$8.LOAD_DATA_API, function () {
-    var scrollSpys = [].slice.call(document.querySelectorAll(Selector$8.DATA_SPY));
-    var scrollSpysLength = scrollSpys.length;
-
-    for (var i = scrollSpysLength; i--;) {
-      var $spy = $(scrollSpys[i]);
-
-      ScrollSpy._jQueryInterface.call($spy, $spy.data());
-    }
-  });
-  /**
-   * ------------------------------------------------------------------------
-   * jQuery
-   * ------------------------------------------------------------------------
-   */
-
-  $.fn[NAME$8] = ScrollSpy._jQueryInterface;
-  $.fn[NAME$8].Constructor = ScrollSpy;
-
-  $.fn[NAME$8].noConflict = function () {
-    $.fn[NAME$8] = JQUERY_NO_CONFLICT$8;
-    return ScrollSpy._jQueryInterface;
-  };
-
-  /**
-   * ------------------------------------------------------------------------
-   * Constants
-   * ------------------------------------------------------------------------
-   */
-
-  var NAME$9 = 'tab';
-  var VERSION$9 = '4.3.1';
-  var DATA_KEY$9 = 'bs.tab';
-  var EVENT_KEY$9 = "." + DATA_KEY$9;
-  var DATA_API_KEY$7 = '.data-api';
-  var JQUERY_NO_CONFLICT$9 = $.fn[NAME$9];
-  var Event$9 = {
-    HIDE: "hide" + EVENT_KEY$9,
-    HIDDEN: "hidden" + EVENT_KEY$9,
-    SHOW: "show" + EVENT_KEY$9,
-    SHOWN: "shown" + EVENT_KEY$9,
-    CLICK_DATA_API: "click" + EVENT_KEY$9 + DATA_API_KEY$7
-  };
-  var ClassName$9 = {
-    DROPDOWN_MENU: 'dropdown-menu',
-    ACTIVE: 'active',
-    DISABLED: 'disabled',
-    FADE: 'fade',
-    SHOW: 'show'
-  };
-  var Selector$9 = {
-    DROPDOWN: '.dropdown',
-    NAV_LIST_GROUP: '.nav, .list-group',
-    ACTIVE: '.active',
-    ACTIVE_UL: '> li > .active',
-    DATA_TOGGLE: '[data-toggle="tab"], [data-toggle="pill"], [data-toggle="list"]',
-    DROPDOWN_TOGGLE: '.dropdown-toggle',
-    DROPDOWN_ACTIVE_CHILD: '> .dropdown-menu .active'
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
-  };
-
-  var Tab =
-  /*#__PURE__*/
-  function () {
-    function Tab(element) {
-      this._element = element;
-    } // Getters
-
-
-    var _proto = Tab.prototype;
-
-    // Public
-    _proto.show = function show() {
-      var _this = this;
-
-      if (this._element.parentNode && this._element.parentNode.nodeType === Node.ELEMENT_NODE && $(this._element).hasClass(ClassName$9.ACTIVE) || $(this._element).hasClass(ClassName$9.DISABLED)) {
-        return;
-      }
-
-      var target;
-      var previous;
-      var listElement = $(this._element).closest(Selector$9.NAV_LIST_GROUP)[0];
-      var selector = Util.getSelectorFromElement(this._element);
-
-      if (listElement) {
-        var itemSelector = listElement.nodeName === 'UL' || listElement.nodeName === 'OL' ? Selector$9.ACTIVE_UL : Selector$9.ACTIVE;
-        previous = $.makeArray($(listElement).find(itemSelector));
-        previous = previous[previous.length - 1];
-      }
-
-      var hideEvent = $.Event(Event$9.HIDE, {
-        relatedTarget: this._element
-      });
-      var showEvent = $.Event(Event$9.SHOW, {
-        relatedTarget: previous
-      });
-
-      if (previous) {
-        $(previous).trigger(hideEvent);
-      }
-
-      $(this._element).trigger(showEvent);
-
-      if (showEvent.isDefaultPrevented() || hideEvent.isDefaultPrevented()) {
-        return;
-      }
-
-      if (selector) {
-        target = document.querySelector(selector);
-      }
-
-      this._activate(this._element, listElement);
-
-      var complete = function complete() {
-        var hiddenEvent = $.Event(Event$9.HIDDEN, {
-          relatedTarget: _this._element
-        });
-        var shownEvent = $.Event(Event$9.SHOWN, {
-          relatedTarget: previous
-        });
-        $(previous).trigger(hiddenEvent);
-        $(_this._element).trigger(shownEvent);
-      };
-
-      if (target) {
-        this._activate(target, target.parentNode, complete);
-      } else {
-        complete();
-      }
-    };
-
-    _proto.dispose = function dispose() {
-      $.removeData(this._element, DATA_KEY$9);
-      this._element = null;
-    } // Private
-    ;
-
-    _proto._activate = function _activate(element, container, callback) {
-      var _this2 = this;
-
-      var activeElements = container && (container.nodeName === 'UL' || container.nodeName === 'OL') ? $(container).find(Selector$9.ACTIVE_UL) : $(container).children(Selector$9.ACTIVE);
-      var active = activeElements[0];
-      var isTransitioning = callback && active && $(active).hasClass(ClassName$9.FADE);
-
-      var complete = function complete() {
-        return _this2._transitionComplete(element, active, callback);
-      };
-
-      if (active && isTransitioning) {
-        var transitionDuration = Util.getTransitionDurationFromElement(active);
-        $(active).removeClass(ClassName$9.SHOW).one(Util.TRANSITION_END, complete).emulateTransitionEnd(transitionDuration);
-      } else {
-        complete();
-      }
-    };
-
-    _proto._transitionComplete = function _transitionComplete(element, active, callback) {
-      if (active) {
-        $(active).removeClass(ClassName$9.ACTIVE);
-        var dropdownChild = $(active.parentNode).find(Selector$9.DROPDOWN_ACTIVE_CHILD)[0];
-
-        if (dropdownChild) {
-          $(dropdownChild).removeClass(ClassName$9.ACTIVE);
-        }
-
-        if (active.getAttribute('role') === 'tab') {
-          active.setAttribute('aria-selected', false);
-        }
-      }
-
-      $(element).addClass(ClassName$9.ACTIVE);
-
-      if (element.getAttribute('role') === 'tab') {
-        element.setAttribute('aria-selected', true);
-      }
-
-      Util.reflow(element);
-
-      if (element.classList.contains(ClassName$9.FADE)) {
-        element.classList.add(ClassName$9.SHOW);
-      }
-
-      if (element.parentNode && $(element.parentNode).hasClass(ClassName$9.DROPDOWN_MENU)) {
-        var dropdownElement = $(element).closest(Selector$9.DROPDOWN)[0];
-
-        if (dropdownElement) {
-          var dropdownToggleList = [].slice.call(dropdownElement.querySelectorAll(Selector$9.DROPDOWN_TOGGLE));
-          $(dropdownToggleList).addClass(ClassName$9.ACTIVE);
-        }
-
-        element.setAttribute('aria-expanded', true);
-      }
-
-      if (callback) {
-        callback();
-      }
-    } // Static
-    ;
-
-    Tab._jQueryInterface = function _jQueryInterface(config) {
-      return this.each(function () {
-        var $this = $(this);
-        var data = $this.data(DATA_KEY$9);
-
-        if (!data) {
-          data = new Tab(this);
-          $this.data(DATA_KEY$9, data);
-        }
-
-        if (typeof config === 'string') {
-          if (typeof data[config] === 'undefined') {
-            throw new TypeError("No method named \"" + config + "\"");
-          }
-
-          data[config]();
-        }
-      });
-    };
-
-    _createClass(Tab, null, [{
-      key: "VERSION",
-      get: function get() {
-        return VERSION$9;
-      }
-    }]);
-
-    return Tab;
-  }();
-  /**
-   * ------------------------------------------------------------------------
-   * Data Api implementation
-   * ------------------------------------------------------------------------
-   */
-
-
-  $(document).on(Event$9.CLICK_DATA_API, Selector$9.DATA_TOGGLE, function (event) {
-    event.preventDefault();
-
-    Tab._jQueryInterface.call($(this), 'show');
-  });
-  /**
-   * ------------------------------------------------------------------------
-   * jQuery
-   * ------------------------------------------------------------------------
-   */
-
-  $.fn[NAME$9] = Tab._jQueryInterface;
-  $.fn[NAME$9].Constructor = Tab;
-
-  $.fn[NAME$9].noConflict = function () {
-    $.fn[NAME$9] = JQUERY_NO_CONFLICT$9;
-    return Tab._jQueryInterface;
-  };
-
-  /**
-   * ------------------------------------------------------------------------
-   * Constants
-   * ------------------------------------------------------------------------
-   */
-
-  var NAME$a = 'toast';
-  var VERSION$a = '4.3.1';
-  var DATA_KEY$a = 'bs.toast';
-  var EVENT_KEY$a = "." + DATA_KEY$a;
-  var JQUERY_NO_CONFLICT$a = $.fn[NAME$a];
-  var Event$a = {
-    CLICK_DISMISS: "click.dismiss" + EVENT_KEY$a,
-    HIDE: "hide" + EVENT_KEY$a,
-    HIDDEN: "hidden" + EVENT_KEY$a,
-    SHOW: "show" + EVENT_KEY$a,
-    SHOWN: "shown" + EVENT_KEY$a
-  };
-  var ClassName$a = {
-    FADE: 'fade',
-    HIDE: 'hide',
-    SHOW: 'show',
-    SHOWING: 'showing'
-  };
-  var DefaultType$7 = {
-    animation: 'boolean',
-    autohide: 'boolean',
-    delay: 'number'
-  };
-  var Default$7 = {
-    animation: true,
-    autohide: true,
-    delay: 500
-  };
-  var Selector$a = {
-    DATA_DISMISS: '[data-dismiss="toast"]'
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
-  };
-
-  var Toast =
-  /*#__PURE__*/
-  function () {
-    function Toast(element, config) {
-      this._element = element;
-      this._config = this._getConfig(config);
-      this._timeout = null;
-
-      this._setListeners();
-    } // Getters
-
-
-    var _proto = Toast.prototype;
-
-    // Public
-    _proto.show = function show() {
-      var _this = this;
-
-      $(this._element).trigger(Event$a.SHOW);
-
-      if (this._config.animation) {
-        this._element.classList.add(ClassName$a.FADE);
-      }
-
-      var complete = function complete() {
-        _this._element.classList.remove(ClassName$a.SHOWING);
-
-        _this._element.classList.add(ClassName$a.SHOW);
-
-        $(_this._element).trigger(Event$a.SHOWN);
-
-        if (_this._config.autohide) {
-          _this.hide();
-        }
-      };
-
-      this._element.classList.remove(ClassName$a.HIDE);
-
-      this._element.classList.add(ClassName$a.SHOWING);
-
-      if (this._config.animation) {
-        var transitionDuration = Util.getTransitionDurationFromElement(this._element);
-        $(this._element).one(Util.TRANSITION_END, complete).emulateTransitionEnd(transitionDuration);
-      } else {
-        complete();
-      }
-    };
-
-    _proto.hide = function hide(withoutTimeout) {
-      var _this2 = this;
-
-      if (!this._element.classList.contains(ClassName$a.SHOW)) {
-        return;
-      }
-
-      $(this._element).trigger(Event$a.HIDE);
-
-      if (withoutTimeout) {
-        this._close();
-      } else {
-        this._timeout = setTimeout(function () {
-          _this2._close();
-        }, this._config.delay);
-      }
-    };
-
-    _proto.dispose = function dispose() {
-      clearTimeout(this._timeout);
-      this._timeout = null;
-
-      if (this._element.classList.contains(ClassName$a.SHOW)) {
-        this._element.classList.remove(ClassName$a.SHOW);
-      }
-
-      $(this._element).off(Event$a.CLICK_DISMISS);
-      $.removeData(this._element, DATA_KEY$a);
-      this._element = null;
-      this._config = null;
-    } // Private
-    ;
-
-    _proto._getConfig = function _getConfig(config) {
-      config = _objectSpread({}, Default$7, $(this._element).data(), typeof config === 'object' && config ? config : {});
-      Util.typeCheckConfig(NAME$a, config, this.constructor.DefaultType);
-      return config;
-    };
-
-    _proto._setListeners = function _setListeners() {
-      var _this3 = this;
-
-      $(this._element).on(Event$a.CLICK_DISMISS, Selector$a.DATA_DISMISS, function () {
-        return _this3.hide(true);
-      });
-    };
-
-    _proto._close = function _close() {
-      var _this4 = this;
-
-      var complete = function complete() {
-        _this4._element.classList.add(ClassName$a.HIDE);
-
-        $(_this4._element).trigger(Event$a.HIDDEN);
-      };
-
-      this._element.classList.remove(ClassName$a.SHOW);
-
-      if (this._config.animation) {
-        var transitionDuration = Util.getTransitionDurationFromElement(this._element);
-        $(this._element).one(Util.TRANSITION_END, complete).emulateTransitionEnd(transitionDuration);
-      } else {
-        complete();
-      }
-    } // Static
-    ;
-
-    Toast._jQueryInterface = function _jQueryInterface(config) {
-      return this.each(function () {
-        var $element = $(this);
-        var data = $element.data(DATA_KEY$a);
-
-        var _config = typeof config === 'object' && config;
-
-        if (!data) {
-          data = new Toast(this, _config);
-          $element.data(DATA_KEY$a, data);
-        }
-
-        if (typeof config === 'string') {
-          if (typeof data[config] === 'undefined') {
-            throw new TypeError("No method named \"" + config + "\"");
-          }
-
-          data[config](this);
-        }
-      });
-    };
-
-    _createClass(Toast, null, [{
-      key: "VERSION",
-      get: function get() {
-        return VERSION$a;
-      }
-    }, {
-      key: "DefaultType",
-      get: function get() {
-        return DefaultType$7;
-      }
-    }, {
-      key: "Default",
-      get: function get() {
-        return Default$7;
-      }
-    }]);
-
-    return Toast;
-  }();
-  /**
-   * ------------------------------------------------------------------------
-   * jQuery
-   * ------------------------------------------------------------------------
-   */
-
-
-  $.fn[NAME$a] = Toast._jQueryInterface;
-  $.fn[NAME$a].Constructor = Toast;
-
-  $.fn[NAME$a].noConflict = function () {
-    $.fn[NAME$a] = JQUERY_NO_CONFLICT$a;
-    return Toast._jQueryInterface;
-  };
-
-  /**
-   * --------------------------------------------------------------------------
-   * Bootstrap (v4.3.1): index.js
-   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-   * --------------------------------------------------------------------------
-   */
-
-  (function () {
-    if (typeof $ === 'undefined') {
-      throw new TypeError('Bootstrap\'s JavaScript requires jQuery. jQuery must be included before Bootstrap\'s JavaScript.');
-    }
-
-    var version = $.fn.jquery.split(' ')[0].split('.');
-    var minMajor = 1;
-    var ltMajor = 2;
-    var minMinor = 9;
-    var minPatch = 1;
-    var maxMajor = 4;
-
-    if (version[0] < ltMajor && version[1] < minMinor || version[0] === minMajor && version[1] === minMinor && version[2] < minPatch || version[0] >= maxMajor) {
-      throw new Error('Bootstrap\'s JavaScript requires at least jQuery v1.9.1 but less than v4.0.0');
-    }
-  })();
-
-  exports.Util = Util;
-  exports.Alert = Alert;
-  exports.Button = Button;
-  exports.Carousel = Carousel;
-  exports.Collapse = Collapse;
-  exports.Dropdown = Dropdown;
-  exports.Modal = Modal;
-  exports.Popover = Popover;
-  exports.Scrollspy = ScrollSpy;
-  exports.Tab = Tab;
-  exports.Toast = Toast;
-  exports.Tooltip = Tooltip;
-
-  Object.defineProperty(exports, '__esModule', { value: true });
-
-}));
-//# sourceMappingURL=bootstrap.bundle.js.map
-
-;(function() {
-"use strict";
-
-/**
- * @license
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/**
- * A component handler interface using the revealing module design pattern.
- * More details on this design pattern here:
- * https://github.com/jasonmayes/mdl-component-design-pattern
- *
- * @author Jason Mayes.
- */
-/* exported componentHandler */
-
-// Pre-defining the componentHandler interface, for closure documentation and
-// static verification.
-var componentHandler = {
-  /**
-   * Searches existing DOM for elements of our component type and upgrades them
-   * if they have not already been upgraded.
-   *
-   * @param {string=} optJsClass the programatic name of the element class we
-   * need to create a new instance of.
-   * @param {string=} optCssClass the name of the CSS class elements of this
-   * type will have.
-   */
-  upgradeDom: function(optJsClass, optCssClass) {},
-  /**
-   * Upgrades a specific element rather than all in the DOM.
-   *
-   * @param {!Element} element The element we wish to upgrade.
-   * @param {string=} optJsClass Optional name of the class we want to upgrade
-   * the element to.
-   */
-  upgradeElement: function(element, optJsClass) {},
-  /**
-   * Upgrades a specific list of elements rather than all in the DOM.
-   *
-   * @param {!Element|!Array<!Element>|!NodeList|!HTMLCollection} elements
-   * The elements we wish to upgrade.
-   */
-  upgradeElements: function(elements) {},
-  /**
-   * Upgrades all registered components found in the current DOM. This is
-   * automatically called on window load.
-   */
-  upgradeAllRegistered: function() {},
-  /**
-   * Allows user to be alerted to any upgrades that are performed for a given
-   * component type
-   *
-   * @param {string} jsClass The class name of the MDL component we wish
-   * to hook into for any upgrades performed.
-   * @param {function(!HTMLElement)} callback The function to call upon an
-   * upgrade. This function should expect 1 parameter - the HTMLElement which
-   * got upgraded.
-   */
-  registerUpgradedCallback: function(jsClass, callback) {},
-  /**
-   * Registers a class for future use and attempts to upgrade existing DOM.
-   *
-   * @param {componentHandler.ComponentConfigPublic} config the registration configuration
-   */
-  register: function(config) {},
-  /**
-   * Downgrade either a given node, an array of nodes, or a NodeList.
-   *
-   * @param {!Node|!Array<!Node>|!NodeList} nodes
-   */
-  downgradeElements: function(nodes) {}
+  }
 };
 
-componentHandler = (function() {
-  'use strict';
+function _normalizeEncoding(enc) {
+  if (!enc) return 'utf8';
+  var retried;
+  while (true) {
+    switch (enc) {
+      case 'utf8':
+      case 'utf-8':
+        return 'utf8';
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return 'utf16le';
+      case 'latin1':
+      case 'binary':
+        return 'latin1';
+      case 'base64':
+      case 'ascii':
+      case 'hex':
+        return enc;
+      default:
+        if (retried) return; // undefined
+        enc = ('' + enc).toLowerCase();
+        retried = true;
+    }
+  }
+};
 
-  /** @type {!Array<componentHandler.ComponentConfig>} */
-  var registeredComponents_ = [];
+// Do not cache `Buffer.isEncoding` when checking encoding names as some
+// modules monkey-patch it to support additional encodings
+function normalizeEncoding(enc) {
+  var nenc = _normalizeEncoding(enc);
+  if (typeof nenc !== 'string' && (Buffer.isEncoding === isEncoding || !isEncoding(enc))) throw new Error('Unknown encoding: ' + enc);
+  return nenc || enc;
+}
 
-  /** @type {!Array<componentHandler.Component>} */
-  var createdComponents_ = [];
+// StringDecoder provides an interface for efficiently splitting a series of
+// buffers into a series of JS strings without breaking apart multi-byte
+// characters.
+exports.StringDecoder = StringDecoder;
+function StringDecoder(encoding) {
+  this.encoding = normalizeEncoding(encoding);
+  var nb;
+  switch (this.encoding) {
+    case 'utf16le':
+      this.text = utf16Text;
+      this.end = utf16End;
+      nb = 4;
+      break;
+    case 'utf8':
+      this.fillLast = utf8FillLast;
+      nb = 4;
+      break;
+    case 'base64':
+      this.text = base64Text;
+      this.end = base64End;
+      nb = 3;
+      break;
+    default:
+      this.write = simpleWrite;
+      this.end = simpleEnd;
+      return;
+  }
+  this.lastNeed = 0;
+  this.lastTotal = 0;
+  this.lastChar = Buffer.allocUnsafe(nb);
+}
 
-  var componentConfigProperty_ = 'mdlComponentConfigInternal_';
+StringDecoder.prototype.write = function (buf) {
+  if (buf.length === 0) return '';
+  var r;
+  var i;
+  if (this.lastNeed) {
+    r = this.fillLast(buf);
+    if (r === undefined) return '';
+    i = this.lastNeed;
+    this.lastNeed = 0;
+  } else {
+    i = 0;
+  }
+  if (i < buf.length) return r ? r + this.text(buf, i) : this.text(buf, i);
+  return r || '';
+};
 
-  /**
-   * Searches registered components for a class we are interested in using.
-   * Optionally replaces a match with passed object if specified.
-   *
-   * @param {string} name The name of a class we want to use.
-   * @param {componentHandler.ComponentConfig=} optReplace Optional object to replace match with.
-   * @return {!Object|boolean}
-   * @private
-   */
-  function findRegisteredClass_(name, optReplace) {
-    for (var i = 0; i < registeredComponents_.length; i++) {
-      if (registeredComponents_[i].className === name) {
-        if (typeof optReplace !== 'undefined') {
-          registeredComponents_[i] = optReplace;
-        }
-        return registeredComponents_[i];
+StringDecoder.prototype.end = utf8End;
+
+// Returns only complete characters in a Buffer
+StringDecoder.prototype.text = utf8Text;
+
+// Attempts to complete a partial non-UTF-8 character using bytes from a Buffer
+StringDecoder.prototype.fillLast = function (buf) {
+  if (this.lastNeed <= buf.length) {
+    buf.copy(this.lastChar, this.lastTotal - this.lastNeed, 0, this.lastNeed);
+    return this.lastChar.toString(this.encoding, 0, this.lastTotal);
+  }
+  buf.copy(this.lastChar, this.lastTotal - this.lastNeed, 0, buf.length);
+  this.lastNeed -= buf.length;
+};
+
+// Checks the type of a UTF-8 byte, whether it's ASCII, a leading byte, or a
+// continuation byte. If an invalid byte is detected, -2 is returned.
+function utf8CheckByte(byte) {
+  if (byte <= 0x7F) return 0;else if (byte >> 5 === 0x06) return 2;else if (byte >> 4 === 0x0E) return 3;else if (byte >> 3 === 0x1E) return 4;
+  return byte >> 6 === 0x02 ? -1 : -2;
+}
+
+// Checks at most 3 bytes at the end of a Buffer in order to detect an
+// incomplete multi-byte UTF-8 character. The total number of bytes (2, 3, or 4)
+// needed to complete the UTF-8 character (if applicable) are returned.
+function utf8CheckIncomplete(self, buf, i) {
+  var j = buf.length - 1;
+  if (j < i) return 0;
+  var nb = utf8CheckByte(buf[j]);
+  if (nb >= 0) {
+    if (nb > 0) self.lastNeed = nb - 1;
+    return nb;
+  }
+  if (--j < i || nb === -2) return 0;
+  nb = utf8CheckByte(buf[j]);
+  if (nb >= 0) {
+    if (nb > 0) self.lastNeed = nb - 2;
+    return nb;
+  }
+  if (--j < i || nb === -2) return 0;
+  nb = utf8CheckByte(buf[j]);
+  if (nb >= 0) {
+    if (nb > 0) {
+      if (nb === 2) nb = 0;else self.lastNeed = nb - 3;
+    }
+    return nb;
+  }
+  return 0;
+}
+
+// Validates as many continuation bytes for a multi-byte UTF-8 character as
+// needed or are available. If we see a non-continuation byte where we expect
+// one, we "replace" the validated continuation bytes we've seen so far with
+// a single UTF-8 replacement character ('\ufffd'), to match v8's UTF-8 decoding
+// behavior. The continuation byte check is included three times in the case
+// where all of the continuation bytes for a character exist in the same buffer.
+// It is also done this way as a slight performance increase instead of using a
+// loop.
+function utf8CheckExtraBytes(self, buf, p) {
+  if ((buf[0] & 0xC0) !== 0x80) {
+    self.lastNeed = 0;
+    return '\ufffd';
+  }
+  if (self.lastNeed > 1 && buf.length > 1) {
+    if ((buf[1] & 0xC0) !== 0x80) {
+      self.lastNeed = 1;
+      return '\ufffd';
+    }
+    if (self.lastNeed > 2 && buf.length > 2) {
+      if ((buf[2] & 0xC0) !== 0x80) {
+        self.lastNeed = 2;
+        return '\ufffd';
       }
     }
+  }
+}
+
+// Attempts to complete a multi-byte UTF-8 character using bytes from a Buffer.
+function utf8FillLast(buf) {
+  var p = this.lastTotal - this.lastNeed;
+  var r = utf8CheckExtraBytes(this, buf, p);
+  if (r !== undefined) return r;
+  if (this.lastNeed <= buf.length) {
+    buf.copy(this.lastChar, p, 0, this.lastNeed);
+    return this.lastChar.toString(this.encoding, 0, this.lastTotal);
+  }
+  buf.copy(this.lastChar, p, 0, buf.length);
+  this.lastNeed -= buf.length;
+}
+
+// Returns all complete UTF-8 characters in a Buffer. If the Buffer ended on a
+// partial character, the character's bytes are buffered until the required
+// number of bytes are available.
+function utf8Text(buf, i) {
+  var total = utf8CheckIncomplete(this, buf, i);
+  if (!this.lastNeed) return buf.toString('utf8', i);
+  this.lastTotal = total;
+  var end = buf.length - (total - this.lastNeed);
+  buf.copy(this.lastChar, 0, end);
+  return buf.toString('utf8', i, end);
+}
+
+// For UTF-8, a replacement character is added when ending on a partial
+// character.
+function utf8End(buf) {
+  var r = buf && buf.length ? this.write(buf) : '';
+  if (this.lastNeed) return r + '\ufffd';
+  return r;
+}
+
+// UTF-16LE typically needs two bytes per character, but even if we have an even
+// number of bytes available, we need to check if we end on a leading/high
+// surrogate. In that case, we need to wait for the next two bytes in order to
+// decode the last character properly.
+function utf16Text(buf, i) {
+  if ((buf.length - i) % 2 === 0) {
+    var r = buf.toString('utf16le', i);
+    if (r) {
+      var c = r.charCodeAt(r.length - 1);
+      if (c >= 0xD800 && c <= 0xDBFF) {
+        this.lastNeed = 2;
+        this.lastTotal = 4;
+        this.lastChar[0] = buf[buf.length - 2];
+        this.lastChar[1] = buf[buf.length - 1];
+        return r.slice(0, -1);
+      }
+    }
+    return r;
+  }
+  this.lastNeed = 1;
+  this.lastTotal = 2;
+  this.lastChar[0] = buf[buf.length - 1];
+  return buf.toString('utf16le', i, buf.length - 1);
+}
+
+// For UTF-16LE we do not explicitly append special replacement characters if we
+// end on a partial character, we simply let v8 handle that.
+function utf16End(buf) {
+  var r = buf && buf.length ? this.write(buf) : '';
+  if (this.lastNeed) {
+    var end = this.lastTotal - this.lastNeed;
+    return r + this.lastChar.toString('utf16le', 0, end);
+  }
+  return r;
+}
+
+function base64Text(buf, i) {
+  var n = (buf.length - i) % 3;
+  if (n === 0) return buf.toString('base64', i);
+  this.lastNeed = 3 - n;
+  this.lastTotal = 3;
+  if (n === 1) {
+    this.lastChar[0] = buf[buf.length - 1];
+  } else {
+    this.lastChar[0] = buf[buf.length - 2];
+    this.lastChar[1] = buf[buf.length - 1];
+  }
+  return buf.toString('base64', i, buf.length - n);
+}
+
+function base64End(buf) {
+  var r = buf && buf.length ? this.write(buf) : '';
+  if (this.lastNeed) return r + this.lastChar.toString('base64', 0, 3 - this.lastNeed);
+  return r;
+}
+
+// Pass bytes on through for single-byte encodings (e.g. ascii, latin1, hex)
+function simpleWrite(buf) {
+  return buf.toString(this.encoding);
+}
+
+function simpleEnd(buf) {
+  return buf && buf.length ? this.write(buf) : '';
+}
+},{"safe-buffer":29}],28:[function(require,module,exports){
+exports = module.exports = require('./lib/_stream_readable.js');
+exports.Stream = exports;
+exports.Readable = exports;
+exports.Writable = require('./lib/_stream_writable.js');
+exports.Duplex = require('./lib/_stream_duplex.js');
+exports.Transform = require('./lib/_stream_transform.js');
+exports.PassThrough = require('./lib/_stream_passthrough.js');
+
+},{"./lib/_stream_duplex.js":18,"./lib/_stream_passthrough.js":19,"./lib/_stream_readable.js":20,"./lib/_stream_transform.js":21,"./lib/_stream_writable.js":22}],29:[function(require,module,exports){
+/* eslint-disable node/no-deprecated-api */
+var buffer = require('buffer')
+var Buffer = buffer.Buffer
+
+// alternative to using Object.keys for old browsers
+function copyProps (src, dst) {
+  for (var key in src) {
+    dst[key] = src[key]
+  }
+}
+if (Buffer.from && Buffer.alloc && Buffer.allocUnsafe && Buffer.allocUnsafeSlow) {
+  module.exports = buffer
+} else {
+  // Copy properties from require('buffer')
+  copyProps(buffer, exports)
+  exports.Buffer = SafeBuffer
+}
+
+function SafeBuffer (arg, encodingOrOffset, length) {
+  return Buffer(arg, encodingOrOffset, length)
+}
+
+// Copy static methods from Buffer
+copyProps(Buffer, SafeBuffer)
+
+SafeBuffer.from = function (arg, encodingOrOffset, length) {
+  if (typeof arg === 'number') {
+    throw new TypeError('Argument must not be a number')
+  }
+  return Buffer(arg, encodingOrOffset, length)
+}
+
+SafeBuffer.alloc = function (size, fill, encoding) {
+  if (typeof size !== 'number') {
+    throw new TypeError('Argument must be a number')
+  }
+  var buf = Buffer(size)
+  if (fill !== undefined) {
+    if (typeof encoding === 'string') {
+      buf.fill(fill, encoding)
+    } else {
+      buf.fill(fill)
+    }
+  } else {
+    buf.fill(0)
+  }
+  return buf
+}
+
+SafeBuffer.allocUnsafe = function (size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('Argument must be a number')
+  }
+  return Buffer(size)
+}
+
+SafeBuffer.allocUnsafeSlow = function (size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('Argument must be a number')
+  }
+  return buffer.SlowBuffer(size)
+}
+
+},{"buffer":5}],30:[function(require,module,exports){
+(function (global){
+var ClientRequest = require('./lib/request')
+var response = require('./lib/response')
+var extend = require('xtend')
+var statusCodes = require('builtin-status-codes')
+var url = require('url')
+
+var http = exports
+
+http.request = function (opts, cb) {
+	if (typeof opts === 'string')
+		opts = url.parse(opts)
+	else
+		opts = extend(opts)
+
+	// Normally, the page is loaded from http or https, so not specifying a protocol
+	// will result in a (valid) protocol-relative url. However, this won't work if
+	// the protocol is something else, like 'file:'
+	var defaultProtocol = global.location.protocol.search(/^https?:$/) === -1 ? 'http:' : ''
+
+	var protocol = opts.protocol || defaultProtocol
+	var host = opts.hostname || opts.host
+	var port = opts.port
+	var path = opts.path || '/'
+
+	// Necessary for IPv6 addresses
+	if (host && host.indexOf(':') !== -1)
+		host = '[' + host + ']'
+
+	// This may be a relative url. The browser should always be able to interpret it correctly.
+	opts.url = (host ? (protocol + '//' + host) : '') + (port ? ':' + port : '') + path
+	opts.method = (opts.method || 'GET').toUpperCase()
+	opts.headers = opts.headers || {}
+
+	// Also valid opts.auth, opts.mode
+
+	var req = new ClientRequest(opts)
+	if (cb)
+		req.on('response', cb)
+	return req
+}
+
+http.get = function get (opts, cb) {
+	var req = http.request(opts, cb)
+	req.end()
+	return req
+}
+
+http.ClientRequest = ClientRequest
+http.IncomingMessage = response.IncomingMessage
+
+http.Agent = function () {}
+http.Agent.defaultMaxSockets = 4
+
+http.globalAgent = new http.Agent()
+
+http.STATUS_CODES = statusCodes
+
+http.METHODS = [
+	'CHECKOUT',
+	'CONNECT',
+	'COPY',
+	'DELETE',
+	'GET',
+	'HEAD',
+	'LOCK',
+	'M-SEARCH',
+	'MERGE',
+	'MKACTIVITY',
+	'MKCOL',
+	'MOVE',
+	'NOTIFY',
+	'OPTIONS',
+	'PATCH',
+	'POST',
+	'PROPFIND',
+	'PROPPATCH',
+	'PURGE',
+	'PUT',
+	'REPORT',
+	'SEARCH',
+	'SUBSCRIBE',
+	'TRACE',
+	'UNLOCK',
+	'UNSUBSCRIBE'
+]
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./lib/request":32,"./lib/response":33,"builtin-status-codes":6,"url":36,"xtend":39}],31:[function(require,module,exports){
+(function (global){
+exports.fetch = isFunction(global.fetch) && isFunction(global.ReadableStream)
+
+exports.writableStream = isFunction(global.WritableStream)
+
+exports.abortController = isFunction(global.AbortController)
+
+exports.blobConstructor = false
+try {
+	new Blob([new ArrayBuffer(1)])
+	exports.blobConstructor = true
+} catch (e) {}
+
+// The xhr request to example.com may violate some restrictive CSP configurations,
+// so if we're running in a browser that supports `fetch`, avoid calling getXHR()
+// and assume support for certain features below.
+var xhr
+function getXHR () {
+	// Cache the xhr value
+	if (xhr !== undefined) return xhr
+
+	if (global.XMLHttpRequest) {
+		xhr = new global.XMLHttpRequest()
+		// If XDomainRequest is available (ie only, where xhr might not work
+		// cross domain), use the page location. Otherwise use example.com
+		// Note: this doesn't actually make an http request.
+		try {
+			xhr.open('GET', global.XDomainRequest ? '/' : 'https://example.com')
+		} catch(e) {
+			xhr = null
+		}
+	} else {
+		// Service workers don't have XHR
+		xhr = null
+	}
+	return xhr
+}
+
+function checkTypeSupport (type) {
+	var xhr = getXHR()
+	if (!xhr) return false
+	try {
+		xhr.responseType = type
+		return xhr.responseType === type
+	} catch (e) {}
+	return false
+}
+
+// For some strange reason, Safari 7.0 reports typeof global.ArrayBuffer === 'object'.
+// Safari 7.1 appears to have fixed this bug.
+var haveArrayBuffer = typeof global.ArrayBuffer !== 'undefined'
+var haveSlice = haveArrayBuffer && isFunction(global.ArrayBuffer.prototype.slice)
+
+// If fetch is supported, then arraybuffer will be supported too. Skip calling
+// checkTypeSupport(), since that calls getXHR().
+exports.arraybuffer = exports.fetch || (haveArrayBuffer && checkTypeSupport('arraybuffer'))
+
+// These next two tests unavoidably show warnings in Chrome. Since fetch will always
+// be used if it's available, just return false for these to avoid the warnings.
+exports.msstream = !exports.fetch && haveSlice && checkTypeSupport('ms-stream')
+exports.mozchunkedarraybuffer = !exports.fetch && haveArrayBuffer &&
+	checkTypeSupport('moz-chunked-arraybuffer')
+
+// If fetch is supported, then overrideMimeType will be supported too. Skip calling
+// getXHR().
+exports.overrideMimeType = exports.fetch || (getXHR() ? isFunction(getXHR().overrideMimeType) : false)
+
+exports.vbArray = isFunction(global.VBArray)
+
+function isFunction (value) {
+	return typeof value === 'function'
+}
+
+xhr = null // Help gc
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],32:[function(require,module,exports){
+(function (process,global,Buffer){
+var capability = require('./capability')
+var inherits = require('inherits')
+var response = require('./response')
+var stream = require('readable-stream')
+var toArrayBuffer = require('to-arraybuffer')
+
+var IncomingMessage = response.IncomingMessage
+var rStates = response.readyStates
+
+function decideMode (preferBinary, useFetch) {
+	if (capability.fetch && useFetch) {
+		return 'fetch'
+	} else if (capability.mozchunkedarraybuffer) {
+		return 'moz-chunked-arraybuffer'
+	} else if (capability.msstream) {
+		return 'ms-stream'
+	} else if (capability.arraybuffer && preferBinary) {
+		return 'arraybuffer'
+	} else if (capability.vbArray && preferBinary) {
+		return 'text:vbarray'
+	} else {
+		return 'text'
+	}
+}
+
+var ClientRequest = module.exports = function (opts) {
+	var self = this
+	stream.Writable.call(self)
+
+	self._opts = opts
+	self._body = []
+	self._headers = {}
+	if (opts.auth)
+		self.setHeader('Authorization', 'Basic ' + new Buffer(opts.auth).toString('base64'))
+	Object.keys(opts.headers).forEach(function (name) {
+		self.setHeader(name, opts.headers[name])
+	})
+
+	var preferBinary
+	var useFetch = true
+	if (opts.mode === 'disable-fetch' || ('requestTimeout' in opts && !capability.abortController)) {
+		// If the use of XHR should be preferred. Not typically needed.
+		useFetch = false
+		preferBinary = true
+	} else if (opts.mode === 'prefer-streaming') {
+		// If streaming is a high priority but binary compatibility and
+		// the accuracy of the 'content-type' header aren't
+		preferBinary = false
+	} else if (opts.mode === 'allow-wrong-content-type') {
+		// If streaming is more important than preserving the 'content-type' header
+		preferBinary = !capability.overrideMimeType
+	} else if (!opts.mode || opts.mode === 'default' || opts.mode === 'prefer-fast') {
+		// Use binary if text streaming may corrupt data or the content-type header, or for speed
+		preferBinary = true
+	} else {
+		throw new Error('Invalid value for opts.mode')
+	}
+	self._mode = decideMode(preferBinary, useFetch)
+	self._fetchTimer = null
+
+	self.on('finish', function () {
+		self._onFinish()
+	})
+}
+
+inherits(ClientRequest, stream.Writable)
+
+ClientRequest.prototype.setHeader = function (name, value) {
+	var self = this
+	var lowerName = name.toLowerCase()
+	// This check is not necessary, but it prevents warnings from browsers about setting unsafe
+	// headers. To be honest I'm not entirely sure hiding these warnings is a good thing, but
+	// http-browserify did it, so I will too.
+	if (unsafeHeaders.indexOf(lowerName) !== -1)
+		return
+
+	self._headers[lowerName] = {
+		name: name,
+		value: value
+	}
+}
+
+ClientRequest.prototype.getHeader = function (name) {
+	var header = this._headers[name.toLowerCase()]
+	if (header)
+		return header.value
+	return null
+}
+
+ClientRequest.prototype.removeHeader = function (name) {
+	var self = this
+	delete self._headers[name.toLowerCase()]
+}
+
+ClientRequest.prototype._onFinish = function () {
+	var self = this
+
+	if (self._destroyed)
+		return
+	var opts = self._opts
+
+	var headersObj = self._headers
+	var body = null
+	if (opts.method !== 'GET' && opts.method !== 'HEAD') {
+		if (capability.arraybuffer) {
+			body = toArrayBuffer(Buffer.concat(self._body))
+		} else if (capability.blobConstructor) {
+			body = new global.Blob(self._body.map(function (buffer) {
+				return toArrayBuffer(buffer)
+			}), {
+				type: (headersObj['content-type'] || {}).value || ''
+			})
+		} else {
+			// get utf8 string
+			body = Buffer.concat(self._body).toString()
+		}
+	}
+
+	// create flattened list of headers
+	var headersList = []
+	Object.keys(headersObj).forEach(function (keyName) {
+		var name = headersObj[keyName].name
+		var value = headersObj[keyName].value
+		if (Array.isArray(value)) {
+			value.forEach(function (v) {
+				headersList.push([name, v])
+			})
+		} else {
+			headersList.push([name, value])
+		}
+	})
+
+	if (self._mode === 'fetch') {
+		var signal = null
+		var fetchTimer = null
+		if (capability.abortController) {
+			var controller = new AbortController()
+			signal = controller.signal
+			self._fetchAbortController = controller
+
+			if ('requestTimeout' in opts && opts.requestTimeout !== 0) {
+				self._fetchTimer = global.setTimeout(function () {
+					self.emit('requestTimeout')
+					if (self._fetchAbortController)
+						self._fetchAbortController.abort()
+				}, opts.requestTimeout)
+			}
+		}
+
+		global.fetch(self._opts.url, {
+			method: self._opts.method,
+			headers: headersList,
+			body: body || undefined,
+			mode: 'cors',
+			credentials: opts.withCredentials ? 'include' : 'same-origin',
+			signal: signal
+		}).then(function (response) {
+			self._fetchResponse = response
+			self._connect()
+		}, function (reason) {
+			global.clearTimeout(self._fetchTimer)
+			if (!self._destroyed)
+				self.emit('error', reason)
+		})
+	} else {
+		var xhr = self._xhr = new global.XMLHttpRequest()
+		try {
+			xhr.open(self._opts.method, self._opts.url, true)
+		} catch (err) {
+			process.nextTick(function () {
+				self.emit('error', err)
+			})
+			return
+		}
+
+		// Can't set responseType on really old browsers
+		if ('responseType' in xhr)
+			xhr.responseType = self._mode.split(':')[0]
+
+		if ('withCredentials' in xhr)
+			xhr.withCredentials = !!opts.withCredentials
+
+		if (self._mode === 'text' && 'overrideMimeType' in xhr)
+			xhr.overrideMimeType('text/plain; charset=x-user-defined')
+
+		if ('requestTimeout' in opts) {
+			xhr.timeout = opts.requestTimeout
+			xhr.ontimeout = function () {
+				self.emit('requestTimeout')
+			}
+		}
+
+		headersList.forEach(function (header) {
+			xhr.setRequestHeader(header[0], header[1])
+		})
+
+		self._response = null
+		xhr.onreadystatechange = function () {
+			switch (xhr.readyState) {
+				case rStates.LOADING:
+				case rStates.DONE:
+					self._onXHRProgress()
+					break
+			}
+		}
+		// Necessary for streaming in Firefox, since xhr.response is ONLY defined
+		// in onprogress, not in onreadystatechange with xhr.readyState = 3
+		if (self._mode === 'moz-chunked-arraybuffer') {
+			xhr.onprogress = function () {
+				self._onXHRProgress()
+			}
+		}
+
+		xhr.onerror = function () {
+			if (self._destroyed)
+				return
+			self.emit('error', new Error('XHR error'))
+		}
+
+		try {
+			xhr.send(body)
+		} catch (err) {
+			process.nextTick(function () {
+				self.emit('error', err)
+			})
+			return
+		}
+	}
+}
+
+/**
+ * Checks if xhr.status is readable and non-zero, indicating no error.
+ * Even though the spec says it should be available in readyState 3,
+ * accessing it throws an exception in IE8
+ */
+function statusValid (xhr) {
+	try {
+		var status = xhr.status
+		return (status !== null && status !== 0)
+	} catch (e) {
+		return false
+	}
+}
+
+ClientRequest.prototype._onXHRProgress = function () {
+	var self = this
+
+	if (!statusValid(self._xhr) || self._destroyed)
+		return
+
+	if (!self._response)
+		self._connect()
+
+	self._response._onXHRProgress()
+}
+
+ClientRequest.prototype._connect = function () {
+	var self = this
+
+	if (self._destroyed)
+		return
+
+	self._response = new IncomingMessage(self._xhr, self._fetchResponse, self._mode, self._fetchTimer)
+	self._response.on('error', function(err) {
+		self.emit('error', err)
+	})
+
+	self.emit('response', self._response)
+}
+
+ClientRequest.prototype._write = function (chunk, encoding, cb) {
+	var self = this
+
+	self._body.push(chunk)
+	cb()
+}
+
+ClientRequest.prototype.abort = ClientRequest.prototype.destroy = function () {
+	var self = this
+	self._destroyed = true
+	global.clearTimeout(self._fetchTimer)
+	if (self._response)
+		self._response._destroyed = true
+	if (self._xhr)
+		self._xhr.abort()
+	else if (self._fetchAbortController)
+		self._fetchAbortController.abort()
+}
+
+ClientRequest.prototype.end = function (data, encoding, cb) {
+	var self = this
+	if (typeof data === 'function') {
+		cb = data
+		data = undefined
+	}
+
+	stream.Writable.prototype.end.call(self, data, encoding, cb)
+}
+
+ClientRequest.prototype.flushHeaders = function () {}
+ClientRequest.prototype.setTimeout = function () {}
+ClientRequest.prototype.setNoDelay = function () {}
+ClientRequest.prototype.setSocketKeepAlive = function () {}
+
+// Taken from http://www.w3.org/TR/XMLHttpRequest/#the-setrequestheader%28%29-method
+var unsafeHeaders = [
+	'accept-charset',
+	'accept-encoding',
+	'access-control-request-headers',
+	'access-control-request-method',
+	'connection',
+	'content-length',
+	'cookie',
+	'cookie2',
+	'date',
+	'dnt',
+	'expect',
+	'host',
+	'keep-alive',
+	'origin',
+	'referer',
+	'te',
+	'trailer',
+	'transfer-encoding',
+	'upgrade',
+	'via'
+]
+
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
+},{"./capability":31,"./response":33,"_process":14,"buffer":5,"inherits":11,"readable-stream":28,"to-arraybuffer":35}],33:[function(require,module,exports){
+(function (process,global,Buffer){
+var capability = require('./capability')
+var inherits = require('inherits')
+var stream = require('readable-stream')
+
+var rStates = exports.readyStates = {
+	UNSENT: 0,
+	OPENED: 1,
+	HEADERS_RECEIVED: 2,
+	LOADING: 3,
+	DONE: 4
+}
+
+var IncomingMessage = exports.IncomingMessage = function (xhr, response, mode, fetchTimer) {
+	var self = this
+	stream.Readable.call(self)
+
+	self._mode = mode
+	self.headers = {}
+	self.rawHeaders = []
+	self.trailers = {}
+	self.rawTrailers = []
+
+	// Fake the 'close' event, but only once 'end' fires
+	self.on('end', function () {
+		// The nextTick is necessary to prevent the 'request' module from causing an infinite loop
+		process.nextTick(function () {
+			self.emit('close')
+		})
+	})
+
+	if (mode === 'fetch') {
+		self._fetchResponse = response
+
+		self.url = response.url
+		self.statusCode = response.status
+		self.statusMessage = response.statusText
+		
+		response.headers.forEach(function (header, key){
+			self.headers[key.toLowerCase()] = header
+			self.rawHeaders.push(key, header)
+		})
+
+		if (capability.writableStream) {
+			var writable = new WritableStream({
+				write: function (chunk) {
+					return new Promise(function (resolve, reject) {
+						if (self._destroyed) {
+							reject()
+						} else if(self.push(new Buffer(chunk))) {
+							resolve()
+						} else {
+							self._resumeFetch = resolve
+						}
+					})
+				},
+				close: function () {
+					global.clearTimeout(fetchTimer)
+					if (!self._destroyed)
+						self.push(null)
+				},
+				abort: function (err) {
+					if (!self._destroyed)
+						self.emit('error', err)
+				}
+			})
+
+			try {
+				response.body.pipeTo(writable).catch(function (err) {
+					global.clearTimeout(fetchTimer)
+					if (!self._destroyed)
+						self.emit('error', err)
+				})
+				return
+			} catch (e) {} // pipeTo method isn't defined. Can't find a better way to feature test this
+		}
+		// fallback for when writableStream or pipeTo aren't available
+		var reader = response.body.getReader()
+		function read () {
+			reader.read().then(function (result) {
+				if (self._destroyed)
+					return
+				if (result.done) {
+					global.clearTimeout(fetchTimer)
+					self.push(null)
+					return
+				}
+				self.push(new Buffer(result.value))
+				read()
+			}).catch(function (err) {
+				global.clearTimeout(fetchTimer)
+				if (!self._destroyed)
+					self.emit('error', err)
+			})
+		}
+		read()
+	} else {
+		self._xhr = xhr
+		self._pos = 0
+
+		self.url = xhr.responseURL
+		self.statusCode = xhr.status
+		self.statusMessage = xhr.statusText
+		var headers = xhr.getAllResponseHeaders().split(/\r?\n/)
+		headers.forEach(function (header) {
+			var matches = header.match(/^([^:]+):\s*(.*)/)
+			if (matches) {
+				var key = matches[1].toLowerCase()
+				if (key === 'set-cookie') {
+					if (self.headers[key] === undefined) {
+						self.headers[key] = []
+					}
+					self.headers[key].push(matches[2])
+				} else if (self.headers[key] !== undefined) {
+					self.headers[key] += ', ' + matches[2]
+				} else {
+					self.headers[key] = matches[2]
+				}
+				self.rawHeaders.push(matches[1], matches[2])
+			}
+		})
+
+		self._charset = 'x-user-defined'
+		if (!capability.overrideMimeType) {
+			var mimeType = self.rawHeaders['mime-type']
+			if (mimeType) {
+				var charsetMatch = mimeType.match(/;\s*charset=([^;])(;|$)/)
+				if (charsetMatch) {
+					self._charset = charsetMatch[1].toLowerCase()
+				}
+			}
+			if (!self._charset)
+				self._charset = 'utf-8' // best guess
+		}
+	}
+}
+
+inherits(IncomingMessage, stream.Readable)
+
+IncomingMessage.prototype._read = function () {
+	var self = this
+
+	var resolve = self._resumeFetch
+	if (resolve) {
+		self._resumeFetch = null
+		resolve()
+	}
+}
+
+IncomingMessage.prototype._onXHRProgress = function () {
+	var self = this
+
+	var xhr = self._xhr
+
+	var response = null
+	switch (self._mode) {
+		case 'text:vbarray': // For IE9
+			if (xhr.readyState !== rStates.DONE)
+				break
+			try {
+				// This fails in IE8
+				response = new global.VBArray(xhr.responseBody).toArray()
+			} catch (e) {}
+			if (response !== null) {
+				self.push(new Buffer(response))
+				break
+			}
+			// Falls through in IE8	
+		case 'text':
+			try { // This will fail when readyState = 3 in IE9. Switch mode and wait for readyState = 4
+				response = xhr.responseText
+			} catch (e) {
+				self._mode = 'text:vbarray'
+				break
+			}
+			if (response.length > self._pos) {
+				var newData = response.substr(self._pos)
+				if (self._charset === 'x-user-defined') {
+					var buffer = new Buffer(newData.length)
+					for (var i = 0; i < newData.length; i++)
+						buffer[i] = newData.charCodeAt(i) & 0xff
+
+					self.push(buffer)
+				} else {
+					self.push(newData, self._charset)
+				}
+				self._pos = response.length
+			}
+			break
+		case 'arraybuffer':
+			if (xhr.readyState !== rStates.DONE || !xhr.response)
+				break
+			response = xhr.response
+			self.push(new Buffer(new Uint8Array(response)))
+			break
+		case 'moz-chunked-arraybuffer': // take whole
+			response = xhr.response
+			if (xhr.readyState !== rStates.LOADING || !response)
+				break
+			self.push(new Buffer(new Uint8Array(response)))
+			break
+		case 'ms-stream':
+			response = xhr.response
+			if (xhr.readyState !== rStates.LOADING)
+				break
+			var reader = new global.MSStreamReader()
+			reader.onprogress = function () {
+				if (reader.result.byteLength > self._pos) {
+					self.push(new Buffer(new Uint8Array(reader.result.slice(self._pos))))
+					self._pos = reader.result.byteLength
+				}
+			}
+			reader.onload = function () {
+				self.push(null)
+			}
+			// reader.onerror = ??? // TODO: this
+			reader.readAsArrayBuffer(response)
+			break
+	}
+
+	// The ms-stream case handles end separately in reader.onload()
+	if (self._xhr.readyState === rStates.DONE && self._mode !== 'ms-stream') {
+		self.push(null)
+	}
+}
+
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
+},{"./capability":31,"_process":14,"buffer":5,"inherits":11,"readable-stream":28}],34:[function(require,module,exports){
+(function (setImmediate,clearImmediate){
+var nextTick = require('process/browser.js').nextTick;
+var apply = Function.prototype.apply;
+var slice = Array.prototype.slice;
+var immediateIds = {};
+var nextImmediateId = 0;
+
+// DOM APIs, for completeness
+
+exports.setTimeout = function() {
+  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
+};
+exports.setInterval = function() {
+  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
+};
+exports.clearTimeout =
+exports.clearInterval = function(timeout) { timeout.close(); };
+
+function Timeout(id, clearFn) {
+  this._id = id;
+  this._clearFn = clearFn;
+}
+Timeout.prototype.unref = Timeout.prototype.ref = function() {};
+Timeout.prototype.close = function() {
+  this._clearFn.call(window, this._id);
+};
+
+// Does not start the time, just sets up the members needed.
+exports.enroll = function(item, msecs) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = msecs;
+};
+
+exports.unenroll = function(item) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = -1;
+};
+
+exports._unrefActive = exports.active = function(item) {
+  clearTimeout(item._idleTimeoutId);
+
+  var msecs = item._idleTimeout;
+  if (msecs >= 0) {
+    item._idleTimeoutId = setTimeout(function onTimeout() {
+      if (item._onTimeout)
+        item._onTimeout();
+    }, msecs);
+  }
+};
+
+// That's not how node.js implements it but the exposed api is the same.
+exports.setImmediate = typeof setImmediate === "function" ? setImmediate : function(fn) {
+  var id = nextImmediateId++;
+  var args = arguments.length < 2 ? false : slice.call(arguments, 1);
+
+  immediateIds[id] = true;
+
+  nextTick(function onNextTick() {
+    if (immediateIds[id]) {
+      // fn.call() is faster so we optimize for the common use-case
+      // @see http://jsperf.com/call-apply-segu
+      if (args) {
+        fn.apply(null, args);
+      } else {
+        fn.call(null);
+      }
+      // Prevent ids from leaking
+      exports.clearImmediate(id);
+    }
+  });
+
+  return id;
+};
+
+exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate : function(id) {
+  delete immediateIds[id];
+};
+}).call(this,require("timers").setImmediate,require("timers").clearImmediate)
+},{"process/browser.js":14,"timers":34}],35:[function(require,module,exports){
+var Buffer = require('buffer').Buffer
+
+module.exports = function (buf) {
+	// If the buffer is backed by a Uint8Array, a faster version will work
+	if (buf instanceof Uint8Array) {
+		// If the buffer isn't a subarray, return the underlying ArrayBuffer
+		if (buf.byteOffset === 0 && buf.byteLength === buf.buffer.byteLength) {
+			return buf.buffer
+		} else if (typeof buf.buffer.slice === 'function') {
+			// Otherwise we need to get a proper copy
+			return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength)
+		}
+	}
+
+	if (Buffer.isBuffer(buf)) {
+		// This is the slow version that will work with any Buffer
+		// implementation (even in old browsers)
+		var arrayCopy = new Uint8Array(buf.length)
+		var len = buf.length
+		for (var i = 0; i < len; i++) {
+			arrayCopy[i] = buf[i]
+		}
+		return arrayCopy.buffer
+	} else {
+		throw new Error('Argument must be a Buffer')
+	}
+}
+
+},{"buffer":5}],36:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+'use strict';
+
+var punycode = require('punycode');
+var util = require('./util');
+
+exports.parse = urlParse;
+exports.resolve = urlResolve;
+exports.resolveObject = urlResolveObject;
+exports.format = urlFormat;
+
+exports.Url = Url;
+
+function Url() {
+  this.protocol = null;
+  this.slashes = null;
+  this.auth = null;
+  this.host = null;
+  this.port = null;
+  this.hostname = null;
+  this.hash = null;
+  this.search = null;
+  this.query = null;
+  this.pathname = null;
+  this.path = null;
+  this.href = null;
+}
+
+// Reference: RFC 3986, RFC 1808, RFC 2396
+
+// define these here so at least they only have to be
+// compiled once on the first module load.
+var protocolPattern = /^([a-z0-9.+-]+:)/i,
+    portPattern = /:[0-9]*$/,
+
+    // Special case for a simple path URL
+    simplePathPattern = /^(\/\/?(?!\/)[^\?\s]*)(\?[^\s]*)?$/,
+
+    // RFC 2396: characters reserved for delimiting URLs.
+    // We actually just auto-escape these.
+    delims = ['<', '>', '"', '`', ' ', '\r', '\n', '\t'],
+
+    // RFC 2396: characters not allowed for various reasons.
+    unwise = ['{', '}', '|', '\\', '^', '`'].concat(delims),
+
+    // Allowed by RFCs, but cause of XSS attacks.  Always escape these.
+    autoEscape = ['\''].concat(unwise),
+    // Characters that are never ever allowed in a hostname.
+    // Note that any invalid chars are also handled, but these
+    // are the ones that are *expected* to be seen, so we fast-path
+    // them.
+    nonHostChars = ['%', '/', '?', ';', '#'].concat(autoEscape),
+    hostEndingChars = ['/', '?', '#'],
+    hostnameMaxLen = 255,
+    hostnamePartPattern = /^[+a-z0-9A-Z_-]{0,63}$/,
+    hostnamePartStart = /^([+a-z0-9A-Z_-]{0,63})(.*)$/,
+    // protocols that can allow "unsafe" and "unwise" chars.
+    unsafeProtocol = {
+      'javascript': true,
+      'javascript:': true
+    },
+    // protocols that never have a hostname.
+    hostlessProtocol = {
+      'javascript': true,
+      'javascript:': true
+    },
+    // protocols that always contain a // bit.
+    slashedProtocol = {
+      'http': true,
+      'https': true,
+      'ftp': true,
+      'gopher': true,
+      'file': true,
+      'http:': true,
+      'https:': true,
+      'ftp:': true,
+      'gopher:': true,
+      'file:': true
+    },
+    querystring = require('querystring');
+
+function urlParse(url, parseQueryString, slashesDenoteHost) {
+  if (url && util.isObject(url) && url instanceof Url) return url;
+
+  var u = new Url;
+  u.parse(url, parseQueryString, slashesDenoteHost);
+  return u;
+}
+
+Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
+  if (!util.isString(url)) {
+    throw new TypeError("Parameter 'url' must be a string, not " + typeof url);
+  }
+
+  // Copy chrome, IE, opera backslash-handling behavior.
+  // Back slashes before the query string get converted to forward slashes
+  // See: https://code.google.com/p/chromium/issues/detail?id=25916
+  var queryIndex = url.indexOf('?'),
+      splitter =
+          (queryIndex !== -1 && queryIndex < url.indexOf('#')) ? '?' : '#',
+      uSplit = url.split(splitter),
+      slashRegex = /\\/g;
+  uSplit[0] = uSplit[0].replace(slashRegex, '/');
+  url = uSplit.join(splitter);
+
+  var rest = url;
+
+  // trim before proceeding.
+  // This is to support parse stuff like "  http://foo.com  \n"
+  rest = rest.trim();
+
+  if (!slashesDenoteHost && url.split('#').length === 1) {
+    // Try fast path regexp
+    var simplePath = simplePathPattern.exec(rest);
+    if (simplePath) {
+      this.path = rest;
+      this.href = rest;
+      this.pathname = simplePath[1];
+      if (simplePath[2]) {
+        this.search = simplePath[2];
+        if (parseQueryString) {
+          this.query = querystring.parse(this.search.substr(1));
+        } else {
+          this.query = this.search.substr(1);
+        }
+      } else if (parseQueryString) {
+        this.search = '';
+        this.query = {};
+      }
+      return this;
+    }
+  }
+
+  var proto = protocolPattern.exec(rest);
+  if (proto) {
+    proto = proto[0];
+    var lowerProto = proto.toLowerCase();
+    this.protocol = lowerProto;
+    rest = rest.substr(proto.length);
+  }
+
+  // figure out if it's got a host
+  // user@server is *always* interpreted as a hostname, and url
+  // resolution will treat //foo/bar as host=foo,path=bar because that's
+  // how the browser resolves relative URLs.
+  if (slashesDenoteHost || proto || rest.match(/^\/\/[^@\/]+@[^@\/]+/)) {
+    var slashes = rest.substr(0, 2) === '//';
+    if (slashes && !(proto && hostlessProtocol[proto])) {
+      rest = rest.substr(2);
+      this.slashes = true;
+    }
+  }
+
+  if (!hostlessProtocol[proto] &&
+      (slashes || (proto && !slashedProtocol[proto]))) {
+
+    // there's a hostname.
+    // the first instance of /, ?, ;, or # ends the host.
+    //
+    // If there is an @ in the hostname, then non-host chars *are* allowed
+    // to the left of the last @ sign, unless some host-ending character
+    // comes *before* the @-sign.
+    // URLs are obnoxious.
+    //
+    // ex:
+    // http://a@b@c/ => user:a@b host:c
+    // http://a@b?@c => user:a host:c path:/?@c
+
+    // v0.12 TODO(isaacs): This is not quite how Chrome does things.
+    // Review our test case against browsers more comprehensively.
+
+    // find the first instance of any hostEndingChars
+    var hostEnd = -1;
+    for (var i = 0; i < hostEndingChars.length; i++) {
+      var hec = rest.indexOf(hostEndingChars[i]);
+      if (hec !== -1 && (hostEnd === -1 || hec < hostEnd))
+        hostEnd = hec;
+    }
+
+    // at this point, either we have an explicit point where the
+    // auth portion cannot go past, or the last @ char is the decider.
+    var auth, atSign;
+    if (hostEnd === -1) {
+      // atSign can be anywhere.
+      atSign = rest.lastIndexOf('@');
+    } else {
+      // atSign must be in auth portion.
+      // http://a@b/c@d => host:b auth:a path:/c@d
+      atSign = rest.lastIndexOf('@', hostEnd);
+    }
+
+    // Now we have a portion which is definitely the auth.
+    // Pull that off.
+    if (atSign !== -1) {
+      auth = rest.slice(0, atSign);
+      rest = rest.slice(atSign + 1);
+      this.auth = decodeURIComponent(auth);
+    }
+
+    // the host is the remaining to the left of the first non-host char
+    hostEnd = -1;
+    for (var i = 0; i < nonHostChars.length; i++) {
+      var hec = rest.indexOf(nonHostChars[i]);
+      if (hec !== -1 && (hostEnd === -1 || hec < hostEnd))
+        hostEnd = hec;
+    }
+    // if we still have not hit it, then the entire thing is a host.
+    if (hostEnd === -1)
+      hostEnd = rest.length;
+
+    this.host = rest.slice(0, hostEnd);
+    rest = rest.slice(hostEnd);
+
+    // pull out port.
+    this.parseHost();
+
+    // we've indicated that there is a hostname,
+    // so even if it's empty, it has to be present.
+    this.hostname = this.hostname || '';
+
+    // if hostname begins with [ and ends with ]
+    // assume that it's an IPv6 address.
+    var ipv6Hostname = this.hostname[0] === '[' &&
+        this.hostname[this.hostname.length - 1] === ']';
+
+    // validate a little.
+    if (!ipv6Hostname) {
+      var hostparts = this.hostname.split(/\./);
+      for (var i = 0, l = hostparts.length; i < l; i++) {
+        var part = hostparts[i];
+        if (!part) continue;
+        if (!part.match(hostnamePartPattern)) {
+          var newpart = '';
+          for (var j = 0, k = part.length; j < k; j++) {
+            if (part.charCodeAt(j) > 127) {
+              // we replace non-ASCII char with a temporary placeholder
+              // we need this to make sure size of hostname is not
+              // broken by replacing non-ASCII by nothing
+              newpart += 'x';
+            } else {
+              newpart += part[j];
+            }
+          }
+          // we test again with ASCII char only
+          if (!newpart.match(hostnamePartPattern)) {
+            var validParts = hostparts.slice(0, i);
+            var notHost = hostparts.slice(i + 1);
+            var bit = part.match(hostnamePartStart);
+            if (bit) {
+              validParts.push(bit[1]);
+              notHost.unshift(bit[2]);
+            }
+            if (notHost.length) {
+              rest = '/' + notHost.join('.') + rest;
+            }
+            this.hostname = validParts.join('.');
+            break;
+          }
+        }
+      }
+    }
+
+    if (this.hostname.length > hostnameMaxLen) {
+      this.hostname = '';
+    } else {
+      // hostnames are always lower case.
+      this.hostname = this.hostname.toLowerCase();
+    }
+
+    if (!ipv6Hostname) {
+      // IDNA Support: Returns a punycoded representation of "domain".
+      // It only converts parts of the domain name that
+      // have non-ASCII characters, i.e. it doesn't matter if
+      // you call it with a domain that already is ASCII-only.
+      this.hostname = punycode.toASCII(this.hostname);
+    }
+
+    var p = this.port ? ':' + this.port : '';
+    var h = this.hostname || '';
+    this.host = h + p;
+    this.href += this.host;
+
+    // strip [ and ] from the hostname
+    // the host field still retains them, though
+    if (ipv6Hostname) {
+      this.hostname = this.hostname.substr(1, this.hostname.length - 2);
+      if (rest[0] !== '/') {
+        rest = '/' + rest;
+      }
+    }
+  }
+
+  // now rest is set to the post-host stuff.
+  // chop off any delim chars.
+  if (!unsafeProtocol[lowerProto]) {
+
+    // First, make 100% sure that any "autoEscape" chars get
+    // escaped, even if encodeURIComponent doesn't think they
+    // need to be.
+    for (var i = 0, l = autoEscape.length; i < l; i++) {
+      var ae = autoEscape[i];
+      if (rest.indexOf(ae) === -1)
+        continue;
+      var esc = encodeURIComponent(ae);
+      if (esc === ae) {
+        esc = escape(ae);
+      }
+      rest = rest.split(ae).join(esc);
+    }
+  }
+
+
+  // chop off from the tail first.
+  var hash = rest.indexOf('#');
+  if (hash !== -1) {
+    // got a fragment string.
+    this.hash = rest.substr(hash);
+    rest = rest.slice(0, hash);
+  }
+  var qm = rest.indexOf('?');
+  if (qm !== -1) {
+    this.search = rest.substr(qm);
+    this.query = rest.substr(qm + 1);
+    if (parseQueryString) {
+      this.query = querystring.parse(this.query);
+    }
+    rest = rest.slice(0, qm);
+  } else if (parseQueryString) {
+    // no query string, but parseQueryString still requested
+    this.search = '';
+    this.query = {};
+  }
+  if (rest) this.pathname = rest;
+  if (slashedProtocol[lowerProto] &&
+      this.hostname && !this.pathname) {
+    this.pathname = '/';
+  }
+
+  //to support http.request
+  if (this.pathname || this.search) {
+    var p = this.pathname || '';
+    var s = this.search || '';
+    this.path = p + s;
+  }
+
+  // finally, reconstruct the href based on what has been validated.
+  this.href = this.format();
+  return this;
+};
+
+// format a parsed object into a url string
+function urlFormat(obj) {
+  // ensure it's an object, and not a string url.
+  // If it's an obj, this is a no-op.
+  // this way, you can call url_format() on strings
+  // to clean up potentially wonky urls.
+  if (util.isString(obj)) obj = urlParse(obj);
+  if (!(obj instanceof Url)) return Url.prototype.format.call(obj);
+  return obj.format();
+}
+
+Url.prototype.format = function() {
+  var auth = this.auth || '';
+  if (auth) {
+    auth = encodeURIComponent(auth);
+    auth = auth.replace(/%3A/i, ':');
+    auth += '@';
+  }
+
+  var protocol = this.protocol || '',
+      pathname = this.pathname || '',
+      hash = this.hash || '',
+      host = false,
+      query = '';
+
+  if (this.host) {
+    host = auth + this.host;
+  } else if (this.hostname) {
+    host = auth + (this.hostname.indexOf(':') === -1 ?
+        this.hostname :
+        '[' + this.hostname + ']');
+    if (this.port) {
+      host += ':' + this.port;
+    }
+  }
+
+  if (this.query &&
+      util.isObject(this.query) &&
+      Object.keys(this.query).length) {
+    query = querystring.stringify(this.query);
+  }
+
+  var search = this.search || (query && ('?' + query)) || '';
+
+  if (protocol && protocol.substr(-1) !== ':') protocol += ':';
+
+  // only the slashedProtocols get the //.  Not mailto:, xmpp:, etc.
+  // unless they had them to begin with.
+  if (this.slashes ||
+      (!protocol || slashedProtocol[protocol]) && host !== false) {
+    host = '//' + (host || '');
+    if (pathname && pathname.charAt(0) !== '/') pathname = '/' + pathname;
+  } else if (!host) {
+    host = '';
+  }
+
+  if (hash && hash.charAt(0) !== '#') hash = '#' + hash;
+  if (search && search.charAt(0) !== '?') search = '?' + search;
+
+  pathname = pathname.replace(/[?#]/g, function(match) {
+    return encodeURIComponent(match);
+  });
+  search = search.replace('#', '%23');
+
+  return protocol + host + pathname + search + hash;
+};
+
+function urlResolve(source, relative) {
+  return urlParse(source, false, true).resolve(relative);
+}
+
+Url.prototype.resolve = function(relative) {
+  return this.resolveObject(urlParse(relative, false, true)).format();
+};
+
+function urlResolveObject(source, relative) {
+  if (!source) return relative;
+  return urlParse(source, false, true).resolveObject(relative);
+}
+
+Url.prototype.resolveObject = function(relative) {
+  if (util.isString(relative)) {
+    var rel = new Url();
+    rel.parse(relative, false, true);
+    relative = rel;
+  }
+
+  var result = new Url();
+  var tkeys = Object.keys(this);
+  for (var tk = 0; tk < tkeys.length; tk++) {
+    var tkey = tkeys[tk];
+    result[tkey] = this[tkey];
+  }
+
+  // hash is always overridden, no matter what.
+  // even href="" will remove it.
+  result.hash = relative.hash;
+
+  // if the relative url is empty, then there's nothing left to do here.
+  if (relative.href === '') {
+    result.href = result.format();
+    return result;
+  }
+
+  // hrefs like //foo/bar always cut to the protocol.
+  if (relative.slashes && !relative.protocol) {
+    // take everything except the protocol from relative
+    var rkeys = Object.keys(relative);
+    for (var rk = 0; rk < rkeys.length; rk++) {
+      var rkey = rkeys[rk];
+      if (rkey !== 'protocol')
+        result[rkey] = relative[rkey];
+    }
+
+    //urlParse appends trailing / to urls like http://www.example.com
+    if (slashedProtocol[result.protocol] &&
+        result.hostname && !result.pathname) {
+      result.path = result.pathname = '/';
+    }
+
+    result.href = result.format();
+    return result;
+  }
+
+  if (relative.protocol && relative.protocol !== result.protocol) {
+    // if it's a known url protocol, then changing
+    // the protocol does weird things
+    // first, if it's not file:, then we MUST have a host,
+    // and if there was a path
+    // to begin with, then we MUST have a path.
+    // if it is file:, then the host is dropped,
+    // because that's known to be hostless.
+    // anything else is assumed to be absolute.
+    if (!slashedProtocol[relative.protocol]) {
+      var keys = Object.keys(relative);
+      for (var v = 0; v < keys.length; v++) {
+        var k = keys[v];
+        result[k] = relative[k];
+      }
+      result.href = result.format();
+      return result;
+    }
+
+    result.protocol = relative.protocol;
+    if (!relative.host && !hostlessProtocol[relative.protocol]) {
+      var relPath = (relative.pathname || '').split('/');
+      while (relPath.length && !(relative.host = relPath.shift()));
+      if (!relative.host) relative.host = '';
+      if (!relative.hostname) relative.hostname = '';
+      if (relPath[0] !== '') relPath.unshift('');
+      if (relPath.length < 2) relPath.unshift('');
+      result.pathname = relPath.join('/');
+    } else {
+      result.pathname = relative.pathname;
+    }
+    result.search = relative.search;
+    result.query = relative.query;
+    result.host = relative.host || '';
+    result.auth = relative.auth;
+    result.hostname = relative.hostname || relative.host;
+    result.port = relative.port;
+    // to support http.request
+    if (result.pathname || result.search) {
+      var p = result.pathname || '';
+      var s = result.search || '';
+      result.path = p + s;
+    }
+    result.slashes = result.slashes || relative.slashes;
+    result.href = result.format();
+    return result;
+  }
+
+  var isSourceAbs = (result.pathname && result.pathname.charAt(0) === '/'),
+      isRelAbs = (
+          relative.host ||
+          relative.pathname && relative.pathname.charAt(0) === '/'
+      ),
+      mustEndAbs = (isRelAbs || isSourceAbs ||
+                    (result.host && relative.pathname)),
+      removeAllDots = mustEndAbs,
+      srcPath = result.pathname && result.pathname.split('/') || [],
+      relPath = relative.pathname && relative.pathname.split('/') || [],
+      psychotic = result.protocol && !slashedProtocol[result.protocol];
+
+  // if the url is a non-slashed url, then relative
+  // links like ../.. should be able
+  // to crawl up to the hostname, as well.  This is strange.
+  // result.protocol has already been set by now.
+  // Later on, put the first path part into the host field.
+  if (psychotic) {
+    result.hostname = '';
+    result.port = null;
+    if (result.host) {
+      if (srcPath[0] === '') srcPath[0] = result.host;
+      else srcPath.unshift(result.host);
+    }
+    result.host = '';
+    if (relative.protocol) {
+      relative.hostname = null;
+      relative.port = null;
+      if (relative.host) {
+        if (relPath[0] === '') relPath[0] = relative.host;
+        else relPath.unshift(relative.host);
+      }
+      relative.host = null;
+    }
+    mustEndAbs = mustEndAbs && (relPath[0] === '' || srcPath[0] === '');
+  }
+
+  if (isRelAbs) {
+    // it's absolute.
+    result.host = (relative.host || relative.host === '') ?
+                  relative.host : result.host;
+    result.hostname = (relative.hostname || relative.hostname === '') ?
+                      relative.hostname : result.hostname;
+    result.search = relative.search;
+    result.query = relative.query;
+    srcPath = relPath;
+    // fall through to the dot-handling below.
+  } else if (relPath.length) {
+    // it's relative
+    // throw away the existing file, and take the new path instead.
+    if (!srcPath) srcPath = [];
+    srcPath.pop();
+    srcPath = srcPath.concat(relPath);
+    result.search = relative.search;
+    result.query = relative.query;
+  } else if (!util.isNullOrUndefined(relative.search)) {
+    // just pull out the search.
+    // like href='?foo'.
+    // Put this after the other two cases because it simplifies the booleans
+    if (psychotic) {
+      result.hostname = result.host = srcPath.shift();
+      //occationaly the auth can get stuck only in host
+      //this especially happens in cases like
+      //url.resolveObject('mailto:local1@domain1', 'local2@domain2')
+      var authInHost = result.host && result.host.indexOf('@') > 0 ?
+                       result.host.split('@') : false;
+      if (authInHost) {
+        result.auth = authInHost.shift();
+        result.host = result.hostname = authInHost.shift();
+      }
+    }
+    result.search = relative.search;
+    result.query = relative.query;
+    //to support http.request
+    if (!util.isNull(result.pathname) || !util.isNull(result.search)) {
+      result.path = (result.pathname ? result.pathname : '') +
+                    (result.search ? result.search : '');
+    }
+    result.href = result.format();
+    return result;
+  }
+
+  if (!srcPath.length) {
+    // no path at all.  easy.
+    // we've already handled the other stuff above.
+    result.pathname = null;
+    //to support http.request
+    if (result.search) {
+      result.path = '/' + result.search;
+    } else {
+      result.path = null;
+    }
+    result.href = result.format();
+    return result;
+  }
+
+  // if a url ENDs in . or .., then it must get a trailing slash.
+  // however, if it ends in anything else non-slashy,
+  // then it must NOT get a trailing slash.
+  var last = srcPath.slice(-1)[0];
+  var hasTrailingSlash = (
+      (result.host || relative.host || srcPath.length > 1) &&
+      (last === '.' || last === '..') || last === '');
+
+  // strip single dots, resolve double dots to parent dir
+  // if the path tries to go above the root, `up` ends up > 0
+  var up = 0;
+  for (var i = srcPath.length; i >= 0; i--) {
+    last = srcPath[i];
+    if (last === '.') {
+      srcPath.splice(i, 1);
+    } else if (last === '..') {
+      srcPath.splice(i, 1);
+      up++;
+    } else if (up) {
+      srcPath.splice(i, 1);
+      up--;
+    }
+  }
+
+  // if the path is allowed to go above the root, restore leading ..s
+  if (!mustEndAbs && !removeAllDots) {
+    for (; up--; up) {
+      srcPath.unshift('..');
+    }
+  }
+
+  if (mustEndAbs && srcPath[0] !== '' &&
+      (!srcPath[0] || srcPath[0].charAt(0) !== '/')) {
+    srcPath.unshift('');
+  }
+
+  if (hasTrailingSlash && (srcPath.join('/').substr(-1) !== '/')) {
+    srcPath.push('');
+  }
+
+  var isAbsolute = srcPath[0] === '' ||
+      (srcPath[0] && srcPath[0].charAt(0) === '/');
+
+  // put the host back
+  if (psychotic) {
+    result.hostname = result.host = isAbsolute ? '' :
+                                    srcPath.length ? srcPath.shift() : '';
+    //occationaly the auth can get stuck only in host
+    //this especially happens in cases like
+    //url.resolveObject('mailto:local1@domain1', 'local2@domain2')
+    var authInHost = result.host && result.host.indexOf('@') > 0 ?
+                     result.host.split('@') : false;
+    if (authInHost) {
+      result.auth = authInHost.shift();
+      result.host = result.hostname = authInHost.shift();
+    }
+  }
+
+  mustEndAbs = mustEndAbs || (result.host && srcPath.length);
+
+  if (mustEndAbs && !isAbsolute) {
+    srcPath.unshift('');
+  }
+
+  if (!srcPath.length) {
+    result.pathname = null;
+    result.path = null;
+  } else {
+    result.pathname = srcPath.join('/');
+  }
+
+  //to support request.http
+  if (!util.isNull(result.pathname) || !util.isNull(result.search)) {
+    result.path = (result.pathname ? result.pathname : '') +
+                  (result.search ? result.search : '');
+  }
+  result.auth = relative.auth || result.auth;
+  result.slashes = result.slashes || relative.slashes;
+  result.href = result.format();
+  return result;
+};
+
+Url.prototype.parseHost = function() {
+  var host = this.host;
+  var port = portPattern.exec(host);
+  if (port) {
+    port = port[0];
+    if (port !== ':') {
+      this.port = port.substr(1);
+    }
+    host = host.substr(0, host.length - port.length);
+  }
+  if (host) this.hostname = host;
+};
+
+},{"./util":37,"punycode":4,"querystring":17}],37:[function(require,module,exports){
+'use strict';
+
+module.exports = {
+  isString: function(arg) {
+    return typeof(arg) === 'string';
+  },
+  isObject: function(arg) {
+    return typeof(arg) === 'object' && arg !== null;
+  },
+  isNull: function(arg) {
+    return arg === null;
+  },
+  isNullOrUndefined: function(arg) {
+    return arg == null;
+  }
+};
+
+},{}],38:[function(require,module,exports){
+(function (global){
+
+/**
+ * Module exports.
+ */
+
+module.exports = deprecate;
+
+/**
+ * Mark that a method should not be used.
+ * Returns a modified function which warns once by default.
+ *
+ * If `localStorage.noDeprecation = true` is set, then it is a no-op.
+ *
+ * If `localStorage.throwDeprecation = true` is set, then deprecated functions
+ * will throw an Error when invoked.
+ *
+ * If `localStorage.traceDeprecation = true` is set, then deprecated functions
+ * will invoke `console.trace()` instead of `console.error()`.
+ *
+ * @param {Function} fn - the function to deprecate
+ * @param {String} msg - the string to print to the console when `fn` is invoked
+ * @returns {Function} a new "deprecated" version of `fn`
+ * @api public
+ */
+
+function deprecate (fn, msg) {
+  if (config('noDeprecation')) {
+    return fn;
+  }
+
+  var warned = false;
+  function deprecated() {
+    if (!warned) {
+      if (config('throwDeprecation')) {
+        throw new Error(msg);
+      } else if (config('traceDeprecation')) {
+        console.trace(msg);
+      } else {
+        console.warn(msg);
+      }
+      warned = true;
+    }
+    return fn.apply(this, arguments);
+  }
+
+  return deprecated;
+}
+
+/**
+ * Checks `localStorage` for boolean values for the given `name`.
+ *
+ * @param {String} name
+ * @returns {Boolean}
+ * @api private
+ */
+
+function config (name) {
+  // accessing global.localStorage can trigger a DOMException in sandboxed iframes
+  try {
+    if (!global.localStorage) return false;
+  } catch (_) {
     return false;
   }
-
-  /**
-   * Returns an array of the classNames of the upgraded classes on the element.
-   *
-   * @param {!Element} element The element to fetch data from.
-   * @return {!Array<string>}
-   * @private
-   */
-  function getUpgradedListOfElement_(element) {
-    var dataUpgraded = element.getAttribute('data-upgraded');
-    // Use `['']` as default value to conform the `,name,name...` style.
-    return dataUpgraded === null ? [''] : dataUpgraded.split(',');
-  }
-
-  /**
-   * Returns true if the given element has already been upgraded for the given
-   * class.
-   *
-   * @param {!Element} element The element we want to check.
-   * @param {string} jsClass The class to check for.
-   * @returns {boolean}
-   * @private
-   */
-  function isElementUpgraded_(element, jsClass) {
-    var upgradedList = getUpgradedListOfElement_(element);
-    return upgradedList.indexOf(jsClass) !== -1;
-  }
-
-  /**
-   * Create an event object.
-   *
-   * @param {string} eventType The type name of the event.
-   * @param {boolean} bubbles Whether the event should bubble up the DOM.
-   * @param {boolean} cancelable Whether the event can be canceled.
-   * @returns {!Event}
-   */
-  function createEvent_(eventType, bubbles, cancelable) {
-    if ('CustomEvent' in window && typeof window.CustomEvent === 'function') {
-      return new CustomEvent(eventType, {
-        bubbles: bubbles,
-        cancelable: cancelable
-      });
-    } else {
-      var ev = document.createEvent('Events');
-      ev.initEvent(eventType, bubbles, cancelable);
-      return ev;
-    }
-  }
-
-  /**
-   * Searches existing DOM for elements of our component type and upgrades them
-   * if they have not already been upgraded.
-   *
-   * @param {string=} optJsClass the programatic name of the element class we
-   * need to create a new instance of.
-   * @param {string=} optCssClass the name of the CSS class elements of this
-   * type will have.
-   */
-  function upgradeDomInternal(optJsClass, optCssClass) {
-    if (typeof optJsClass === 'undefined' &&
-        typeof optCssClass === 'undefined') {
-      for (var i = 0; i < registeredComponents_.length; i++) {
-        upgradeDomInternal(registeredComponents_[i].className,
-            registeredComponents_[i].cssClass);
-      }
-    } else {
-      var jsClass = /** @type {string} */ (optJsClass);
-      if (typeof optCssClass === 'undefined') {
-        var registeredClass = findRegisteredClass_(jsClass);
-        if (registeredClass) {
-          optCssClass = registeredClass.cssClass;
-        }
-      }
-
-      var elements = document.querySelectorAll('.' + optCssClass);
-      for (var n = 0; n < elements.length; n++) {
-        upgradeElementInternal(elements[n], jsClass);
-      }
-    }
-  }
-
-  /**
-   * Upgrades a specific element rather than all in the DOM.
-   *
-   * @param {!Element} element The element we wish to upgrade.
-   * @param {string=} optJsClass Optional name of the class we want to upgrade
-   * the element to.
-   */
-  function upgradeElementInternal(element, optJsClass) {
-    // Verify argument type.
-    if (!(typeof element === 'object' && element instanceof Element)) {
-      throw new Error('Invalid argument provided to upgrade MDL element.');
-    }
-    // Allow upgrade to be canceled by canceling emitted event.
-    var upgradingEv = createEvent_('mdl-componentupgrading', true, true);
-    element.dispatchEvent(upgradingEv);
-    if (upgradingEv.defaultPrevented) {
-      return;
-    }
-
-    var upgradedList = getUpgradedListOfElement_(element);
-    var classesToUpgrade = [];
-    // If jsClass is not provided scan the registered components to find the
-    // ones matching the element's CSS classList.
-    if (!optJsClass) {
-      var classList = element.classList;
-      registeredComponents_.forEach(function(component) {
-        // Match CSS & Not to be upgraded & Not upgraded.
-        if (classList.contains(component.cssClass) &&
-            classesToUpgrade.indexOf(component) === -1 &&
-            !isElementUpgraded_(element, component.className)) {
-          classesToUpgrade.push(component);
-        }
-      });
-    } else if (!isElementUpgraded_(element, optJsClass)) {
-      classesToUpgrade.push(findRegisteredClass_(optJsClass));
-    }
-
-    // Upgrade the element for each classes.
-    for (var i = 0, n = classesToUpgrade.length, registeredClass; i < n; i++) {
-      registeredClass = classesToUpgrade[i];
-      if (registeredClass) {
-        // Mark element as upgraded.
-        upgradedList.push(registeredClass.className);
-        element.setAttribute('data-upgraded', upgradedList.join(','));
-        var instance = new registeredClass.classConstructor(element);
-        instance[componentConfigProperty_] = registeredClass;
-        createdComponents_.push(instance);
-        // Call any callbacks the user has registered with this component type.
-        for (var j = 0, m = registeredClass.callbacks.length; j < m; j++) {
-          registeredClass.callbacks[j](element);
-        }
-
-        if (registeredClass.widget) {
-          // Assign per element instance for control over API
-          element[registeredClass.className] = instance;
-        }
-      } else {
-        throw new Error(
-          'Unable to find a registered component for the given class.');
-      }
-
-      var upgradedEv = createEvent_('mdl-componentupgraded', true, false);
-      element.dispatchEvent(upgradedEv);
-    }
-  }
-
-  /**
-   * Upgrades a specific list of elements rather than all in the DOM.
-   *
-   * @param {!Element|!Array<!Element>|!NodeList|!HTMLCollection} elements
-   * The elements we wish to upgrade.
-   */
-  function upgradeElementsInternal(elements) {
-    if (!Array.isArray(elements)) {
-      if (elements instanceof Element) {
-        elements = [elements];
-      } else {
-        elements = Array.prototype.slice.call(elements);
-      }
-    }
-    for (var i = 0, n = elements.length, element; i < n; i++) {
-      element = elements[i];
-      if (element instanceof HTMLElement) {
-        upgradeElementInternal(element);
-        if (element.children.length > 0) {
-          upgradeElementsInternal(element.children);
-        }
-      }
-    }
-  }
-
-  /**
-   * Registers a class for future use and attempts to upgrade existing DOM.
-   *
-   * @param {componentHandler.ComponentConfigPublic} config
-   */
-  function registerInternal(config) {
-    // In order to support both Closure-compiled and uncompiled code accessing
-    // this method, we need to allow for both the dot and array syntax for
-    // property access. You'll therefore see the `foo.bar || foo['bar']`
-    // pattern repeated across this method.
-    var widgetMissing = (typeof config.widget === 'undefined' &&
-        typeof config['widget'] === 'undefined');
-    var widget = true;
-
-    if (!widgetMissing) {
-      widget = config.widget || config['widget'];
-    }
-
-    var newConfig = /** @type {componentHandler.ComponentConfig} */ ({
-      classConstructor: config.constructor || config['constructor'],
-      className: config.classAsString || config['classAsString'],
-      cssClass: config.cssClass || config['cssClass'],
-      widget: widget,
-      callbacks: []
-    });
-
-    registeredComponents_.forEach(function(item) {
-      if (item.cssClass === newConfig.cssClass) {
-        throw new Error('The provided cssClass has already been registered: ' + item.cssClass);
-      }
-      if (item.className === newConfig.className) {
-        throw new Error('The provided className has already been registered');
-      }
-    });
-
-    if (config.constructor.prototype
-        .hasOwnProperty(componentConfigProperty_)) {
-      throw new Error(
-          'MDL component classes must not have ' + componentConfigProperty_ +
-          ' defined as a property.');
-    }
-
-    var found = findRegisteredClass_(config.classAsString, newConfig);
-
-    if (!found) {
-      registeredComponents_.push(newConfig);
-    }
-  }
-
-  /**
-   * Allows user to be alerted to any upgrades that are performed for a given
-   * component type
-   *
-   * @param {string} jsClass The class name of the MDL component we wish
-   * to hook into for any upgrades performed.
-   * @param {function(!HTMLElement)} callback The function to call upon an
-   * upgrade. This function should expect 1 parameter - the HTMLElement which
-   * got upgraded.
-   */
-  function registerUpgradedCallbackInternal(jsClass, callback) {
-    var regClass = findRegisteredClass_(jsClass);
-    if (regClass) {
-      regClass.callbacks.push(callback);
-    }
-  }
-
-  /**
-   * Upgrades all registered components found in the current DOM. This is
-   * automatically called on window load.
-   */
-  function upgradeAllRegisteredInternal() {
-    for (var n = 0; n < registeredComponents_.length; n++) {
-      upgradeDomInternal(registeredComponents_[n].className);
-    }
-  }
-
-  /**
-   * Check the component for the downgrade method.
-   * Execute if found.
-   * Remove component from createdComponents list.
-   *
-   * @param {?componentHandler.Component} component
-   */
-  function deconstructComponentInternal(component) {
-    if (component) {
-      var componentIndex = createdComponents_.indexOf(component);
-      createdComponents_.splice(componentIndex, 1);
-
-      var upgrades = component.element_.getAttribute('data-upgraded').split(',');
-      var componentPlace = upgrades.indexOf(component[componentConfigProperty_].classAsString);
-      upgrades.splice(componentPlace, 1);
-      component.element_.setAttribute('data-upgraded', upgrades.join(','));
-
-      var ev = createEvent_('mdl-componentdowngraded', true, false);
-      component.element_.dispatchEvent(ev);
-    }
-  }
-
-  /**
-   * Downgrade either a given node, an array of nodes, or a NodeList.
-   *
-   * @param {!Node|!Array<!Node>|!NodeList} nodes
-   */
-  function downgradeNodesInternal(nodes) {
-    /**
-     * Auxiliary function to downgrade a single node.
-     * @param  {!Node} node the node to be downgraded
-     */
-    var downgradeNode = function(node) {
-      createdComponents_.filter(function(item) {
-        return item.element_ === node;
-      }).forEach(deconstructComponentInternal);
-    };
-    if (nodes instanceof Array || nodes instanceof NodeList) {
-      for (var n = 0; n < nodes.length; n++) {
-        downgradeNode(nodes[n]);
-      }
-    } else if (nodes instanceof Node) {
-      downgradeNode(nodes);
-    } else {
-      throw new Error('Invalid argument provided to downgrade MDL nodes.');
-    }
-  }
-
-  // Now return the functions that should be made public with their publicly
-  // facing names...
-  return {
-    upgradeDom: upgradeDomInternal,
-    upgradeElement: upgradeElementInternal,
-    upgradeElements: upgradeElementsInternal,
-    upgradeAllRegistered: upgradeAllRegisteredInternal,
-    registerUpgradedCallback: registerUpgradedCallbackInternal,
-    register: registerInternal,
-    downgradeElements: downgradeNodesInternal
-  };
-})();
-
-/**
- * Describes the type of a registered component type managed by
- * componentHandler. Provided for benefit of the Closure compiler.
- *
- * @typedef {{
- *   constructor: Function,
- *   classAsString: string,
- *   cssClass: string,
- *   widget: (string|boolean|undefined)
- * }}
- */
-componentHandler.ComponentConfigPublic;  // jshint ignore:line
-
-/**
- * Describes the type of a registered component type managed by
- * componentHandler. Provided for benefit of the Closure compiler.
- *
- * @typedef {{
- *   constructor: !Function,
- *   className: string,
- *   cssClass: string,
- *   widget: (string|boolean),
- *   callbacks: !Array<function(!HTMLElement)>
- * }}
- */
-componentHandler.ComponentConfig;  // jshint ignore:line
-
-/**
- * Created component (i.e., upgraded element) type as managed by
- * componentHandler. Provided for benefit of the Closure compiler.
- *
- * @typedef {{
- *   element_: !HTMLElement,
- *   className: string,
- *   classAsString: string,
- *   cssClass: string,
- *   widget: string
- * }}
- */
-componentHandler.Component;  // jshint ignore:line
-
-// Export all symbols, for the benefit of Closure compiler.
-// No effect on uncompiled code.
-componentHandler['upgradeDom'] = componentHandler.upgradeDom;
-componentHandler['upgradeElement'] = componentHandler.upgradeElement;
-componentHandler['upgradeElements'] = componentHandler.upgradeElements;
-componentHandler['upgradeAllRegistered'] =
-    componentHandler.upgradeAllRegistered;
-componentHandler['registerUpgradedCallback'] =
-    componentHandler.registerUpgradedCallback;
-componentHandler['register'] = componentHandler.register;
-componentHandler['downgradeElements'] = componentHandler.downgradeElements;
-window.componentHandler = componentHandler;
-window['componentHandler'] = componentHandler;
-
-window.addEventListener('load', function() {
-  'use strict';
-
-  /**
-   * Performs a "Cutting the mustard" test. If the browser supports the features
-   * tested, adds a mdl-js class to the <html> element. It then upgrades all MDL
-   * components requiring JavaScript.
-   */
-  if ('classList' in document.createElement('div') &&
-      'querySelector' in document &&
-      'addEventListener' in window && Array.prototype.forEach) {
-    document.documentElement.classList.add('mdl-js');
-    componentHandler.upgradeAllRegistered();
-  } else {
-    /**
-     * Dummy function to avoid JS errors.
-     */
-    componentHandler.upgradeElement = function() {};
-    /**
-     * Dummy function to avoid JS errors.
-     */
-    componentHandler.register = function() {};
-  }
-});
-
-// Source: https://github.com/darius/requestAnimationFrame/blob/master/requestAnimationFrame.js
-// Adapted from https://gist.github.com/paulirish/1579671 which derived from
-// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
-// requestAnimationFrame polyfill by Erik Möller.
-// Fixes from Paul Irish, Tino Zijdel, Andrew Mao, Klemen Slavič, Darius Bacon
-// MIT license
-if (!Date.now) {
-    /**
-     * Date.now polyfill.
-     * @return {number} the current Date
-     */
-    Date.now = function () {
-        return new Date().getTime();
-    };
-    Date['now'] = Date.now;
+  var val = global.localStorage[name];
+  if (null == val) return false;
+  return String(val).toLowerCase() === 'true';
 }
-var vendors = [
-    'webkit',
-    'moz'
-];
-for (var i = 0; i < vendors.length && !window.requestAnimationFrame; ++i) {
-    var vp = vendors[i];
-    window.requestAnimationFrame = window[vp + 'RequestAnimationFrame'];
-    window.cancelAnimationFrame = window[vp + 'CancelAnimationFrame'] || window[vp + 'CancelRequestAnimationFrame'];
-    window['requestAnimationFrame'] = window.requestAnimationFrame;
-    window['cancelAnimationFrame'] = window.cancelAnimationFrame;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],39:[function(require,module,exports){
+module.exports = extend
+
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+function extend() {
+    var target = {}
+
+    for (var i = 0; i < arguments.length; i++) {
+        var source = arguments[i]
+
+        for (var key in source) {
+            if (hasOwnProperty.call(source, key)) {
+                target[key] = source[key]
+            }
+        }
+    }
+
+    return target
 }
-if (/iP(ad|hone|od).*OS 6/.test(window.navigator.userAgent) || !window.requestAnimationFrame || !window.cancelAnimationFrame) {
-    var lastTime = 0;
-    /**
-     * requestAnimationFrame polyfill.
-     * @param  {!Function} callback the callback function.
-     */
-    window.requestAnimationFrame = function (callback) {
-        var now = Date.now();
-        var nextTime = Math.max(lastTime + 16, now);
-        return setTimeout(function () {
-            callback(lastTime = nextTime);
-        }, nextTime - now);
-    };
-    window.cancelAnimationFrame = clearTimeout;
-    window['requestAnimationFrame'] = window.requestAnimationFrame;
-    window['cancelAnimationFrame'] = window.cancelAnimationFrame;
-}
-/**
- * @license
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
-   * Class constructor for Button MDL component.
-   * Implements MDL component design pattern defined at:
-   * https://github.com/jasonmayes/mdl-component-design-pattern
-   *
-   * @param {HTMLElement} element The element that will be upgraded.
-   */
-var MaterialButton = function MaterialButton(element) {
-    this.element_ = element;
-    // Initialize instance.
-    this.init();
-};
-window['MaterialButton'] = MaterialButton;
-/**
-   * Store constants in one place so they can be updated easily.
-   *
-   * @enum {string | number}
-   * @private
-   */
-MaterialButton.prototype.Constant_ = {};
-/**
-   * Store strings for class names defined by this component that are used in
-   * JavaScript. This allows us to simply change it in one place should we
-   * decide to modify at a later date.
-   *
-   * @enum {string}
-   * @private
-   */
-MaterialButton.prototype.CssClasses_ = {
-    RIPPLE_EFFECT: 'mdl-js-ripple-effect',
-    RIPPLE_CONTAINER: 'mdl-button__ripple-container',
-    RIPPLE: 'mdl-ripple'
-};
-/**
-   * Handle blur of element.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialButton.prototype.blurHandler_ = function (event) {
-    if (event) {
-        this.element_.blur();
-    }
-};
-// Public methods.
-/**
-   * Disable button.
-   *
-   * @public
-   */
-MaterialButton.prototype.disable = function () {
-    this.element_.disabled = true;
-};
-MaterialButton.prototype['disable'] = MaterialButton.prototype.disable;
-/**
-   * Enable button.
-   *
-   * @public
-   */
-MaterialButton.prototype.enable = function () {
-    this.element_.disabled = false;
-};
-MaterialButton.prototype['enable'] = MaterialButton.prototype.enable;
-/**
-   * Initialize element.
-   */
-MaterialButton.prototype.init = function () {
-    if (this.element_) {
-        if (this.element_.classList.contains(this.CssClasses_.RIPPLE_EFFECT)) {
-            var rippleContainer = document.createElement('span');
-            rippleContainer.classList.add(this.CssClasses_.RIPPLE_CONTAINER);
-            this.rippleElement_ = document.createElement('span');
-            this.rippleElement_.classList.add(this.CssClasses_.RIPPLE);
-            rippleContainer.appendChild(this.rippleElement_);
-            this.boundRippleBlurHandler = this.blurHandler_.bind(this);
-            this.rippleElement_.addEventListener('mouseup', this.boundRippleBlurHandler);
-            this.element_.appendChild(rippleContainer);
-        }
-        this.boundButtonBlurHandler = this.blurHandler_.bind(this);
-        this.element_.addEventListener('mouseup', this.boundButtonBlurHandler);
-        this.element_.addEventListener('mouseleave', this.boundButtonBlurHandler);
-    }
-};
-// The component registers itself. It can assume componentHandler is available
-// in the global scope.
-componentHandler.register({
-    constructor: MaterialButton,
-    classAsString: 'MaterialButton',
-    cssClass: 'mdl-js-button',
-    widget: true
+
+},{}]},{},[1])(1)
 });
-/**
- * @license
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
-   * Class constructor for Checkbox MDL component.
-   * Implements MDL component design pattern defined at:
-   * https://github.com/jasonmayes/mdl-component-design-pattern
-   *
-   * @constructor
-   * @param {HTMLElement} element The element that will be upgraded.
-   */
-var MaterialCheckbox = function MaterialCheckbox(element) {
-    this.element_ = element;
-    // Initialize instance.
-    this.init();
-};
-window['MaterialCheckbox'] = MaterialCheckbox;
-/**
-   * Store constants in one place so they can be updated easily.
-   *
-   * @enum {string | number}
-   * @private
-   */
-MaterialCheckbox.prototype.Constant_ = { TINY_TIMEOUT: 0.001 };
-/**
-   * Store strings for class names defined by this component that are used in
-   * JavaScript. This allows us to simply change it in one place should we
-   * decide to modify at a later date.
-   *
-   * @enum {string}
-   * @private
-   */
-MaterialCheckbox.prototype.CssClasses_ = {
-    INPUT: 'mdl-checkbox__input',
-    BOX_OUTLINE: 'mdl-checkbox__box-outline',
-    FOCUS_HELPER: 'mdl-checkbox__focus-helper',
-    TICK_OUTLINE: 'mdl-checkbox__tick-outline',
-    RIPPLE_EFFECT: 'mdl-js-ripple-effect',
-    RIPPLE_IGNORE_EVENTS: 'mdl-js-ripple-effect--ignore-events',
-    RIPPLE_CONTAINER: 'mdl-checkbox__ripple-container',
-    RIPPLE_CENTER: 'mdl-ripple--center',
-    RIPPLE: 'mdl-ripple',
-    IS_FOCUSED: 'is-focused',
-    IS_DISABLED: 'is-disabled',
-    IS_CHECKED: 'is-checked',
-    IS_UPGRADED: 'is-upgraded'
-};
-/**
-   * Handle change of state.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialCheckbox.prototype.onChange_ = function (event) {
-    this.updateClasses_();
-};
-/**
-   * Handle focus of element.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialCheckbox.prototype.onFocus_ = function (event) {
-    this.element_.classList.add(this.CssClasses_.IS_FOCUSED);
-};
-/**
-   * Handle lost focus of element.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialCheckbox.prototype.onBlur_ = function (event) {
-    this.element_.classList.remove(this.CssClasses_.IS_FOCUSED);
-};
-/**
-   * Handle mouseup.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialCheckbox.prototype.onMouseUp_ = function (event) {
-    this.blur_();
-};
-/**
-   * Handle class updates.
-   *
-   * @private
-   */
-MaterialCheckbox.prototype.updateClasses_ = function () {
-    this.checkDisabled();
-    this.checkToggleState();
-};
-/**
-   * Add blur.
-   *
-   * @private
-   */
-MaterialCheckbox.prototype.blur_ = function () {
-    // TODO: figure out why there's a focus event being fired after our blur,
-    // so that we can avoid this hack.
-    window.setTimeout(function () {
-        this.inputElement_.blur();
-    }.bind(this), this.Constant_.TINY_TIMEOUT);
-};
-// Public methods.
-/**
-   * Check the inputs toggle state and update display.
-   *
-   * @public
-   */
-MaterialCheckbox.prototype.checkToggleState = function () {
-    if (this.inputElement_.checked) {
-        this.element_.classList.add(this.CssClasses_.IS_CHECKED);
-    } else {
-        this.element_.classList.remove(this.CssClasses_.IS_CHECKED);
-    }
-};
-MaterialCheckbox.prototype['checkToggleState'] = MaterialCheckbox.prototype.checkToggleState;
-/**
-   * Check the inputs disabled state and update display.
-   *
-   * @public
-   */
-MaterialCheckbox.prototype.checkDisabled = function () {
-    if (this.inputElement_.disabled) {
-        this.element_.classList.add(this.CssClasses_.IS_DISABLED);
-    } else {
-        this.element_.classList.remove(this.CssClasses_.IS_DISABLED);
-    }
-};
-MaterialCheckbox.prototype['checkDisabled'] = MaterialCheckbox.prototype.checkDisabled;
-/**
-   * Disable checkbox.
-   *
-   * @public
-   */
-MaterialCheckbox.prototype.disable = function () {
-    this.inputElement_.disabled = true;
-    this.updateClasses_();
-};
-MaterialCheckbox.prototype['disable'] = MaterialCheckbox.prototype.disable;
-/**
-   * Enable checkbox.
-   *
-   * @public
-   */
-MaterialCheckbox.prototype.enable = function () {
-    this.inputElement_.disabled = false;
-    this.updateClasses_();
-};
-MaterialCheckbox.prototype['enable'] = MaterialCheckbox.prototype.enable;
-/**
-   * Check checkbox.
-   *
-   * @public
-   */
-MaterialCheckbox.prototype.check = function () {
-    this.inputElement_.checked = true;
-    this.updateClasses_();
-};
-MaterialCheckbox.prototype['check'] = MaterialCheckbox.prototype.check;
-/**
-   * Uncheck checkbox.
-   *
-   * @public
-   */
-MaterialCheckbox.prototype.uncheck = function () {
-    this.inputElement_.checked = false;
-    this.updateClasses_();
-};
-MaterialCheckbox.prototype['uncheck'] = MaterialCheckbox.prototype.uncheck;
-/**
-   * Initialize element.
-   */
-MaterialCheckbox.prototype.init = function () {
-    if (this.element_) {
-        this.inputElement_ = this.element_.querySelector('.' + this.CssClasses_.INPUT);
-        var boxOutline = document.createElement('span');
-        boxOutline.classList.add(this.CssClasses_.BOX_OUTLINE);
-        var tickContainer = document.createElement('span');
-        tickContainer.classList.add(this.CssClasses_.FOCUS_HELPER);
-        var tickOutline = document.createElement('span');
-        tickOutline.classList.add(this.CssClasses_.TICK_OUTLINE);
-        boxOutline.appendChild(tickOutline);
-        this.element_.appendChild(tickContainer);
-        this.element_.appendChild(boxOutline);
-        if (this.element_.classList.contains(this.CssClasses_.RIPPLE_EFFECT)) {
-            this.element_.classList.add(this.CssClasses_.RIPPLE_IGNORE_EVENTS);
-            this.rippleContainerElement_ = document.createElement('span');
-            this.rippleContainerElement_.classList.add(this.CssClasses_.RIPPLE_CONTAINER);
-            this.rippleContainerElement_.classList.add(this.CssClasses_.RIPPLE_EFFECT);
-            this.rippleContainerElement_.classList.add(this.CssClasses_.RIPPLE_CENTER);
-            this.boundRippleMouseUp = this.onMouseUp_.bind(this);
-            this.rippleContainerElement_.addEventListener('mouseup', this.boundRippleMouseUp);
-            var ripple = document.createElement('span');
-            ripple.classList.add(this.CssClasses_.RIPPLE);
-            this.rippleContainerElement_.appendChild(ripple);
-            this.element_.appendChild(this.rippleContainerElement_);
-        }
-        this.boundInputOnChange = this.onChange_.bind(this);
-        this.boundInputOnFocus = this.onFocus_.bind(this);
-        this.boundInputOnBlur = this.onBlur_.bind(this);
-        this.boundElementMouseUp = this.onMouseUp_.bind(this);
-        this.inputElement_.addEventListener('change', this.boundInputOnChange);
-        this.inputElement_.addEventListener('focus', this.boundInputOnFocus);
-        this.inputElement_.addEventListener('blur', this.boundInputOnBlur);
-        this.element_.addEventListener('mouseup', this.boundElementMouseUp);
-        this.updateClasses_();
-        this.element_.classList.add(this.CssClasses_.IS_UPGRADED);
-    }
-};
-// The component registers itself. It can assume componentHandler is available
-// in the global scope.
-componentHandler.register({
-    constructor: MaterialCheckbox,
-    classAsString: 'MaterialCheckbox',
-    cssClass: 'mdl-js-checkbox',
-    widget: true
-});
-/**
- * @license
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
-   * Class constructor for icon toggle MDL component.
-   * Implements MDL component design pattern defined at:
-   * https://github.com/jasonmayes/mdl-component-design-pattern
-   *
-   * @constructor
-   * @param {HTMLElement} element The element that will be upgraded.
-   */
-var MaterialIconToggle = function MaterialIconToggle(element) {
-    this.element_ = element;
-    // Initialize instance.
-    this.init();
-};
-window['MaterialIconToggle'] = MaterialIconToggle;
-/**
-   * Store constants in one place so they can be updated easily.
-   *
-   * @enum {string | number}
-   * @private
-   */
-MaterialIconToggle.prototype.Constant_ = { TINY_TIMEOUT: 0.001 };
-/**
-   * Store strings for class names defined by this component that are used in
-   * JavaScript. This allows us to simply change it in one place should we
-   * decide to modify at a later date.
-   *
-   * @enum {string}
-   * @private
-   */
-MaterialIconToggle.prototype.CssClasses_ = {
-    INPUT: 'mdl-icon-toggle__input',
-    JS_RIPPLE_EFFECT: 'mdl-js-ripple-effect',
-    RIPPLE_IGNORE_EVENTS: 'mdl-js-ripple-effect--ignore-events',
-    RIPPLE_CONTAINER: 'mdl-icon-toggle__ripple-container',
-    RIPPLE_CENTER: 'mdl-ripple--center',
-    RIPPLE: 'mdl-ripple',
-    IS_FOCUSED: 'is-focused',
-    IS_DISABLED: 'is-disabled',
-    IS_CHECKED: 'is-checked'
-};
-/**
-   * Handle change of state.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialIconToggle.prototype.onChange_ = function (event) {
-    this.updateClasses_();
-};
-/**
-   * Handle focus of element.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialIconToggle.prototype.onFocus_ = function (event) {
-    this.element_.classList.add(this.CssClasses_.IS_FOCUSED);
-};
-/**
-   * Handle lost focus of element.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialIconToggle.prototype.onBlur_ = function (event) {
-    this.element_.classList.remove(this.CssClasses_.IS_FOCUSED);
-};
-/**
-   * Handle mouseup.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialIconToggle.prototype.onMouseUp_ = function (event) {
-    this.blur_();
-};
-/**
-   * Handle class updates.
-   *
-   * @private
-   */
-MaterialIconToggle.prototype.updateClasses_ = function () {
-    this.checkDisabled();
-    this.checkToggleState();
-};
-/**
-   * Add blur.
-   *
-   * @private
-   */
-MaterialIconToggle.prototype.blur_ = function () {
-    // TODO: figure out why there's a focus event being fired after our blur,
-    // so that we can avoid this hack.
-    window.setTimeout(function () {
-        this.inputElement_.blur();
-    }.bind(this), this.Constant_.TINY_TIMEOUT);
-};
-// Public methods.
-/**
-   * Check the inputs toggle state and update display.
-   *
-   * @public
-   */
-MaterialIconToggle.prototype.checkToggleState = function () {
-    if (this.inputElement_.checked) {
-        this.element_.classList.add(this.CssClasses_.IS_CHECKED);
-    } else {
-        this.element_.classList.remove(this.CssClasses_.IS_CHECKED);
-    }
-};
-MaterialIconToggle.prototype['checkToggleState'] = MaterialIconToggle.prototype.checkToggleState;
-/**
-   * Check the inputs disabled state and update display.
-   *
-   * @public
-   */
-MaterialIconToggle.prototype.checkDisabled = function () {
-    if (this.inputElement_.disabled) {
-        this.element_.classList.add(this.CssClasses_.IS_DISABLED);
-    } else {
-        this.element_.classList.remove(this.CssClasses_.IS_DISABLED);
-    }
-};
-MaterialIconToggle.prototype['checkDisabled'] = MaterialIconToggle.prototype.checkDisabled;
-/**
-   * Disable icon toggle.
-   *
-   * @public
-   */
-MaterialIconToggle.prototype.disable = function () {
-    this.inputElement_.disabled = true;
-    this.updateClasses_();
-};
-MaterialIconToggle.prototype['disable'] = MaterialIconToggle.prototype.disable;
-/**
-   * Enable icon toggle.
-   *
-   * @public
-   */
-MaterialIconToggle.prototype.enable = function () {
-    this.inputElement_.disabled = false;
-    this.updateClasses_();
-};
-MaterialIconToggle.prototype['enable'] = MaterialIconToggle.prototype.enable;
-/**
-   * Check icon toggle.
-   *
-   * @public
-   */
-MaterialIconToggle.prototype.check = function () {
-    this.inputElement_.checked = true;
-    this.updateClasses_();
-};
-MaterialIconToggle.prototype['check'] = MaterialIconToggle.prototype.check;
-/**
-   * Uncheck icon toggle.
-   *
-   * @public
-   */
-MaterialIconToggle.prototype.uncheck = function () {
-    this.inputElement_.checked = false;
-    this.updateClasses_();
-};
-MaterialIconToggle.prototype['uncheck'] = MaterialIconToggle.prototype.uncheck;
-/**
-   * Initialize element.
-   */
-MaterialIconToggle.prototype.init = function () {
-    if (this.element_) {
-        this.inputElement_ = this.element_.querySelector('.' + this.CssClasses_.INPUT);
-        if (this.element_.classList.contains(this.CssClasses_.JS_RIPPLE_EFFECT)) {
-            this.element_.classList.add(this.CssClasses_.RIPPLE_IGNORE_EVENTS);
-            this.rippleContainerElement_ = document.createElement('span');
-            this.rippleContainerElement_.classList.add(this.CssClasses_.RIPPLE_CONTAINER);
-            this.rippleContainerElement_.classList.add(this.CssClasses_.JS_RIPPLE_EFFECT);
-            this.rippleContainerElement_.classList.add(this.CssClasses_.RIPPLE_CENTER);
-            this.boundRippleMouseUp = this.onMouseUp_.bind(this);
-            this.rippleContainerElement_.addEventListener('mouseup', this.boundRippleMouseUp);
-            var ripple = document.createElement('span');
-            ripple.classList.add(this.CssClasses_.RIPPLE);
-            this.rippleContainerElement_.appendChild(ripple);
-            this.element_.appendChild(this.rippleContainerElement_);
-        }
-        this.boundInputOnChange = this.onChange_.bind(this);
-        this.boundInputOnFocus = this.onFocus_.bind(this);
-        this.boundInputOnBlur = this.onBlur_.bind(this);
-        this.boundElementOnMouseUp = this.onMouseUp_.bind(this);
-        this.inputElement_.addEventListener('change', this.boundInputOnChange);
-        this.inputElement_.addEventListener('focus', this.boundInputOnFocus);
-        this.inputElement_.addEventListener('blur', this.boundInputOnBlur);
-        this.element_.addEventListener('mouseup', this.boundElementOnMouseUp);
-        this.updateClasses_();
-        this.element_.classList.add('is-upgraded');
-    }
-};
-// The component registers itself. It can assume componentHandler is available
-// in the global scope.
-componentHandler.register({
-    constructor: MaterialIconToggle,
-    classAsString: 'MaterialIconToggle',
-    cssClass: 'mdl-js-icon-toggle',
-    widget: true
-});
-/**
- * @license
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
-   * Class constructor for dropdown MDL component.
-   * Implements MDL component design pattern defined at:
-   * https://github.com/jasonmayes/mdl-component-design-pattern
-   *
-   * @constructor
-   * @param {HTMLElement} element The element that will be upgraded.
-   */
-var MaterialMenu = function MaterialMenu(element) {
-    this.element_ = element;
-    // Initialize instance.
-    this.init();
-};
-window['MaterialMenu'] = MaterialMenu;
-/**
-   * Store constants in one place so they can be updated easily.
-   *
-   * @enum {string | number}
-   * @private
-   */
-MaterialMenu.prototype.Constant_ = {
-    // Total duration of the menu animation.
-    TRANSITION_DURATION_SECONDS: 0.3,
-    // The fraction of the total duration we want to use for menu item animations.
-    TRANSITION_DURATION_FRACTION: 0.8,
-    // How long the menu stays open after choosing an option (so the user can see
-    // the ripple).
-    CLOSE_TIMEOUT: 150
-};
-/**
-   * Keycodes, for code readability.
-   *
-   * @enum {number}
-   * @private
-   */
-MaterialMenu.prototype.Keycodes_ = {
-    ENTER: 13,
-    ESCAPE: 27,
-    SPACE: 32,
-    UP_ARROW: 38,
-    DOWN_ARROW: 40
-};
-/**
-   * Store strings for class names defined by this component that are used in
-   * JavaScript. This allows us to simply change it in one place should we
-   * decide to modify at a later date.
-   *
-   * @enum {string}
-   * @private
-   */
-MaterialMenu.prototype.CssClasses_ = {
-    CONTAINER: 'mdl-menu__container',
-    OUTLINE: 'mdl-menu__outline',
-    ITEM: 'mdl-menu__item',
-    ITEM_RIPPLE_CONTAINER: 'mdl-menu__item-ripple-container',
-    RIPPLE_EFFECT: 'mdl-js-ripple-effect',
-    RIPPLE_IGNORE_EVENTS: 'mdl-js-ripple-effect--ignore-events',
-    RIPPLE: 'mdl-ripple',
-    // Statuses
-    IS_UPGRADED: 'is-upgraded',
-    IS_VISIBLE: 'is-visible',
-    IS_ANIMATING: 'is-animating',
-    // Alignment options
-    BOTTOM_LEFT: 'mdl-menu--bottom-left',
-    // This is the default.
-    BOTTOM_RIGHT: 'mdl-menu--bottom-right',
-    TOP_LEFT: 'mdl-menu--top-left',
-    TOP_RIGHT: 'mdl-menu--top-right',
-    UNALIGNED: 'mdl-menu--unaligned'
-};
-/**
-   * Initialize element.
-   */
-MaterialMenu.prototype.init = function () {
-    if (this.element_) {
-        // Create container for the menu.
-        var container = document.createElement('div');
-        container.classList.add(this.CssClasses_.CONTAINER);
-        this.element_.parentElement.insertBefore(container, this.element_);
-        this.element_.parentElement.removeChild(this.element_);
-        container.appendChild(this.element_);
-        this.container_ = container;
-        // Create outline for the menu (shadow and background).
-        var outline = document.createElement('div');
-        outline.classList.add(this.CssClasses_.OUTLINE);
-        this.outline_ = outline;
-        container.insertBefore(outline, this.element_);
-        // Find the "for" element and bind events to it.
-        var forElId = this.element_.getAttribute('for') || this.element_.getAttribute('data-mdl-for');
-        var forEl = null;
-        if (forElId) {
-            forEl = document.getElementById(forElId);
-            if (forEl) {
-                this.forElement_ = forEl;
-                forEl.addEventListener('click', this.handleForClick_.bind(this));
-                forEl.addEventListener('keydown', this.handleForKeyboardEvent_.bind(this));
-            }
-        }
-        var items = this.element_.querySelectorAll('.' + this.CssClasses_.ITEM);
-        this.boundItemKeydown_ = this.handleItemKeyboardEvent_.bind(this);
-        this.boundItemClick_ = this.handleItemClick_.bind(this);
-        for (var i = 0; i < items.length; i++) {
-            // Add a listener to each menu item.
-            items[i].addEventListener('click', this.boundItemClick_);
-            // Add a tab index to each menu item.
-            items[i].tabIndex = '-1';
-            // Add a keyboard listener to each menu item.
-            items[i].addEventListener('keydown', this.boundItemKeydown_);
-        }
-        // Add ripple classes to each item, if the user has enabled ripples.
-        if (this.element_.classList.contains(this.CssClasses_.RIPPLE_EFFECT)) {
-            this.element_.classList.add(this.CssClasses_.RIPPLE_IGNORE_EVENTS);
-            for (i = 0; i < items.length; i++) {
-                var item = items[i];
-                var rippleContainer = document.createElement('span');
-                rippleContainer.classList.add(this.CssClasses_.ITEM_RIPPLE_CONTAINER);
-                var ripple = document.createElement('span');
-                ripple.classList.add(this.CssClasses_.RIPPLE);
-                rippleContainer.appendChild(ripple);
-                item.appendChild(rippleContainer);
-                item.classList.add(this.CssClasses_.RIPPLE_EFFECT);
-            }
-        }
-        // Copy alignment classes to the container, so the outline can use them.
-        if (this.element_.classList.contains(this.CssClasses_.BOTTOM_LEFT)) {
-            this.outline_.classList.add(this.CssClasses_.BOTTOM_LEFT);
-        }
-        if (this.element_.classList.contains(this.CssClasses_.BOTTOM_RIGHT)) {
-            this.outline_.classList.add(this.CssClasses_.BOTTOM_RIGHT);
-        }
-        if (this.element_.classList.contains(this.CssClasses_.TOP_LEFT)) {
-            this.outline_.classList.add(this.CssClasses_.TOP_LEFT);
-        }
-        if (this.element_.classList.contains(this.CssClasses_.TOP_RIGHT)) {
-            this.outline_.classList.add(this.CssClasses_.TOP_RIGHT);
-        }
-        if (this.element_.classList.contains(this.CssClasses_.UNALIGNED)) {
-            this.outline_.classList.add(this.CssClasses_.UNALIGNED);
-        }
-        container.classList.add(this.CssClasses_.IS_UPGRADED);
-    }
-};
-/**
-   * Handles a click on the "for" element, by positioning the menu and then
-   * toggling it.
-   *
-   * @param {Event} evt The event that fired.
-   * @private
-   */
-MaterialMenu.prototype.handleForClick_ = function (evt) {
-    if (this.element_ && this.forElement_) {
-        var rect = this.forElement_.getBoundingClientRect();
-        var forRect = this.forElement_.parentElement.getBoundingClientRect();
-        if (this.element_.classList.contains(this.CssClasses_.UNALIGNED)) {
-        } else if (this.element_.classList.contains(this.CssClasses_.BOTTOM_RIGHT)) {
-            // Position below the "for" element, aligned to its right.
-            this.container_.style.right = forRect.right - rect.right + 'px';
-            this.container_.style.top = this.forElement_.offsetTop + this.forElement_.offsetHeight + 'px';
-        } else if (this.element_.classList.contains(this.CssClasses_.TOP_LEFT)) {
-            // Position above the "for" element, aligned to its left.
-            this.container_.style.left = this.forElement_.offsetLeft + 'px';
-            this.container_.style.bottom = forRect.bottom - rect.top + 'px';
-        } else if (this.element_.classList.contains(this.CssClasses_.TOP_RIGHT)) {
-            // Position above the "for" element, aligned to its right.
-            this.container_.style.right = forRect.right - rect.right + 'px';
-            this.container_.style.bottom = forRect.bottom - rect.top + 'px';
-        } else {
-            // Default: position below the "for" element, aligned to its left.
-            this.container_.style.left = this.forElement_.offsetLeft + 'px';
-            this.container_.style.top = this.forElement_.offsetTop + this.forElement_.offsetHeight + 'px';
-        }
-    }
-    this.toggle(evt);
-};
-/**
-   * Handles a keyboard event on the "for" element.
-   *
-   * @param {Event} evt The event that fired.
-   * @private
-   */
-MaterialMenu.prototype.handleForKeyboardEvent_ = function (evt) {
-    if (this.element_ && this.container_ && this.forElement_) {
-        var items = this.element_.querySelectorAll('.' + this.CssClasses_.ITEM + ':not([disabled])');
-        if (items && items.length > 0 && this.container_.classList.contains(this.CssClasses_.IS_VISIBLE)) {
-            if (evt.keyCode === this.Keycodes_.UP_ARROW) {
-                evt.preventDefault();
-                items[items.length - 1].focus();
-            } else if (evt.keyCode === this.Keycodes_.DOWN_ARROW) {
-                evt.preventDefault();
-                items[0].focus();
-            }
-        }
-    }
-};
-/**
-   * Handles a keyboard event on an item.
-   *
-   * @param {Event} evt The event that fired.
-   * @private
-   */
-MaterialMenu.prototype.handleItemKeyboardEvent_ = function (evt) {
-    if (this.element_ && this.container_) {
-        var items = this.element_.querySelectorAll('.' + this.CssClasses_.ITEM + ':not([disabled])');
-        if (items && items.length > 0 && this.container_.classList.contains(this.CssClasses_.IS_VISIBLE)) {
-            var currentIndex = Array.prototype.slice.call(items).indexOf(evt.target);
-            if (evt.keyCode === this.Keycodes_.UP_ARROW) {
-                evt.preventDefault();
-                if (currentIndex > 0) {
-                    items[currentIndex - 1].focus();
-                } else {
-                    items[items.length - 1].focus();
-                }
-            } else if (evt.keyCode === this.Keycodes_.DOWN_ARROW) {
-                evt.preventDefault();
-                if (items.length > currentIndex + 1) {
-                    items[currentIndex + 1].focus();
-                } else {
-                    items[0].focus();
-                }
-            } else if (evt.keyCode === this.Keycodes_.SPACE || evt.keyCode === this.Keycodes_.ENTER) {
-                evt.preventDefault();
-                // Send mousedown and mouseup to trigger ripple.
-                var e = new MouseEvent('mousedown');
-                evt.target.dispatchEvent(e);
-                e = new MouseEvent('mouseup');
-                evt.target.dispatchEvent(e);
-                // Send click.
-                evt.target.click();
-            } else if (evt.keyCode === this.Keycodes_.ESCAPE) {
-                evt.preventDefault();
-                this.hide();
-            }
-        }
-    }
-};
-/**
-   * Handles a click event on an item.
-   *
-   * @param {Event} evt The event that fired.
-   * @private
-   */
-MaterialMenu.prototype.handleItemClick_ = function (evt) {
-    if (evt.target.hasAttribute('disabled')) {
-        evt.stopPropagation();
-    } else {
-        // Wait some time before closing menu, so the user can see the ripple.
-        this.closing_ = true;
-        window.setTimeout(function (evt) {
-            this.hide();
-            this.closing_ = false;
-        }.bind(this), this.Constant_.CLOSE_TIMEOUT);
-    }
-};
-/**
-   * Calculates the initial clip (for opening the menu) or final clip (for closing
-   * it), and applies it. This allows us to animate from or to the correct point,
-   * that is, the point it's aligned to in the "for" element.
-   *
-   * @param {number} height Height of the clip rectangle
-   * @param {number} width Width of the clip rectangle
-   * @private
-   */
-MaterialMenu.prototype.applyClip_ = function (height, width) {
-    if (this.element_.classList.contains(this.CssClasses_.UNALIGNED)) {
-        // Do not clip.
-        this.element_.style.clip = '';
-    } else if (this.element_.classList.contains(this.CssClasses_.BOTTOM_RIGHT)) {
-        // Clip to the top right corner of the menu.
-        this.element_.style.clip = 'rect(0 ' + width + 'px ' + '0 ' + width + 'px)';
-    } else if (this.element_.classList.contains(this.CssClasses_.TOP_LEFT)) {
-        // Clip to the bottom left corner of the menu.
-        this.element_.style.clip = 'rect(' + height + 'px 0 ' + height + 'px 0)';
-    } else if (this.element_.classList.contains(this.CssClasses_.TOP_RIGHT)) {
-        // Clip to the bottom right corner of the menu.
-        this.element_.style.clip = 'rect(' + height + 'px ' + width + 'px ' + height + 'px ' + width + 'px)';
-    } else {
-        // Default: do not clip (same as clipping to the top left corner).
-        this.element_.style.clip = '';
-    }
-};
-/**
-   * Cleanup function to remove animation listeners.
-   *
-   * @param {Event} evt
-   * @private
-   */
-MaterialMenu.prototype.removeAnimationEndListener_ = function (evt) {
-    evt.target.classList.remove(MaterialMenu.prototype.CssClasses_.IS_ANIMATING);
-};
-/**
-   * Adds an event listener to clean up after the animation ends.
-   *
-   * @private
-   */
-MaterialMenu.prototype.addAnimationEndListener_ = function () {
-    this.element_.addEventListener('transitionend', this.removeAnimationEndListener_);
-    this.element_.addEventListener('webkitTransitionEnd', this.removeAnimationEndListener_);
-};
-/**
-   * Displays the menu.
-   *
-   * @public
-   */
-MaterialMenu.prototype.show = function (evt) {
-    if (this.element_ && this.container_ && this.outline_) {
-        // Measure the inner element.
-        var height = this.element_.getBoundingClientRect().height;
-        var width = this.element_.getBoundingClientRect().width;
-        // Apply the inner element's size to the container and outline.
-        this.container_.style.width = width + 'px';
-        this.container_.style.height = height + 'px';
-        this.outline_.style.width = width + 'px';
-        this.outline_.style.height = height + 'px';
-        var transitionDuration = this.Constant_.TRANSITION_DURATION_SECONDS * this.Constant_.TRANSITION_DURATION_FRACTION;
-        // Calculate transition delays for individual menu items, so that they fade
-        // in one at a time.
-        var items = this.element_.querySelectorAll('.' + this.CssClasses_.ITEM);
-        for (var i = 0; i < items.length; i++) {
-            var itemDelay = null;
-            if (this.element_.classList.contains(this.CssClasses_.TOP_LEFT) || this.element_.classList.contains(this.CssClasses_.TOP_RIGHT)) {
-                itemDelay = (height - items[i].offsetTop - items[i].offsetHeight) / height * transitionDuration + 's';
-            } else {
-                itemDelay = items[i].offsetTop / height * transitionDuration + 's';
-            }
-            items[i].style.transitionDelay = itemDelay;
-        }
-        // Apply the initial clip to the text before we start animating.
-        this.applyClip_(height, width);
-        // Wait for the next frame, turn on animation, and apply the final clip.
-        // Also make it visible. This triggers the transitions.
-        window.requestAnimationFrame(function () {
-            this.element_.classList.add(this.CssClasses_.IS_ANIMATING);
-            this.element_.style.clip = 'rect(0 ' + width + 'px ' + height + 'px 0)';
-            this.container_.classList.add(this.CssClasses_.IS_VISIBLE);
-        }.bind(this));
-        // Clean up after the animation is complete.
-        this.addAnimationEndListener_();
-        // Add a click listener to the document, to close the menu.
-        var callback = function (e) {
-            // Check to see if the document is processing the same event that
-            // displayed the menu in the first place. If so, do nothing.
-            // Also check to see if the menu is in the process of closing itself, and
-            // do nothing in that case.
-            // Also check if the clicked element is a menu item
-            // if so, do nothing.
-            if (e !== evt && !this.closing_ && e.target.parentNode !== this.element_) {
-                document.removeEventListener('click', callback);
-                this.hide();
-            }
-        }.bind(this);
-        document.addEventListener('click', callback);
-    }
-};
-MaterialMenu.prototype['show'] = MaterialMenu.prototype.show;
-/**
-   * Hides the menu.
-   *
-   * @public
-   */
-MaterialMenu.prototype.hide = function () {
-    if (this.element_ && this.container_ && this.outline_) {
-        var items = this.element_.querySelectorAll('.' + this.CssClasses_.ITEM);
-        // Remove all transition delays; menu items fade out concurrently.
-        for (var i = 0; i < items.length; i++) {
-            items[i].style.removeProperty('transition-delay');
-        }
-        // Measure the inner element.
-        var rect = this.element_.getBoundingClientRect();
-        var height = rect.height;
-        var width = rect.width;
-        // Turn on animation, and apply the final clip. Also make invisible.
-        // This triggers the transitions.
-        this.element_.classList.add(this.CssClasses_.IS_ANIMATING);
-        this.applyClip_(height, width);
-        this.container_.classList.remove(this.CssClasses_.IS_VISIBLE);
-        // Clean up after the animation is complete.
-        this.addAnimationEndListener_();
-    }
-};
-MaterialMenu.prototype['hide'] = MaterialMenu.prototype.hide;
-/**
-   * Displays or hides the menu, depending on current state.
-   *
-   * @public
-   */
-MaterialMenu.prototype.toggle = function (evt) {
-    if (this.container_.classList.contains(this.CssClasses_.IS_VISIBLE)) {
-        this.hide();
-    } else {
-        this.show(evt);
-    }
-};
-MaterialMenu.prototype['toggle'] = MaterialMenu.prototype.toggle;
-// The component registers itself. It can assume componentHandler is available
-// in the global scope.
-componentHandler.register({
-    constructor: MaterialMenu,
-    classAsString: 'MaterialMenu',
-    cssClass: 'mdl-js-menu',
-    widget: true
-});
-/**
- * @license
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
-   * Class constructor for Progress MDL component.
-   * Implements MDL component design pattern defined at:
-   * https://github.com/jasonmayes/mdl-component-design-pattern
-   *
-   * @constructor
-   * @param {HTMLElement} element The element that will be upgraded.
-   */
-var MaterialProgress = function MaterialProgress(element) {
-    this.element_ = element;
-    // Initialize instance.
-    this.init();
-};
-window['MaterialProgress'] = MaterialProgress;
-/**
-   * Store constants in one place so they can be updated easily.
-   *
-   * @enum {string | number}
-   * @private
-   */
-MaterialProgress.prototype.Constant_ = {};
-/**
-   * Store strings for class names defined by this component that are used in
-   * JavaScript. This allows us to simply change it in one place should we
-   * decide to modify at a later date.
-   *
-   * @enum {string}
-   * @private
-   */
-MaterialProgress.prototype.CssClasses_ = { INDETERMINATE_CLASS: 'mdl-progress__indeterminate' };
-/**
-   * Set the current progress of the progressbar.
-   *
-   * @param {number} p Percentage of the progress (0-100)
-   * @public
-   */
-MaterialProgress.prototype.setProgress = function (p) {
-    if (this.element_.classList.contains(this.CssClasses_.INDETERMINATE_CLASS)) {
-        return;
-    }
-    this.progressbar_.style.width = p + '%';
-};
-MaterialProgress.prototype['setProgress'] = MaterialProgress.prototype.setProgress;
-/**
-   * Set the current progress of the buffer.
-   *
-   * @param {number} p Percentage of the buffer (0-100)
-   * @public
-   */
-MaterialProgress.prototype.setBuffer = function (p) {
-    this.bufferbar_.style.width = p + '%';
-    this.auxbar_.style.width = 100 - p + '%';
-};
-MaterialProgress.prototype['setBuffer'] = MaterialProgress.prototype.setBuffer;
-/**
-   * Initialize element.
-   */
-MaterialProgress.prototype.init = function () {
-    if (this.element_) {
-        var el = document.createElement('div');
-        el.className = 'progressbar bar bar1';
-        this.element_.appendChild(el);
-        this.progressbar_ = el;
-        el = document.createElement('div');
-        el.className = 'bufferbar bar bar2';
-        this.element_.appendChild(el);
-        this.bufferbar_ = el;
-        el = document.createElement('div');
-        el.className = 'auxbar bar bar3';
-        this.element_.appendChild(el);
-        this.auxbar_ = el;
-        this.progressbar_.style.width = '0%';
-        this.bufferbar_.style.width = '100%';
-        this.auxbar_.style.width = '0%';
-        this.element_.classList.add('is-upgraded');
-    }
-};
-// The component registers itself. It can assume componentHandler is available
-// in the global scope.
-componentHandler.register({
-    constructor: MaterialProgress,
-    classAsString: 'MaterialProgress',
-    cssClass: 'mdl-js-progress',
-    widget: true
-});
-/**
- * @license
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
-   * Class constructor for Radio MDL component.
-   * Implements MDL component design pattern defined at:
-   * https://github.com/jasonmayes/mdl-component-design-pattern
-   *
-   * @constructor
-   * @param {HTMLElement} element The element that will be upgraded.
-   */
-var MaterialRadio = function MaterialRadio(element) {
-    this.element_ = element;
-    // Initialize instance.
-    this.init();
-};
-window['MaterialRadio'] = MaterialRadio;
-/**
-   * Store constants in one place so they can be updated easily.
-   *
-   * @enum {string | number}
-   * @private
-   */
-MaterialRadio.prototype.Constant_ = { TINY_TIMEOUT: 0.001 };
-/**
-   * Store strings for class names defined by this component that are used in
-   * JavaScript. This allows us to simply change it in one place should we
-   * decide to modify at a later date.
-   *
-   * @enum {string}
-   * @private
-   */
-MaterialRadio.prototype.CssClasses_ = {
-    IS_FOCUSED: 'is-focused',
-    IS_DISABLED: 'is-disabled',
-    IS_CHECKED: 'is-checked',
-    IS_UPGRADED: 'is-upgraded',
-    JS_RADIO: 'mdl-js-radio',
-    RADIO_BTN: 'mdl-radio__button',
-    RADIO_OUTER_CIRCLE: 'mdl-radio__outer-circle',
-    RADIO_INNER_CIRCLE: 'mdl-radio__inner-circle',
-    RIPPLE_EFFECT: 'mdl-js-ripple-effect',
-    RIPPLE_IGNORE_EVENTS: 'mdl-js-ripple-effect--ignore-events',
-    RIPPLE_CONTAINER: 'mdl-radio__ripple-container',
-    RIPPLE_CENTER: 'mdl-ripple--center',
-    RIPPLE: 'mdl-ripple'
-};
-/**
-   * Handle change of state.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialRadio.prototype.onChange_ = function (event) {
-    // Since other radio buttons don't get change events, we need to look for
-    // them to update their classes.
-    var radios = document.getElementsByClassName(this.CssClasses_.JS_RADIO);
-    for (var i = 0; i < radios.length; i++) {
-        var button = radios[i].querySelector('.' + this.CssClasses_.RADIO_BTN);
-        // Different name == different group, so no point updating those.
-        if (button.getAttribute('name') === this.btnElement_.getAttribute('name')) {
-            if (typeof radios[i]['MaterialRadio'] !== 'undefined') {
-                radios[i]['MaterialRadio'].updateClasses_();
-            }
-        }
-    }
-};
-/**
-   * Handle focus.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialRadio.prototype.onFocus_ = function (event) {
-    this.element_.classList.add(this.CssClasses_.IS_FOCUSED);
-};
-/**
-   * Handle lost focus.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialRadio.prototype.onBlur_ = function (event) {
-    this.element_.classList.remove(this.CssClasses_.IS_FOCUSED);
-};
-/**
-   * Handle mouseup.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialRadio.prototype.onMouseup_ = function (event) {
-    this.blur_();
-};
-/**
-   * Update classes.
-   *
-   * @private
-   */
-MaterialRadio.prototype.updateClasses_ = function () {
-    this.checkDisabled();
-    this.checkToggleState();
-};
-/**
-   * Add blur.
-   *
-   * @private
-   */
-MaterialRadio.prototype.blur_ = function () {
-    // TODO: figure out why there's a focus event being fired after our blur,
-    // so that we can avoid this hack.
-    window.setTimeout(function () {
-        this.btnElement_.blur();
-    }.bind(this), this.Constant_.TINY_TIMEOUT);
-};
-// Public methods.
-/**
-   * Check the components disabled state.
-   *
-   * @public
-   */
-MaterialRadio.prototype.checkDisabled = function () {
-    if (this.btnElement_.disabled) {
-        this.element_.classList.add(this.CssClasses_.IS_DISABLED);
-    } else {
-        this.element_.classList.remove(this.CssClasses_.IS_DISABLED);
-    }
-};
-MaterialRadio.prototype['checkDisabled'] = MaterialRadio.prototype.checkDisabled;
-/**
-   * Check the components toggled state.
-   *
-   * @public
-   */
-MaterialRadio.prototype.checkToggleState = function () {
-    if (this.btnElement_.checked) {
-        this.element_.classList.add(this.CssClasses_.IS_CHECKED);
-    } else {
-        this.element_.classList.remove(this.CssClasses_.IS_CHECKED);
-    }
-};
-MaterialRadio.prototype['checkToggleState'] = MaterialRadio.prototype.checkToggleState;
-/**
-   * Disable radio.
-   *
-   * @public
-   */
-MaterialRadio.prototype.disable = function () {
-    this.btnElement_.disabled = true;
-    this.updateClasses_();
-};
-MaterialRadio.prototype['disable'] = MaterialRadio.prototype.disable;
-/**
-   * Enable radio.
-   *
-   * @public
-   */
-MaterialRadio.prototype.enable = function () {
-    this.btnElement_.disabled = false;
-    this.updateClasses_();
-};
-MaterialRadio.prototype['enable'] = MaterialRadio.prototype.enable;
-/**
-   * Check radio.
-   *
-   * @public
-   */
-MaterialRadio.prototype.check = function () {
-    this.btnElement_.checked = true;
-    this.onChange_(null);
-};
-MaterialRadio.prototype['check'] = MaterialRadio.prototype.check;
-/**
-   * Uncheck radio.
-   *
-   * @public
-   */
-MaterialRadio.prototype.uncheck = function () {
-    this.btnElement_.checked = false;
-    this.onChange_(null);
-};
-MaterialRadio.prototype['uncheck'] = MaterialRadio.prototype.uncheck;
-/**
-   * Initialize element.
-   */
-MaterialRadio.prototype.init = function () {
-    if (this.element_) {
-        this.btnElement_ = this.element_.querySelector('.' + this.CssClasses_.RADIO_BTN);
-        this.boundChangeHandler_ = this.onChange_.bind(this);
-        this.boundFocusHandler_ = this.onChange_.bind(this);
-        this.boundBlurHandler_ = this.onBlur_.bind(this);
-        this.boundMouseUpHandler_ = this.onMouseup_.bind(this);
-        var outerCircle = document.createElement('span');
-        outerCircle.classList.add(this.CssClasses_.RADIO_OUTER_CIRCLE);
-        var innerCircle = document.createElement('span');
-        innerCircle.classList.add(this.CssClasses_.RADIO_INNER_CIRCLE);
-        this.element_.appendChild(outerCircle);
-        this.element_.appendChild(innerCircle);
-        var rippleContainer;
-        if (this.element_.classList.contains(this.CssClasses_.RIPPLE_EFFECT)) {
-            this.element_.classList.add(this.CssClasses_.RIPPLE_IGNORE_EVENTS);
-            rippleContainer = document.createElement('span');
-            rippleContainer.classList.add(this.CssClasses_.RIPPLE_CONTAINER);
-            rippleContainer.classList.add(this.CssClasses_.RIPPLE_EFFECT);
-            rippleContainer.classList.add(this.CssClasses_.RIPPLE_CENTER);
-            rippleContainer.addEventListener('mouseup', this.boundMouseUpHandler_);
-            var ripple = document.createElement('span');
-            ripple.classList.add(this.CssClasses_.RIPPLE);
-            rippleContainer.appendChild(ripple);
-            this.element_.appendChild(rippleContainer);
-        }
-        this.btnElement_.addEventListener('change', this.boundChangeHandler_);
-        this.btnElement_.addEventListener('focus', this.boundFocusHandler_);
-        this.btnElement_.addEventListener('blur', this.boundBlurHandler_);
-        this.element_.addEventListener('mouseup', this.boundMouseUpHandler_);
-        this.updateClasses_();
-        this.element_.classList.add(this.CssClasses_.IS_UPGRADED);
-    }
-};
-// The component registers itself. It can assume componentHandler is available
-// in the global scope.
-componentHandler.register({
-    constructor: MaterialRadio,
-    classAsString: 'MaterialRadio',
-    cssClass: 'mdl-js-radio',
-    widget: true
-});
-/**
- * @license
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
-   * Class constructor for Slider MDL component.
-   * Implements MDL component design pattern defined at:
-   * https://github.com/jasonmayes/mdl-component-design-pattern
-   *
-   * @constructor
-   * @param {HTMLElement} element The element that will be upgraded.
-   */
-var MaterialSlider = function MaterialSlider(element) {
-    this.element_ = element;
-    // Browser feature detection.
-    this.isIE_ = window.navigator.msPointerEnabled;
-    // Initialize instance.
-    this.init();
-};
-window['MaterialSlider'] = MaterialSlider;
-/**
-   * Store constants in one place so they can be updated easily.
-   *
-   * @enum {string | number}
-   * @private
-   */
-MaterialSlider.prototype.Constant_ = {};
-/**
-   * Store strings for class names defined by this component that are used in
-   * JavaScript. This allows us to simply change it in one place should we
-   * decide to modify at a later date.
-   *
-   * @enum {string}
-   * @private
-   */
-MaterialSlider.prototype.CssClasses_ = {
-    IE_CONTAINER: 'mdl-slider__ie-container',
-    SLIDER_CONTAINER: 'mdl-slider__container',
-    BACKGROUND_FLEX: 'mdl-slider__background-flex',
-    BACKGROUND_LOWER: 'mdl-slider__background-lower',
-    BACKGROUND_UPPER: 'mdl-slider__background-upper',
-    IS_LOWEST_VALUE: 'is-lowest-value',
-    IS_UPGRADED: 'is-upgraded'
-};
-/**
-   * Handle input on element.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialSlider.prototype.onInput_ = function (event) {
-    this.updateValueStyles_();
-};
-/**
-   * Handle change on element.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialSlider.prototype.onChange_ = function (event) {
-    this.updateValueStyles_();
-};
-/**
-   * Handle mouseup on element.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialSlider.prototype.onMouseUp_ = function (event) {
-    event.target.blur();
-};
-/**
-   * Handle mousedown on container element.
-   * This handler is purpose is to not require the use to click
-   * exactly on the 2px slider element, as FireFox seems to be very
-   * strict about this.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   * @suppress {missingProperties}
-   */
-MaterialSlider.prototype.onContainerMouseDown_ = function (event) {
-    // If this click is not on the parent element (but rather some child)
-    // ignore. It may still bubble up.
-    if (event.target !== this.element_.parentElement) {
-        return;
-    }
-    // Discard the original event and create a new event that
-    // is on the slider element.
-    event.preventDefault();
-    var newEvent = new MouseEvent('mousedown', {
-        target: event.target,
-        buttons: event.buttons,
-        clientX: event.clientX,
-        clientY: this.element_.getBoundingClientRect().y
-    });
-    this.element_.dispatchEvent(newEvent);
-};
-/**
-   * Handle updating of values.
-   *
-   * @private
-   */
-MaterialSlider.prototype.updateValueStyles_ = function () {
-    // Calculate and apply percentages to div structure behind slider.
-    var fraction = (this.element_.value - this.element_.min) / (this.element_.max - this.element_.min);
-    if (fraction === 0) {
-        this.element_.classList.add(this.CssClasses_.IS_LOWEST_VALUE);
-    } else {
-        this.element_.classList.remove(this.CssClasses_.IS_LOWEST_VALUE);
-    }
-    if (!this.isIE_) {
-        this.backgroundLower_.style.flex = fraction;
-        this.backgroundLower_.style.webkitFlex = fraction;
-        this.backgroundUpper_.style.flex = 1 - fraction;
-        this.backgroundUpper_.style.webkitFlex = 1 - fraction;
-    }
-};
-// Public methods.
-/**
-   * Disable slider.
-   *
-   * @public
-   */
-MaterialSlider.prototype.disable = function () {
-    this.element_.disabled = true;
-};
-MaterialSlider.prototype['disable'] = MaterialSlider.prototype.disable;
-/**
-   * Enable slider.
-   *
-   * @public
-   */
-MaterialSlider.prototype.enable = function () {
-    this.element_.disabled = false;
-};
-MaterialSlider.prototype['enable'] = MaterialSlider.prototype.enable;
-/**
-   * Update slider value.
-   *
-   * @param {number} value The value to which to set the control (optional).
-   * @public
-   */
-MaterialSlider.prototype.change = function (value) {
-    if (typeof value !== 'undefined') {
-        this.element_.value = value;
-    }
-    this.updateValueStyles_();
-};
-MaterialSlider.prototype['change'] = MaterialSlider.prototype.change;
-/**
-   * Initialize element.
-   */
-MaterialSlider.prototype.init = function () {
-    if (this.element_) {
-        if (this.isIE_) {
-            // Since we need to specify a very large height in IE due to
-            // implementation limitations, we add a parent here that trims it down to
-            // a reasonable size.
-            var containerIE = document.createElement('div');
-            containerIE.classList.add(this.CssClasses_.IE_CONTAINER);
-            this.element_.parentElement.insertBefore(containerIE, this.element_);
-            this.element_.parentElement.removeChild(this.element_);
-            containerIE.appendChild(this.element_);
-        } else {
-            // For non-IE browsers, we need a div structure that sits behind the
-            // slider and allows us to style the left and right sides of it with
-            // different colors.
-            var container = document.createElement('div');
-            container.classList.add(this.CssClasses_.SLIDER_CONTAINER);
-            this.element_.parentElement.insertBefore(container, this.element_);
-            this.element_.parentElement.removeChild(this.element_);
-            container.appendChild(this.element_);
-            var backgroundFlex = document.createElement('div');
-            backgroundFlex.classList.add(this.CssClasses_.BACKGROUND_FLEX);
-            container.appendChild(backgroundFlex);
-            this.backgroundLower_ = document.createElement('div');
-            this.backgroundLower_.classList.add(this.CssClasses_.BACKGROUND_LOWER);
-            backgroundFlex.appendChild(this.backgroundLower_);
-            this.backgroundUpper_ = document.createElement('div');
-            this.backgroundUpper_.classList.add(this.CssClasses_.BACKGROUND_UPPER);
-            backgroundFlex.appendChild(this.backgroundUpper_);
-        }
-        this.boundInputHandler = this.onInput_.bind(this);
-        this.boundChangeHandler = this.onChange_.bind(this);
-        this.boundMouseUpHandler = this.onMouseUp_.bind(this);
-        this.boundContainerMouseDownHandler = this.onContainerMouseDown_.bind(this);
-        this.element_.addEventListener('input', this.boundInputHandler);
-        this.element_.addEventListener('change', this.boundChangeHandler);
-        this.element_.addEventListener('mouseup', this.boundMouseUpHandler);
-        this.element_.parentElement.addEventListener('mousedown', this.boundContainerMouseDownHandler);
-        this.updateValueStyles_();
-        this.element_.classList.add(this.CssClasses_.IS_UPGRADED);
-    }
-};
-// The component registers itself. It can assume componentHandler is available
-// in the global scope.
-componentHandler.register({
-    constructor: MaterialSlider,
-    classAsString: 'MaterialSlider',
-    cssClass: 'mdl-js-slider',
-    widget: true
-});
-/**
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
-   * Class constructor for Snackbar MDL component.
-   * Implements MDL component design pattern defined at:
-   * https://github.com/jasonmayes/mdl-component-design-pattern
-   *
-   * @constructor
-   * @param {HTMLElement} element The element that will be upgraded.
-   */
-var MaterialSnackbar = function MaterialSnackbar(element) {
-    this.element_ = element;
-    this.textElement_ = this.element_.querySelector('.' + this.cssClasses_.MESSAGE);
-    this.actionElement_ = this.element_.querySelector('.' + this.cssClasses_.ACTION);
-    if (!this.textElement_) {
-        throw new Error('There must be a message element for a snackbar.');
-    }
-    if (!this.actionElement_) {
-        throw new Error('There must be an action element for a snackbar.');
-    }
-    this.active = false;
-    this.actionHandler_ = undefined;
-    this.message_ = undefined;
-    this.actionText_ = undefined;
-    this.queuedNotifications_ = [];
-    this.setActionHidden_(true);
-};
-window['MaterialSnackbar'] = MaterialSnackbar;
-/**
-   * Store constants in one place so they can be updated easily.
-   *
-   * @enum {string | number}
-   * @private
-   */
-MaterialSnackbar.prototype.Constant_ = {
-    // The duration of the snackbar show/hide animation, in ms.
-    ANIMATION_LENGTH: 250
-};
-/**
-   * Store strings for class names defined by this component that are used in
-   * JavaScript. This allows us to simply change it in one place should we
-   * decide to modify at a later date.
-   *
-   * @enum {string}
-   * @private
-   */
-MaterialSnackbar.prototype.cssClasses_ = {
-    SNACKBAR: 'mdl-snackbar',
-    MESSAGE: 'mdl-snackbar__text',
-    ACTION: 'mdl-snackbar__action',
-    ACTIVE: 'mdl-snackbar--active'
-};
-/**
-   * Display the snackbar.
-   *
-   * @private
-   */
-MaterialSnackbar.prototype.displaySnackbar_ = function () {
-    this.element_.setAttribute('aria-hidden', 'true');
-    if (this.actionHandler_) {
-        this.actionElement_.textContent = this.actionText_;
-        this.actionElement_.addEventListener('click', this.actionHandler_);
-        this.setActionHidden_(false);
-    }
-    this.textElement_.textContent = this.message_;
-    this.element_.classList.add(this.cssClasses_.ACTIVE);
-    this.element_.setAttribute('aria-hidden', 'false');
-    setTimeout(this.cleanup_.bind(this), this.timeout_);
-};
-/**
-   * Show the snackbar.
-   *
-   * @param {Object} data The data for the notification.
-   * @public
-   */
-MaterialSnackbar.prototype.showSnackbar = function (data) {
-    if (data === undefined) {
-        throw new Error('Please provide a data object with at least a message to display.');
-    }
-    if (data['message'] === undefined) {
-        throw new Error('Please provide a message to be displayed.');
-    }
-    if (data['actionHandler'] && !data['actionText']) {
-        throw new Error('Please provide action text with the handler.');
-    }
-    if (this.active) {
-        this.queuedNotifications_.push(data);
-    } else {
-        this.active = true;
-        this.message_ = data['message'];
-        if (data['timeout']) {
-            this.timeout_ = data['timeout'];
-        } else {
-            this.timeout_ = 2750;
-        }
-        if (data['actionHandler']) {
-            this.actionHandler_ = data['actionHandler'];
-        }
-        if (data['actionText']) {
-            this.actionText_ = data['actionText'];
-        }
-        this.displaySnackbar_();
-    }
-};
-MaterialSnackbar.prototype['showSnackbar'] = MaterialSnackbar.prototype.showSnackbar;
-/**
-   * Check if the queue has items within it.
-   * If it does, display the next entry.
-   *
-   * @private
-   */
-MaterialSnackbar.prototype.checkQueue_ = function () {
-    if (this.queuedNotifications_.length > 0) {
-        this.showSnackbar(this.queuedNotifications_.shift());
-    }
-};
-/**
-   * Cleanup the snackbar event listeners and accessiblity attributes.
-   *
-   * @private
-   */
-MaterialSnackbar.prototype.cleanup_ = function () {
-    this.element_.classList.remove(this.cssClasses_.ACTIVE);
-    setTimeout(function () {
-        this.element_.setAttribute('aria-hidden', 'true');
-        this.textElement_.textContent = '';
-        if (!Boolean(this.actionElement_.getAttribute('aria-hidden'))) {
-            this.setActionHidden_(true);
-            this.actionElement_.textContent = '';
-            this.actionElement_.removeEventListener('click', this.actionHandler_);
-        }
-        this.actionHandler_ = undefined;
-        this.message_ = undefined;
-        this.actionText_ = undefined;
-        this.active = false;
-        this.checkQueue_();
-    }.bind(this), this.Constant_.ANIMATION_LENGTH);
-};
-/**
-   * Set the action handler hidden state.
-   *
-   * @param {boolean} value
-   * @private
-   */
-MaterialSnackbar.prototype.setActionHidden_ = function (value) {
-    if (value) {
-        this.actionElement_.setAttribute('aria-hidden', 'true');
-    } else {
-        this.actionElement_.removeAttribute('aria-hidden');
-    }
-};
-// The component registers itself. It can assume componentHandler is available
-// in the global scope.
-componentHandler.register({
-    constructor: MaterialSnackbar,
-    classAsString: 'MaterialSnackbar',
-    cssClass: 'mdl-js-snackbar',
-    widget: true
-});
-/**
- * @license
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
-   * Class constructor for Spinner MDL component.
-   * Implements MDL component design pattern defined at:
-   * https://github.com/jasonmayes/mdl-component-design-pattern
-   *
-   * @param {HTMLElement} element The element that will be upgraded.
-   * @constructor
-   */
-var MaterialSpinner = function MaterialSpinner(element) {
-    this.element_ = element;
-    // Initialize instance.
-    this.init();
-};
-window['MaterialSpinner'] = MaterialSpinner;
-/**
-   * Store constants in one place so they can be updated easily.
-   *
-   * @enum {string | number}
-   * @private
-   */
-MaterialSpinner.prototype.Constant_ = { MDL_SPINNER_LAYER_COUNT: 4 };
-/**
-   * Store strings for class names defined by this component that are used in
-   * JavaScript. This allows us to simply change it in one place should we
-   * decide to modify at a later date.
-   *
-   * @enum {string}
-   * @private
-   */
-MaterialSpinner.prototype.CssClasses_ = {
-    MDL_SPINNER_LAYER: 'mdl-spinner__layer',
-    MDL_SPINNER_CIRCLE_CLIPPER: 'mdl-spinner__circle-clipper',
-    MDL_SPINNER_CIRCLE: 'mdl-spinner__circle',
-    MDL_SPINNER_GAP_PATCH: 'mdl-spinner__gap-patch',
-    MDL_SPINNER_LEFT: 'mdl-spinner__left',
-    MDL_SPINNER_RIGHT: 'mdl-spinner__right'
-};
-/**
-   * Auxiliary method to create a spinner layer.
-   *
-   * @param {number} index Index of the layer to be created.
-   * @public
-   */
-MaterialSpinner.prototype.createLayer = function (index) {
-    var layer = document.createElement('div');
-    layer.classList.add(this.CssClasses_.MDL_SPINNER_LAYER);
-    layer.classList.add(this.CssClasses_.MDL_SPINNER_LAYER + '-' + index);
-    var leftClipper = document.createElement('div');
-    leftClipper.classList.add(this.CssClasses_.MDL_SPINNER_CIRCLE_CLIPPER);
-    leftClipper.classList.add(this.CssClasses_.MDL_SPINNER_LEFT);
-    var gapPatch = document.createElement('div');
-    gapPatch.classList.add(this.CssClasses_.MDL_SPINNER_GAP_PATCH);
-    var rightClipper = document.createElement('div');
-    rightClipper.classList.add(this.CssClasses_.MDL_SPINNER_CIRCLE_CLIPPER);
-    rightClipper.classList.add(this.CssClasses_.MDL_SPINNER_RIGHT);
-    var circleOwners = [
-        leftClipper,
-        gapPatch,
-        rightClipper
-    ];
-    for (var i = 0; i < circleOwners.length; i++) {
-        var circle = document.createElement('div');
-        circle.classList.add(this.CssClasses_.MDL_SPINNER_CIRCLE);
-        circleOwners[i].appendChild(circle);
-    }
-    layer.appendChild(leftClipper);
-    layer.appendChild(gapPatch);
-    layer.appendChild(rightClipper);
-    this.element_.appendChild(layer);
-};
-MaterialSpinner.prototype['createLayer'] = MaterialSpinner.prototype.createLayer;
-/**
-   * Stops the spinner animation.
-   * Public method for users who need to stop the spinner for any reason.
-   *
-   * @public
-   */
-MaterialSpinner.prototype.stop = function () {
-    this.element_.classList.remove('is-active');
-};
-MaterialSpinner.prototype['stop'] = MaterialSpinner.prototype.stop;
-/**
-   * Starts the spinner animation.
-   * Public method for users who need to manually start the spinner for any reason
-   * (instead of just adding the 'is-active' class to their markup).
-   *
-   * @public
-   */
-MaterialSpinner.prototype.start = function () {
-    this.element_.classList.add('is-active');
-};
-MaterialSpinner.prototype['start'] = MaterialSpinner.prototype.start;
-/**
-   * Initialize element.
-   */
-MaterialSpinner.prototype.init = function () {
-    if (this.element_) {
-        for (var i = 1; i <= this.Constant_.MDL_SPINNER_LAYER_COUNT; i++) {
-            this.createLayer(i);
-        }
-        this.element_.classList.add('is-upgraded');
-    }
-};
-// The component registers itself. It can assume componentHandler is available
-// in the global scope.
-componentHandler.register({
-    constructor: MaterialSpinner,
-    classAsString: 'MaterialSpinner',
-    cssClass: 'mdl-js-spinner',
-    widget: true
-});
-/**
- * @license
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
-   * Class constructor for Checkbox MDL component.
-   * Implements MDL component design pattern defined at:
-   * https://github.com/jasonmayes/mdl-component-design-pattern
-   *
-   * @constructor
-   * @param {HTMLElement} element The element that will be upgraded.
-   */
-var MaterialSwitch = function MaterialSwitch(element) {
-    this.element_ = element;
-    // Initialize instance.
-    this.init();
-};
-window['MaterialSwitch'] = MaterialSwitch;
-/**
-   * Store constants in one place so they can be updated easily.
-   *
-   * @enum {string | number}
-   * @private
-   */
-MaterialSwitch.prototype.Constant_ = { TINY_TIMEOUT: 0.001 };
-/**
-   * Store strings for class names defined by this component that are used in
-   * JavaScript. This allows us to simply change it in one place should we
-   * decide to modify at a later date.
-   *
-   * @enum {string}
-   * @private
-   */
-MaterialSwitch.prototype.CssClasses_ = {
-    INPUT: 'mdl-switch__input',
-    TRACK: 'mdl-switch__track',
-    THUMB: 'mdl-switch__thumb',
-    FOCUS_HELPER: 'mdl-switch__focus-helper',
-    RIPPLE_EFFECT: 'mdl-js-ripple-effect',
-    RIPPLE_IGNORE_EVENTS: 'mdl-js-ripple-effect--ignore-events',
-    RIPPLE_CONTAINER: 'mdl-switch__ripple-container',
-    RIPPLE_CENTER: 'mdl-ripple--center',
-    RIPPLE: 'mdl-ripple',
-    IS_FOCUSED: 'is-focused',
-    IS_DISABLED: 'is-disabled',
-    IS_CHECKED: 'is-checked'
-};
-/**
-   * Handle change of state.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialSwitch.prototype.onChange_ = function (event) {
-    this.updateClasses_();
-};
-/**
-   * Handle focus of element.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialSwitch.prototype.onFocus_ = function (event) {
-    this.element_.classList.add(this.CssClasses_.IS_FOCUSED);
-};
-/**
-   * Handle lost focus of element.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialSwitch.prototype.onBlur_ = function (event) {
-    this.element_.classList.remove(this.CssClasses_.IS_FOCUSED);
-};
-/**
-   * Handle mouseup.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialSwitch.prototype.onMouseUp_ = function (event) {
-    this.blur_();
-};
-/**
-   * Handle class updates.
-   *
-   * @private
-   */
-MaterialSwitch.prototype.updateClasses_ = function () {
-    this.checkDisabled();
-    this.checkToggleState();
-};
-/**
-   * Add blur.
-   *
-   * @private
-   */
-MaterialSwitch.prototype.blur_ = function () {
-    // TODO: figure out why there's a focus event being fired after our blur,
-    // so that we can avoid this hack.
-    window.setTimeout(function () {
-        this.inputElement_.blur();
-    }.bind(this), this.Constant_.TINY_TIMEOUT);
-};
-// Public methods.
-/**
-   * Check the components disabled state.
-   *
-   * @public
-   */
-MaterialSwitch.prototype.checkDisabled = function () {
-    if (this.inputElement_.disabled) {
-        this.element_.classList.add(this.CssClasses_.IS_DISABLED);
-    } else {
-        this.element_.classList.remove(this.CssClasses_.IS_DISABLED);
-    }
-};
-MaterialSwitch.prototype['checkDisabled'] = MaterialSwitch.prototype.checkDisabled;
-/**
-   * Check the components toggled state.
-   *
-   * @public
-   */
-MaterialSwitch.prototype.checkToggleState = function () {
-    if (this.inputElement_.checked) {
-        this.element_.classList.add(this.CssClasses_.IS_CHECKED);
-    } else {
-        this.element_.classList.remove(this.CssClasses_.IS_CHECKED);
-    }
-};
-MaterialSwitch.prototype['checkToggleState'] = MaterialSwitch.prototype.checkToggleState;
-/**
-   * Disable switch.
-   *
-   * @public
-   */
-MaterialSwitch.prototype.disable = function () {
-    this.inputElement_.disabled = true;
-    this.updateClasses_();
-};
-MaterialSwitch.prototype['disable'] = MaterialSwitch.prototype.disable;
-/**
-   * Enable switch.
-   *
-   * @public
-   */
-MaterialSwitch.prototype.enable = function () {
-    this.inputElement_.disabled = false;
-    this.updateClasses_();
-};
-MaterialSwitch.prototype['enable'] = MaterialSwitch.prototype.enable;
-/**
-   * Activate switch.
-   *
-   * @public
-   */
-MaterialSwitch.prototype.on = function () {
-    this.inputElement_.checked = true;
-    this.updateClasses_();
-};
-MaterialSwitch.prototype['on'] = MaterialSwitch.prototype.on;
-/**
-   * Deactivate switch.
-   *
-   * @public
-   */
-MaterialSwitch.prototype.off = function () {
-    this.inputElement_.checked = false;
-    this.updateClasses_();
-};
-MaterialSwitch.prototype['off'] = MaterialSwitch.prototype.off;
-/**
-   * Initialize element.
-   */
-MaterialSwitch.prototype.init = function () {
-    if (this.element_) {
-        this.inputElement_ = this.element_.querySelector('.' + this.CssClasses_.INPUT);
-        var track = document.createElement('div');
-        track.classList.add(this.CssClasses_.TRACK);
-        var thumb = document.createElement('div');
-        thumb.classList.add(this.CssClasses_.THUMB);
-        var focusHelper = document.createElement('span');
-        focusHelper.classList.add(this.CssClasses_.FOCUS_HELPER);
-        thumb.appendChild(focusHelper);
-        this.element_.appendChild(track);
-        this.element_.appendChild(thumb);
-        this.boundMouseUpHandler = this.onMouseUp_.bind(this);
-        if (this.element_.classList.contains(this.CssClasses_.RIPPLE_EFFECT)) {
-            this.element_.classList.add(this.CssClasses_.RIPPLE_IGNORE_EVENTS);
-            this.rippleContainerElement_ = document.createElement('span');
-            this.rippleContainerElement_.classList.add(this.CssClasses_.RIPPLE_CONTAINER);
-            this.rippleContainerElement_.classList.add(this.CssClasses_.RIPPLE_EFFECT);
-            this.rippleContainerElement_.classList.add(this.CssClasses_.RIPPLE_CENTER);
-            this.rippleContainerElement_.addEventListener('mouseup', this.boundMouseUpHandler);
-            var ripple = document.createElement('span');
-            ripple.classList.add(this.CssClasses_.RIPPLE);
-            this.rippleContainerElement_.appendChild(ripple);
-            this.element_.appendChild(this.rippleContainerElement_);
-        }
-        this.boundChangeHandler = this.onChange_.bind(this);
-        this.boundFocusHandler = this.onFocus_.bind(this);
-        this.boundBlurHandler = this.onBlur_.bind(this);
-        this.inputElement_.addEventListener('change', this.boundChangeHandler);
-        this.inputElement_.addEventListener('focus', this.boundFocusHandler);
-        this.inputElement_.addEventListener('blur', this.boundBlurHandler);
-        this.element_.addEventListener('mouseup', this.boundMouseUpHandler);
-        this.updateClasses_();
-        this.element_.classList.add('is-upgraded');
-    }
-};
-// The component registers itself. It can assume componentHandler is available
-// in the global scope.
-componentHandler.register({
-    constructor: MaterialSwitch,
-    classAsString: 'MaterialSwitch',
-    cssClass: 'mdl-js-switch',
-    widget: true
-});
-/**
- * @license
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
-   * Class constructor for Tabs MDL component.
-   * Implements MDL component design pattern defined at:
-   * https://github.com/jasonmayes/mdl-component-design-pattern
-   *
-   * @constructor
-   * @param {Element} element The element that will be upgraded.
-   */
-var MaterialTabs = function MaterialTabs(element) {
-    // Stores the HTML element.
-    this.element_ = element;
-    // Initialize instance.
-    this.init();
-};
-window['MaterialTabs'] = MaterialTabs;
-/**
-   * Store constants in one place so they can be updated easily.
-   *
-   * @enum {string}
-   * @private
-   */
-MaterialTabs.prototype.Constant_ = {};
-/**
-   * Store strings for class names defined by this component that are used in
-   * JavaScript. This allows us to simply change it in one place should we
-   * decide to modify at a later date.
-   *
-   * @enum {string}
-   * @private
-   */
-MaterialTabs.prototype.CssClasses_ = {
-    TAB_CLASS: 'mdl-tabs__tab',
-    PANEL_CLASS: 'mdl-tabs__panel',
-    ACTIVE_CLASS: 'is-active',
-    UPGRADED_CLASS: 'is-upgraded',
-    MDL_JS_RIPPLE_EFFECT: 'mdl-js-ripple-effect',
-    MDL_RIPPLE_CONTAINER: 'mdl-tabs__ripple-container',
-    MDL_RIPPLE: 'mdl-ripple',
-    MDL_JS_RIPPLE_EFFECT_IGNORE_EVENTS: 'mdl-js-ripple-effect--ignore-events'
-};
-/**
-   * Handle clicks to a tabs component
-   *
-   * @private
-   */
-MaterialTabs.prototype.initTabs_ = function () {
-    if (this.element_.classList.contains(this.CssClasses_.MDL_JS_RIPPLE_EFFECT)) {
-        this.element_.classList.add(this.CssClasses_.MDL_JS_RIPPLE_EFFECT_IGNORE_EVENTS);
-    }
-    // Select element tabs, document panels
-    this.tabs_ = this.element_.querySelectorAll('.' + this.CssClasses_.TAB_CLASS);
-    this.panels_ = this.element_.querySelectorAll('.' + this.CssClasses_.PANEL_CLASS);
-    // Create new tabs for each tab element
-    for (var i = 0; i < this.tabs_.length; i++) {
-        new MaterialTab(this.tabs_[i], this);
-    }
-    this.element_.classList.add(this.CssClasses_.UPGRADED_CLASS);
-};
-/**
-   * Reset tab state, dropping active classes
-   *
-   * @private
-   */
-MaterialTabs.prototype.resetTabState_ = function () {
-    for (var k = 0; k < this.tabs_.length; k++) {
-        this.tabs_[k].classList.remove(this.CssClasses_.ACTIVE_CLASS);
-    }
-};
-/**
-   * Reset panel state, droping active classes
-   *
-   * @private
-   */
-MaterialTabs.prototype.resetPanelState_ = function () {
-    for (var j = 0; j < this.panels_.length; j++) {
-        this.panels_[j].classList.remove(this.CssClasses_.ACTIVE_CLASS);
-    }
-};
-/**
-   * Initialize element.
-   */
-MaterialTabs.prototype.init = function () {
-    if (this.element_) {
-        this.initTabs_();
-    }
-};
-/**
-   * Constructor for an individual tab.
-   *
-   * @constructor
-   * @param {Element} tab The HTML element for the tab.
-   * @param {MaterialTabs} ctx The MaterialTabs object that owns the tab.
-   */
-function MaterialTab(tab, ctx) {
-    if (tab) {
-        if (ctx.element_.classList.contains(ctx.CssClasses_.MDL_JS_RIPPLE_EFFECT)) {
-            var rippleContainer = document.createElement('span');
-            rippleContainer.classList.add(ctx.CssClasses_.MDL_RIPPLE_CONTAINER);
-            rippleContainer.classList.add(ctx.CssClasses_.MDL_JS_RIPPLE_EFFECT);
-            var ripple = document.createElement('span');
-            ripple.classList.add(ctx.CssClasses_.MDL_RIPPLE);
-            rippleContainer.appendChild(ripple);
-            tab.appendChild(rippleContainer);
-        }
-        tab.addEventListener('click', function (e) {
-            if (tab.getAttribute('href').charAt(0) === '#') {
-                e.preventDefault();
-                var href = tab.href.split('#')[1];
-                var panel = ctx.element_.querySelector('#' + href);
-                ctx.resetTabState_();
-                ctx.resetPanelState_();
-                tab.classList.add(ctx.CssClasses_.ACTIVE_CLASS);
-                panel.classList.add(ctx.CssClasses_.ACTIVE_CLASS);
-            }
-        });
-    }
-}
-// The component registers itself. It can assume componentHandler is available
-// in the global scope.
-componentHandler.register({
-    constructor: MaterialTabs,
-    classAsString: 'MaterialTabs',
-    cssClass: 'mdl-js-tabs'
-});
-/**
- * @license
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
-   * Class constructor for Textfield MDL component.
-   * Implements MDL component design pattern defined at:
-   * https://github.com/jasonmayes/mdl-component-design-pattern
-   *
-   * @constructor
-   * @param {HTMLElement} element The element that will be upgraded.
-   */
-var MaterialTextfield = function MaterialTextfield(element) {
-    this.element_ = element;
-    this.maxRows = this.Constant_.NO_MAX_ROWS;
-    // Initialize instance.
-    this.init();
-};
-window['MaterialTextfield'] = MaterialTextfield;
-/**
-   * Store constants in one place so they can be updated easily.
-   *
-   * @enum {string | number}
-   * @private
-   */
-MaterialTextfield.prototype.Constant_ = {
-    NO_MAX_ROWS: -1,
-    MAX_ROWS_ATTRIBUTE: 'maxrows'
-};
-/**
-   * Store strings for class names defined by this component that are used in
-   * JavaScript. This allows us to simply change it in one place should we
-   * decide to modify at a later date.
-   *
-   * @enum {string}
-   * @private
-   */
-MaterialTextfield.prototype.CssClasses_ = {
-    LABEL: 'mdl-textfield__label',
-    INPUT: 'mdl-textfield__input',
-    IS_DIRTY: 'is-dirty',
-    IS_FOCUSED: 'is-focused',
-    IS_DISABLED: 'is-disabled',
-    IS_INVALID: 'is-invalid',
-    IS_UPGRADED: 'is-upgraded',
-    HAS_PLACEHOLDER: 'has-placeholder'
-};
-/**
-   * Handle input being entered.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialTextfield.prototype.onKeyDown_ = function (event) {
-    var currentRowCount = event.target.value.split('\n').length;
-    if (event.keyCode === 13) {
-        if (currentRowCount >= this.maxRows) {
-            event.preventDefault();
-        }
-    }
-};
-/**
-   * Handle focus.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialTextfield.prototype.onFocus_ = function (event) {
-    this.element_.classList.add(this.CssClasses_.IS_FOCUSED);
-};
-/**
-   * Handle lost focus.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialTextfield.prototype.onBlur_ = function (event) {
-    this.element_.classList.remove(this.CssClasses_.IS_FOCUSED);
-};
-/**
-   * Handle reset event from out side.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialTextfield.prototype.onReset_ = function (event) {
-    this.updateClasses_();
-};
-/**
-   * Handle class updates.
-   *
-   * @private
-   */
-MaterialTextfield.prototype.updateClasses_ = function () {
-    this.checkDisabled();
-    this.checkValidity();
-    this.checkDirty();
-    this.checkFocus();
-};
-// Public methods.
-/**
-   * Check the disabled state and update field accordingly.
-   *
-   * @public
-   */
-MaterialTextfield.prototype.checkDisabled = function () {
-    if (this.input_.disabled) {
-        this.element_.classList.add(this.CssClasses_.IS_DISABLED);
-    } else {
-        this.element_.classList.remove(this.CssClasses_.IS_DISABLED);
-    }
-};
-MaterialTextfield.prototype['checkDisabled'] = MaterialTextfield.prototype.checkDisabled;
-/**
-  * Check the focus state and update field accordingly.
-  *
-  * @public
-  */
-MaterialTextfield.prototype.checkFocus = function () {
-    if (Boolean(this.element_.querySelector(':focus'))) {
-        this.element_.classList.add(this.CssClasses_.IS_FOCUSED);
-    } else {
-        this.element_.classList.remove(this.CssClasses_.IS_FOCUSED);
-    }
-};
-MaterialTextfield.prototype['checkFocus'] = MaterialTextfield.prototype.checkFocus;
-/**
-   * Check the validity state and update field accordingly.
-   *
-   * @public
-   */
-MaterialTextfield.prototype.checkValidity = function () {
-    if (this.input_.validity) {
-        if (this.input_.validity.valid) {
-            this.element_.classList.remove(this.CssClasses_.IS_INVALID);
-        } else {
-            this.element_.classList.add(this.CssClasses_.IS_INVALID);
-        }
-    }
-};
-MaterialTextfield.prototype['checkValidity'] = MaterialTextfield.prototype.checkValidity;
-/**
-   * Check the dirty state and update field accordingly.
-   *
-   * @public
-   */
-MaterialTextfield.prototype.checkDirty = function () {
-    if (this.input_.value && this.input_.value.length > 0) {
-        this.element_.classList.add(this.CssClasses_.IS_DIRTY);
-    } else {
-        this.element_.classList.remove(this.CssClasses_.IS_DIRTY);
-    }
-};
-MaterialTextfield.prototype['checkDirty'] = MaterialTextfield.prototype.checkDirty;
-/**
-   * Disable text field.
-   *
-   * @public
-   */
-MaterialTextfield.prototype.disable = function () {
-    this.input_.disabled = true;
-    this.updateClasses_();
-};
-MaterialTextfield.prototype['disable'] = MaterialTextfield.prototype.disable;
-/**
-   * Enable text field.
-   *
-   * @public
-   */
-MaterialTextfield.prototype.enable = function () {
-    this.input_.disabled = false;
-    this.updateClasses_();
-};
-MaterialTextfield.prototype['enable'] = MaterialTextfield.prototype.enable;
-/**
-   * Update text field value.
-   *
-   * @param {string} value The value to which to set the control (optional).
-   * @public
-   */
-MaterialTextfield.prototype.change = function (value) {
-    this.input_.value = value || '';
-    this.updateClasses_();
-};
-MaterialTextfield.prototype['change'] = MaterialTextfield.prototype.change;
-/**
-   * Initialize element.
-   */
-MaterialTextfield.prototype.init = function () {
-    if (this.element_) {
-        this.label_ = this.element_.querySelector('.' + this.CssClasses_.LABEL);
-        this.input_ = this.element_.querySelector('.' + this.CssClasses_.INPUT);
-        if (this.input_) {
-            if (this.input_.hasAttribute(this.Constant_.MAX_ROWS_ATTRIBUTE)) {
-                this.maxRows = parseInt(this.input_.getAttribute(this.Constant_.MAX_ROWS_ATTRIBUTE), 10);
-                if (isNaN(this.maxRows)) {
-                    this.maxRows = this.Constant_.NO_MAX_ROWS;
-                }
-            }
-            if (this.input_.hasAttribute('placeholder')) {
-                this.element_.classList.add(this.CssClasses_.HAS_PLACEHOLDER);
-            }
-            this.boundUpdateClassesHandler = this.updateClasses_.bind(this);
-            this.boundFocusHandler = this.onFocus_.bind(this);
-            this.boundBlurHandler = this.onBlur_.bind(this);
-            this.boundResetHandler = this.onReset_.bind(this);
-            this.input_.addEventListener('input', this.boundUpdateClassesHandler);
-            this.input_.addEventListener('focus', this.boundFocusHandler);
-            this.input_.addEventListener('blur', this.boundBlurHandler);
-            this.input_.addEventListener('reset', this.boundResetHandler);
-            if (this.maxRows !== this.Constant_.NO_MAX_ROWS) {
-                // TODO: This should handle pasting multi line text.
-                // Currently doesn't.
-                this.boundKeyDownHandler = this.onKeyDown_.bind(this);
-                this.input_.addEventListener('keydown', this.boundKeyDownHandler);
-            }
-            var invalid = this.element_.classList.contains(this.CssClasses_.IS_INVALID);
-            this.updateClasses_();
-            this.element_.classList.add(this.CssClasses_.IS_UPGRADED);
-            if (invalid) {
-                this.element_.classList.add(this.CssClasses_.IS_INVALID);
-            }
-            if (this.input_.hasAttribute('autofocus')) {
-                this.element_.focus();
-                this.checkFocus();
-            }
-        }
-    }
-};
-// The component registers itself. It can assume componentHandler is available
-// in the global scope.
-componentHandler.register({
-    constructor: MaterialTextfield,
-    classAsString: 'MaterialTextfield',
-    cssClass: 'mdl-js-textfield',
-    widget: true
-});
-/**
- * @license
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
-   * Class constructor for Tooltip MDL component.
-   * Implements MDL component design pattern defined at:
-   * https://github.com/jasonmayes/mdl-component-design-pattern
-   *
-   * @constructor
-   * @param {HTMLElement} element The element that will be upgraded.
-   */
-var MaterialTooltip = function MaterialTooltip(element) {
-    this.element_ = element;
-    // Initialize instance.
-    this.init();
-};
-window['MaterialTooltip'] = MaterialTooltip;
-/**
-   * Store constants in one place so they can be updated easily.
-   *
-   * @enum {string | number}
-   * @private
-   */
-MaterialTooltip.prototype.Constant_ = {};
-/**
-   * Store strings for class names defined by this component that are used in
-   * JavaScript. This allows us to simply change it in one place should we
-   * decide to modify at a later date.
-   *
-   * @enum {string}
-   * @private
-   */
-MaterialTooltip.prototype.CssClasses_ = {
-    IS_ACTIVE: 'is-active',
-    BOTTOM: 'mdl-tooltip--bottom',
-    LEFT: 'mdl-tooltip--left',
-    RIGHT: 'mdl-tooltip--right',
-    TOP: 'mdl-tooltip--top'
-};
-/**
-   * Handle mouseenter for tooltip.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialTooltip.prototype.handleMouseEnter_ = function (event) {
-    var props = event.target.getBoundingClientRect();
-    var left = props.left + props.width / 2;
-    var top = props.top + props.height / 2;
-    var marginLeft = -1 * (this.element_.offsetWidth / 2);
-    var marginTop = -1 * (this.element_.offsetHeight / 2);
-    if (this.element_.classList.contains(this.CssClasses_.LEFT) || this.element_.classList.contains(this.CssClasses_.RIGHT)) {
-        left = props.width / 2;
-        if (top + marginTop < 0) {
-            this.element_.style.top = '0';
-            this.element_.style.marginTop = '0';
-        } else {
-            this.element_.style.top = top + 'px';
-            this.element_.style.marginTop = marginTop + 'px';
-        }
-    } else {
-        if (left + marginLeft < 0) {
-            this.element_.style.left = '0';
-            this.element_.style.marginLeft = '0';
-        } else {
-            this.element_.style.left = left + 'px';
-            this.element_.style.marginLeft = marginLeft + 'px';
-        }
-    }
-    if (this.element_.classList.contains(this.CssClasses_.TOP)) {
-        this.element_.style.top = props.top - this.element_.offsetHeight - 10 + 'px';
-    } else if (this.element_.classList.contains(this.CssClasses_.RIGHT)) {
-        this.element_.style.left = props.left + props.width + 10 + 'px';
-    } else if (this.element_.classList.contains(this.CssClasses_.LEFT)) {
-        this.element_.style.left = props.left - this.element_.offsetWidth - 10 + 'px';
-    } else {
-        this.element_.style.top = props.top + props.height + 10 + 'px';
-    }
-    this.element_.classList.add(this.CssClasses_.IS_ACTIVE);
-};
-/**
-   * Hide tooltip on mouseleave or scroll
-   *
-   * @private
-   */
-MaterialTooltip.prototype.hideTooltip_ = function () {
-    this.element_.classList.remove(this.CssClasses_.IS_ACTIVE);
-};
-/**
-   * Initialize element.
-   */
-MaterialTooltip.prototype.init = function () {
-    if (this.element_) {
-        var forElId = this.element_.getAttribute('for') || this.element_.getAttribute('data-mdl-for');
-        if (forElId) {
-            this.forElement_ = document.getElementById(forElId);
-        }
-        if (this.forElement_) {
-            // It's left here because it prevents accidental text selection on Android
-            if (!this.forElement_.hasAttribute('tabindex')) {
-                this.forElement_.setAttribute('tabindex', '0');
-            }
-            this.boundMouseEnterHandler = this.handleMouseEnter_.bind(this);
-            this.boundMouseLeaveAndScrollHandler = this.hideTooltip_.bind(this);
-            this.forElement_.addEventListener('mouseenter', this.boundMouseEnterHandler, false);
-            this.forElement_.addEventListener('touchend', this.boundMouseEnterHandler, false);
-            this.forElement_.addEventListener('mouseleave', this.boundMouseLeaveAndScrollHandler, false);
-            window.addEventListener('scroll', this.boundMouseLeaveAndScrollHandler, true);
-            window.addEventListener('touchstart', this.boundMouseLeaveAndScrollHandler);
-        }
-    }
-};
-// The component registers itself. It can assume componentHandler is available
-// in the global scope.
-componentHandler.register({
-    constructor: MaterialTooltip,
-    classAsString: 'MaterialTooltip',
-    cssClass: 'mdl-tooltip'
-});
-/**
- * @license
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
-   * Class constructor for Layout MDL component.
-   * Implements MDL component design pattern defined at:
-   * https://github.com/jasonmayes/mdl-component-design-pattern
-   *
-   * @constructor
-   * @param {HTMLElement} element The element that will be upgraded.
-   */
-var MaterialLayout = function MaterialLayout(element) {
-    this.element_ = element;
-    // Initialize instance.
-    this.init();
-};
-window['MaterialLayout'] = MaterialLayout;
-/**
-   * Store constants in one place so they can be updated easily.
-   *
-   * @enum {string | number}
-   * @private
-   */
-MaterialLayout.prototype.Constant_ = {
-    MAX_WIDTH: '(max-width: 1024px)',
-    TAB_SCROLL_PIXELS: 100,
-    RESIZE_TIMEOUT: 100,
-    MENU_ICON: '&#xE5D2;',
-    CHEVRON_LEFT: 'chevron_left',
-    CHEVRON_RIGHT: 'chevron_right'
-};
-/**
-   * Keycodes, for code readability.
-   *
-   * @enum {number}
-   * @private
-   */
-MaterialLayout.prototype.Keycodes_ = {
-    ENTER: 13,
-    ESCAPE: 27,
-    SPACE: 32
-};
-/**
-   * Modes.
-   *
-   * @enum {number}
-   * @private
-   */
-MaterialLayout.prototype.Mode_ = {
-    STANDARD: 0,
-    SEAMED: 1,
-    WATERFALL: 2,
-    SCROLL: 3
-};
-/**
-   * Store strings for class names defined by this component that are used in
-   * JavaScript. This allows us to simply change it in one place should we
-   * decide to modify at a later date.
-   *
-   * @enum {string}
-   * @private
-   */
-MaterialLayout.prototype.CssClasses_ = {
-    CONTAINER: 'mdl-layout__container',
-    HEADER: 'mdl-layout__header',
-    DRAWER: 'mdl-layout__drawer',
-    CONTENT: 'mdl-layout__content',
-    DRAWER_BTN: 'mdl-layout__drawer-button',
-    ICON: 'material-icons',
-    JS_RIPPLE_EFFECT: 'mdl-js-ripple-effect',
-    RIPPLE_CONTAINER: 'mdl-layout__tab-ripple-container',
-    RIPPLE: 'mdl-ripple',
-    RIPPLE_IGNORE_EVENTS: 'mdl-js-ripple-effect--ignore-events',
-    HEADER_SEAMED: 'mdl-layout__header--seamed',
-    HEADER_WATERFALL: 'mdl-layout__header--waterfall',
-    HEADER_SCROLL: 'mdl-layout__header--scroll',
-    FIXED_HEADER: 'mdl-layout--fixed-header',
-    OBFUSCATOR: 'mdl-layout__obfuscator',
-    TAB_BAR: 'mdl-layout__tab-bar',
-    TAB_CONTAINER: 'mdl-layout__tab-bar-container',
-    TAB: 'mdl-layout__tab',
-    TAB_BAR_BUTTON: 'mdl-layout__tab-bar-button',
-    TAB_BAR_LEFT_BUTTON: 'mdl-layout__tab-bar-left-button',
-    TAB_BAR_RIGHT_BUTTON: 'mdl-layout__tab-bar-right-button',
-    TAB_MANUAL_SWITCH: 'mdl-layout__tab-manual-switch',
-    PANEL: 'mdl-layout__tab-panel',
-    HAS_DRAWER: 'has-drawer',
-    HAS_TABS: 'has-tabs',
-    HAS_SCROLLING_HEADER: 'has-scrolling-header',
-    CASTING_SHADOW: 'is-casting-shadow',
-    IS_COMPACT: 'is-compact',
-    IS_SMALL_SCREEN: 'is-small-screen',
-    IS_DRAWER_OPEN: 'is-visible',
-    IS_ACTIVE: 'is-active',
-    IS_UPGRADED: 'is-upgraded',
-    IS_ANIMATING: 'is-animating',
-    ON_LARGE_SCREEN: 'mdl-layout--large-screen-only',
-    ON_SMALL_SCREEN: 'mdl-layout--small-screen-only'
-};
-/**
-   * Handles scrolling on the content.
-   *
-   * @private
-   */
-MaterialLayout.prototype.contentScrollHandler_ = function () {
-    if (this.header_.classList.contains(this.CssClasses_.IS_ANIMATING)) {
-        return;
-    }
-    var headerVisible = !this.element_.classList.contains(this.CssClasses_.IS_SMALL_SCREEN) || this.element_.classList.contains(this.CssClasses_.FIXED_HEADER);
-    if (this.content_.scrollTop > 0 && !this.header_.classList.contains(this.CssClasses_.IS_COMPACT)) {
-        this.header_.classList.add(this.CssClasses_.CASTING_SHADOW);
-        this.header_.classList.add(this.CssClasses_.IS_COMPACT);
-        if (headerVisible) {
-            this.header_.classList.add(this.CssClasses_.IS_ANIMATING);
-        }
-    } else if (this.content_.scrollTop <= 0 && this.header_.classList.contains(this.CssClasses_.IS_COMPACT)) {
-        this.header_.classList.remove(this.CssClasses_.CASTING_SHADOW);
-        this.header_.classList.remove(this.CssClasses_.IS_COMPACT);
-        if (headerVisible) {
-            this.header_.classList.add(this.CssClasses_.IS_ANIMATING);
-        }
-    }
-};
-/**
-   * Handles a keyboard event on the drawer.
-   *
-   * @param {Event} evt The event that fired.
-   * @private
-   */
-MaterialLayout.prototype.keyboardEventHandler_ = function (evt) {
-    // Only react when the drawer is open.
-    if (evt.keyCode === this.Keycodes_.ESCAPE && this.drawer_.classList.contains(this.CssClasses_.IS_DRAWER_OPEN)) {
-        this.toggleDrawer();
-    }
-};
-/**
-   * Handles changes in screen size.
-   *
-   * @private
-   */
-MaterialLayout.prototype.screenSizeHandler_ = function () {
-    if (this.screenSizeMediaQuery_.matches) {
-        this.element_.classList.add(this.CssClasses_.IS_SMALL_SCREEN);
-    } else {
-        this.element_.classList.remove(this.CssClasses_.IS_SMALL_SCREEN);
-        // Collapse drawer (if any) when moving to a large screen size.
-        if (this.drawer_) {
-            this.drawer_.classList.remove(this.CssClasses_.IS_DRAWER_OPEN);
-            this.obfuscator_.classList.remove(this.CssClasses_.IS_DRAWER_OPEN);
-        }
-    }
-};
-/**
-   * Handles events of drawer button.
-   *
-   * @param {Event} evt The event that fired.
-   * @private
-   */
-MaterialLayout.prototype.drawerToggleHandler_ = function (evt) {
-    if (evt && evt.type === 'keydown') {
-        if (evt.keyCode === this.Keycodes_.SPACE || evt.keyCode === this.Keycodes_.ENTER) {
-            // prevent scrolling in drawer nav
-            evt.preventDefault();
-        } else {
-            // prevent other keys
-            return;
-        }
-    }
-    this.toggleDrawer();
-};
-/**
-   * Handles (un)setting the `is-animating` class
-   *
-   * @private
-   */
-MaterialLayout.prototype.headerTransitionEndHandler_ = function () {
-    this.header_.classList.remove(this.CssClasses_.IS_ANIMATING);
-};
-/**
-   * Handles expanding the header on click
-   *
-   * @private
-   */
-MaterialLayout.prototype.headerClickHandler_ = function () {
-    if (this.header_.classList.contains(this.CssClasses_.IS_COMPACT)) {
-        this.header_.classList.remove(this.CssClasses_.IS_COMPACT);
-        this.header_.classList.add(this.CssClasses_.IS_ANIMATING);
-    }
-};
-/**
-   * Reset tab state, dropping active classes
-   *
-   * @private
-   */
-MaterialLayout.prototype.resetTabState_ = function (tabBar) {
-    for (var k = 0; k < tabBar.length; k++) {
-        tabBar[k].classList.remove(this.CssClasses_.IS_ACTIVE);
-    }
-};
-/**
-   * Reset panel state, droping active classes
-   *
-   * @private
-   */
-MaterialLayout.prototype.resetPanelState_ = function (panels) {
-    for (var j = 0; j < panels.length; j++) {
-        panels[j].classList.remove(this.CssClasses_.IS_ACTIVE);
-    }
-};
-/**
-  * Toggle drawer state
-  *
-  * @public
-  */
-MaterialLayout.prototype.toggleDrawer = function () {
-    var drawerButton = this.element_.querySelector('.' + this.CssClasses_.DRAWER_BTN);
-    this.drawer_.classList.toggle(this.CssClasses_.IS_DRAWER_OPEN);
-    this.obfuscator_.classList.toggle(this.CssClasses_.IS_DRAWER_OPEN);
-    // Set accessibility properties.
-    if (this.drawer_.classList.contains(this.CssClasses_.IS_DRAWER_OPEN)) {
-        this.drawer_.setAttribute('aria-hidden', 'false');
-        drawerButton.setAttribute('aria-expanded', 'true');
-    } else {
-        this.drawer_.setAttribute('aria-hidden', 'true');
-        drawerButton.setAttribute('aria-expanded', 'false');
-    }
-};
-MaterialLayout.prototype['toggleDrawer'] = MaterialLayout.prototype.toggleDrawer;
-/**
-   * Initialize element.
-   */
-MaterialLayout.prototype.init = function () {
-    if (this.element_) {
-        var container = document.createElement('div');
-        container.classList.add(this.CssClasses_.CONTAINER);
-        var focusedElement = this.element_.querySelector(':focus');
-        this.element_.parentElement.insertBefore(container, this.element_);
-        this.element_.parentElement.removeChild(this.element_);
-        container.appendChild(this.element_);
-        if (focusedElement) {
-            focusedElement.focus();
-        }
-        var directChildren = this.element_.childNodes;
-        var numChildren = directChildren.length;
-        for (var c = 0; c < numChildren; c++) {
-            var child = directChildren[c];
-            if (child.classList && child.classList.contains(this.CssClasses_.HEADER)) {
-                this.header_ = child;
-            }
-            if (child.classList && child.classList.contains(this.CssClasses_.DRAWER)) {
-                this.drawer_ = child;
-            }
-            if (child.classList && child.classList.contains(this.CssClasses_.CONTENT)) {
-                this.content_ = child;
-            }
-        }
-        window.addEventListener('pageshow', function (e) {
-            if (e.persisted) {
-                // when page is loaded from back/forward cache
-                // trigger repaint to let layout scroll in safari
-                this.element_.style.overflowY = 'hidden';
-                requestAnimationFrame(function () {
-                    this.element_.style.overflowY = '';
-                }.bind(this));
-            }
-        }.bind(this), false);
-        if (this.header_) {
-            this.tabBar_ = this.header_.querySelector('.' + this.CssClasses_.TAB_BAR);
-        }
-        var mode = this.Mode_.STANDARD;
-        if (this.header_) {
-            if (this.header_.classList.contains(this.CssClasses_.HEADER_SEAMED)) {
-                mode = this.Mode_.SEAMED;
-            } else if (this.header_.classList.contains(this.CssClasses_.HEADER_WATERFALL)) {
-                mode = this.Mode_.WATERFALL;
-                this.header_.addEventListener('transitionend', this.headerTransitionEndHandler_.bind(this));
-                this.header_.addEventListener('click', this.headerClickHandler_.bind(this));
-            } else if (this.header_.classList.contains(this.CssClasses_.HEADER_SCROLL)) {
-                mode = this.Mode_.SCROLL;
-                container.classList.add(this.CssClasses_.HAS_SCROLLING_HEADER);
-            }
-            if (mode === this.Mode_.STANDARD) {
-                this.header_.classList.add(this.CssClasses_.CASTING_SHADOW);
-                if (this.tabBar_) {
-                    this.tabBar_.classList.add(this.CssClasses_.CASTING_SHADOW);
-                }
-            } else if (mode === this.Mode_.SEAMED || mode === this.Mode_.SCROLL) {
-                this.header_.classList.remove(this.CssClasses_.CASTING_SHADOW);
-                if (this.tabBar_) {
-                    this.tabBar_.classList.remove(this.CssClasses_.CASTING_SHADOW);
-                }
-            } else if (mode === this.Mode_.WATERFALL) {
-                // Add and remove shadows depending on scroll position.
-                // Also add/remove auxiliary class for styling of the compact version of
-                // the header.
-                this.content_.addEventListener('scroll', this.contentScrollHandler_.bind(this));
-                this.contentScrollHandler_();
-            }
-        }
-        // Add drawer toggling button to our layout, if we have an openable drawer.
-        if (this.drawer_) {
-            var drawerButton = this.element_.querySelector('.' + this.CssClasses_.DRAWER_BTN);
-            if (!drawerButton) {
-                drawerButton = document.createElement('div');
-                drawerButton.setAttribute('aria-expanded', 'false');
-                drawerButton.setAttribute('role', 'button');
-                drawerButton.setAttribute('tabindex', '0');
-                drawerButton.classList.add(this.CssClasses_.DRAWER_BTN);
-                var drawerButtonIcon = document.createElement('i');
-                drawerButtonIcon.classList.add(this.CssClasses_.ICON);
-                drawerButtonIcon.innerHTML = this.Constant_.MENU_ICON;
-                drawerButton.appendChild(drawerButtonIcon);
-            }
-            if (this.drawer_.classList.contains(this.CssClasses_.ON_LARGE_SCREEN)) {
-                //If drawer has ON_LARGE_SCREEN class then add it to the drawer toggle button as well.
-                drawerButton.classList.add(this.CssClasses_.ON_LARGE_SCREEN);
-            } else if (this.drawer_.classList.contains(this.CssClasses_.ON_SMALL_SCREEN)) {
-                //If drawer has ON_SMALL_SCREEN class then add it to the drawer toggle button as well.
-                drawerButton.classList.add(this.CssClasses_.ON_SMALL_SCREEN);
-            }
-            drawerButton.addEventListener('click', this.drawerToggleHandler_.bind(this));
-            drawerButton.addEventListener('keydown', this.drawerToggleHandler_.bind(this));
-            // Add a class if the layout has a drawer, for altering the left padding.
-            // Adds the HAS_DRAWER to the elements since this.header_ may or may
-            // not be present.
-            this.element_.classList.add(this.CssClasses_.HAS_DRAWER);
-            // If we have a fixed header, add the button to the header rather than
-            // the layout.
-            if (this.element_.classList.contains(this.CssClasses_.FIXED_HEADER)) {
-                this.header_.insertBefore(drawerButton, this.header_.firstChild);
-            } else {
-                this.element_.insertBefore(drawerButton, this.content_);
-            }
-            var obfuscator = document.createElement('div');
-            obfuscator.classList.add(this.CssClasses_.OBFUSCATOR);
-            this.element_.appendChild(obfuscator);
-            obfuscator.addEventListener('click', this.drawerToggleHandler_.bind(this));
-            this.obfuscator_ = obfuscator;
-            this.drawer_.addEventListener('keydown', this.keyboardEventHandler_.bind(this));
-            this.drawer_.setAttribute('aria-hidden', 'true');
-        }
-        // Keep an eye on screen size, and add/remove auxiliary class for styling
-        // of small screens.
-        this.screenSizeMediaQuery_ = window.matchMedia(this.Constant_.MAX_WIDTH);
-        this.screenSizeMediaQuery_.addListener(this.screenSizeHandler_.bind(this));
-        this.screenSizeHandler_();
-        // Initialize tabs, if any.
-        if (this.header_ && this.tabBar_) {
-            this.element_.classList.add(this.CssClasses_.HAS_TABS);
-            var tabContainer = document.createElement('div');
-            tabContainer.classList.add(this.CssClasses_.TAB_CONTAINER);
-            this.header_.insertBefore(tabContainer, this.tabBar_);
-            this.header_.removeChild(this.tabBar_);
-            var leftButton = document.createElement('div');
-            leftButton.classList.add(this.CssClasses_.TAB_BAR_BUTTON);
-            leftButton.classList.add(this.CssClasses_.TAB_BAR_LEFT_BUTTON);
-            var leftButtonIcon = document.createElement('i');
-            leftButtonIcon.classList.add(this.CssClasses_.ICON);
-            leftButtonIcon.textContent = this.Constant_.CHEVRON_LEFT;
-            leftButton.appendChild(leftButtonIcon);
-            leftButton.addEventListener('click', function () {
-                this.tabBar_.scrollLeft -= this.Constant_.TAB_SCROLL_PIXELS;
-            }.bind(this));
-            var rightButton = document.createElement('div');
-            rightButton.classList.add(this.CssClasses_.TAB_BAR_BUTTON);
-            rightButton.classList.add(this.CssClasses_.TAB_BAR_RIGHT_BUTTON);
-            var rightButtonIcon = document.createElement('i');
-            rightButtonIcon.classList.add(this.CssClasses_.ICON);
-            rightButtonIcon.textContent = this.Constant_.CHEVRON_RIGHT;
-            rightButton.appendChild(rightButtonIcon);
-            rightButton.addEventListener('click', function () {
-                this.tabBar_.scrollLeft += this.Constant_.TAB_SCROLL_PIXELS;
-            }.bind(this));
-            tabContainer.appendChild(leftButton);
-            tabContainer.appendChild(this.tabBar_);
-            tabContainer.appendChild(rightButton);
-            // Add and remove tab buttons depending on scroll position and total
-            // window size.
-            var tabUpdateHandler = function () {
-                if (this.tabBar_.scrollLeft > 0) {
-                    leftButton.classList.add(this.CssClasses_.IS_ACTIVE);
-                } else {
-                    leftButton.classList.remove(this.CssClasses_.IS_ACTIVE);
-                }
-                if (this.tabBar_.scrollLeft < this.tabBar_.scrollWidth - this.tabBar_.offsetWidth) {
-                    rightButton.classList.add(this.CssClasses_.IS_ACTIVE);
-                } else {
-                    rightButton.classList.remove(this.CssClasses_.IS_ACTIVE);
-                }
-            }.bind(this);
-            this.tabBar_.addEventListener('scroll', tabUpdateHandler);
-            tabUpdateHandler();
-            // Update tabs when the window resizes.
-            var windowResizeHandler = function () {
-                // Use timeouts to make sure it doesn't happen too often.
-                if (this.resizeTimeoutId_) {
-                    clearTimeout(this.resizeTimeoutId_);
-                }
-                this.resizeTimeoutId_ = setTimeout(function () {
-                    tabUpdateHandler();
-                    this.resizeTimeoutId_ = null;
-                }.bind(this), this.Constant_.RESIZE_TIMEOUT);
-            }.bind(this);
-            window.addEventListener('resize', windowResizeHandler);
-            if (this.tabBar_.classList.contains(this.CssClasses_.JS_RIPPLE_EFFECT)) {
-                this.tabBar_.classList.add(this.CssClasses_.RIPPLE_IGNORE_EVENTS);
-            }
-            // Select element tabs, document panels
-            var tabs = this.tabBar_.querySelectorAll('.' + this.CssClasses_.TAB);
-            var panels = this.content_.querySelectorAll('.' + this.CssClasses_.PANEL);
-            // Create new tabs for each tab element
-            for (var i = 0; i < tabs.length; i++) {
-                new MaterialLayoutTab(tabs[i], tabs, panels, this);
-            }
-        }
-        this.element_.classList.add(this.CssClasses_.IS_UPGRADED);
-    }
-};
-/**
-   * Constructor for an individual tab.
-   *
-   * @constructor
-   * @param {HTMLElement} tab The HTML element for the tab.
-   * @param {!Array<HTMLElement>} tabs Array with HTML elements for all tabs.
-   * @param {!Array<HTMLElement>} panels Array with HTML elements for all panels.
-   * @param {MaterialLayout} layout The MaterialLayout object that owns the tab.
-   */
-function MaterialLayoutTab(tab, tabs, panels, layout) {
-    /**
-     * Auxiliary method to programmatically select a tab in the UI.
-     */
-    function selectTab() {
-        var href = tab.href.split('#')[1];
-        var panel = layout.content_.querySelector('#' + href);
-        layout.resetTabState_(tabs);
-        layout.resetPanelState_(panels);
-        tab.classList.add(layout.CssClasses_.IS_ACTIVE);
-        panel.classList.add(layout.CssClasses_.IS_ACTIVE);
-    }
-    if (layout.tabBar_.classList.contains(layout.CssClasses_.JS_RIPPLE_EFFECT)) {
-        var rippleContainer = document.createElement('span');
-        rippleContainer.classList.add(layout.CssClasses_.RIPPLE_CONTAINER);
-        rippleContainer.classList.add(layout.CssClasses_.JS_RIPPLE_EFFECT);
-        var ripple = document.createElement('span');
-        ripple.classList.add(layout.CssClasses_.RIPPLE);
-        rippleContainer.appendChild(ripple);
-        tab.appendChild(rippleContainer);
-    }
-    if (!layout.tabBar_.classList.contains(layout.CssClasses_.TAB_MANUAL_SWITCH)) {
-        tab.addEventListener('click', function (e) {
-            if (tab.getAttribute('href').charAt(0) === '#') {
-                e.preventDefault();
-                selectTab();
-            }
-        });
-    }
-    tab.show = selectTab;
-}
-window['MaterialLayoutTab'] = MaterialLayoutTab;
-// The component registers itself. It can assume componentHandler is available
-// in the global scope.
-componentHandler.register({
-    constructor: MaterialLayout,
-    classAsString: 'MaterialLayout',
-    cssClass: 'mdl-js-layout'
-});
-/**
- * @license
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
-   * Class constructor for Data Table Card MDL component.
-   * Implements MDL component design pattern defined at:
-   * https://github.com/jasonmayes/mdl-component-design-pattern
-   *
-   * @constructor
-   * @param {Element} element The element that will be upgraded.
-   */
-var MaterialDataTable = function MaterialDataTable(element) {
-    this.element_ = element;
-    // Initialize instance.
-    this.init();
-};
-window['MaterialDataTable'] = MaterialDataTable;
-/**
-   * Store constants in one place so they can be updated easily.
-   *
-   * @enum {string | number}
-   * @private
-   */
-MaterialDataTable.prototype.Constant_ = {};
-/**
-   * Store strings for class names defined by this component that are used in
-   * JavaScript. This allows us to simply change it in one place should we
-   * decide to modify at a later date.
-   *
-   * @enum {string}
-   * @private
-   */
-MaterialDataTable.prototype.CssClasses_ = {
-    DATA_TABLE: 'mdl-data-table',
-    SELECTABLE: 'mdl-data-table--selectable',
-    SELECT_ELEMENT: 'mdl-data-table__select',
-    IS_SELECTED: 'is-selected',
-    IS_UPGRADED: 'is-upgraded'
-};
-/**
-   * Generates and returns a function that toggles the selection state of a
-   * single row (or multiple rows).
-   *
-   * @param {Element} checkbox Checkbox that toggles the selection state.
-   * @param {Element} row Row to toggle when checkbox changes.
-   * @param {(Array<Object>|NodeList)=} opt_rows Rows to toggle when checkbox changes.
-   * @private
-   */
-MaterialDataTable.prototype.selectRow_ = function (checkbox, row, opt_rows) {
-    if (row) {
-        return function () {
-            if (checkbox.checked) {
-                row.classList.add(this.CssClasses_.IS_SELECTED);
-            } else {
-                row.classList.remove(this.CssClasses_.IS_SELECTED);
-            }
-        }.bind(this);
-    }
-    if (opt_rows) {
-        return function () {
-            var i;
-            var el;
-            if (checkbox.checked) {
-                for (i = 0; i < opt_rows.length; i++) {
-                    el = opt_rows[i].querySelector('td').querySelector('.mdl-checkbox');
-                    el['MaterialCheckbox'].check();
-                    opt_rows[i].classList.add(this.CssClasses_.IS_SELECTED);
-                }
-            } else {
-                for (i = 0; i < opt_rows.length; i++) {
-                    el = opt_rows[i].querySelector('td').querySelector('.mdl-checkbox');
-                    el['MaterialCheckbox'].uncheck();
-                    opt_rows[i].classList.remove(this.CssClasses_.IS_SELECTED);
-                }
-            }
-        }.bind(this);
-    }
-};
-/**
-   * Creates a checkbox for a single or or multiple rows and hooks up the
-   * event handling.
-   *
-   * @param {Element} row Row to toggle when checkbox changes.
-   * @param {(Array<Object>|NodeList)=} opt_rows Rows to toggle when checkbox changes.
-   * @private
-   */
-MaterialDataTable.prototype.createCheckbox_ = function (row, opt_rows) {
-    var label = document.createElement('label');
-    var labelClasses = [
-        'mdl-checkbox',
-        'mdl-js-checkbox',
-        'mdl-js-ripple-effect',
-        this.CssClasses_.SELECT_ELEMENT
-    ];
-    label.className = labelClasses.join(' ');
-    var checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.classList.add('mdl-checkbox__input');
-    if (row) {
-        checkbox.checked = row.classList.contains(this.CssClasses_.IS_SELECTED);
-        checkbox.addEventListener('change', this.selectRow_(checkbox, row));
-    } else if (opt_rows) {
-        checkbox.addEventListener('change', this.selectRow_(checkbox, null, opt_rows));
-    }
-    label.appendChild(checkbox);
-    componentHandler.upgradeElement(label, 'MaterialCheckbox');
-    return label;
-};
-/**
-   * Initialize element.
-   */
-MaterialDataTable.prototype.init = function () {
-    if (this.element_) {
-        var firstHeader = this.element_.querySelector('th');
-        var bodyRows = Array.prototype.slice.call(this.element_.querySelectorAll('tbody tr'));
-        var footRows = Array.prototype.slice.call(this.element_.querySelectorAll('tfoot tr'));
-        var rows = bodyRows.concat(footRows);
-        if (this.element_.classList.contains(this.CssClasses_.SELECTABLE)) {
-            var th = document.createElement('th');
-            var headerCheckbox = this.createCheckbox_(null, rows);
-            th.appendChild(headerCheckbox);
-            firstHeader.parentElement.insertBefore(th, firstHeader);
-            for (var i = 0; i < rows.length; i++) {
-                var firstCell = rows[i].querySelector('td');
-                if (firstCell) {
-                    var td = document.createElement('td');
-                    if (rows[i].parentNode.nodeName.toUpperCase() === 'TBODY') {
-                        var rowCheckbox = this.createCheckbox_(rows[i]);
-                        td.appendChild(rowCheckbox);
-                    }
-                    rows[i].insertBefore(td, firstCell);
-                }
-            }
-            this.element_.classList.add(this.CssClasses_.IS_UPGRADED);
-        }
-    }
-};
-// The component registers itself. It can assume componentHandler is available
-// in the global scope.
-componentHandler.register({
-    constructor: MaterialDataTable,
-    classAsString: 'MaterialDataTable',
-    cssClass: 'mdl-js-data-table'
-});
-/**
- * @license
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
-   * Class constructor for Ripple MDL component.
-   * Implements MDL component design pattern defined at:
-   * https://github.com/jasonmayes/mdl-component-design-pattern
-   *
-   * @constructor
-   * @param {HTMLElement} element The element that will be upgraded.
-   */
-var MaterialRipple = function MaterialRipple(element) {
-    this.element_ = element;
-    // Initialize instance.
-    this.init();
-};
-window['MaterialRipple'] = MaterialRipple;
-/**
-   * Store constants in one place so they can be updated easily.
-   *
-   * @enum {string | number}
-   * @private
-   */
-MaterialRipple.prototype.Constant_ = {
-    INITIAL_SCALE: 'scale(0.0001, 0.0001)',
-    INITIAL_SIZE: '1px',
-    INITIAL_OPACITY: '0.4',
-    FINAL_OPACITY: '0',
-    FINAL_SCALE: ''
-};
-/**
-   * Store strings for class names defined by this component that are used in
-   * JavaScript. This allows us to simply change it in one place should we
-   * decide to modify at a later date.
-   *
-   * @enum {string}
-   * @private
-   */
-MaterialRipple.prototype.CssClasses_ = {
-    RIPPLE_CENTER: 'mdl-ripple--center',
-    RIPPLE_EFFECT_IGNORE_EVENTS: 'mdl-js-ripple-effect--ignore-events',
-    RIPPLE: 'mdl-ripple',
-    IS_ANIMATING: 'is-animating',
-    IS_VISIBLE: 'is-visible'
-};
-/**
-   * Handle mouse / finger down on element.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialRipple.prototype.downHandler_ = function (event) {
-    if (!this.rippleElement_.style.width && !this.rippleElement_.style.height) {
-        var rect = this.element_.getBoundingClientRect();
-        this.boundHeight = rect.height;
-        this.boundWidth = rect.width;
-        this.rippleSize_ = Math.sqrt(rect.width * rect.width + rect.height * rect.height) * 2 + 2;
-        this.rippleElement_.style.width = this.rippleSize_ + 'px';
-        this.rippleElement_.style.height = this.rippleSize_ + 'px';
-    }
-    this.rippleElement_.classList.add(this.CssClasses_.IS_VISIBLE);
-    if (event.type === 'mousedown' && this.ignoringMouseDown_) {
-        this.ignoringMouseDown_ = false;
-    } else {
-        if (event.type === 'touchstart') {
-            this.ignoringMouseDown_ = true;
-        }
-        var frameCount = this.getFrameCount();
-        if (frameCount > 0) {
-            return;
-        }
-        this.setFrameCount(1);
-        var bound = event.currentTarget.getBoundingClientRect();
-        var x;
-        var y;
-        // Check if we are handling a keyboard click.
-        if (event.clientX === 0 && event.clientY === 0) {
-            x = Math.round(bound.width / 2);
-            y = Math.round(bound.height / 2);
-        } else {
-            var clientX = event.clientX !== undefined ? event.clientX : event.touches[0].clientX;
-            var clientY = event.clientY !== undefined ? event.clientY : event.touches[0].clientY;
-            x = Math.round(clientX - bound.left);
-            y = Math.round(clientY - bound.top);
-        }
-        this.setRippleXY(x, y);
-        this.setRippleStyles(true);
-        window.requestAnimationFrame(this.animFrameHandler.bind(this));
-    }
-};
-/**
-   * Handle mouse / finger up on element.
-   *
-   * @param {Event} event The event that fired.
-   * @private
-   */
-MaterialRipple.prototype.upHandler_ = function (event) {
-    // Don't fire for the artificial "mouseup" generated by a double-click.
-    if (event && event.detail !== 2) {
-        // Allow a repaint to occur before removing this class, so the animation
-        // shows for tap events, which seem to trigger a mouseup too soon after
-        // mousedown.
-        window.setTimeout(function () {
-            this.rippleElement_.classList.remove(this.CssClasses_.IS_VISIBLE);
-        }.bind(this), 0);
-    }
-};
-/**
-   * Initialize element.
-   */
-MaterialRipple.prototype.init = function () {
-    if (this.element_) {
-        var recentering = this.element_.classList.contains(this.CssClasses_.RIPPLE_CENTER);
-        if (!this.element_.classList.contains(this.CssClasses_.RIPPLE_EFFECT_IGNORE_EVENTS)) {
-            this.rippleElement_ = this.element_.querySelector('.' + this.CssClasses_.RIPPLE);
-            this.frameCount_ = 0;
-            this.rippleSize_ = 0;
-            this.x_ = 0;
-            this.y_ = 0;
-            // Touch start produces a compat mouse down event, which would cause a
-            // second ripples. To avoid that, we use this property to ignore the first
-            // mouse down after a touch start.
-            this.ignoringMouseDown_ = false;
-            this.boundDownHandler = this.downHandler_.bind(this);
-            this.element_.addEventListener('mousedown', this.boundDownHandler);
-            this.element_.addEventListener('touchstart', this.boundDownHandler);
-            this.boundUpHandler = this.upHandler_.bind(this);
-            this.element_.addEventListener('mouseup', this.boundUpHandler);
-            this.element_.addEventListener('mouseleave', this.boundUpHandler);
-            this.element_.addEventListener('touchend', this.boundUpHandler);
-            this.element_.addEventListener('blur', this.boundUpHandler);
-            /**
-         * Getter for frameCount_.
-         * @return {number} the frame count.
-         */
-            this.getFrameCount = function () {
-                return this.frameCount_;
-            };
-            /**
-         * Setter for frameCount_.
-         * @param {number} fC the frame count.
-         */
-            this.setFrameCount = function (fC) {
-                this.frameCount_ = fC;
-            };
-            /**
-         * Getter for rippleElement_.
-         * @return {Element} the ripple element.
-         */
-            this.getRippleElement = function () {
-                return this.rippleElement_;
-            };
-            /**
-         * Sets the ripple X and Y coordinates.
-         * @param  {number} newX the new X coordinate
-         * @param  {number} newY the new Y coordinate
-         */
-            this.setRippleXY = function (newX, newY) {
-                this.x_ = newX;
-                this.y_ = newY;
-            };
-            /**
-         * Sets the ripple styles.
-         * @param  {boolean} start whether or not this is the start frame.
-         */
-            this.setRippleStyles = function (start) {
-                if (this.rippleElement_ !== null) {
-                    var transformString;
-                    var scale;
-                    var size;
-                    var offset = 'translate(' + this.x_ + 'px, ' + this.y_ + 'px)';
-                    if (start) {
-                        scale = this.Constant_.INITIAL_SCALE;
-                        size = this.Constant_.INITIAL_SIZE;
-                    } else {
-                        scale = this.Constant_.FINAL_SCALE;
-                        size = this.rippleSize_ + 'px';
-                        if (recentering) {
-                            offset = 'translate(' + this.boundWidth / 2 + 'px, ' + this.boundHeight / 2 + 'px)';
-                        }
-                    }
-                    transformString = 'translate(-50%, -50%) ' + offset + scale;
-                    this.rippleElement_.style.webkitTransform = transformString;
-                    this.rippleElement_.style.msTransform = transformString;
-                    this.rippleElement_.style.transform = transformString;
-                    if (start) {
-                        this.rippleElement_.classList.remove(this.CssClasses_.IS_ANIMATING);
-                    } else {
-                        this.rippleElement_.classList.add(this.CssClasses_.IS_ANIMATING);
-                    }
-                }
-            };
-            /**
-         * Handles an animation frame.
-         */
-            this.animFrameHandler = function () {
-                if (this.frameCount_-- > 0) {
-                    window.requestAnimationFrame(this.animFrameHandler.bind(this));
-                } else {
-                    this.setRippleStyles(false);
-                }
-            };
-        }
-    }
-};
-// The component registers itself. It can assume componentHandler is available
-// in the global scope.
-componentHandler.register({
-    constructor: MaterialRipple,
-    classAsString: 'MaterialRipple',
-    cssClass: 'mdl-js-ripple-effect',
-    widget: false
-});
-}());
 
 //! openseadragon 2.4.1
 //! Built on 2019-07-03

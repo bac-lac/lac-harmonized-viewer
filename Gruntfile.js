@@ -12,21 +12,17 @@ module.exports = function (grunt) {
 		copy: {
 			dist: {
 				files: [
-					{
-						src: 'node_modules/bootstrap/dist/js/bootstrap.bundle.js',
-						dest: 'public/vendors/bootstrap/bootstrap.js'
-					},
+					// {
+					// 	src: 'node_modules/bootstrap/dist/js/bootstrap.bundle.js',
+					// 	dest: 'public/vendors/bootstrap/bootstrap.js'
+					// },
 					{
 						src: 'node_modules/openseadragon/build/openseadragon/openseadragon.js',
 						dest: 'public/vendors/openseadragon/openseadragon.js'
 					},
 					{
-						src: 'node_modules/material-design-lite/material.css',
-						dest: 'public/vendors/material-design-lite/material.css'
-					},
-					{
-						src: 'node_modules/material-design-lite/material.js',
-						dest: 'public/vendors/material-design-lite/material.js'
+						src: 'node_modules/manifesto.js/dist/client/manifesto.bundle.js',
+						dest: 'public/vendors/manifesto/manifesto.js'
 					}
 				]
 			}
