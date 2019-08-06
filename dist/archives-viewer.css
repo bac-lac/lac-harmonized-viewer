@@ -23,10 +23,16 @@
 .av-titlebar {
   height: 64px;
   min-height: 64px;
-  padding: 0 1.5rem;
   display: flex;
   align-items: center;
   justify-content: flex-start; }
+  .av-titlebar .av-logo {
+    width: 100px;
+    height: 100%;
+    margin-right: 1.25rem;
+    background-size: cover;
+    background-position: 50% 50%;
+    background-repeat: no-repeat; }
   .av-titlebar h1,
   .av-titlebar h2,
   .av-titlebar h3,
@@ -38,11 +44,10 @@
     letter-spacing: 0.02em; }
   .av-titlebar .av-manifest-label {
     color: #fff;
-    font-size: 14px;
-    font-weight: normal; }
+    font-size: 14px; }
   .av-titlebar .av-image-label {
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 20px; }
+    color: #B2EBF2;
+    font-size: 18px; }
 
 .av-toolbar {
   height: 50px;
@@ -60,7 +65,6 @@
   .av-toolbar-right {
     margin-left: auto; }
   .av-toolbar .av-button {
-    cursor: pointer;
     color: #5c5c5c;
     height: 36px;
     padding: 0 12px;
@@ -70,12 +74,19 @@
     font-size: 14px;
     border-radius: 2px;
     border: none; }
-    .av-toolbar .av-button:hover {
+    .av-toolbar .av-button:not([disabled]) {
+      cursor: pointer; }
+    .av-toolbar .av-button:not([disabled]):hover {
       background-color: rgba(158, 158, 158, 0.2); }
+    .av-toolbar .av-button[disabled] {
+      color: #9c9c9c !important; }
     .av-toolbar .av-button:active {
       background-color: rgba(158, 158, 158, 0.4); }
     .av-toolbar .av-button .material-icons {
       vertical-align: middle; }
+  .av-toolbar .av-zoom {
+    width: 40px;
+    text-align: center; }
   .av-toolbar .separator {
     width: 1px;
     height: 36px;
@@ -87,17 +98,15 @@
   height: 100%;
   left: auto;
   right: 0;
-  z-index: 1;
+  z-index: 0;
   position: fixed;
-  visibility: hidden;
   transition: all 0.5s ease;
-  border-left: #f2f2f2 2px solid;
-  background: #fff; }
+  background: #fff;
+  transform: translate3d(350px, 0, 0); }
   .av-sidebar.av-sidebar--visible {
-    width: 350px;
-    visibility: visible; }
+    transform: translate3d(0, 0, 0); }
     .av-sidebar.av-sidebar--visible ~ .av-content .av-viewport {
-      transform: translate3d(-350px, 0, 0); }
+      width: calc(100% - 350px); }
   .av-sidebar .av-sidebar-title,
   .av-sidebar .av-sidebar-content {
     padding-left: 40px; }
@@ -106,7 +115,8 @@
 
 .av-main {
   flex: auto;
-  display: flex; }
+  display: flex;
+  overflow-x: hidden; }
 
 .av-content {
   flex: auto;
@@ -115,15 +125,13 @@
   position: relative; }
 
 .av-viewport {
+  width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  overflow-y: auto;
-  left: 0;
-  z-index: 2;
-  transition: transform ease 0.5s; }
+  transition: all 0.5s ease; }
   .av-viewport.av-viewport--empty::after {
     color: rgba(0, 0, 0, 0.04);
     content: "power_off";

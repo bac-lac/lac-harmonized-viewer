@@ -68,6 +68,21 @@
                 self.toggleSidebar();
             });
 
+            this.addHandler("previous", function () {
+                var page = openseadragon.currentPage();
+                if (page > 0) {
+                    openseadragon.goToPage(page - 1);
+                }
+            });
+
+            this.addHandler("next", function () {
+                var page = openseadragon.currentPage();
+                var pageCount = openseadragon.tileSources.length + 1;
+                if (page < (pageCount - 1)) {
+                    openseadragon.goToPage(page + 1);
+                }
+            });
+
             this.debug = (window.sessionStorage.getItem("debug") === "true") ? true : false;
             if (this.debug) {
                 this.getEventControls("debug").addClass("av-button-toggle--active");
@@ -115,7 +130,15 @@
 
         isSidebarOpened: function () {
             var $sidebar = this.getSidebar();
-            return $sidebar.hasClass("av-sidebar--opened");
+            return $sidebar.hasClass("av-sidebar--visible");
+        },
+
+        enableButton: function (button) {
+            $(this.element).find(button).prop("disabled", false);
+        },
+
+        disableButton: function (button) {
+            $(this.element).find(button).prop("disabled", true);
         },
 
         initSpinner: function () {
@@ -126,7 +149,7 @@
             var $viewport = this.getViewport();
             var $spinner = $viewport.find(".av-spinner");
             if ($spinner.length === 0) {
-                $spinner = $("<div />").addClass("av-spinner").appendTo($viewport);
+                $spinner = $("<div/>").addClass("av-spinner").appendTo($viewport);
             }
             return $spinner;
         },
@@ -263,6 +286,8 @@
                 openseadragon.addHandler("open", function () {
                     self.hideSpinner();
 
+                    $(self.element).find(".av-logo").css("background-image", self.format("url('{0}')", self.manifest.getLogo()));
+
                     self.setManifestLabel(self.manifest.getDefaultLabel());
 
                     var canvas = self.getManifestCanvas();
@@ -276,6 +301,14 @@
                 });
 
                 openseadragon.addHandler("animation", function () {
+
+                    var minZoom = openseadragon.viewport.getMinZoom();
+                    var maxZoom = openseadragon.viewport.getMaxZoom();
+
+                    var current = openseadragon.viewport.getZoom(false);
+                    var currentPercentage = Math.round((current - minZoom) * 100 / (maxZoom - minZoom), 0);
+
+                    $(self.element).find(".av-zoom").text(self.format("{0}%", currentPercentage));
                     //self.refreshZoomSlider();
                 });
             });
