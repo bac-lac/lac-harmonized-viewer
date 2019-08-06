@@ -64,8 +64,12 @@
                 window.sessionStorage.setItem("debug", self.debug);
             });
 
-            this.addHandler("sidebar", function () {
-                self.toggleSidebar();
+            this.addHandler("gallery", function () {
+                self.toggleDrawer(self.getGallery());
+            });
+
+            this.addHandler("annotations", function () {
+                self.toggleDrawer(self.getAnnotations());
             });
 
             this.addHandler("previous", function () {
@@ -77,7 +81,7 @@
 
             this.addHandler("next", function () {
                 var page = openseadragon.currentPage();
-                var pageCount = openseadragon.tileSources.length + 1;
+                var pageCount = openseadragon.tileSources.length;
                 if (page < (pageCount - 1)) {
                     openseadragon.goToPage(page + 1);
                 }
@@ -105,32 +109,33 @@
             return $(this.element).find(".av-viewport");
         },
 
-        getSidebar: function () {
-            return $(this.element).find(".av-sidebar");
+        getGallery: function () {
+            return $(this.element).find(".av-drawer__gallery");
         },
 
-        openSidebar: function () {
-            var $sidebar = this.getSidebar();
-            $sidebar.addClass("av-sidebar--visible");
+        getAnnotations: function () {
+            return $(this.element).find(".av-drawer__annotations");
         },
 
-        closeSidebar: function () {
-            var $sidebar = this.getSidebar();
-            $sidebar.removeClass("av-sidebar--visible");
+        openDrawer: function (element) {
+            $(element).addClass("av-drawer--visible");
         },
 
-        toggleSidebar: function () {
-            if (this.isSidebarOpened()) {
-                this.closeSidebar();
+        closeDrawer: function (element) {
+            $(element).removeClass("av-drawer--visible");
+        },
+
+        toggleDrawer: function (element) {
+            if (this.isDrawerVisible(element)) {
+                this.closeDrawer(element);
             }
             else {
-                this.openSidebar();
+                this.openDrawer(element);
             }
         },
 
-        isSidebarOpened: function () {
-            var $sidebar = this.getSidebar();
-            return $sidebar.hasClass("av-sidebar--visible");
+        isDrawerVisible: function (element) {
+            return $(element).hasClass("av-drawer--visible");
         },
 
         enableButton: function (button) {
@@ -165,9 +170,41 @@
         },
 
         initToolbar: function () {
-            $(document).on("click", ".av-toolbar .av-button-toggle", function () {
+            $(this.element).on("click", ".av-toolbar .av-button-toggle", function () {
                 $(this).toggleClass("av-button-toggle--active");
             });
+        },
+
+        enableToolbar: function () {
+            $(this.element).find(".av-button.av-button-openseadragon").prop("disabled", false);
+        },
+
+        disableToolbar: function () {
+            $(this.element).find(".av-button.av-button-openseadragon").prop("disabled", true);
+        },
+
+        isFirstPage: function () {
+            if (openseadragon === undefined) {
+                return false;
+            }
+            var page = openseadragon.currentPage();
+            return (page === 0);
+        },
+
+        isLastPage: function () {
+            if (openseadragon === undefined) {
+                return false;
+            }
+            var page = openseadragon.currentPage();
+            var pageCount = openseadragon.tileSources.length;
+            return (page >= (pageCount - 1));
+        },
+
+        updateNavigationControls: function () {
+            this.getEventControls("previous")
+                .prop("disabled", this.isFirstPage());
+            this.getEventControls("next")
+                .prop("disabled", this.isLastPage());
         },
 
         getManifestCanvas: function () {
@@ -239,6 +276,8 @@
         initOpenSeadragon: function () {
             var self = this;
 
+            self.disableToolbar();
+
             if (openseadragon !== undefined) {
                 openseadragon.destroy();
                 openseadragon = null;
@@ -246,7 +285,7 @@
 
             // Create root OpenSeadragon element inside viewport
             var $viewport = this.getViewport();
-            var $openseadragon = $("<div/>").width("100%").height("100%").appendTo($viewport);
+            var $openseadragon = $("<div/>").hide().width("100%").height("100%").appendTo($viewport);
 
             var openseadragonId = this.getUniqueId($openseadragon[0]);
 
@@ -280,11 +319,17 @@
                     navigatorPosition: "BOTTOM_RIGHT",
                     showNavigationControl: false,
                     minZoomImageRatio: 1.0,
-                    preserveViewport: true
+                    preserveViewport: true,
+                    animationTime: 0.25,
+                    springStiffness: 10.0
                 });
 
                 openseadragon.addHandler("open", function () {
                     self.hideSpinner();
+                    $(openseadragon.element).show();
+
+                    self.enableToolbar();
+                    self.updateNavigationControls();
 
                     $(self.element).find(".av-logo").css("background-image", self.format("url('{0}')", self.manifest.getLogo()));
 
@@ -295,6 +340,7 @@
 
                     self.setImageLabel(label.value);
                 });
+
                 openseadragon.addHandler("open-failed", function (err) {
                     $(openseadragon.element).hide();
                     self.showError(err);
@@ -311,6 +357,10 @@
                     $(self.element).find(".av-zoom").text(self.format("{0}%", currentPercentage));
                     //self.refreshZoomSlider();
                 });
+            }, function (err) {
+                console.error(err);
+                self.hideSpinner();
+                self.showError(err);
             });
         },
 
@@ -351,6 +401,7 @@
         },
 
         showError: function (err) {
+            console.log('error');
             this.hideSpinner();
 
             var $error = $("<div />").addClass("av-error");

@@ -45,28 +45,47 @@
 
 			<div class="av-toolbar">
 				<div class="av-toolbar-left">
-					<button type="button" class="av-button" data-toggle="home" title="Go home">
+					<button type="button" class="av-button av-button-toggle" data-toggle="gallery"
+						title="Toggle gallery view">
+						<i class="material-icons">view_module</i>
+					</button>
+					<button type="button" class="av-button av-button-openseadragon" data-toggle="home" title="Go home">
 						<i class="material-icons">home</i>
 					</button>
 					<div class="separator"></div>
 					<!-- <button type="button" class="av-button" data-toggle="fullscreen" title="Toggle fullscreen view">
 						<i class="material-icons">fullscreen</i>
 					</button> -->
-					<button type="button" class="av-button" title="Download a copy">
+					<button type="button" class="av-button av-button-openseadragon" title="Download a copy">
 						<i class="material-icons">file_download</i>
 						Download
 					</button>
-					<button type="button" class="av-button" title="Printable version">
+					<button type="button" class="av-button av-button-openseadragon" title="Printable version">
 						<i class="material-icons">print</i>
 						Printable version
 					</button>
 				</div>
-				<div style="margin-left:auto">
-					<button type="button" class="av-button" data-toggle="previous" title="Previous">
+				<div class="av-navigation">
+					<button type="button" class="av-button av-button-openseadragon" data-toggle="first"
+						title="First page">
+						<i class="material-icons">first_page</i>
+					</button>
+					<button type="button" class="av-button av-button-openseadragon" data-toggle="previous"
+						title="Previous page">
 						<i class="material-icons">navigate_before</i>
 					</button>
-					<button type="button" class="av-button" data-toggle="next" title="Next">
+					<div class="av-navigation__current">
+						<button type="button" class="av-button">
+							Page 1 of 16
+						</button>
+					</div>
+					<button type="button" class="av-button av-button-openseadragon" data-toggle="next"
+						title="Next page">
 						<i class="material-icons">navigate_next</i>
+					</button>
+					<button type="button" class="av-button av-button-openseadragon" data-toggle="last"
+						title="Last page">
+						<i class="material-icons">last_page</i>
 					</button>
 				</div>
 				<div class="av-toolbar-right">
@@ -75,19 +94,21 @@
 						<i class="material-icons">developer_mode</i>
 					</button>
 					<div class="separator"></div>
-					<button type="button" class="av-button" data-toggle="zoom-out" title="Zoom out">
+					<button type="button" class="av-button av-button-openseadragon" data-toggle="zoom-out"
+						title="Zoom out">
 						<i class="material-icons">remove</i>
 					</button>
 					<div class="av-zoom"></div>
-					<button type="button" class="av-button" data-toggle="zoom-in" title="Zoom in">
+					<button type="button" class="av-button av-button-openseadragon" data-toggle="zoom-in"
+						title="Zoom in">
 						<i class="material-icons">add</i>
 					</button>
 					<!-- <button type="button" class="av-button" data-toggle="gallery" title="Toggle gallery view">
 						<i class="material-icons">view_list</i>
 					</button> -->
 					<div class="separator"></div>
-					<button type="button" class="av-button av-button-toggle" data-toggle="sidebar"
-						title="Show/hide sidebar">
+					<button type="button" class="av-button av-button-toggle" data-toggle="annotations"
+						title="Toggle annotations view">
 						<i class="material-icons">vertical_split</i>
 					</button>
 				</div>
@@ -95,21 +116,18 @@
 		</header>
 
 		<main class="av-main">
+			<aside class="av-drawer av_drawer__left av-drawer__gallery">
+			</aside>
 
-			<!-- <div class="av-error">
-			</div> -->
-
-			<aside class="av-sidebar">
-				<h3 class="av-sidebar-title">Item Properties</h3>
-				<div class="av-sidebar-content">
+			<aside class="av-drawer av-drawer__right av-drawer__annotations">
+				<h3 class="av-drawer-title">Item Properties</h3>
+				<div class="av-drawer-content">
 
 				</div>
 			</aside>
 
 			<div class="av-content">
-
 				<div class="av-viewport"></div>
-
 			</div>
 		</main>
 	</div>

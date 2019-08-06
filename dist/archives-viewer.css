@@ -1,9 +1,12 @@
+.av-viewer,
+.av-button {
+  font-family: "Roboto", Helvetica, Arial, sans-serif; }
+
 .av-viewer {
   width: 100%;
   height: 100%;
   display: flex;
   flex-flow: column;
-  font-family: "Roboto", Helvetica, Arial, sans-serif;
   background-color: #616161; }
   .av-viewer,
   .av-viewer *, .av-viewer::before, .av-viewer::after {
@@ -46,7 +49,7 @@
     color: #fff;
     font-size: 14px; }
   .av-titlebar .av-image-label {
-    color: #B2EBF2;
+    color: #b2ebf2;
     font-size: 18px; }
 
 .av-toolbar {
@@ -67,11 +70,9 @@
   .av-toolbar .av-button {
     color: #5c5c5c;
     height: 36px;
-    padding: 0 12px;
-    line-height: 36px;
-    display: inline-block;
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
     font-size: 14px;
+    padding: 0 12px;
+    display: inline-block;
     border-radius: 2px;
     border: none; }
     .av-toolbar .av-button:not([disabled]) {
@@ -84,6 +85,10 @@
       background-color: rgba(158, 158, 158, 0.4); }
     .av-toolbar .av-button .material-icons {
       vertical-align: middle; }
+  .av-toolbar .av-navigation {
+    display: flex;
+    align-items: center;
+    margin-left: auto; }
   .av-toolbar .av-zoom {
     width: 40px;
     text-align: center; }
@@ -93,24 +98,31 @@
     margin: 0 0.3rem;
     background: rgba(158, 158, 158, 0.2); }
 
-.av-sidebar {
+.av-drawer {
   width: 350px;
   height: 100%;
-  left: auto;
-  right: 0;
   z-index: 0;
   position: fixed;
   transition: all 0.5s ease;
   background: #fff;
-  transform: translate3d(350px, 0, 0); }
-  .av-sidebar.av-sidebar--visible {
+  left: 0;
+  transform: translate3d(-350px, 0, 0); }
+  .av-drawer.av-drawer--visible {
     transform: translate3d(0, 0, 0); }
-    .av-sidebar.av-sidebar--visible ~ .av-content .av-viewport {
-      width: calc(100% - 350px); }
-  .av-sidebar .av-sidebar-title,
-  .av-sidebar .av-sidebar-content {
+    .av-drawer.av-drawer--visible ~ .av-content .av-viewport {
+      width: calc(100% - 350px);
+      transform: translate3d(350px, 0, 0); }
+    .av-drawer.av-drawer--visible.av-drawer__right ~ .av-content .av-viewport {
+      width: calc(100% - 350px);
+      transform: translate3d(0, 0, 0); }
+  .av-drawer__right {
+    left: auto;
+    right: 0;
+    transform: translate3d(350px, 0, 0); }
+  .av-drawer .av-drawer-title,
+  .av-drawer .av-drawer-content {
     padding-left: 40px; }
-  .av-sidebar .av-sidebar-title {
+  .av-drawer .av-drawer-title {
     font-weight: normal; }
 
 .av-main {
@@ -142,10 +154,10 @@
   text-align: center;
   line-height: 1.5rem; }
   .av-error-icon {
-    font-size: 5rem;
-    color: #e74c3c; }
+    color: #4c4c4c;
+    font-size: 5rem; }
   .av-error-text {
-    color: #999;
+    color: #ccc;
     margin-top: 0.5rem; }
   .av-error .av-debug {
     color: #666;
@@ -156,7 +168,7 @@
 
 .av-spinner {
   border: 10px solid rgba(0, 0, 0, 0.05);
-  border-top: 10px solid rgba(22, 160, 133, 0.5);
+  border-top: 10px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   width: 60px;
   height: 60px;

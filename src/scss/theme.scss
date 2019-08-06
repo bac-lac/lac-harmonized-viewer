@@ -14,6 +14,7 @@
 
     .#{$ns}-button {
       color: $toolbar-button-icon-color--light;
+      background-color: $toolbar-button-background-color--light;
 
       &-toggle--active {
         color: #3c3c3c;
