@@ -93,6 +93,17 @@
             }
         },
 
+        populateAnnotations: function () {
+            var $annotations = $("<dl/>")
+                .addClass("av-annotations")
+                .appendTo(this.getAnnotations());
+            $.each(this.manifest.getMetadata(), function (index, item) {
+                $("<dt/>").text(item.getLabel()).appendTo($annotations);
+                $("<dd/>").html(item.getValue()).appendTo($annotations);
+                $annotations.append($annotations);
+            });
+        },
+
         setManifestLabel: function (label) {
             $(this.element).find(".av-manifest-label").html(label);
         },
@@ -184,23 +195,18 @@
         },
 
         isFirstPage: function () {
-            if (openseadragon === undefined) {
-                return false;
-            }
             var page = openseadragon.currentPage();
             return (page === 0);
         },
 
         isLastPage: function () {
-            if (openseadragon === undefined) {
-                return false;
-            }
             var page = openseadragon.currentPage();
             var pageCount = openseadragon.tileSources.length;
             return (page >= (pageCount - 1));
         },
 
         updateNavigationControls: function () {
+            console.log(this.isFirstPage());
             this.getEventControls("previous")
                 .prop("disabled", this.isFirstPage());
             this.getEventControls("next")
@@ -295,6 +301,7 @@
             manifesto.loadManifest(tileSource).then(function (manifest) {
 
                 self.manifest = manifesto.create(manifest);
+                self.populateAnnotations();
 
                 var sources = new Array();
                 $.each(self.manifest.getSequences(), function (sequenceIndex, sequence) {
@@ -339,6 +346,11 @@
                     var label = canvas.getLabel().filter(function (i) { return (i.locale === self.settings.locale); })[0];
 
                     self.setImageLabel(label.value);
+                });
+
+                openseadragon.addHandler("page", function () {  
+                    console.log("page");                  
+                    self.updateNavigationControls();
                 });
 
                 openseadragon.addHandler("open-failed", function (err) {

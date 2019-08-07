@@ -21,7 +21,7 @@
   justify-content: flex-start;
   flex-shrink: 0;
   box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.2);
-  z-index: 1; }
+  z-index: 10; }
 
 .av-titlebar {
   height: 64px;
@@ -101,12 +101,12 @@
 .av-drawer {
   width: 350px;
   height: 100%;
-  z-index: 0;
+  left: 0;
   position: fixed;
   transition: all 0.5s ease;
-  background: #fff;
-  left: 0;
-  transform: translate3d(-350px, 0, 0); }
+  background: #f5f5f5;
+  transform: translate3d(-350px, 0, 0);
+  z-index: 1; }
   .av-drawer.av-drawer--visible {
     transform: translate3d(0, 0, 0); }
     .av-drawer.av-drawer--visible ~ .av-content .av-viewport {
@@ -124,6 +124,15 @@
     padding-left: 40px; }
   .av-drawer .av-drawer-title {
     font-weight: normal; }
+  .av-drawer__annotations .av-annotations {
+    padding: 0 40px; }
+    .av-drawer__annotations .av-annotations dt {
+      font-weight: bold;
+      margin: 0 0 0.5rem 0; }
+    .av-drawer__annotations .av-annotations dd {
+      padding: 0;
+      margin: 0 0 1.25rem 0;
+      overflow: auto; }
 
 .av-main {
   flex: auto;
@@ -143,7 +152,38 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  transition: all 0.5s ease; }
+  transition: all 0.5s ease;
+  border: #616161 5px solid;
+  border-top: none;
+  border-bottom: none; }
+  .av-viewport__prev {
+    left: 0.5rem; }
+  .av-viewport__next {
+    right: 0.5rem; }
+  .av-viewport__prev, .av-viewport__next {
+    cursor: pointer;
+    color: #9e9e9e;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 1rem 0.25rem;
+    z-index: 9999;
+    position: absolute;
+    border-radius: 2px;
+    border: none;
+    background-color: #616161;
+    transition: all 0.25s ease; }
+    .av-viewport__prev:hover, .av-viewport__next:hover {
+      color: #e0e0e0;
+      background-color: #515151; }
+    .av-viewport__prev[disabled], .av-viewport__next[disabled] {
+      display: none; }
+  .av-viewport:hover .av-viewport__prev,
+  .av-viewport:hover .av-viewport__next {
+    opacity: 1; }
   .av-viewport.av-viewport--empty::after {
     color: rgba(0, 0, 0, 0.04);
     content: "power_off";
