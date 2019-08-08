@@ -52,14 +52,6 @@
 					<!-- <button type="button" class="hv-button" data-toggle="fullscreen" title="Toggle fullscreen view">
 						<i class="material-icons">fullscreen</i>
 					</button> -->
-					<button type="button" class="hv-button" title="Download a copy">
-						<img src="/dist/assets/download.svg" width="20px" height="20px" alt="Download" />
-						Download
-					</button>
-					<button type="button" class="hv-button" title="Printable version">
-						<img src="/dist/assets/printer.svg" width="20px" height="20px" alt="Printable version" />
-						Printable version
-					</button>
 				</div>
 				<div class="hv-navigation">
 					<!-- <button type="button" class="hv-button" data-toggle="first" title="First page">
@@ -108,22 +100,51 @@
 
 		<main class="hv-main">
 
-			<aside class="hv-drawer av_drawer__left hv-drawer__navigation">
+			<aside class="hv-drawer hv-drawer__left hv-drawer__navigation">
 				<ul>
 					<li>
-						<img src="https://dlcs.io/iiif-img/wellcome/1/ff2085d5-a9c7-412e-9dbe-dda87712228d/full/90,/0/default.jpg?t=1565241919797"
-							class="hv-thumbnail" />
+						<a href="#">
+							<img src="https://dlcs.io/iiif-img/wellcome/1/ff2085d5-a9c7-412e-9dbe-dda87712228d/full/90,/0/default.jpg?t=1565241919797"
+								class="hv-thumbnail" />
+						</a>
 					</li>
 					<li>
-						<img src="https://dlcs.io/iiif-img/wellcome/1/f327de6b-06ef-47ec-b98f-ee79c1685393/full/90,/0/default.jpg?t=1565241919797"
-							class="hv-thumbnail" />
+						<a href="#">
+							<img src="https://dlcs.io/iiif-img/wellcome/1/f327de6b-06ef-47ec-b98f-ee79c1685393/full/90,/0/default.jpg?t=1565241919797"
+								class="hv-thumbnail" />
+						</a>
 					</li>
 					<li>
-						<img src="https://dlcs.io/iiif-img/wellcome/1/61ea4035-6dde-4a4a-9ed2-74bf36d32d4c/full/90,/0/default.jpg?t=1565241919797"
-							class="hv-thumbnail" />
+						<a href="#">
+							<img src="https://dlcs.io/iiif-img/wellcome/1/61ea4035-6dde-4a4a-9ed2-74bf36d32d4c/full/90,/0/default.jpg?t=1565241919797"
+								class="hv-thumbnail" />
+						</a>
 					</li>
 				</ul>
 			</aside>
+
+			<div class="hv-content">
+				<div class="hv-content__container">
+					<div class="hv-viewport">
+						<button type="button" class="hv-viewport__prev" data-toggle="previous" title="Previous page">
+							<img src="/dist/assets/chevron-left.svg" width="40px" height="40px" alt="Previous page" />
+						</button>
+						<button type="button" class="hv-viewport__next" data-toggle="next" title="Next page">
+							<img src="/dist/assets/chevron-right.svg" width="40px" height="40px" alt="Next page" />
+						</button>
+					</div>
+					<div class="hv-toolbar">
+						<button type="button" class="hv-button" title="Download a copy">
+							<img src="/dist/assets/download.svg" width="20px" height="20px" alt="Download" />
+							Download
+						</button>
+						<button type="button" class="hv-button" title="Printable version">
+							<img src="/dist/assets/printer.svg" width="20px" height="20px" alt="Printable version" />
+							Printable version
+						</button>
+					</div>
+				</div>
+			</div>
 
 			<aside class="hv-drawer hv-drawer__right hv-drawer__annotations">
 				<h3 class="hv-drawer-title">Document details</h3>
@@ -131,16 +152,6 @@
 				</div>
 			</aside>
 
-			<div class="hv-content">
-				<div class="hv-viewport">
-					<button type="button" class="hv-viewport__prev" data-toggle="previous" title="Previous page">
-						<img src="/dist/assets/chevron-left.svg" width="40px" height="40px" alt="Previous page" />
-					</button>
-					<button type="button" class="hv-viewport__next" data-toggle="next" title="Next page">
-						<img src="/dist/assets/chevron-right.svg" width="40px" height="40px" alt="Next page" />
-					</button>
-				</div>
-			</div>
 		</main>
 
 	</div>

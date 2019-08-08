@@ -124,12 +124,47 @@
             return $(this.element).find(".hv-drawer__annotations");
         },
 
-        openDrawer: function (element) {
-            $(element).addClass("hv-drawer--visible");
+        openDrawer: function (drawer) {
+            $(drawer).addClass("hv-drawer--visible");
+            this.updateLayout(drawer);
         },
 
-        closeDrawer: function (element) {
-            $(element).removeClass("hv-drawer--visible");
+        closeDrawer: function (drawer) {
+            $(drawer).removeClass("hv-drawer--visible");
+            this.updateLayout(drawer);
+        },
+
+        updateLayout: function (drawer) {
+            var $container = $(drawer)
+                .siblings(".hv-content").find(".hv-content__container");
+
+            var $leftDrawer = $(this.element)
+                .find(".hv-drawer:not(.hv-drawer__right)");
+            var leftVisible = this.isDrawerVisible($leftDrawer);
+
+            var $rightDrawer = $(this.element)
+                .find(".hv-drawer.hv-drawer__right");
+            var rightVisible = this.isDrawerVisible($rightDrawer);
+
+            var totalWidth = (leftVisible ? 350 : 0) + (rightVisible ? 350 : 0);
+
+            $container.parent()
+                .removeClass("hv-content--push-left hv-content--push-right");
+
+            if (leftVisible) {
+                $container.parent().addClass("hv-content--push-left");
+            }
+            if (rightVisible) {
+                $container.parent().addClass("hv-content--push-right");
+            }
+
+            $(drawer).animate({
+                transform: "(-350px)"
+            }, 500, function () {
+                
+            });
+
+            //$container.css("width", "calc(100% - " + totalWidth + "px)");
         },
 
         toggleDrawer: function (element) {
@@ -209,6 +244,8 @@
                 .getSequenceByIndex(0)
                 .getCanvasByIndex(openseadragon.currentPage());
         },
+
+
 
         bindEventControls: function (eventName) {
             var self = this;
