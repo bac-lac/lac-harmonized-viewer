@@ -200,6 +200,23 @@
   }
 }
 
+.#{$ns}-drawer__navigation {
+  padding: 2rem;
+  background: #616161;
+
+  ul {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    list-style-type: none;
+  }
+
+  .#{$ns}-thumbnail {
+    width: 125px;
+  }
+}
+
 .#{$ns}-main {
   flex: auto;
   display: flex;
@@ -244,8 +261,8 @@
     padding: 1.25rem 0.25rem;
     z-index: 9999;
     position: absolute;
-    border-radius: 2px;
     border: none;
+    border-radius: 2px;
     background-color: #616161;
     transition: all 0.25s ease;
 
@@ -261,8 +278,6 @@
 
   &#{&}--empty::after {
     color: rgba(0, 0, 0, 0.04);
-    content: "power_off";
-    font: 20rem "Material Icons";
   }
 }
 

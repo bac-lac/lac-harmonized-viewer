@@ -64,8 +64,8 @@
                 window.sessionStorage.setItem("debug", self.debug);
             });
 
-            this.addHandler("gallery", function () {
-                self.toggleDrawer(self.getGallery());
+            this.addHandler("navigation", function () {
+                self.toggleDrawer(self.getNavigation());
             });
 
             this.addHandler("annotations", function () {
@@ -116,8 +116,8 @@
             return $(this.element).find(".hv-viewport");
         },
 
-        getGallery: function () {
-            return $(this.element).find(".hv-drawer__gallery");
+        getNavigation: function () {
+            return $(this.element).find(".hv-drawer__navigation");
         },
 
         getAnnotations: function () {

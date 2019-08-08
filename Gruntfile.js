@@ -12,10 +12,10 @@ module.exports = function (grunt) {
 		copy: {
 			dist: {
 				files: [
-					// {
-					// 	src: 'node_modules/bootstrap/dist/js/bootstrap.bundle.js',
-					// 	dest: 'public/vendors/bootstrap/bootstrap.js'
-					// },
+					{
+						src: 'node_modules/bootstrap/dist/js/bootstrap.bundle.js',
+						dest: 'public/vendors/bootstrap/bootstrap.js'
+					},
 					{
 						src: 'node_modules/openseadragon/build/openseadragon/openseadragon.js',
 						dest: 'public/vendors/openseadragon/openseadragon.js'
@@ -60,8 +60,8 @@ module.exports = function (grunt) {
 		// Minify JS
 		uglify: {
 			dist: {
-				src: ["dist/archives-viewer.js"],
-				dest: "dist/archives-viewer.min.js"
+				src: ["dist/lac-harmonized-viewer.js"],
+				dest: "dist/lac-harmonized-viewer.min.js"
 			}
 		},
 
@@ -87,10 +87,13 @@ module.exports = function (grunt) {
 			dist: {
 				files: [
 					{
-						'dist/archives-viewer.css': 'src/scss/main.scss'
+						'dist/bootstrap.css': 'node_modules/bootstrap/dist/scss/bootstrap.scss'
 					},
 					{
-						'dist/archives-viewer-theme.css': 'src/scss/theme.scss'
+						'dist/lac-harmonized-viewer.css': 'src/scss/main.scss'
+					},
+					{
+						'dist/lac-harmonized-viewer-theme.css': 'src/scss/theme.scss'
 					}
 				]
 			}

@@ -1,6 +1,6 @@
 {
 	"version": 3,
-	"file": "archives-viewer-theme.css",
+	"file": "lac-harmonized-viewer-theme.css",
 	"sources": [
 		"../src/scss/theme.scss",
 		"../src/scss/_variables.scss"
