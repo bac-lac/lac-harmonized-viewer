@@ -41,7 +41,7 @@
 
 			<div class="hv-toolbar">
 				<div class="hv-toolbar-left">
-					<button type="button" class="hv-button hv-button__icon" data-toggle="gallery"
+					<button type="button" class="hv-button hv-button__icon" data-toggle="navigation"
 						title="Toggle navigation view">
 						<img src="/dist/assets/menu.svg" width="20px" height="20px" alt="Navigation" />
 					</button>
@@ -107,7 +107,22 @@
 		</header>
 
 		<main class="hv-main">
-			<aside class="hv-drawer av_drawer__left hv-drawer__gallery">
+
+			<aside class="hv-drawer av_drawer__left hv-drawer__navigation">
+				<ul>
+					<li>
+						<img src="https://dlcs.io/iiif-img/wellcome/1/ff2085d5-a9c7-412e-9dbe-dda87712228d/full/90,/0/default.jpg?t=1565241919797"
+							class="hv-thumbnail" />
+					</li>
+					<li>
+						<img src="https://dlcs.io/iiif-img/wellcome/1/f327de6b-06ef-47ec-b98f-ee79c1685393/full/90,/0/default.jpg?t=1565241919797"
+							class="hv-thumbnail" />
+					</li>
+					<li>
+						<img src="https://dlcs.io/iiif-img/wellcome/1/61ea4035-6dde-4a4a-9ed2-74bf36d32d4c/full/90,/0/default.jpg?t=1565241919797"
+							class="hv-thumbnail" />
+					</li>
+				</ul>
 			</aside>
 
 			<aside class="hv-drawer hv-drawer__right hv-drawer__annotations">
@@ -128,21 +143,6 @@
 			</div>
 		</main>
 
-		<footer class="hv-footer">
-			<div class="hv-toolbar">
-				<button type="button" class="hv-button hv-button__icon" data-toggle="previous" title="Previous page">
-					<img src="/dist/assets/chevron-left.svg" width="20px" height="20px" alt="Previous page" />
-				</button>
-				<div class="hv-navigation__current">
-					<button type="button" class="hv-button">
-						Page 1 of 16
-					</button>
-				</div>
-				<button type="button" class="hv-button hv-button__icon" data-toggle="next" title="Next page">
-					<img src="/dist/assets/chevron-right.svg" width="20px" height="20px" alt="Next page" />
-				</button>
-			</div>
-		</footer>
 	</div>
 
 	<script type="text/javascript">
