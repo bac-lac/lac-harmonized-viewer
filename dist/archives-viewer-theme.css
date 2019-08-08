@@ -1,15 +1,15 @@
-.av-viewer {
+.hv-viewer {
   background-color: #616161; }
-  .av-viewer .av-header {
+  .hv-viewer .hv-header {
     background-color: #00838F; }
-  .av-viewer .av-toolbar {
+  .hv-viewer .hv-toolbar {
     border-top: #eee 1px solid;
     border-bottom: #eee 1px solid;
     background-color: #eee; }
-    .av-viewer .av-toolbar .av-button {
+    .hv-viewer .hv-toolbar .hv-button {
       color: #5c5c5c;
       background-color: #eee; }
-      .av-viewer .av-toolbar .av-button-toggle--active {
+      .hv-viewer .hv-toolbar .hv-button-toggle--active {
         color: #3c3c3c;
         background: rgba(0, 0, 0, 0.2); }
 

@@ -13,7 +13,7 @@
     // minified (especially when both are regularly referenced in your plugin).
 
     // Default plugin settings
-    var pluginName = "archivesViewer",
+    var pluginName = "harmonizedViewer",
         defaults = {
             locale: "en-GB"
         };
@@ -89,13 +89,13 @@
 
             this.debug = (window.sessionStorage.getItem("debug") === "true") ? true : false;
             if (this.debug) {
-                this.getEventControls("debug").addClass("av-button-toggle--active");
+                this.getEventControls("debug").addClass("hv-button-toggle--active");
             }
         },
 
         populateAnnotations: function () {
             var $annotations = $("<dl/>")
-                .addClass("av-annotations")
+                .addClass("hv-annotations")
                 .appendTo(this.getAnnotations());
             $.each(this.manifest.getMetadata(), function (index, item) {
                 $("<dt/>").text(item.getLabel()).appendTo($annotations);
@@ -105,35 +105,31 @@
         },
 
         setManifestLabel: function (label) {
-            $(this.element).find(".av-manifest-label").html(label);
-        },
-
-        setImageLabel: function (label) {
-            $(this.element).find(".av-image-label").html(label);
+            $(this.element).find(".hv-manifest-label").html(label);
         },
 
         getContent: function () {
-            return $(this.element).find(".av-content");
+            return $(this.element).find(".hv-content");
         },
 
         getViewport: function () {
-            return $(this.element).find(".av-viewport");
+            return $(this.element).find(".hv-viewport");
         },
 
         getGallery: function () {
-            return $(this.element).find(".av-drawer__gallery");
+            return $(this.element).find(".hv-drawer__gallery");
         },
 
         getAnnotations: function () {
-            return $(this.element).find(".av-drawer__annotations");
+            return $(this.element).find(".hv-drawer__annotations");
         },
 
         openDrawer: function (element) {
-            $(element).addClass("av-drawer--visible");
+            $(element).addClass("hv-drawer--visible");
         },
 
         closeDrawer: function (element) {
-            $(element).removeClass("av-drawer--visible");
+            $(element).removeClass("hv-drawer--visible");
         },
 
         toggleDrawer: function (element) {
@@ -146,7 +142,7 @@
         },
 
         isDrawerVisible: function (element) {
-            return $(element).hasClass("av-drawer--visible");
+            return $(element).hasClass("hv-drawer--visible");
         },
 
         enableButton: function (button) {
@@ -163,9 +159,9 @@
 
         getSpinner: function () {
             var $viewport = this.getViewport();
-            var $spinner = $viewport.find(".av-spinner");
+            var $spinner = $viewport.find(".hv-spinner");
             if ($spinner.length === 0) {
-                $spinner = $("<div/>").addClass("av-spinner").appendTo($viewport);
+                $spinner = $("<div/>").addClass("hv-spinner").appendTo($viewport);
             }
             return $spinner;
         },
@@ -181,17 +177,13 @@
         },
 
         initToolbar: function () {
-            $(this.element).on("click", ".av-toolbar .av-button-toggle", function () {
-                $(this).toggleClass("av-button-toggle--active");
+            $(this.element).on("click", ".hv-toolbar .hv-button-toggle", function () {
+                $(this).toggleClass("hv-button-toggle--active");
             });
         },
 
-        enableToolbar: function () {
-            $(this.element).find(".av-button.av-button-openseadragon").prop("disabled", false);
-        },
-
-        disableToolbar: function () {
-            $(this.element).find(".av-button.av-button-openseadragon").prop("disabled", true);
+        enableToggleButtons: function (enable) {
+            $(this.element).find(".hv-button[data-toggle]").prop("disabled", (enable === false));
         },
 
         isFirstPage: function () {
@@ -206,7 +198,6 @@
         },
 
         updateNavigationControls: function () {
-            console.log(this.isFirstPage());
             this.getEventControls("previous")
                 .prop("disabled", this.isFirstPage());
             this.getEventControls("next")
@@ -282,7 +273,7 @@
         initOpenSeadragon: function () {
             var self = this;
 
-            self.disableToolbar();
+            this.enableToggleButtons(false);
 
             if (openseadragon !== undefined) {
                 openseadragon.destroy();
@@ -325,6 +316,7 @@
                     showNavigator: true,
                     navigatorPosition: "BOTTOM_RIGHT",
                     showNavigationControl: false,
+                    showSequenceControl: false,
                     minZoomImageRatio: 1.0,
                     preserveViewport: true,
                     animationTime: 0.25,
@@ -335,21 +327,20 @@
                     self.hideSpinner();
                     $(openseadragon.element).show();
 
-                    self.enableToolbar();
+                    self.enableToggleButtons(true);
                     self.updateNavigationControls();
 
-                    $(self.element).find(".av-logo").css("background-image", self.format("url('{0}')", self.manifest.getLogo()));
+                    $(self.element).find(".hv-logo").css("background-image", self.format("url('{0}')", self.manifest.getLogo()));
 
                     self.setManifestLabel(self.manifest.getDefaultLabel());
 
                     var canvas = self.getManifestCanvas();
                     var label = canvas.getLabel().filter(function (i) { return (i.locale === self.settings.locale); })[0];
 
-                    self.setImageLabel(label.value);
+                    //self.setImageLabel(label.value);
                 });
 
-                openseadragon.addHandler("page", function () {  
-                    console.log("page");                  
+                openseadragon.addHandler("page", function (event) {
                     self.updateNavigationControls();
                 });
 
@@ -366,7 +357,7 @@
                     var current = openseadragon.viewport.getZoom(false);
                     var currentPercentage = Math.round((current - minZoom) * 100 / (maxZoom - minZoom), 0);
 
-                    $(self.element).find(".av-zoom").text(self.format("{0}%", currentPercentage));
+                    $(self.element).find(".hv-zoom").text(self.format("{0}%", currentPercentage));
                     //self.refreshZoomSlider();
                 });
             }, function (err) {
@@ -416,12 +407,12 @@
             console.log('error');
             this.hideSpinner();
 
-            var $error = $("<div />").addClass("av-error");
-            $("<i />").addClass("av-error-icon").addClass("material-icons").text("error_outline").appendTo($error);
-            $("<div />").addClass("av-error-text").html("An unexpected error occurred.<br />Please try again later.").appendTo($error);
+            var $error = $("<div />").addClass("hv-error");
+            $("<i />").addClass("hv-error-icon").addClass("material-icons").text("error_outline").appendTo($error);
+            $("<div />").addClass("hv-error-text").html("An unexpected error occurred.<br />Please try again later.").appendTo($error);
 
             if (this.debug) {
-                $("<div />").addClass("av-debug").html(err.message).appendTo($error);
+                $("<div />").addClass("hv-debug").html(err.message).appendTo($error);
             }
 
             var $viewport = this.getViewport();
@@ -429,7 +420,7 @@
         }
     });
 
-    $.fn.archivesViewer = function (options) {
+    $.fn.harmonizedViewer = function (options) {
         return this.each(function () {
             if (!$.data(this, "plugin_" + pluginName)) {
                 $.data(this, "plugin_" +

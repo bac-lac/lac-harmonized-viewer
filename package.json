@@ -1,5 +1,5 @@
 {
-  "name": "archivescanada-viewer",
+  "name": "lac-harmonized-viewer",
   "version": "1.0.0",
   "description": "Open-source web-based viewer for archival material. IIIF compliant & based on JQuery and Openseadragon.",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gabrielboisseau-archivescanada/archivescanada-viewer.git"
+    "url": "git+https://github.com/bac-lac/lac-harmonized-viewer.git"
   },
   "keywords": [
     "viewer",
@@ -20,9 +20,9 @@
   "author": "Government of Canada",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/gabrielboisseau-archivescanada/archivescanada-viewer/issues"
+    "url": "https://github.com/bac-lac/lac-harmonized-viewer/issues"
   },
-  "homepage": "https://github.com/gabrielboisseau-archivescanada/archivescanada-viewer#readme",
+  "homepage": "https://github.com/bac-lac/lac-harmonized-viewer#readme",
   "dependencies": {
     "bootstrap": "^4.3.1",
     "jquery": ">=1.5.1",

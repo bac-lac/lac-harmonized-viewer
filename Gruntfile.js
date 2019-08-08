@@ -23,6 +23,12 @@ module.exports = function (grunt) {
 					{
 						src: 'node_modules/manifesto.js/dist/client/manifesto.bundle.js',
 						dest: 'public/vendors/manifesto/manifesto.js'
+					},
+					{
+						expand: true,
+						cwd: 'src/assets',
+						src: '*',
+						dest: 'dist/assets/'
 					}
 				]
 			}

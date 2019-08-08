@@ -2,7 +2,7 @@
 
 .#{$ns}-viewer,
 .#{$ns}-button {
-  font-family: "Roboto", Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
 }
 
 .#{$ns}-viewer {
@@ -63,12 +63,8 @@
 
   .#{$ns}-manifest-label {
     color: #fff;
-    font-size: 14px;
-  }
-
-  .#{$ns}-image-label {
-    color: #b2ebf2;
-    font-size: 18px;
+    font-size: 1.1rem;
+    font-weight: normal;
   }
 }
 
@@ -95,12 +91,19 @@
 
   .#{$ns}-button {
     color: #5c5c5c;
-    height: 36px;
-    font-size: 14px;
-    padding: 0 12px;
-    display: inline-block;
-    border-radius: 2px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    border-radius: 3px;
     border: none;
+
+    & > * {
+      margin-right: 10px;
+    }
+
+    &__icon > * {
+      margin-right: 0;
+    }
 
     &:not([disabled]) {
       cursor: pointer;
@@ -116,10 +119,6 @@
 
     &:active {
       background-color: rgba(158, 158, 158, 0.4);
-    }
-
-    .material-icons {
-      vertical-align: middle;
     }
   }
 
@@ -138,7 +137,7 @@
     width: 1px;
     height: 36px;
     margin: 0 0.3rem;
-    background: rgba(158, 158, 158, 0.2);
+    background: rgba(158, 158, 158, 0.5);
   }
 }
 
@@ -163,6 +162,11 @@
     &.#{$ns}-drawer__right ~ .#{$ns}-content .#{$ns}-viewport {
       width: calc(100% - 350px);
       transform: translate3d(0, 0, 0);
+    }
+
+    & ~ .#{$ns}-drawer--visible ~ .#{$ns}-content .#{$ns}-viewport {
+      width: calc(100% - 700px);
+      transform: translate3d(350px, 0, 0);
     }
   }
 
@@ -217,9 +221,7 @@
   justify-content: center;
   position: relative;
   transition: all 0.5s ease;
-  border: #616161 5px solid;
-  border-top: none;
-  border-bottom: none;
+  border: #616161 7px solid;
 
   &__prev {
     left: 0.5rem;
@@ -239,7 +241,7 @@
     font-size: 2.5rem;
     font-weight: bold;
     text-decoration: none;
-    padding: 1rem 0.25rem;
+    padding: 1.25rem 0.25rem;
     z-index: 9999;
     position: absolute;
     border-radius: 2px;
@@ -248,12 +250,7 @@
     transition: all 0.25s ease;
 
     &:hover {
-      color: #e0e0e0;
       background-color: #515151;
-    }
-
-    &[disabled] {
-      display: none;
     }
   }
 
@@ -290,6 +287,12 @@
     margin-top: 1rem;
     font: 0.8rem Consolas, "Courier New", monospace;
     background-color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+.#{$ns}-footer {
+  .#{$ns}-toolbar {
+    margin-bottom: 0;
   }
 }
 
