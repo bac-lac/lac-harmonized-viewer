@@ -59,6 +59,13 @@
 
             var self = this;
 
+            this.bindEventControls("debug");
+            this.bindEventControls("page");
+            this.bindEventControls("previous");
+            this.bindEventControls("next");
+            this.bindEventControls("navigation");
+            this.bindEventControls("annotations");
+
             this.addHandler("debug", function () {
                 self.debug = !self.debug;
                 window.sessionStorage.setItem("debug", self.debug);
@@ -66,10 +73,11 @@
 
             this.addHandler("navigation", function () {
                 self.toggleDrawer(self.getNavigation());
+                self.updateLayout();
             });
 
             this.addHandler("annotations", function () {
-                self.toggleDrawer(self.getAnnotations());
+                self.toggleDrawer(self.getAnnotation());
             });
 
             this.addHandler("previous", function () {
@@ -87,6 +95,12 @@
                 }
             });
 
+            this.addHandler("page", function (event) {
+                console.log("raising page");
+                self.enableToggleButtons(false);
+                openseadragon.goToPage(event.page);
+            });
+
             this.debug = (window.sessionStorage.getItem("debug") === "true") ? true : false;
             if (this.debug) {
                 this.getEventControls("debug").addClass("hv-button-toggle--active");
@@ -96,12 +110,64 @@
         populateAnnotations: function () {
             var $annotations = $("<dl/>")
                 .addClass("hv-annotations")
-                .appendTo(this.getAnnotations());
+                .appendTo(this.getAnnotation());
+
             $.each(this.manifest.getMetadata(), function (index, item) {
                 $("<dt/>").text(item.getLabel()).appendTo($annotations);
                 $("<dd/>").html(item.getValue()).appendTo($annotations);
                 $annotations.append($annotations);
             });
+        },
+
+        populateNavigation: function () {
+
+            var self = this;
+
+            var $ol = $("<ol/>");
+            var sequence = this.manifest.getSequenceByIndex(0);
+
+            $.each(sequence.getCanvases(), function (index, canvas) {
+
+                var image = canvas.getImages()[0];
+                var label = canvas.getLabel()[0];
+
+                var thumbnail = self.getThumbnail(image, undefined, 120);
+
+                var $li = $("<li/>")
+                    .attr("data-index", index)
+                    .appendTo($ol);
+
+                var $a = $("<a/>")
+                    .attr("href", "javascript:;")
+                    .addClass("hv-navigation__item")
+                    .attr("title", self.format("Go to page {0}", label.value))
+                    .attr("data-toggle", "page")
+                    .attr("data-page", index)
+                    .appendTo($li);
+
+                var $img = $("<img/>")
+                    .attr("src", thumbnail)
+                    .addClass("hv-thumbnail")
+                    .appendTo($a);
+
+                var $page = $("<div/>")
+                    .addClass("hv-navigation__item-page")
+                    .text(label.value)
+                    .appendTo($a);
+            });
+
+            this.getNavigation().html($ol).mCustomScrollbar({
+                scrollInertia: 250
+            });
+        },
+
+        getThumbnail: function (image, width, height) {
+
+            var resource = image.getResource();
+            var service = resource.getServices()[0];
+
+            return this.format("{0}/full/{1},{2}/0/default.{3}", service.id,
+                (width !== undefined ? width : ""), (height !== undefined ? height : ""), "jpg");
         },
 
         setManifestLabel: function (label) {
@@ -120,13 +186,25 @@
             return $(this.element).find(".hv-drawer__navigation");
         },
 
-        getAnnotations: function () {
+        isNavigationVisible: function () {
+            return $(this.element).find(".hv-drawer__navigation").hasClass("hv-drawer--visible");
+        },
+
+        getAnnotation: function () {
             return $(this.element).find(".hv-drawer__annotations");
+        },
+
+        isAnnotationVisible: function () {
+            return $(this.element).find(".hv-drawer__annotations").hasClass("hv-drawer--visible");
+        },
+
+        openNavigation: function () {
+            this.openDrawer(this.getNavigation());
+            $(this.element).trigger("navigation");
         },
 
         openDrawer: function (drawer) {
             $(drawer).addClass("hv-drawer--visible");
-            this.updateLayout(drawer);
         },
 
         closeDrawer: function (drawer) {
@@ -134,37 +212,21 @@
             this.updateLayout(drawer);
         },
 
-        updateLayout: function (drawer) {
-            var $container = $(drawer)
-                .siblings(".hv-content").find(".hv-content__container");
+        updateLayout: function () {
+            var $content = this.getContent();
 
-            var $leftDrawer = $(this.element)
-                .find(".hv-drawer:not(.hv-drawer__right)");
-            var leftVisible = this.isDrawerVisible($leftDrawer);
+            $content.removeClass("hv-content--push-left hv-content--push-right");
 
-            var $rightDrawer = $(this.element)
-                .find(".hv-drawer.hv-drawer__right");
-            var rightVisible = this.isDrawerVisible($rightDrawer);
-
-            var totalWidth = (leftVisible ? 350 : 0) + (rightVisible ? 350 : 0);
-
-            $container.parent().removeClass("hv-content--push-left hv-content--push-right");
-
-            if (leftVisible) {
-                $container.parent().addClass("hv-content--push-left");
+            if (this.isNavigationVisible()) {
+                $content.addClass("hv-content--push-left");
             }
-            if (rightVisible) {
-                $container.parent().addClass("hv-content--push-right");
+            if (this.isAnnotationVisible()) {
+                $content.addClass("hv-content--push-right");
             }
+        },
 
-            // $(drawer).animate({
-            //     "margin-left": -350,
-            //     //"transform": "translate(-350px)"
-            // }, 500, function () {
-
-            // });
-
-            //$container.css("width", "calc(100% - " + totalWidth + "px)");
+        toggleNavigation: function () {
+            this.toggleDrawer(this.getNavigation());
         },
 
         toggleDrawer: function (element) {
@@ -174,6 +236,7 @@
             else {
                 this.openDrawer(element);
             }
+            this.updateLayout();
         },
 
         isDrawerVisible: function (element) {
@@ -218,7 +281,9 @@
         },
 
         enableToggleButtons: function (enable) {
-            $(this.element).find(".hv-button[data-toggle]").prop("disabled", (enable === false));
+            $(this.element)
+                .find(".hv-button[data-toggle]")
+                .prop("disabled", (enable === false));
         },
 
         isFirstPage: function () {
@@ -233,10 +298,21 @@
         },
 
         updateNavigationControls: function () {
+            var page = openseadragon.currentPage();
+
+            // Enable/disable navigation buttons
             this.getEventControls("previous")
                 .prop("disabled", this.isFirstPage());
             this.getEventControls("next")
                 .prop("disabled", this.isLastPage());
+
+            // Set active navigation item
+            $(this.element)
+                .find(".hv-drawer__navigation ol > li")
+                .removeClass("active");
+            $(this.element)
+                .find(".hv-drawer__navigation ol > li[data-index=" + page + "]")
+                .addClass("active");
         },
 
         getManifestCanvas: function () {
@@ -245,16 +321,10 @@
                 .getCanvasByIndex(openseadragon.currentPage());
         },
 
-
-
-        bindEventControls: function (eventName) {
+        bindEventControls: function (eventName, eventArgs) {
             var self = this;
-            var $controls = this.getEventControls(eventName);
-            $controls.each(function (index, control) {
-                var selector = self.format("#{0}", self.getUniqueId(control));
-                $(document).on("click", selector, function () {
-                    self.raiseEvent(eventName);
-                });
+            $(document).find(this.element).on("click", "[data-toggle=" + eventName + "]", function () {
+                self.raiseEvent(eventName, $(this).data());
             });
         },
 
@@ -282,7 +352,6 @@
             }
             if (handler && typeof handler === "function") {
                 events[events.length] = { handler: handler, userData: userData || null };
-                this.bindEventControls(eventName);
             }
         },
 
@@ -310,8 +379,6 @@
         initOpenSeadragon: function () {
             var self = this;
 
-            this.enableToggleButtons(false);
-
             if (openseadragon !== undefined) {
                 openseadragon.destroy();
                 openseadragon = null;
@@ -329,7 +396,6 @@
             manifesto.loadManifest(tileSource).then(function (manifest) {
 
                 self.manifest = manifesto.create(manifest);
-                self.populateAnnotations();
 
                 var sources = new Array();
                 $.each(self.manifest.getSequences(), function (sequenceIndex, sequence) {
@@ -372,13 +438,14 @@
                     self.setManifestLabel(self.manifest.getDefaultLabel());
 
                     var canvas = self.getManifestCanvas();
-                    var label = canvas.getLabel().filter(function (i) { return (i.locale === self.settings.locale); })[0];
+                    //var label = canvas.getLabel().filter(function (i) { return (i.locale === self.settings.locale); })[0];
 
                     //self.setImageLabel(label.value);
                 });
 
-                openseadragon.addHandler("page", function (event) {
-                    self.updateNavigationControls();
+                openseadragon.addHandler("page", function () {
+                    //self.enableToggleButtons(true);
+                    //self.updateNavigationControls();
                 });
 
                 openseadragon.addHandler("open-failed", function (err) {
@@ -397,6 +464,10 @@
                     $(self.element).find(".hv-zoom").text(self.format("{0}%", currentPercentage));
                     //self.refreshZoomSlider();
                 });
+
+                self.populateAnnotations();
+                self.populateNavigation();
+
             }, function (err) {
                 console.error(err);
                 self.hideSpinner();

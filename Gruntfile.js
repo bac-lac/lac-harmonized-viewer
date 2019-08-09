@@ -13,16 +13,24 @@ module.exports = function (grunt) {
 			dist: {
 				files: [
 					{
+						src: 'node_modules/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js',
+						dest: 'tmp/vendors/malihu-scrollbar/malihu-scrollbar.js'
+					},
+					{
+						src: 'node_modules/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css',
+						dest: 'tmp/vendors/malihu-scrollbar/malihu-scrollbar.css'
+					},
+					{
 						src: 'node_modules/bootstrap/dist/js/bootstrap.bundle.js',
-						dest: 'public/vendors/bootstrap/bootstrap.js'
+						dest: 'tmp/vendors/bootstrap/bootstrap.js'
 					},
 					{
 						src: 'node_modules/openseadragon/build/openseadragon/openseadragon.js',
-						dest: 'public/vendors/openseadragon/openseadragon.js'
+						dest: 'tmp/vendors/openseadragon/openseadragon.js'
 					},
 					{
 						src: 'node_modules/manifesto.js/dist/client/manifesto.bundle.js',
-						dest: 'public/vendors/manifesto/manifesto.js'
+						dest: 'tmp/vendors/manifesto/manifesto.js'
 					},
 					{
 						expand: true,
@@ -31,14 +39,30 @@ module.exports = function (grunt) {
 						dest: 'dist/assets/'
 					}
 				]
+			},
+			themes: {
+				files: [
+					{
+						src: 'tmp/harmonized-viewer-theme.css',
+						dest: 'dist/harmonized-viewer-theme.css'
+					}
+				]
 			}
 		},
 
 		// Concat definitions
 		concat: {
-			dist: {
-				src: ['src/**/*.js', 'public/vendors/**/*.js'],
-				dest: "dist/archives-viewer.js"
+			js: {
+				src: ['src/**/*.js', 'tmp/vendors/**/*.js'],
+				dest: 'dist/harmonized-viewer.js'
+			},
+			css: {
+				src: ['tmp/vendors/**/*.css'],
+				dest: 'tmp/vendors/all.css'
+			},
+			bundle: {
+				src: ['tmp/harmonized-viewer.css', 'tmp/harmonized-viewer-icons.css', 'tmp/vendors/all.css'],
+				dest: 'dist/harmonized-viewer.css'
 			}
 		},
 
@@ -60,8 +84,8 @@ module.exports = function (grunt) {
 		// Minify JS
 		uglify: {
 			dist: {
-				src: ["dist/lac-harmonized-viewer.js"],
-				dest: "dist/lac-harmonized-viewer.min.js"
+				src: ["dist/harmonized-viewer.js"],
+				dest: "dist/harmonized-viewer.min.js"
 			}
 		},
 
@@ -87,13 +111,10 @@ module.exports = function (grunt) {
 			dist: {
 				files: [
 					{
-						'dist/bootstrap.css': 'node_modules/bootstrap/dist/scss/bootstrap.scss'
+						'tmp/harmonized-viewer.css': 'src/scss/main.scss'
 					},
 					{
-						'dist/lac-harmonized-viewer.css': 'src/scss/main.scss'
-					},
-					{
-						'dist/lac-harmonized-viewer-theme.css': 'src/scss/theme.scss'
+						'tmp/harmonized-viewer-theme.css': 'src/scss/theme.scss'
 					}
 				]
 			}
@@ -109,10 +130,24 @@ module.exports = function (grunt) {
 			}
 		},
 
+		// SVG compilation
+		grunticon: {
+			dist: {
+				files: [{
+					expand: true,
+					cwd: 'src/assets',
+					src: ['*.svg', '*.png'],
+					dest: "dist/assets"
+				}],
+				options: {
+				}
+			},
+		},
+
 		// Clean temp folder
 		clean: {
-			public: {
-				src: ['public']
+			tmp: {
+				src: ['tmp']
 			},
 			dist: {
 				src: ['dist']
@@ -130,6 +165,7 @@ module.exports = function (grunt) {
 	});
 
 	grunt.loadNpmTasks("grunt-sass");
+	grunt.loadNpmTasks('grunt-grunticon');
 	grunt.loadNpmTasks("grunt-contrib-concat");
 	grunt.loadNpmTasks("grunt-contrib-copy");
 	grunt.loadNpmTasks("grunt-contrib-jshint");
@@ -140,7 +176,8 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks("grunt-contrib-watch");
 	grunt.loadNpmTasks("grunt-karma");
 
-	grunt.registerTask("lint", ["jshint", "jscs"]);
-	grunt.registerTask("build", ["clean:dist", "copy", "concat", "sass", "uglify", "cssmin", "clean:public"]);
+	//grunt.registerTask("lint", ["jshint", "jscs"]);
+	grunt.registerTask("svg", "grunticon");
+	grunt.registerTask("build", ["clean:dist", "copy:dist", "concat:js", "concat:css", "sass", "concat:bundle", "uglify", "copy:themes", "cssmin", "clean:tmp"]);
 	grunt.registerTask("default", ["build"]);
 };
