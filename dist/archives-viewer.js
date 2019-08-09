@@ -148,8 +148,7 @@
 
             var totalWidth = (leftVisible ? 350 : 0) + (rightVisible ? 350 : 0);
 
-            $container.parent()
-                .removeClass("hv-content--push-left hv-content--push-right");
+            $container.parent().removeClass("hv-content--push-left hv-content--push-right");
 
             if (leftVisible) {
                 $container.parent().addClass("hv-content--push-left");
@@ -158,11 +157,12 @@
                 $container.parent().addClass("hv-content--push-right");
             }
 
-            $(drawer).animate({
-                transform: "(-350px)"
-            }, 500, function () {
-                
-            });
+            // $(drawer).animate({
+            //     "margin-left": -350,
+            //     //"transform": "translate(-350px)"
+            // }, 500, function () {
+
+            // });
 
             //$container.css("width", "calc(100% - " + totalWidth + "px)");
         },
