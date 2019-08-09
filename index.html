@@ -6,12 +6,12 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-	<script type="text/javascript" src="/dist/archives-viewer.js"></script>
+	<script type="text/javascript" src="/dist/harmonized-viewer.min.js"></script>
 
 	<link href="//fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
 
-	<link href="/dist/lac-harmonized-viewer.css" rel="stylesheet" type="text/css">
-	<link href="/dist/lac-harmonized-viewer-theme.css" rel="stylesheet" type="text/css">
+	<link href="/dist/harmonized-viewer.css" rel="stylesheet" type="text/css">
+	<link href="/dist/harmonized-viewer-theme.css" rel="stylesheet" type="text/css">
 
 	<style type="text/css">
 		html,
@@ -40,10 +40,9 @@
 			</div>
 
 			<div class="hv-toolbar">
-				<div class="hv-toolbar-left">
-					<button type="button" class="hv-button hv-button__icon" data-toggle="navigation"
+				<div class="hv-toolbar__left">
+					<button type="button" class="hv-button hv-button__icon hv-icon__menu" data-toggle="navigation"
 						title="Toggle navigation view">
-						<img src="/dist/assets/menu.svg" width="20px" height="20px" alt="Navigation" />
 					</button>
 					<!-- <button type="button" class="hv-button hv-button__icon" data-toggle="home" title="Go home">
 						<img src="/dist/assets/home.svg" width="20px" height="20px" alt="Home" />
@@ -73,7 +72,7 @@
 						<i class="material-icons">last_page</i>
 					</button> -->
 				</div>
-				<div class="hv-toolbar-right">
+				<div class="hv-toolbar__right">
 					<button type="button" class="hv-button hv-button__icon" data-toggle="debug"
 						title="Toggle debug mode">
 						<img src="/dist/assets/code.svg" width="20px" height="20px" alt="Debug" />
@@ -92,7 +91,7 @@
 					<div class="separator"></div>
 					<button type="button" class="hv-button" data-toggle="annotations" title="Toggle annotations view">
 						<img src="/dist/assets/columns.svg" width="20px" height="20px" alt="Toggle annotations view" />
-						Details view
+						Details
 					</button>
 				</div>
 			</div>
@@ -101,26 +100,6 @@
 		<main class="hv-main">
 
 			<aside class="hv-drawer hv-drawer__left hv-drawer__navigation">
-				<ul>
-					<li>
-						<a href="#">
-							<img src="https://dlcs.io/iiif-img/wellcome/1/ff2085d5-a9c7-412e-9dbe-dda87712228d/full/90,/0/default.jpg?t=1565241919797"
-								class="hv-thumbnail" />
-						</a>
-					</li>
-					<li>
-						<a href="#">
-							<img src="https://dlcs.io/iiif-img/wellcome/1/f327de6b-06ef-47ec-b98f-ee79c1685393/full/90,/0/default.jpg?t=1565241919797"
-								class="hv-thumbnail" />
-						</a>
-					</li>
-					<li>
-						<a href="#">
-							<img src="https://dlcs.io/iiif-img/wellcome/1/61ea4035-6dde-4a4a-9ed2-74bf36d32d4c/full/90,/0/default.jpg?t=1565241919797"
-								class="hv-thumbnail" />
-						</a>
-					</li>
-				</ul>
 			</aside>
 
 			<div class="hv-content">
@@ -146,14 +125,21 @@
 
 		<footer class="hv-footer">
 			<div class="hv-toolbar">
-				<button type="button" class="hv-button" title="Download a copy">
-					<img src="/dist/assets/download.svg" width="20px" height="20px" alt="Download" />
-					Download
-				</button>
-				<button type="button" class="hv-button" title="Printable version">
-					<img src="/dist/assets/printer.svg" width="20px" height="20px" alt="Printable version" />
-					Printable version
-				</button>
+				<div class="hv-toolbar__left">
+					<button type="button" class="hv-button" title="Download a copy">
+						<img src="/dist/assets/download.svg" width="20px" height="20px" alt="Download" />
+						Download
+					</button>
+					<button type="button" class="hv-button" title="Printable version">
+						<img src="/dist/assets/printer.svg" width="20px" height="20px" alt="Printable version" />
+						Printable version
+					</button>
+				</div>
+				<div class="hv-toolbar__right">
+					<button type="button" class="hv-button hv-button__icon" title="Fullscreen">
+						<img src="/dist/assets/maximize.svg" width="20px" height="20px" alt="Fullscreen" />
+					</button>
+				</div>
 			</div>
 		</footer>
 
