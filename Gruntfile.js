@@ -31,12 +31,6 @@ module.exports = function (grunt) {
 					{
 						src: 'node_modules/manifesto.js/dist/client/manifesto.bundle.js',
 						dest: 'tmp/vendors/manifesto/manifesto.js'
-					},
-					{
-						expand: true,
-						cwd: 'src/assets',
-						src: '*',
-						dest: 'dist/assets/'
 					}
 				]
 			},
@@ -177,7 +171,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks("grunt-karma");
 
 	//grunt.registerTask("lint", ["jshint", "jscs"]);
-	grunt.registerTask("svg", "grunticon");
+	grunt.registerTask("svg", "grunticon:dist");
 	grunt.registerTask("build", ["clean:dist", "copy:dist", "concat:js", "concat:css", "sass", "concat:bundle", "uglify", "copy:themes", "cssmin", "clean:tmp"]);
 	grunt.registerTask("default", ["build"]);
 };
