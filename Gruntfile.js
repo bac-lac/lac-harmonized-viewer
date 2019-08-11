@@ -55,7 +55,7 @@ module.exports = function (grunt) {
 				dest: 'tmp/vendors/all.css'
 			},
 			bundle: {
-				src: ['tmp/harmonized-viewer.css', 'tmp/harmonized-viewer-icons.css', 'tmp/vendors/all.css'],
+				src: ['tmp/harmonized-viewer.css', 'tmp/vendors/all.css'],
 				dest: 'dist/harmonized-viewer.css'
 			}
 		},
@@ -129,11 +129,16 @@ module.exports = function (grunt) {
 			dist: {
 				files: [{
 					expand: true,
-					cwd: 'src/assets',
+					cwd: 'node_modules/feather-icons/dist/icons',
 					src: ['*.svg', '*.png'],
-					dest: "dist/assets"
+					dest: "dist/vendors/feather"
 				}],
 				options: {
+					enhanceSVG: true,
+					cssprefix: '.hv-icon__',
+					datasvgcss: 'icons-svg.css',
+					datapngcss: 'icons-png.css',
+					urlpngcss: 'icons-fallback.css'
 				}
 			},
 		},
@@ -153,7 +158,7 @@ module.exports = function (grunt) {
 		// (call 'grunt watch')
 		watch: {
 			files: ["src/**/*", "test/**/*"],
-			tasks: ["default"]
+			tasks: ["refresh"]
 		}
 
 	});
@@ -172,6 +177,7 @@ module.exports = function (grunt) {
 
 	//grunt.registerTask("lint", ["jshint", "jscs"]);
 	grunt.registerTask("svg", "grunticon:dist");
-	grunt.registerTask("build", ["clean:dist", "copy:dist", "concat:js", "concat:css", "sass", "concat:bundle", "uglify", "copy:themes", "cssmin", "clean:tmp"]);
+	grunt.registerTask("refresh", ["copy:dist", "concat:js", "concat:css", "sass", "concat:bundle", "uglify", "copy:themes", "cssmin", "clean:tmp"]);
+	grunt.registerTask("build", ["clean:dist", "refresh", "svg"]);
 	grunt.registerTask("default", ["build"]);
 };

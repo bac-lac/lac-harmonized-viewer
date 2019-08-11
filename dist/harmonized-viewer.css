@@ -65,6 +65,15 @@
     align-items: center; }
   .hv-toolbar__right {
     margin-left: auto; }
+  .hv-toolbar .hv-icon {
+    width: 26px;
+    height: 26px;
+    box-sizing: content-box;
+    background-position: 50% 50%; }
+    .hv-toolbar .hv-icon svg * {
+      stroke: #888; }
+    .hv-toolbar .hv-icon[disabled] svg * {
+      stroke: #aaa; }
   .hv-toolbar .hv-button {
     color: #5c5c5c;
     padding: 8px 12px;
@@ -81,8 +90,9 @@
     .hv-toolbar .hv-button:not([disabled]):hover {
       background-color: rgba(158, 158, 158, 0.2); }
     .hv-toolbar .hv-button[disabled] {
-      color: #9c9c9c !important;
-      background-color: red !important; }
+      cursor: not-allowed; }
+      .hv-toolbar .hv-button[disabled] svg * {
+        stroke: #ddd; }
     .hv-toolbar .hv-button:active {
       background-color: rgba(158, 158, 158, 0.4); }
   .hv-toolbar .hv-navigation {
@@ -162,7 +172,7 @@
           font-size: 0.8rem;
           margin-top: 0.3rem; }
       .hv-drawer__navigation ol li.active .hv-thumbnail {
-        border-color: #FFE0B2 !important; }
+        border-color: #ffe0b2 !important; }
 
 .hv-main {
   flex: auto;
@@ -208,7 +218,7 @@
     font-size: 2.5rem;
     font-weight: bold;
     text-decoration: none;
-    padding: 1.25rem 0.25rem;
+    padding: 1.25rem 0.75rem;
     z-index: 9999;
     position: absolute;
     border: none;

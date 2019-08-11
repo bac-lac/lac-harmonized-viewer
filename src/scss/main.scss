@@ -89,6 +89,21 @@
     margin-left: auto;
   }
 
+  .#{$ns}-icon {
+    width: 26px;
+    height: 26px;
+    box-sizing: content-box;
+    background-position: 50% 50%;
+
+    svg * {
+      stroke: #888;
+    }
+
+    &[disabled] svg * {
+      stroke: #aaa;
+    }
+  }
+
   .#{$ns}-button {
     color: #5c5c5c;
     padding: 8px 12px;
@@ -114,8 +129,10 @@
     }
 
     &[disabled] {
-      color: #9c9c9c !important;
-      background-color: red !important;
+      cursor: not-allowed;
+      svg * {
+        stroke: #ddd;
+      }
     }
 
     &:active {
@@ -236,7 +253,7 @@
 
       &.active {
         .#{$ns}-thumbnail {
-          border-color: #FFE0B2 !important;
+          border-color: #ffe0b2 !important;
         }
       }
     }
@@ -298,10 +315,9 @@
     opacity: 0;
     display: flex;
     align-items: center;
-    font-size: 2.5rem;
     font-weight: bold;
     text-decoration: none;
-    padding: 1.25rem 0.25rem;
+    padding: 1.25rem 0.75rem;
     z-index: 9999;
     position: absolute;
     border: none;

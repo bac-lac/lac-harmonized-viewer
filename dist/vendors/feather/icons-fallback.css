@@ -1,0 +1,564 @@
+.hv-icon__activity { background-image: url('png/activity.png'); background-repeat: no-repeat; }
+
+.hv-icon__airplay { background-image: url('png/airplay.png'); background-repeat: no-repeat; }
+
+.hv-icon__alert-circle { background-image: url('png/alert-circle.png'); background-repeat: no-repeat; }
+
+.hv-icon__alert-octagon { background-image: url('png/alert-octagon.png'); background-repeat: no-repeat; }
+
+.hv-icon__alert-triangle { background-image: url('png/alert-triangle.png'); background-repeat: no-repeat; }
+
+.hv-icon__align-center { background-image: url('png/align-center.png'); background-repeat: no-repeat; }
+
+.hv-icon__align-justify { background-image: url('png/align-justify.png'); background-repeat: no-repeat; }
+
+.hv-icon__align-left { background-image: url('png/align-left.png'); background-repeat: no-repeat; }
+
+.hv-icon__align-right { background-image: url('png/align-right.png'); background-repeat: no-repeat; }
+
+.hv-icon__anchor { background-image: url('png/anchor.png'); background-repeat: no-repeat; }
+
+.hv-icon__aperture { background-image: url('png/aperture.png'); background-repeat: no-repeat; }
+
+.hv-icon__archive { background-image: url('png/archive.png'); background-repeat: no-repeat; }
+
+.hv-icon__arrow-down-circle { background-image: url('png/arrow-down-circle.png'); background-repeat: no-repeat; }
+
+.hv-icon__arrow-down-left { background-image: url('png/arrow-down-left.png'); background-repeat: no-repeat; }
+
+.hv-icon__arrow-down-right { background-image: url('png/arrow-down-right.png'); background-repeat: no-repeat; }
+
+.hv-icon__arrow-down { background-image: url('png/arrow-down.png'); background-repeat: no-repeat; }
+
+.hv-icon__arrow-left-circle { background-image: url('png/arrow-left-circle.png'); background-repeat: no-repeat; }
+
+.hv-icon__arrow-left { background-image: url('png/arrow-left.png'); background-repeat: no-repeat; }
+
+.hv-icon__arrow-right-circle { background-image: url('png/arrow-right-circle.png'); background-repeat: no-repeat; }
+
+.hv-icon__arrow-right { background-image: url('png/arrow-right.png'); background-repeat: no-repeat; }
+
+.hv-icon__arrow-up-circle { background-image: url('png/arrow-up-circle.png'); background-repeat: no-repeat; }
+
+.hv-icon__arrow-up-left { background-image: url('png/arrow-up-left.png'); background-repeat: no-repeat; }
+
+.hv-icon__arrow-up-right { background-image: url('png/arrow-up-right.png'); background-repeat: no-repeat; }
+
+.hv-icon__arrow-up { background-image: url('png/arrow-up.png'); background-repeat: no-repeat; }
+
+.hv-icon__at-sign { background-image: url('png/at-sign.png'); background-repeat: no-repeat; }
+
+.hv-icon__award { background-image: url('png/award.png'); background-repeat: no-repeat; }
+
+.hv-icon__bar-chart-2 { background-image: url('png/bar-chart-2.png'); background-repeat: no-repeat; }
+
+.hv-icon__bar-chart { background-image: url('png/bar-chart.png'); background-repeat: no-repeat; }
+
+.hv-icon__battery-charging { background-image: url('png/battery-charging.png'); background-repeat: no-repeat; }
+
+.hv-icon__battery { background-image: url('png/battery.png'); background-repeat: no-repeat; }
+
+.hv-icon__bell-off { background-image: url('png/bell-off.png'); background-repeat: no-repeat; }
+
+.hv-icon__bell { background-image: url('png/bell.png'); background-repeat: no-repeat; }
+
+.hv-icon__bluetooth { background-image: url('png/bluetooth.png'); background-repeat: no-repeat; }
+
+.hv-icon__bold { background-image: url('png/bold.png'); background-repeat: no-repeat; }
+
+.hv-icon__book-open { background-image: url('png/book-open.png'); background-repeat: no-repeat; }
+
+.hv-icon__book { background-image: url('png/book.png'); background-repeat: no-repeat; }
+
+.hv-icon__bookmark { background-image: url('png/bookmark.png'); background-repeat: no-repeat; }
+
+.hv-icon__box { background-image: url('png/box.png'); background-repeat: no-repeat; }
+
+.hv-icon__briefcase { background-image: url('png/briefcase.png'); background-repeat: no-repeat; }
+
+.hv-icon__calendar { background-image: url('png/calendar.png'); background-repeat: no-repeat; }
+
+.hv-icon__camera-off { background-image: url('png/camera-off.png'); background-repeat: no-repeat; }
+
+.hv-icon__camera { background-image: url('png/camera.png'); background-repeat: no-repeat; }
+
+.hv-icon__cast { background-image: url('png/cast.png'); background-repeat: no-repeat; }
+
+.hv-icon__check-circle { background-image: url('png/check-circle.png'); background-repeat: no-repeat; }
+
+.hv-icon__check-square { background-image: url('png/check-square.png'); background-repeat: no-repeat; }
+
+.hv-icon__check { background-image: url('png/check.png'); background-repeat: no-repeat; }
+
+.hv-icon__chevron-down { background-image: url('png/chevron-down.png'); background-repeat: no-repeat; }
+
+.hv-icon__chevron-left { background-image: url('png/chevron-left.png'); background-repeat: no-repeat; }
+
+.hv-icon__chevron-right { background-image: url('png/chevron-right.png'); background-repeat: no-repeat; }
+
+.hv-icon__chevron-up { background-image: url('png/chevron-up.png'); background-repeat: no-repeat; }
+
+.hv-icon__chevrons-down { background-image: url('png/chevrons-down.png'); background-repeat: no-repeat; }
+
+.hv-icon__chevrons-left { background-image: url('png/chevrons-left.png'); background-repeat: no-repeat; }
+
+.hv-icon__chevrons-right { background-image: url('png/chevrons-right.png'); background-repeat: no-repeat; }
+
+.hv-icon__chevrons-up { background-image: url('png/chevrons-up.png'); background-repeat: no-repeat; }
+
+.hv-icon__chrome { background-image: url('png/chrome.png'); background-repeat: no-repeat; }
+
+.hv-icon__circle { background-image: url('png/circle.png'); background-repeat: no-repeat; }
+
+.hv-icon__clipboard { background-image: url('png/clipboard.png'); background-repeat: no-repeat; }
+
+.hv-icon__clock { background-image: url('png/clock.png'); background-repeat: no-repeat; }
+
+.hv-icon__cloud-drizzle { background-image: url('png/cloud-drizzle.png'); background-repeat: no-repeat; }
+
+.hv-icon__cloud-lightning { background-image: url('png/cloud-lightning.png'); background-repeat: no-repeat; }
+
+.hv-icon__cloud-off { background-image: url('png/cloud-off.png'); background-repeat: no-repeat; }
+
+.hv-icon__cloud-rain { background-image: url('png/cloud-rain.png'); background-repeat: no-repeat; }
+
+.hv-icon__cloud-snow { background-image: url('png/cloud-snow.png'); background-repeat: no-repeat; }
+
+.hv-icon__cloud { background-image: url('png/cloud.png'); background-repeat: no-repeat; }
+
+.hv-icon__code { background-image: url('png/code.png'); background-repeat: no-repeat; }
+
+.hv-icon__codepen { background-image: url('png/codepen.png'); background-repeat: no-repeat; }
+
+.hv-icon__codesandbox { background-image: url('png/codesandbox.png'); background-repeat: no-repeat; }
+
+.hv-icon__coffee { background-image: url('png/coffee.png'); background-repeat: no-repeat; }
+
+.hv-icon__columns { background-image: url('png/columns.png'); background-repeat: no-repeat; }
+
+.hv-icon__command { background-image: url('png/command.png'); background-repeat: no-repeat; }
+
+.hv-icon__compass { background-image: url('png/compass.png'); background-repeat: no-repeat; }
+
+.hv-icon__copy { background-image: url('png/copy.png'); background-repeat: no-repeat; }
+
+.hv-icon__corner-down-left { background-image: url('png/corner-down-left.png'); background-repeat: no-repeat; }
+
+.hv-icon__corner-down-right { background-image: url('png/corner-down-right.png'); background-repeat: no-repeat; }
+
+.hv-icon__corner-left-down { background-image: url('png/corner-left-down.png'); background-repeat: no-repeat; }
+
+.hv-icon__corner-left-up { background-image: url('png/corner-left-up.png'); background-repeat: no-repeat; }
+
+.hv-icon__corner-right-down { background-image: url('png/corner-right-down.png'); background-repeat: no-repeat; }
+
+.hv-icon__corner-right-up { background-image: url('png/corner-right-up.png'); background-repeat: no-repeat; }
+
+.hv-icon__corner-up-left { background-image: url('png/corner-up-left.png'); background-repeat: no-repeat; }
+
+.hv-icon__corner-up-right { background-image: url('png/corner-up-right.png'); background-repeat: no-repeat; }
+
+.hv-icon__cpu { background-image: url('png/cpu.png'); background-repeat: no-repeat; }
+
+.hv-icon__credit-card { background-image: url('png/credit-card.png'); background-repeat: no-repeat; }
+
+.hv-icon__crop { background-image: url('png/crop.png'); background-repeat: no-repeat; }
+
+.hv-icon__crosshair { background-image: url('png/crosshair.png'); background-repeat: no-repeat; }
+
+.hv-icon__database { background-image: url('png/database.png'); background-repeat: no-repeat; }
+
+.hv-icon__delete { background-image: url('png/delete.png'); background-repeat: no-repeat; }
+
+.hv-icon__disc { background-image: url('png/disc.png'); background-repeat: no-repeat; }
+
+.hv-icon__dollar-sign { background-image: url('png/dollar-sign.png'); background-repeat: no-repeat; }
+
+.hv-icon__download-cloud { background-image: url('png/download-cloud.png'); background-repeat: no-repeat; }
+
+.hv-icon__download { background-image: url('png/download.png'); background-repeat: no-repeat; }
+
+.hv-icon__droplet { background-image: url('png/droplet.png'); background-repeat: no-repeat; }
+
+.hv-icon__edit-2 { background-image: url('png/edit-2.png'); background-repeat: no-repeat; }
+
+.hv-icon__edit-3 { background-image: url('png/edit-3.png'); background-repeat: no-repeat; }
+
+.hv-icon__edit { background-image: url('png/edit.png'); background-repeat: no-repeat; }
+
+.hv-icon__external-link { background-image: url('png/external-link.png'); background-repeat: no-repeat; }
+
+.hv-icon__eye-off { background-image: url('png/eye-off.png'); background-repeat: no-repeat; }
+
+.hv-icon__eye { background-image: url('png/eye.png'); background-repeat: no-repeat; }
+
+.hv-icon__facebook { background-image: url('png/facebook.png'); background-repeat: no-repeat; }
+
+.hv-icon__fast-forward { background-image: url('png/fast-forward.png'); background-repeat: no-repeat; }
+
+.hv-icon__feather { background-image: url('png/feather.png'); background-repeat: no-repeat; }
+
+.hv-icon__figma { background-image: url('png/figma.png'); background-repeat: no-repeat; }
+
+.hv-icon__file-minus { background-image: url('png/file-minus.png'); background-repeat: no-repeat; }
+
+.hv-icon__file-plus { background-image: url('png/file-plus.png'); background-repeat: no-repeat; }
+
+.hv-icon__file-text { background-image: url('png/file-text.png'); background-repeat: no-repeat; }
+
+.hv-icon__file { background-image: url('png/file.png'); background-repeat: no-repeat; }
+
+.hv-icon__film { background-image: url('png/film.png'); background-repeat: no-repeat; }
+
+.hv-icon__filter { background-image: url('png/filter.png'); background-repeat: no-repeat; }
+
+.hv-icon__flag { background-image: url('png/flag.png'); background-repeat: no-repeat; }
+
+.hv-icon__folder-minus { background-image: url('png/folder-minus.png'); background-repeat: no-repeat; }
+
+.hv-icon__folder-plus { background-image: url('png/folder-plus.png'); background-repeat: no-repeat; }
+
+.hv-icon__folder { background-image: url('png/folder.png'); background-repeat: no-repeat; }
+
+.hv-icon__framer { background-image: url('png/framer.png'); background-repeat: no-repeat; }
+
+.hv-icon__frown { background-image: url('png/frown.png'); background-repeat: no-repeat; }
+
+.hv-icon__gift { background-image: url('png/gift.png'); background-repeat: no-repeat; }
+
+.hv-icon__git-branch { background-image: url('png/git-branch.png'); background-repeat: no-repeat; }
+
+.hv-icon__git-commit { background-image: url('png/git-commit.png'); background-repeat: no-repeat; }
+
+.hv-icon__git-merge { background-image: url('png/git-merge.png'); background-repeat: no-repeat; }
+
+.hv-icon__git-pull-request { background-image: url('png/git-pull-request.png'); background-repeat: no-repeat; }
+
+.hv-icon__github { background-image: url('png/github.png'); background-repeat: no-repeat; }
+
+.hv-icon__gitlab { background-image: url('png/gitlab.png'); background-repeat: no-repeat; }
+
+.hv-icon__globe { background-image: url('png/globe.png'); background-repeat: no-repeat; }
+
+.hv-icon__grid { background-image: url('png/grid.png'); background-repeat: no-repeat; }
+
+.hv-icon__hard-drive { background-image: url('png/hard-drive.png'); background-repeat: no-repeat; }
+
+.hv-icon__hash { background-image: url('png/hash.png'); background-repeat: no-repeat; }
+
+.hv-icon__headphones { background-image: url('png/headphones.png'); background-repeat: no-repeat; }
+
+.hv-icon__heart { background-image: url('png/heart.png'); background-repeat: no-repeat; }
+
+.hv-icon__help-circle { background-image: url('png/help-circle.png'); background-repeat: no-repeat; }
+
+.hv-icon__hexagon { background-image: url('png/hexagon.png'); background-repeat: no-repeat; }
+
+.hv-icon__home { background-image: url('png/home.png'); background-repeat: no-repeat; }
+
+.hv-icon__image { background-image: url('png/image.png'); background-repeat: no-repeat; }
+
+.hv-icon__inbox { background-image: url('png/inbox.png'); background-repeat: no-repeat; }
+
+.hv-icon__info { background-image: url('png/info.png'); background-repeat: no-repeat; }
+
+.hv-icon__instagram { background-image: url('png/instagram.png'); background-repeat: no-repeat; }
+
+.hv-icon__italic { background-image: url('png/italic.png'); background-repeat: no-repeat; }
+
+.hv-icon__key { background-image: url('png/key.png'); background-repeat: no-repeat; }
+
+.hv-icon__layers { background-image: url('png/layers.png'); background-repeat: no-repeat; }
+
+.hv-icon__layout { background-image: url('png/layout.png'); background-repeat: no-repeat; }
+
+.hv-icon__life-buoy { background-image: url('png/life-buoy.png'); background-repeat: no-repeat; }
+
+.hv-icon__link-2 { background-image: url('png/link-2.png'); background-repeat: no-repeat; }
+
+.hv-icon__link { background-image: url('png/link.png'); background-repeat: no-repeat; }
+
+.hv-icon__linkedin { background-image: url('png/linkedin.png'); background-repeat: no-repeat; }
+
+.hv-icon__list { background-image: url('png/list.png'); background-repeat: no-repeat; }
+
+.hv-icon__loader { background-image: url('png/loader.png'); background-repeat: no-repeat; }
+
+.hv-icon__lock { background-image: url('png/lock.png'); background-repeat: no-repeat; }
+
+.hv-icon__log-in { background-image: url('png/log-in.png'); background-repeat: no-repeat; }
+
+.hv-icon__log-out { background-image: url('png/log-out.png'); background-repeat: no-repeat; }
+
+.hv-icon__mail { background-image: url('png/mail.png'); background-repeat: no-repeat; }
+
+.hv-icon__map-pin { background-image: url('png/map-pin.png'); background-repeat: no-repeat; }
+
+.hv-icon__map { background-image: url('png/map.png'); background-repeat: no-repeat; }
+
+.hv-icon__maximize-2 { background-image: url('png/maximize-2.png'); background-repeat: no-repeat; }
+
+.hv-icon__maximize { background-image: url('png/maximize.png'); background-repeat: no-repeat; }
+
+.hv-icon__meh { background-image: url('png/meh.png'); background-repeat: no-repeat; }
+
+.hv-icon__menu { background-image: url('png/menu.png'); background-repeat: no-repeat; }
+
+.hv-icon__message-circle { background-image: url('png/message-circle.png'); background-repeat: no-repeat; }
+
+.hv-icon__message-square { background-image: url('png/message-square.png'); background-repeat: no-repeat; }
+
+.hv-icon__mic-off { background-image: url('png/mic-off.png'); background-repeat: no-repeat; }
+
+.hv-icon__mic { background-image: url('png/mic.png'); background-repeat: no-repeat; }
+
+.hv-icon__minimize-2 { background-image: url('png/minimize-2.png'); background-repeat: no-repeat; }
+
+.hv-icon__minimize { background-image: url('png/minimize.png'); background-repeat: no-repeat; }
+
+.hv-icon__minus-circle { background-image: url('png/minus-circle.png'); background-repeat: no-repeat; }
+
+.hv-icon__minus-square { background-image: url('png/minus-square.png'); background-repeat: no-repeat; }
+
+.hv-icon__minus { background-image: url('png/minus.png'); background-repeat: no-repeat; }
+
+.hv-icon__monitor { background-image: url('png/monitor.png'); background-repeat: no-repeat; }
+
+.hv-icon__moon { background-image: url('png/moon.png'); background-repeat: no-repeat; }
+
+.hv-icon__more-horizontal { background-image: url('png/more-horizontal.png'); background-repeat: no-repeat; }
+
+.hv-icon__more-vertical { background-image: url('png/more-vertical.png'); background-repeat: no-repeat; }
+
+.hv-icon__mouse-pointer { background-image: url('png/mouse-pointer.png'); background-repeat: no-repeat; }
+
+.hv-icon__move { background-image: url('png/move.png'); background-repeat: no-repeat; }
+
+.hv-icon__music { background-image: url('png/music.png'); background-repeat: no-repeat; }
+
+.hv-icon__navigation-2 { background-image: url('png/navigation-2.png'); background-repeat: no-repeat; }
+
+.hv-icon__navigation { background-image: url('png/navigation.png'); background-repeat: no-repeat; }
+
+.hv-icon__octagon { background-image: url('png/octagon.png'); background-repeat: no-repeat; }
+
+.hv-icon__package { background-image: url('png/package.png'); background-repeat: no-repeat; }
+
+.hv-icon__paperclip { background-image: url('png/paperclip.png'); background-repeat: no-repeat; }
+
+.hv-icon__pause-circle { background-image: url('png/pause-circle.png'); background-repeat: no-repeat; }
+
+.hv-icon__pause { background-image: url('png/pause.png'); background-repeat: no-repeat; }
+
+.hv-icon__pen-tool { background-image: url('png/pen-tool.png'); background-repeat: no-repeat; }
+
+.hv-icon__percent { background-image: url('png/percent.png'); background-repeat: no-repeat; }
+
+.hv-icon__phone-call { background-image: url('png/phone-call.png'); background-repeat: no-repeat; }
+
+.hv-icon__phone-forwarded { background-image: url('png/phone-forwarded.png'); background-repeat: no-repeat; }
+
+.hv-icon__phone-incoming { background-image: url('png/phone-incoming.png'); background-repeat: no-repeat; }
+
+.hv-icon__phone-missed { background-image: url('png/phone-missed.png'); background-repeat: no-repeat; }
+
+.hv-icon__phone-off { background-image: url('png/phone-off.png'); background-repeat: no-repeat; }
+
+.hv-icon__phone-outgoing { background-image: url('png/phone-outgoing.png'); background-repeat: no-repeat; }
+
+.hv-icon__phone { background-image: url('png/phone.png'); background-repeat: no-repeat; }
+
+.hv-icon__pie-chart { background-image: url('png/pie-chart.png'); background-repeat: no-repeat; }
+
+.hv-icon__play-circle { background-image: url('png/play-circle.png'); background-repeat: no-repeat; }
+
+.hv-icon__play { background-image: url('png/play.png'); background-repeat: no-repeat; }
+
+.hv-icon__plus-circle { background-image: url('png/plus-circle.png'); background-repeat: no-repeat; }
+
+.hv-icon__plus-square { background-image: url('png/plus-square.png'); background-repeat: no-repeat; }
+
+.hv-icon__plus { background-image: url('png/plus.png'); background-repeat: no-repeat; }
+
+.hv-icon__pocket { background-image: url('png/pocket.png'); background-repeat: no-repeat; }
+
+.hv-icon__power { background-image: url('png/power.png'); background-repeat: no-repeat; }
+
+.hv-icon__printer { background-image: url('png/printer.png'); background-repeat: no-repeat; }
+
+.hv-icon__radio { background-image: url('png/radio.png'); background-repeat: no-repeat; }
+
+.hv-icon__refresh-ccw { background-image: url('png/refresh-ccw.png'); background-repeat: no-repeat; }
+
+.hv-icon__refresh-cw { background-image: url('png/refresh-cw.png'); background-repeat: no-repeat; }
+
+.hv-icon__repeat { background-image: url('png/repeat.png'); background-repeat: no-repeat; }
+
+.hv-icon__rewind { background-image: url('png/rewind.png'); background-repeat: no-repeat; }
+
+.hv-icon__rotate-ccw { background-image: url('png/rotate-ccw.png'); background-repeat: no-repeat; }
+
+.hv-icon__rotate-cw { background-image: url('png/rotate-cw.png'); background-repeat: no-repeat; }
+
+.hv-icon__rss { background-image: url('png/rss.png'); background-repeat: no-repeat; }
+
+.hv-icon__save { background-image: url('png/save.png'); background-repeat: no-repeat; }
+
+.hv-icon__scissors { background-image: url('png/scissors.png'); background-repeat: no-repeat; }
+
+.hv-icon__search { background-image: url('png/search.png'); background-repeat: no-repeat; }
+
+.hv-icon__send { background-image: url('png/send.png'); background-repeat: no-repeat; }
+
+.hv-icon__server { background-image: url('png/server.png'); background-repeat: no-repeat; }
+
+.hv-icon__settings { background-image: url('png/settings.png'); background-repeat: no-repeat; }
+
+.hv-icon__share-2 { background-image: url('png/share-2.png'); background-repeat: no-repeat; }
+
+.hv-icon__share { background-image: url('png/share.png'); background-repeat: no-repeat; }
+
+.hv-icon__shield-off { background-image: url('png/shield-off.png'); background-repeat: no-repeat; }
+
+.hv-icon__shield { background-image: url('png/shield.png'); background-repeat: no-repeat; }
+
+.hv-icon__shopping-bag { background-image: url('png/shopping-bag.png'); background-repeat: no-repeat; }
+
+.hv-icon__shopping-cart { background-image: url('png/shopping-cart.png'); background-repeat: no-repeat; }
+
+.hv-icon__shuffle { background-image: url('png/shuffle.png'); background-repeat: no-repeat; }
+
+.hv-icon__sidebar { background-image: url('png/sidebar.png'); background-repeat: no-repeat; }
+
+.hv-icon__skip-back { background-image: url('png/skip-back.png'); background-repeat: no-repeat; }
+
+.hv-icon__skip-forward { background-image: url('png/skip-forward.png'); background-repeat: no-repeat; }
+
+.hv-icon__slack { background-image: url('png/slack.png'); background-repeat: no-repeat; }
+
+.hv-icon__slash { background-image: url('png/slash.png'); background-repeat: no-repeat; }
+
+.hv-icon__sliders { background-image: url('png/sliders.png'); background-repeat: no-repeat; }
+
+.hv-icon__smartphone { background-image: url('png/smartphone.png'); background-repeat: no-repeat; }
+
+.hv-icon__smile { background-image: url('png/smile.png'); background-repeat: no-repeat; }
+
+.hv-icon__speaker { background-image: url('png/speaker.png'); background-repeat: no-repeat; }
+
+.hv-icon__square { background-image: url('png/square.png'); background-repeat: no-repeat; }
+
+.hv-icon__star { background-image: url('png/star.png'); background-repeat: no-repeat; }
+
+.hv-icon__stop-circle { background-image: url('png/stop-circle.png'); background-repeat: no-repeat; }
+
+.hv-icon__sun { background-image: url('png/sun.png'); background-repeat: no-repeat; }
+
+.hv-icon__sunrise { background-image: url('png/sunrise.png'); background-repeat: no-repeat; }
+
+.hv-icon__sunset { background-image: url('png/sunset.png'); background-repeat: no-repeat; }
+
+.hv-icon__tablet { background-image: url('png/tablet.png'); background-repeat: no-repeat; }
+
+.hv-icon__tag { background-image: url('png/tag.png'); background-repeat: no-repeat; }
+
+.hv-icon__target { background-image: url('png/target.png'); background-repeat: no-repeat; }
+
+.hv-icon__terminal { background-image: url('png/terminal.png'); background-repeat: no-repeat; }
+
+.hv-icon__thermometer { background-image: url('png/thermometer.png'); background-repeat: no-repeat; }
+
+.hv-icon__thumbs-down { background-image: url('png/thumbs-down.png'); background-repeat: no-repeat; }
+
+.hv-icon__thumbs-up { background-image: url('png/thumbs-up.png'); background-repeat: no-repeat; }
+
+.hv-icon__toggle-left { background-image: url('png/toggle-left.png'); background-repeat: no-repeat; }
+
+.hv-icon__toggle-right { background-image: url('png/toggle-right.png'); background-repeat: no-repeat; }
+
+.hv-icon__tool { background-image: url('png/tool.png'); background-repeat: no-repeat; }
+
+.hv-icon__trash-2 { background-image: url('png/trash-2.png'); background-repeat: no-repeat; }
+
+.hv-icon__trash { background-image: url('png/trash.png'); background-repeat: no-repeat; }
+
+.hv-icon__trello { background-image: url('png/trello.png'); background-repeat: no-repeat; }
+
+.hv-icon__trending-down { background-image: url('png/trending-down.png'); background-repeat: no-repeat; }
+
+.hv-icon__trending-up { background-image: url('png/trending-up.png'); background-repeat: no-repeat; }
+
+.hv-icon__triangle { background-image: url('png/triangle.png'); background-repeat: no-repeat; }
+
+.hv-icon__truck { background-image: url('png/truck.png'); background-repeat: no-repeat; }
+
+.hv-icon__tv { background-image: url('png/tv.png'); background-repeat: no-repeat; }
+
+.hv-icon__twitch { background-image: url('png/twitch.png'); background-repeat: no-repeat; }
+
+.hv-icon__twitter { background-image: url('png/twitter.png'); background-repeat: no-repeat; }
+
+.hv-icon__type { background-image: url('png/type.png'); background-repeat: no-repeat; }
+
+.hv-icon__umbrella { background-image: url('png/umbrella.png'); background-repeat: no-repeat; }
+
+.hv-icon__underline { background-image: url('png/underline.png'); background-repeat: no-repeat; }
+
+.hv-icon__unlock { background-image: url('png/unlock.png'); background-repeat: no-repeat; }
+
+.hv-icon__upload-cloud { background-image: url('png/upload-cloud.png'); background-repeat: no-repeat; }
+
+.hv-icon__upload { background-image: url('png/upload.png'); background-repeat: no-repeat; }
+
+.hv-icon__user-check { background-image: url('png/user-check.png'); background-repeat: no-repeat; }
+
+.hv-icon__user-minus { background-image: url('png/user-minus.png'); background-repeat: no-repeat; }
+
+.hv-icon__user-plus { background-image: url('png/user-plus.png'); background-repeat: no-repeat; }
+
+.hv-icon__user-x { background-image: url('png/user-x.png'); background-repeat: no-repeat; }
+
+.hv-icon__user { background-image: url('png/user.png'); background-repeat: no-repeat; }
+
+.hv-icon__users { background-image: url('png/users.png'); background-repeat: no-repeat; }
+
+.hv-icon__video-off { background-image: url('png/video-off.png'); background-repeat: no-repeat; }
+
+.hv-icon__video { background-image: url('png/video.png'); background-repeat: no-repeat; }
+
+.hv-icon__voicemail { background-image: url('png/voicemail.png'); background-repeat: no-repeat; }
+
+.hv-icon__volume-1 { background-image: url('png/volume-1.png'); background-repeat: no-repeat; }
+
+.hv-icon__volume-2 { background-image: url('png/volume-2.png'); background-repeat: no-repeat; }
+
+.hv-icon__volume-x { background-image: url('png/volume-x.png'); background-repeat: no-repeat; }
+
+.hv-icon__volume { background-image: url('png/volume.png'); background-repeat: no-repeat; }
+
+.hv-icon__watch { background-image: url('png/watch.png'); background-repeat: no-repeat; }
+
+.hv-icon__wifi-off { background-image: url('png/wifi-off.png'); background-repeat: no-repeat; }
+
+.hv-icon__wifi { background-image: url('png/wifi.png'); background-repeat: no-repeat; }
+
+.hv-icon__wind { background-image: url('png/wind.png'); background-repeat: no-repeat; }
+
+.hv-icon__x-circle { background-image: url('png/x-circle.png'); background-repeat: no-repeat; }
+
+.hv-icon__x-octagon { background-image: url('png/x-octagon.png'); background-repeat: no-repeat; }
+
+.hv-icon__x-square { background-image: url('png/x-square.png'); background-repeat: no-repeat; }
+
+.hv-icon__x { background-image: url('png/x.png'); background-repeat: no-repeat; }
+
+.hv-icon__youtube { background-image: url('png/youtube.png'); background-repeat: no-repeat; }
+
+.hv-icon__zap-off { background-image: url('png/zap-off.png'); background-repeat: no-repeat; }
+
+.hv-icon__zap { background-image: url('png/zap.png'); background-repeat: no-repeat; }
+
+.hv-icon__zoom-in { background-image: url('png/zoom-in.png'); background-repeat: no-repeat; }
+
+.hv-icon__zoom-out { background-image: url('png/zoom-out.png'); background-repeat: no-repeat; }
+
