@@ -1,4 +1,5 @@
 @import "variables";
+@import "node_modules/bootstrap/scss/bootstrap";
 
 .#{$ns}-viewer,
 .#{$ns}-button {
@@ -6,6 +7,7 @@
 }
 
 .#{$ns}-viewer {
+
   width: 100%;
   height: 100%;
   display: flex;
@@ -90,18 +92,10 @@
   }
 
   .#{$ns}-icon {
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
     box-sizing: content-box;
-    background-position: 50% 50%;
-
-    svg * {
-      stroke: #888;
-    }
-
-    &[disabled] svg * {
-      stroke: #aaa;
-    }
+    background-color: #5a5a5a;
   }
 
   .#{$ns}-button {
@@ -130,8 +124,8 @@
 
     &[disabled] {
       cursor: not-allowed;
-      svg * {
-        stroke: #ddd;
+      .#{$ns}-icon {
+        background-color: #aaa;
       }
     }
 
@@ -159,7 +153,7 @@
   }
 }
 
-.#{$ns}-drawer {
+.#{$ns}-sidebar {
   width: 350px;
   height: 100%;
   overflow: auto;
@@ -170,9 +164,8 @@
   left: 0;
   margin-left: -350px;
 
-  &.#{$ns}-drawer--visible {
+  &.#{$ns}-sidebar--open {
     margin-left: 0;
-    //transform: translate3d(0, 0, 0);
   }
 
   &__right {
@@ -180,7 +173,7 @@
     right: 0;
     margin-right: -350px;
 
-    &.#{$ns}-drawer--visible {
+    &.#{$ns}-sidebar--open {
       margin-right: 0;
     }
   }
@@ -192,7 +185,7 @@
 
   & &-title,
   & &-content {
-    padding-left: 40px;
+    padding-left: 30px;
   }
 
   & &-title {
@@ -200,11 +193,11 @@
   }
 
   &__annotations .#{$ns}-annotations {
-    padding: 0 40px;
+    font-size: 0.8rem;
 
     dt {
-      font-weight: bold;
-      margin: 0 0 0.5rem 0;
+      font-weight: 600;
+      margin: 0 0 0.25rem 0;
     }
     dd {
       padding: 0;
@@ -217,6 +210,12 @@
 .#{$ns}-drawer__navigation {
   background: #515151;
 
+  .mCSB_inside {
+    .mCSB_container {
+      margin-right: 0;
+    }
+  }
+
   ol {
     margin: 0;
     padding: 1rem;
@@ -226,34 +225,34 @@
     list-style-type: none;
 
     li {
-      margin-bottom: 0.75rem;
-
       .#{$ns}-navigation__item {
         color: #fff;
         display: flex;
-        margin: 0.3rem;
+        margin: 0.5rem;
         text-align: center;
         text-decoration: none;
         flex-direction: column;
 
+        &:hover,
+        &.hv-navigation__item--active {
+          .#{$ns}-thumbnail {
+            opacity: 1;
+            box-shadow: 0 0 0 0.4rem #9E9E9E;
+          }
+        }
+
         .#{$ns}-thumbnail {
+          opacity: 0.7;
+          width: 90px;
           height: 120px;
-          padding: 0.15rem;
           display: block;
-          border: #777 2px solid;
-          background-color: #414141;
-        }
-
-        &-page {
-          color: #eee;
-          font-size: 0.8rem;
-          margin-top: 0.3rem;
-        }
-      }
-
-      &.active {
-        .#{$ns}-thumbnail {
-          border-color: #ffe0b2 !important;
+          border: #000 1px solid;
+          box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+          transition: all 0.1s ease;
+          background-color: #000;
+          background-size: cover;
+          background-repeat: no-repeat;
+          background-position: 50% 50%;
         }
       }
     }
@@ -300,6 +299,10 @@
   position: relative;
   border: #616161 7px solid;
 
+  .navigator {
+    border: #000 4px solid !important;
+  }
+
   &__prev {
     left: 0.5rem;
   }
@@ -311,13 +314,12 @@
   &__prev,
   &__next {
     cursor: pointer;
-    color: #9e9e9e;
     opacity: 0;
     display: flex;
     align-items: center;
     font-weight: bold;
     text-decoration: none;
-    padding: 1.25rem 0.75rem;
+    padding: 1.5rem 0.5rem;
     z-index: 9999;
     position: absolute;
     border: none;
@@ -327,6 +329,12 @@
 
     &:hover {
       background-color: #515151;
+    }
+
+    .#{$ns}-icon {
+      width: 26px;
+      height: 26px;
+      background-color: #e0e0e0;
     }
   }
 
@@ -345,9 +353,11 @@
   text-align: center;
   line-height: 1.5rem;
 
-  &-icon {
-    color: #4c4c4c;
-    font-size: 5rem;
+  & &-icon {
+    width: 5rem;
+    height: 5rem;
+    display: inline-block;
+    background-color: #4c4c4c;
   }
 
   &-text {

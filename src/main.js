@@ -55,29 +55,21 @@
             this.initToolbar();
             this.initOpenSeadragon();
 
-            //this.bindEventControls();
-
             var self = this;
 
-            this.bindEventControls("debug");
             this.bindEventControls("page");
             this.bindEventControls("previous");
             this.bindEventControls("next");
-            this.bindEventControls("navigation");
-            this.bindEventControls("annotations");
+            this.bindEventControls("sidebar-navigation");
+            this.bindEventControls("sidebar-metadata");
 
-            this.addHandler("debug", function () {
-                self.debug = !self.debug;
-                window.sessionStorage.setItem("debug", self.debug);
+            this.addHandler("sidebar-navigation", function () {
+                self.toggleSidebar(".hv-sidebar__navigation");
+                self.refresh();
             });
 
-            this.addHandler("navigation", function () {
-                self.toggleDrawer(self.getNavigation());
-                self.updateLayout();
-            });
-
-            this.addHandler("annotations", function () {
-                self.toggleDrawer(self.getAnnotation());
+            this.addHandler("sidebar-metadata", function () {
+                self.toggleSidebar(".hv-sidebar__metadata");
             });
 
             this.addHandler("previous", function () {
@@ -96,7 +88,6 @@
             });
 
             this.addHandler("page", function (event) {
-                console.log("raising page");
                 self.enableToggleButtons(false);
                 openseadragon.goToPage(event.page);
             });
@@ -108,20 +99,37 @@
         },
 
         populateAnnotations: function () {
+            var $sidebar = this.getSidebar(".hv-sidebar__metadata");
+
+            var $title = $("<h4/>")
+                .addClass("hv-sidebar-title")
+                .text("Details")
+                .appendTo($sidebar);
+
+            var $content = $("<div/>")
+                .addClass("hv-sidebar-content")
+                .appendTo($sidebar);
+
             var $annotations = $("<dl/>")
                 .addClass("hv-annotations")
-                .appendTo(this.getAnnotation());
+                .appendTo($content);
 
             $.each(this.manifest.getMetadata(), function (index, item) {
                 $("<dt/>").text(item.getLabel()).appendTo($annotations);
                 $("<dd/>").html(item.getValue()).appendTo($annotations);
                 $annotations.append($annotations);
             });
+
+            $sidebar.mCustomScrollbar({
+                scrollInertia: 250
+            });
         },
 
         populateNavigation: function () {
 
             var self = this;
+
+            var $navigation = this.getSidebar(".hv-sidebar__navigation");
 
             var $ol = $("<ol/>");
             var sequence = this.manifest.getSequenceByIndex(0);
@@ -140,24 +148,31 @@
                 var $a = $("<a/>")
                     .attr("href", "javascript:;")
                     .addClass("hv-navigation__item")
-                    .attr("title", self.format("Go to page {0}", label.value))
+                    .attr("title", label.value)
                     .attr("data-toggle", "page")
                     .attr("data-page", index)
                     .appendTo($li);
 
-                var $img = $("<img/>")
-                    .attr("src", thumbnail)
-                    .addClass("hv-thumbnail")
+                var $img = $("<div/>")
+                    //.css("background-image", self.format("url({0})", thumbnail))
+                    .addClass("hv-thumbnail hv-lazy")
+                    .attr("data-image-url", thumbnail)
                     .appendTo($a);
 
-                var $page = $("<div/>")
-                    .addClass("hv-navigation__item-page")
-                    .text(label.value)
-                    .appendTo($a);
+                // var $page = $("<div/>")
+                //     .addClass("hv-navigation__item-page")
+                //     .text(label.value)
+                //     .appendTo($a);
             });
 
-            this.getNavigation().html($ol).mCustomScrollbar({
+            $navigation.html($ol).mCustomScrollbar({
                 scrollInertia: 250
+            });
+
+            this.initLazyLoading();
+            
+            $navigation.find(".hv-navigation__item").tooltip({
+                placement: "bottom"
             });
         },
 
@@ -182,65 +197,43 @@
             return $(this.element).find(".hv-viewport");
         },
 
-        getNavigation: function () {
-            return $(this.element).find(".hv-drawer__navigation");
+        getSidebar: function (selector) {
+            return $(this.element).find(selector);
         },
 
-        isNavigationVisible: function () {
-            return $(this.element).find(".hv-drawer__navigation").hasClass("hv-drawer--visible");
+        openSidebar: function (selector) {
+            $(selector).addClass("hv-sidebar--open");
         },
 
-        getAnnotation: function () {
-            return $(this.element).find(".hv-drawer__annotations");
+        closeSidebar: function (selector) {
+            $(selector).removeClass("hv-sidebar--open");
         },
 
-        isAnnotationVisible: function () {
-            return $(this.element).find(".hv-drawer__annotations").hasClass("hv-drawer--visible");
+        isSidebarOpen: function (selector) {
+            return $(this.element).find(selector).hasClass("hv-sidebar--open");
         },
 
-        openNavigation: function () {
-            this.openDrawer(this.getNavigation());
-            $(this.element).trigger("navigation");
-        },
-
-        openDrawer: function (drawer) {
-            $(drawer).addClass("hv-drawer--visible");
-        },
-
-        closeDrawer: function (drawer) {
-            $(drawer).removeClass("hv-drawer--visible");
-            this.updateLayout(drawer);
-        },
-
-        updateLayout: function () {
+        refresh: function () {
             var $content = this.getContent();
 
             $content.removeClass("hv-content--push-left hv-content--push-right");
 
-            if (this.isNavigationVisible()) {
-                $content.addClass("hv-content--push-left");
-            }
-            if (this.isAnnotationVisible()) {
-                $content.addClass("hv-content--push-right");
-            }
+            // if (this.isSidebarOpen()) {
+            //     $content.addClass("hv-content--push-left");
+            // }
+            // if (this.isMetadataSidebarOpen()) {
+            //     $content.addClass("hv-content--push-right");
+            // }
         },
 
-        toggleNavigation: function () {
-            this.toggleDrawer(this.getNavigation());
-        },
-
-        toggleDrawer: function (element) {
-            if (this.isDrawerVisible(element)) {
-                this.closeDrawer(element);
+        toggleSidebar: function (selector) {
+            if (this.isSidebarOpen(selector)) {
+                this.closeSidebar(selector);
             }
             else {
-                this.openDrawer(element);
+                this.openSidebar(selector);
             }
-            this.updateLayout();
-        },
-
-        isDrawerVisible: function (element) {
-            return $(element).hasClass("hv-drawer--visible");
+            this.refresh();
         },
 
         enableButton: function (button) {
@@ -275,7 +268,7 @@
         },
 
         initToolbar: function () {
-            $(this.element).on("click", ".hv-toolbar .hv-button-toggle", function () {
+            $(this.element).on("click", ".hv-button-toggle", function () {
                 $(this).toggleClass("hv-button-toggle--active");
             });
         },
@@ -308,11 +301,11 @@
 
             // Set active navigation item
             $(this.element)
-                .find(".hv-drawer__navigation ol > li")
-                .removeClass("active");
+                .find(".hv-sidebar__navigation ol > li .hv-navigation__item")
+                .removeClass("hv-navigation__item--active");
             $(this.element)
-                .find(".hv-drawer__navigation ol > li[data-index=" + page + "]")
-                .addClass("active");
+                .find(".hv-sidebar__navigation ol > li[data-index=" + page + "] .hv-navigation__item")
+                .addClass("hv-navigation__item--active");
         },
 
         getManifestCanvas: function () {
@@ -390,7 +383,7 @@
 
             var openseadragonId = this.getUniqueId($openseadragon[0]);
 
-            var tileSource = "https://d.lib.ncsu.edu/collections/catalog/nubian-message-1992-11-30/manifest";
+            var tileSource = "https://digital.library.villanova.edu/Item/vudl:92879/Manifest";
             //var tileSource = "https://openseadragon.github.io/example-images/highsmith/highsmith.dzi";
 
             manifesto.loadManifest(tileSource).then(function (manifest) {
@@ -512,12 +505,11 @@
         },
 
         showError: function (err) {
-            console.log('error');
             this.hideSpinner();
 
             var $error = $("<div />").addClass("hv-error");
-            $("<i />").addClass("hv-error-icon").addClass("material-icons").text("error_outline").appendTo($error);
-            $("<div />").addClass("hv-error-text").html("An unexpected error occurred.<br />Please try again later.").appendTo($error);
+            $("<span/>").addClass("hv-error-icon").addClass("hv-icon hv-icon__alert-triangle").appendTo($error);
+            $("<div/>").addClass("hv-error-text").html("An unexpected error occurred.<br />Please try again later.").appendTo($error);
 
             if (this.debug) {
                 $("<div />").addClass("hv-debug").html(err.message).appendTo($error);
@@ -525,6 +517,34 @@
 
             var $viewport = this.getViewport();
             $error.appendTo($viewport);
+        },
+
+        initLazyLoading: function () {
+
+            var self = this;
+            //document.addEventListener("DOMContentLoaded", function () {
+                var lazyBackgrounds = [].slice.call(document.querySelectorAll(".hv-lazy"));
+
+                if ("IntersectionObserver" in window) {
+                    var lazyBackgroundObserver = new IntersectionObserver(function (entries, observer) {
+                        entries.forEach(function (entry) {
+                            if (entry.isIntersecting) {
+
+                                // Convert the image url into css background attribute
+                                var imageUrl = $(entry.target).attr("data-image-url");
+                                $(entry.target).css("background-image", self.format("url({0})", imageUrl));
+
+                                lazyBackgroundObserver.unobserve(entry.target);
+                            }
+                        });
+                    });
+
+                    lazyBackgrounds.forEach(function (lazyBackground) {
+                        lazyBackgroundObserver.observe(lazyBackground);
+                    });
+                }
+            //});
+
         }
     });
 

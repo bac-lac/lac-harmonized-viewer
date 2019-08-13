@@ -5,20 +5,14 @@
 	<title>Archives Canada Viewer Demo</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-	<script type="text/javascript" src="/dist/harmonized-viewer.min.js"></script>
+	<script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
+	<script type="text/javascript" src="/dist/harmonized-viewer.bundle.js"></script>
 
-	<script type="text/javascript" src="/dist/vendors/feather/grunticon.loader.js"></script>
-	<script type="text/javascript">
-		//$(document).ready(function () {
-			grunticon(["/dist/vendors/feather/icons-svg.css", "/dist/vendors/feather/icons-png.css", "/dist/vendors/feather/icons-fallback.css"], grunticon.svgLoadedCallback);
-		//});
-	</script>
-
-	<link href="//fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap" rel="stylesheet">
 
 	<link href="/dist/harmonized-viewer.css" rel="stylesheet" type="text/css">
 	<link href="/dist/harmonized-viewer-theme.css" rel="stylesheet" type="text/css">
+	<link href="/dist/vendors/feather/webfont.css" rel="stylesheet" type="text/css">
 
 	<style type="text/css">
 		html,
@@ -48,9 +42,9 @@
 
 			<div class="hv-toolbar">
 				<div class="hv-toolbar__left">
-					<button type="button" class="hv-button hv-button__icon" data-toggle="navigation"
+					<button type="button" class="hv-button hv-button__icon hv-button-toggle" data-toggle="navigation"
 						title="Toggle navigation view">
-						<div class="hv-icon hv-icon__menu" data-grunticon-embed></div>
+						<span class="hv-icon hv-icon__menu"></span>
 					</button>
 					<!-- <button type="button" class="hv-button hv-button__icon" data-toggle="home" title="Go home">
 						<img src="/dist/assets/home.svg" width="20px" height="20px" alt="Home" />
@@ -66,7 +60,7 @@
 					</button> -->
 					<button type="button" class="hv-button hv-button__icon" data-toggle="previous"
 						title="Previous page">
-						<span class="hv-icon hv-icon__chevron-left" data-grunticon-embed></span>
+						<span class="hv-icon hv-icon__chevron-left"></span>
 					</button>
 					<div class="hv-navigation__current">
 						<button type="button" class="hv-button">
@@ -74,31 +68,31 @@
 						</button>
 					</div>
 					<button type="button" class="hv-button hv-button__icon" data-toggle="next" title="Next page">
-						<span class="hv-icon hv-icon__chevron-right" data-grunticon-embed></span>
+						<span class="hv-icon hv-icon__chevron-right"></span>
 					</button>
 					<!-- <button type="button" class="hv-button" data-toggle="last" title="Last page">
 						<i class="material-icons">last_page</i>
 					</button> -->
 				</div>
 				<div class="hv-toolbar__right">
-					<button type="button" class="hv-button hv-button__icon" data-toggle="debug"
+					<button type="button" class="hv-button hv-button__icon hv-button-toggle" data-toggle="debug"
 						title="Toggle debug mode">
-						<span class="hv-icon hv-icon__code" data-grunticon-embed></span>
+						<span class="hv-icon hv-icon__code"></span>
 					</button>
 					<div class="separator"></div>
 					<button type="button" class="hv-button hv-button__icon" data-toggle="zoom-out" title="Zoom out">
-						<span class="hv-icon hv-icon__zoom-out" data-grunticon-embed></span>
+						<span class="hv-icon hv-icon__zoom-out"></span>
 					</button>
 					<div class="hv-zoom"></div>
 					<button type="button" class="hv-button hv-button__icon" data-toggle="zoom-in" title="Zoom in">
-						<span class="hv-icon hv-icon__zoom-in" data-grunticon-embed></span>
+						<span class="hv-icon hv-icon__zoom-in"></span>
 					</button>
 					<!-- <button type="button" class="hv-button" data-toggle="gallery" title="Toggle gallery view">
 						<i class="material-icons">view_list</i>
 					</button> -->
 					<div class="separator"></div>
-					<button type="button" class="hv-button" data-toggle="annotations" title="Toggle annotations view">
-						<span class="hv-icon hv-icon__columns" data-grunticon-embed></span>
+					<button type="button" class="hv-button hv-button-toggle" data-toggle="metadata" title="Toggle metadata view">
+						<span class="hv-icon hv-icon__columns"></span>
 						Details
 					</button>
 				</div>
@@ -107,27 +101,22 @@
 
 		<main class="hv-main">
 
-			<aside class="hv-drawer hv-drawer__left hv-drawer__navigation">
-			</aside>
+			<aside class="hv-sidebar hv-sidebar__navigation hv-sidebar__left"></aside>
 
 			<div class="hv-content">
 				<div class="hv-content__container">
 					<div class="hv-viewport">
 						<button type="button" class="hv-viewport__prev" data-toggle="previous" title="Previous page">
-							<span class="hv-icon hv-icon__chevron-left" data-grunticon-embed></span>
+							<span class="hv-icon hv-icon__chevron-left"></span>
 						</button>
 						<button type="button" class="hv-viewport__next" data-toggle="next" title="Next page">
-							<span class="hv-icon hv-icon__chevron-right" data-grunticon-embed></span>
+							<span class="hv-icon hv-icon__chevron-right"></span>
 						</button>
 					</div>
 				</div>
 			</div>
 
-			<aside class="hv-drawer hv-drawer__right hv-drawer__annotations">
-				<h3 class="hv-drawer-title">Document details</h3>
-				<div class="hv-drawer-content">
-				</div>
-			</aside>
+			<aside class="hv-sidebar hv-sidebar__metadata hv-sidebar__right"></aside>
 
 		</main>
 
@@ -135,17 +124,17 @@
 			<div class="hv-toolbar">
 				<div class="hv-toolbar__left">
 					<button type="button" class="hv-button" title="Download a copy">
-						<span class="hv-icon hv-icon__download" data-grunticon-embed></span>
+						<span class="hv-icon hv-icon__download"></span>
 						Download
 					</button>
 					<button type="button" class="hv-button" title="Printable version">
-						<span class="hv-icon hv-icon__printer" data-grunticon-embed></span>
+						<span class="hv-icon hv-icon__printer"></span>
 						Printable version
 					</button>
 				</div>
 				<div class="hv-toolbar__right">
-					<button type="button" class="hv-button hv-button__icon" title="Fullscreen">
-						<span class="hv-icon hv-icon__maximize" data-grunticon-embed></span>
+					<button type="button" class="hv-button hv-button__icon hv-button-toggle" title="Fullscreen">
+						<span class="hv-icon hv-icon__maximize"></span>
 					</button>
 				</div>
 			</div>
