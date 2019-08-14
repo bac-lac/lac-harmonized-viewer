@@ -62,10 +62,13 @@
             this.bindEventControls("next");
             this.bindEventControls("navigation");
             this.bindEventControls("metadata");
+            this.bindEventControls("navigation-full");
 
             this.addHandler("navigation", function () {
                 self.toggleSidebar(".hv-sidebar__navigation");
-                self.refresh();
+            });
+            this.addHandler("navigation-full", function () {
+                self.toggleSidebar(".hv-sidebar__overlay");
             });
 
             this.addHandler("metadata", function () {
@@ -172,7 +175,8 @@
             this.initLazyLoading();
 
             $navigation.find(".hv-navigation__item").tooltip({
-                placement: "bottom"
+                placement: "bottom",
+                trigger: "hover"
             });
         },
 
@@ -214,8 +218,8 @@
         },
 
         refresh: function () {
-            var offsetLeft = this.getSidebarWidth(".hv-sidebar.hv-sidebar__left");
-            var offsetRight = this.getSidebarWidth(".hv-sidebar.hv-sidebar__right");
+            var offsetLeft = this.getSidebarWidth(".hv-sidebar.hv-sidebar__push.hv-sidebar__left");
+            var offsetRight = this.getSidebarWidth(".hv-sidebar.hv-sidebar__push.hv-sidebar__right");
 
             this.getContent()
                 .css("padding-left", this.format("{0}px", offsetLeft))

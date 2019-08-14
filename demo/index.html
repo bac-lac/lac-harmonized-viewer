@@ -34,7 +34,6 @@
 		<header class="hv-header">
 
 			<div class="hv-titlebar">
-				<div class="hv-logo"></div>
 				<div>
 					<h1 class="hv-manifest-label"></h1>
 				</div>
@@ -46,9 +45,10 @@
 						title="Toggle navigation view">
 						<span class="hv-icon hv-icon__menu"></span>
 					</button>
-					<!-- <button type="button" class="hv-button hv-button__icon" data-toggle="home" title="Go home">
-						<img src="/dist/assets/home.svg" width="20px" height="20px" alt="Home" />
-					</button> -->
+					<button type="button" class="hv-button hv-button__icon hv-button-toggle" data-toggle="navigation-full"
+						title="Toggle navigation view" style="display:none">
+						<span class="hv-icon hv-icon__menu"></span>
+					</button>
 					<div class="separator"></div>
 					<!-- <button type="button" class="hv-button" data-toggle="fullscreen" title="Toggle fullscreen view">
 						<i class="material-icons">fullscreen</i>
@@ -101,8 +101,6 @@
 
 		<main class="hv-main">
 
-			<aside class="hv-sidebar hv-sidebar__navigation hv-sidebar__left"></aside>
-
 			<div class="hv-content">
 				<div class="hv-content__container">
 					<div class="hv-viewport">
@@ -116,7 +114,16 @@
 				</div>
 			</div>
 
-			<aside class="hv-sidebar hv-sidebar__metadata hv-sidebar__right"></aside>
+			<!-- Sidebars -->
+			<aside class="hv-sidebar hv-sidebar__push hv-sidebar__navigation hv-sidebar__left"></aside>
+			<aside class="hv-sidebar hv-sidebar__push hv-sidebar__metadata hv-sidebar__right"></aside>
+			<!-- End Sidebars -->
+
+			<!-- Overlays -->
+			<aside class="hv-sidebar hv-sidebar__overlay hv-sidebar__left">
+				test
+			</aside>
+			<!-- End Overlays -->
 
 		</main>
 
