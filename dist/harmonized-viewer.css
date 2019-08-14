@@ -7138,6 +7138,7 @@ a.text-dark:hover, a.text-dark:focus {
     .hv-sidebar__right.hv-sidebar--open {
       margin-right: 0; }
   .hv-sidebar__overlay {
+    opacity: 0.95;
     width: 100%;
     height: 100%;
     margin-left: -100%;
