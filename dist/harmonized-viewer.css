@@ -7161,28 +7161,28 @@ a.text-dark:hover, a.text-dark:focus {
       margin: 0 0 1.25rem 0;
       overflow: auto; }
 
-.hv-drawer__navigation {
+.hv-sidebar__navigation {
   background: #515151; }
-  .hv-drawer__navigation .mCSB_inside .mCSB_container {
+  .hv-sidebar__navigation .mCSB_inside .mCSB_container {
     margin-right: 0; }
-  .hv-drawer__navigation ol {
+  .hv-sidebar__navigation ol {
     margin: 0;
     padding: 1rem;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     list-style-type: none; }
-    .hv-drawer__navigation ol li .hv-navigation__item {
+    .hv-sidebar__navigation ol li .hv-navigation__item {
       color: #fff;
       display: flex;
       margin: 0.5rem;
       text-align: center;
       text-decoration: none;
       flex-direction: column; }
-      .hv-drawer__navigation ol li .hv-navigation__item:hover .hv-thumbnail, .hv-drawer__navigation ol li .hv-navigation__item.hv-navigation__item--active .hv-thumbnail {
+      .hv-sidebar__navigation ol li .hv-navigation__item:hover .hv-thumbnail, .hv-sidebar__navigation ol li .hv-navigation__item.hv-navigation__item--active .hv-thumbnail {
         opacity: 1;
         box-shadow: 0 0 0 0.4rem #9E9E9E; }
-      .hv-drawer__navigation ol li .hv-navigation__item .hv-thumbnail {
+      .hv-sidebar__navigation ol li .hv-navigation__item .hv-thumbnail {
         opacity: 0.7;
         width: 90px;
         height: 120px;

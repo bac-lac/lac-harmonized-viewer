@@ -60,15 +60,15 @@
             this.bindEventControls("page");
             this.bindEventControls("previous");
             this.bindEventControls("next");
-            this.bindEventControls("sidebar-navigation");
-            this.bindEventControls("sidebar-metadata");
+            this.bindEventControls("navigation");
+            this.bindEventControls("metadata");
 
-            this.addHandler("sidebar-navigation", function () {
+            this.addHandler("navigation", function () {
                 self.toggleSidebar(".hv-sidebar__navigation");
                 self.refresh();
             });
 
-            this.addHandler("sidebar-metadata", function () {
+            this.addHandler("metadata", function () {
                 self.toggleSidebar(".hv-sidebar__metadata");
             });
 
@@ -170,7 +170,7 @@
             });
 
             this.initLazyLoading();
-            
+
             $navigation.find(".hv-navigation__item").tooltip({
                 placement: "bottom"
             });
@@ -214,16 +214,22 @@
         },
 
         refresh: function () {
-            var $content = this.getContent();
+            var offsetLeft = this.getSidebarWidth(".hv-sidebar.hv-sidebar__left");
+            var offsetRight = this.getSidebarWidth(".hv-sidebar.hv-sidebar__right");
 
-            $content.removeClass("hv-content--push-left hv-content--push-right");
+            this.getContent()
+                .css("padding-left", this.format("{0}px", offsetLeft))
+                .css("padding-right", this.format("{0}px", offsetRight));
+        },
 
-            // if (this.isSidebarOpen()) {
-            //     $content.addClass("hv-content--push-left");
-            // }
-            // if (this.isMetadataSidebarOpen()) {
-            //     $content.addClass("hv-content--push-right");
-            // }
+        getSidebarWidth: function (selector) {
+            var self = this, width = 0;
+            $(this.element).find(selector).each(function () {
+                if (self.isSidebarOpen(this)) {
+                    width += $(this).outerWidth();
+                }
+            });
+            return width;
         },
 
         toggleSidebar: function (selector) {
@@ -523,26 +529,26 @@
 
             var self = this;
             //document.addEventListener("DOMContentLoaded", function () {
-                var lazyBackgrounds = [].slice.call(document.querySelectorAll(".hv-lazy"));
+            var lazyBackgrounds = [].slice.call(document.querySelectorAll(".hv-lazy"));
 
-                if ("IntersectionObserver" in window) {
-                    var lazyBackgroundObserver = new IntersectionObserver(function (entries, observer) {
-                        entries.forEach(function (entry) {
-                            if (entry.isIntersecting) {
+            if ("IntersectionObserver" in window) {
+                var lazyBackgroundObserver = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
 
-                                // Convert the image url into css background attribute
-                                var imageUrl = $(entry.target).attr("data-image-url");
-                                $(entry.target).css("background-image", self.format("url({0})", imageUrl));
+                            // Convert the image url into css background attribute
+                            var imageUrl = $(entry.target).attr("data-image-url");
+                            $(entry.target).css("background-image", self.format("url({0})", imageUrl));
 
-                                lazyBackgroundObserver.unobserve(entry.target);
-                            }
-                        });
+                            lazyBackgroundObserver.unobserve(entry.target);
+                        }
                     });
+                });
 
-                    lazyBackgrounds.forEach(function (lazyBackground) {
-                        lazyBackgroundObserver.observe(lazyBackground);
-                    });
-                }
+                lazyBackgrounds.forEach(function (lazyBackground) {
+                    lazyBackgroundObserver.observe(lazyBackground);
+                });
+            }
             //});
 
         }
