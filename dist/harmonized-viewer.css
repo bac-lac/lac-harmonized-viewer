@@ -7165,8 +7165,23 @@ a.text-dark:hover, a.text-dark:focus {
       margin: 0 0 1.25rem 0;
       overflow: auto; }
 
+.hv-tooltip .tooltip-inner {
+  border-radius: 2px;
+  background-color: #00838F; }
+
 .hv-sidebar__navigation {
-  background: #515151; }
+  background-color: #515151; }
+  .hv-sidebar__navigation .mCSB_scrollTools_vertical {
+    width: 8px; }
+    .hv-sidebar__navigation .mCSB_scrollTools_vertical .mCSB_dragger .mCSB_dragger_bar {
+      width: 8px;
+      border-radius: 2px; }
+    .hv-sidebar__navigation .mCSB_scrollTools_vertical .mCSB_draggerRail {
+      width: 6px;
+      border-radius: 0;
+      background-color: #424242; }
+  .hv-sidebar__navigation .mCSB_inside .mCSB_container {
+    margin-right: 0; }
   .hv-sidebar__navigation ol {
     margin: 0;
     padding: 0;
@@ -7187,7 +7202,6 @@ a.text-dark:hover, a.text-dark:focus {
       border: #000 1px solid;
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
       transition: all 0.1s ease;
-      background-color: #000;
       background-size: cover;
       background-repeat: no-repeat;
       background-position: 50% 50%; }
@@ -7196,12 +7210,16 @@ a.text-dark:hover, a.text-dark:focus {
         box-shadow: 0 0 0 0.4rem #424242; }
       .hv-sidebar__navigation ol li .hv-navigation__item.hv-navigation__item--active {
         box-shadow: 0 0 0 0.2rem #eee; }
+      .hv-sidebar__navigation ol li .hv-navigation__item img {
+        width: 100%;
+        height: 100%; }
 
 .hv-navigation {
   padding: 1rem 1.25rem; }
   .hv-navigation__display {
-    width: 100%;
     margin-bottom: 1rem; }
+    .hv-navigation__display .btn-group {
+      width: 100%; }
     .hv-navigation__display .hv-button {
       background: #cfd8dc; }
 

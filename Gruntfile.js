@@ -10,7 +10,7 @@ module.exports = function (grunt) {
 		pkg: grunt.file.readJSON("package.json"),
 
 		copy: {
-			dist: {
+			vendors: {
 				files: [
 					{
 						src: 'node_modules/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js',
@@ -46,17 +46,13 @@ module.exports = function (grunt) {
 
 		// Concat definitions
 		concat: {
+			css: {
+				src: ['tmp/harmonized-viewer.css', 'tmp/vendors/**/*.css'],
+				dest: 'dist/harmonized-viewer.css'
+			},
 			js: {
 				src: ['src/**/*.js', 'tmp/vendors/**/*.js'],
 				dest: 'dist/harmonized-viewer.bundle.js'
-			},
-			css: {
-				src: ['tmp/vendors/**/*.css'],
-				dest: 'tmp/vendors/all.css'
-			},
-			bundle: {
-				src: ['tmp/harmonized-viewer.css', 'tmp/vendors/all.css'],
-				dest: 'dist/harmonized-viewer.css'
 			}
 		},
 
@@ -124,38 +120,19 @@ module.exports = function (grunt) {
 			}
 		},
 
-		// SVG compilation
-		// grunticon: {
-		// 	dist: {
-		// 		files: [{
-		// 			expand: true,
-		// 			cwd: 'node_modules/feather-icons/dist/icons',
-		// 			src: ['*.svg', '*.png'],
-		// 			dest: "dist/vendors/feather"
-		// 		}],
-		// 		options: {
-		// 			enhanceSVG: true,
-		// 			cssprefix: '.hv-icon__',
-		// 			datasvgcss: 'icons-svg.css',
-		// 			datapngcss: 'icons-png.css',
-		// 			urlpngcss: 'icons-fallback.css'
-		// 		}
-		// 	},
-		// },
-
 		svgcss: {
 			options: {
 			},
 			dist: {
 				files: {
-					'dist/vendors/feather/webfont.css': ['node_modules/feather-icons/dist/icons/*.svg']
+					'dist/lib/feather/webfont.css': ['node_modules/feather-icons/dist/icons/*.svg']
 				},
 				options: {
 					cssprefix: 'hv-icon__',
 					csstemplate: 'tasks/grunt-svgmin-template.hbs'
 				},
 			},
-		  },
+		},
 
 		// Clean temp folder
 		clean: {
@@ -172,13 +149,12 @@ module.exports = function (grunt) {
 		// (call 'grunt watch')
 		watch: {
 			files: ["src/**/*", "test/**/*"],
-			tasks: ["refresh"]
+			tasks: ["build"]
 		}
 
 	});
 
 	grunt.loadNpmTasks("grunt-sass");
-	//grunt.loadNpmTasks('grunt-grunticon');
 	grunt.loadNpmTasks("grunt-svg-css");
 	grunt.loadNpmTasks("grunt-contrib-concat");
 	grunt.loadNpmTasks("grunt-contrib-copy");
@@ -190,9 +166,6 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks("grunt-contrib-watch");
 	grunt.loadNpmTasks("grunt-karma");
 
-	//grunt.registerTask("lint", ["jshint", "jscs"]);
-	grunt.registerTask("svg", "svgcss:dist");
-	grunt.registerTask("refresh", ["copy:dist", "concat:js", "concat:css", "sass", "concat:bundle", "uglify", "copy:themes", "cssmin", "clean:tmp"]);
-	grunt.registerTask("build", ["clean:dist", "refresh"]);
+	grunt.registerTask("build", ["clean:dist", "sass", "svgcss", "copy:vendors", "concat:css", "concat:js", "copy:themes", "uglify", "cssmin", "clean:tmp"]);
 	grunt.registerTask("default", ["build"]);
 };

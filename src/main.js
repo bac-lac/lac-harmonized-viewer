@@ -17,7 +17,7 @@
         defaults = {
             locale: "en-GB",
             navigation: {
-                enableMalihuScrollbar: true
+                enableCustomScrollbar: true
             }
         };
 
@@ -162,9 +162,13 @@
                     .attr("data-page", index)
                     .appendTo($li);
 
+                // Lazy loading (send request only when the element is visible)
+                // Use base64 transparent pixel as placeholder
                 $("<img/>")
-                    .attr("src", thumbnail)
+                    .attr("src", "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==")
                     .addClass("hv-thumbnail hv-placeholder hv-lazy")
+                    .attr("data-src", thumbnail)
+                    .attr("data-srcset", self.format("{0} 1x", thumbnail))
                     .appendTo($a);
             });
 
@@ -177,8 +181,9 @@
             this.initLazyLoading();
 
             $navigation.find(".hv-navigation__item").tooltip({
+                trigger: "hover",
                 placement: "bottom",
-                trigger: "hover"
+                template: '<div class="tooltip hv-tooltip" role="tooltip"><div class="tooltip-inner"></div></div>'
             });
         },
 
@@ -308,7 +313,7 @@
             var $navigation = this.getSidebar(".hv-sidebar__navigation");
             var $active = $navigation.find(".hv-navigation__item[data-page=" + page + "]");
 
-            if (this.enableMalihuScrollbar) {
+            if (this.settings.navigation.enableCustomScrollbar) {
                 // Use scroll method from mCustomScrollbar
                 $navigation.mCustomScrollbar("scrollTo", $active);
             }
@@ -552,34 +557,25 @@
 
         initLazyLoading: function () {
 
-            var self = this;
-            //document.addEventListener("DOMContentLoaded", function () {
-            var lazyBackgrounds = [].slice.call(document.querySelectorAll(".hv-lazy"));
+            var lazyImages = [].slice.call(document.querySelectorAll("img.hv-lazy"));
 
             if ("IntersectionObserver" in window) {
-                var lazyBackgroundObserver = new IntersectionObserver(function (entries, observer) {
+                var lazyImageObserver = new IntersectionObserver(function (entries, observer) {
                     entries.forEach(function (entry) {
                         if (entry.isIntersecting) {
-
-                            // Convert the image url into css background attribute
-                            var imageUrl = $(entry.target).attr("data-image-url");
-                            $(entry.target)
-                                .css("background-image", self.format("url({0})", imageUrl))
-                                .removeClass("hv-placeholder");
-
-
-
-                            lazyBackgroundObserver.unobserve(entry.target);
+                            var lazyImage = entry.target;
+                            lazyImage.src = lazyImage.dataset.src;
+                            lazyImage.srcset = lazyImage.dataset.srcset;
+                            lazyImage.classList.remove("hz-lazy");
+                            lazyImageObserver.unobserve(lazyImage);
                         }
                     });
                 });
 
-                lazyBackgrounds.forEach(function (lazyBackground) {
-                    lazyBackgroundObserver.observe(lazyBackground);
+                lazyImages.forEach(function (lazyImage) {
+                    lazyImageObserver.observe(lazyImage);
                 });
             }
-            //});
-
         }
     });
 
