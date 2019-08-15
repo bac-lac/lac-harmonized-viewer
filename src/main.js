@@ -15,7 +15,10 @@
     // Default plugin settings
     var pluginName = "harmonizedViewer",
         defaults = {
-            locale: "en-GB"
+            locale: "en-GB",
+            navigation: {
+                enableMalihuScrollbar: true
+            }
         };
 
     var debug;
@@ -80,6 +83,7 @@
                 if (page > 0) {
                     openseadragon.goToPage(page - 1);
                 }
+                self.scrollActiveNavigation();
             });
 
             this.addHandler("next", function () {
@@ -88,6 +92,7 @@
                 if (page < (pageCount - 1)) {
                     openseadragon.goToPage(page + 1);
                 }
+                self.scrollActiveNavigation();
             });
 
             this.addHandler("page", function (event) {
@@ -123,9 +128,9 @@
                 $annotations.append($annotations);
             });
 
-            $sidebar.mCustomScrollbar({
-                scrollInertia: 250
-            });
+            // $sidebar.mCustomScrollbar({
+            //     scrollInertia: 250
+            // });
         },
 
         populateNavigation: function () {
@@ -133,6 +138,7 @@
             var self = this;
 
             var $navigation = this.getSidebar(".hv-sidebar__navigation");
+            var $items = $navigation.find(".hv-navigation__items");
 
             var $ol = $("<ol/>");
             var sequence = this.manifest.getSequenceByIndex(0);
@@ -156,19 +162,15 @@
                     .attr("data-page", index)
                     .appendTo($li);
 
-                var $img = $("<div/>")
-                    //.css("background-image", self.format("url({0})", thumbnail))
-                    .addClass("hv-thumbnail hv-lazy")
-                    .attr("data-image-url", thumbnail)
+                $("<img/>")
+                    .attr("src", thumbnail)
+                    .addClass("hv-thumbnail hv-placeholder hv-lazy")
                     .appendTo($a);
-
-                // var $page = $("<div/>")
-                //     .addClass("hv-navigation__item-page")
-                //     .text(label.value)
-                //     .appendTo($a);
             });
 
-            $navigation.html($ol).mCustomScrollbar({
+            $items.html($ol);
+
+            $navigation.mCustomScrollbar({
                 scrollInertia: 250
             });
 
@@ -298,6 +300,26 @@
             var page = openseadragon.currentPage();
             var pageCount = openseadragon.tileSources.length;
             return (page >= (pageCount - 1));
+        },
+
+        scrollActiveNavigation: function () {
+            var page = openseadragon.currentPage();
+
+            var $navigation = this.getSidebar(".hv-sidebar__navigation");
+            var $active = $navigation.find(".hv-navigation__item[data-page=" + page + "]");
+
+            if (this.enableMalihuScrollbar) {
+                // Use scroll method from mCustomScrollbar
+                $navigation.mCustomScrollbar("scrollTo", $active);
+            }
+            else {
+                // Use native scroll method when
+                $active[0].scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest",
+                    inline: "nearest"
+                });
+            }
         },
 
         updateNavigationControls: function () {
@@ -441,14 +463,13 @@
                     self.setManifestLabel(self.manifest.getDefaultLabel());
 
                     var canvas = self.getManifestCanvas();
-                    //var label = canvas.getLabel().filter(function (i) { return (i.locale === self.settings.locale); })[0];
 
+                    //var label = canvas.getLabel().filter(function (i) { return (i.locale === self.settings.locale); })[0];
                     //self.setImageLabel(label.value);
                 });
 
                 openseadragon.addHandler("page", function () {
-                    //self.enableToggleButtons(true);
-                    //self.updateNavigationControls();
+
                 });
 
                 openseadragon.addHandler("open-failed", function (err) {
@@ -542,7 +563,11 @@
 
                             // Convert the image url into css background attribute
                             var imageUrl = $(entry.target).attr("data-image-url");
-                            $(entry.target).css("background-image", self.format("url({0})", imageUrl));
+                            $(entry.target)
+                                .css("background-image", self.format("url({0})", imageUrl))
+                                .removeClass("hv-placeholder");
+
+
 
                             lazyBackgroundObserver.unobserve(entry.target);
                         }

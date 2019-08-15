@@ -7,7 +7,6 @@
 }
 
 .#{$ns}-viewer {
-
   width: 100%;
   height: 100%;
   display: flex;
@@ -62,6 +61,49 @@
   }
 }
 
+.#{$ns}-button {
+  color: #5c5c5c;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  border-radius: 3px;
+  border: none;
+
+  & > * {
+    margin-right: 10px;
+  }
+
+  &__icon > * {
+    margin-right: 0;
+  }
+
+  &:not([disabled]) {
+    cursor: pointer;
+  }
+
+  &:not([disabled]):hover {
+    background-color: rgba(158, 158, 158, 0.2);
+  }
+
+  &[disabled] {
+    cursor: not-allowed;
+    .#{$ns}-icon {
+      background-color: #aaa;
+    }
+  }
+
+  &:active {
+    background-color: rgba(158, 158, 158, 0.4);
+  }
+}
+
+.#{$ns}-icon {
+  width: 24px;
+  height: 24px;
+  box-sizing: content-box;
+  background-color: #5a5a5a;
+}
+
 .#{$ns}-toolbar {
   height: 50px;
   padding: 0 0.5rem;
@@ -81,49 +123,6 @@
 
   &__right {
     margin-left: auto;
-  }
-
-  .#{$ns}-icon {
-    width: 24px;
-    height: 24px;
-    box-sizing: content-box;
-    background-color: #5a5a5a;
-  }
-
-  .#{$ns}-button {
-    color: #5c5c5c;
-    padding: 8px 12px;
-    display: flex;
-    align-items: center;
-    border-radius: 3px;
-    border: none;
-
-    & > * {
-      margin-right: 10px;
-    }
-
-    &__icon > * {
-      margin-right: 0;
-    }
-
-    &:not([disabled]) {
-      cursor: pointer;
-    }
-
-    &:not([disabled]):hover {
-      background-color: rgba(158, 158, 158, 0.2);
-    }
-
-    &[disabled] {
-      cursor: not-allowed;
-      .#{$ns}-icon {
-        background-color: #aaa;
-      }
-    }
-
-    &:active {
-      background-color: rgba(158, 158, 158, 0.4);
-    }
   }
 
   .#{$ns}-navigation {
@@ -212,15 +211,15 @@
 .#{$ns}-sidebar__navigation {
   background: #515151;
 
-  .mCSB_inside {
-    .mCSB_container {
-      margin-right: 0;
-    }
-  }
+  // .mCSB_inside {
+  //   .mCSB_container {
+  //     margin-right: 0;
+  //   }
+  // }
 
   ol {
     margin: 0;
-    padding: 1rem;
+    padding: 0;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -228,35 +227,46 @@
 
     li {
       .#{$ns}-navigation__item {
+        opacity: 0.7;
+        width: 90px;
+        height: 120px;
         color: #fff;
         display: flex;
         margin: 0.5rem;
         text-align: center;
         text-decoration: none;
         flex-direction: column;
+        border: #000 1px solid;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+        transition: all 0.1s ease;
+        background-color: #000;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
 
         &:hover,
         &.hv-navigation__item--active {
-          .#{$ns}-thumbnail {
-            opacity: 1;
-            box-shadow: 0 0 0 0.4rem #7E7E7E;
-          }
+          opacity: 1;
+          box-shadow: 0 0 0 0.4rem #424242;
         }
 
-        .#{$ns}-thumbnail {
-          opacity: 0.7;
-          width: 90px;
-          height: 120px;
-          display: block;
-          border: #000 1px solid;
-          box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
-          transition: all 0.1s ease;
-          background-color: #000;
-          background-size: cover;
-          background-repeat: no-repeat;
-          background-position: 50% 50%;
+        &.hv-navigation__item--active {
+          box-shadow: 0 0 0 0.2rem #eee;
         }
       }
+    }
+  }
+}
+
+.#{$ns}-navigation {
+  padding: 1rem 1.25rem;
+
+  &__display {
+    width: 100%;
+    margin-bottom: 1rem;
+
+    .#{$ns}-button {
+      background: #cfd8dc;
     }
   }
 }
@@ -391,11 +401,36 @@
   animation: #{$ns}-spinner 1.5s ease infinite;
 }
 
+.#{$ns}-placeholder {
+  background: -webkit-gradient(
+    linear,
+    left top,
+    right top,
+    color-stop(25%, #000),
+    color-stop(37%, #212121),
+    color-stop(63%, #000)
+  ) !important;
+  background: -webkit-linear-gradient(left, #000 25%, #212121 37%, #000 63%) !important;
+  background: linear-gradient(90deg, #000 25%, #212121 37%, #000 63%) !important;
+  background-size: 400% 100% !important;
+  -webkit-animation: #{$ns}-placeholder 1.4s ease infinite;
+  animation: #{$ns}-placeholder 1.4s ease infinite;
+}
+
 @keyframes #{$ns}-spinner {
   0% {
     transform: rotate(0deg);
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes #{$ns}-placeholder {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
   }
 }
