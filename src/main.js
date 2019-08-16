@@ -16,6 +16,7 @@
     var pluginName = "harmonizedViewer",
         defaults = {
             locale: "en-GB",
+            manifest: null,
             navigation: {
                 enableCustomScrollbar: true
             }
@@ -138,7 +139,10 @@
             var self = this;
 
             var $navigation = this.getSidebar(".hv-sidebar__navigation");
-            var $items = $navigation.find(".hv-navigation__items");
+            var $gallery = this.getSidebar(".hv-sidebar__gallery");
+
+            var $navigationItems = $navigation.find(".hv-navigation__items");
+            var $galleryItems = $gallery.find(".hv-navigation__items");
 
             var $ol = $("<ol/>");
             var sequence = this.manifest.getSequenceByIndex(0);
@@ -172,19 +176,25 @@
                     .appendTo($a);
             });
 
-            $items.html($ol);
+            $navigationItems.html($ol[0].outerHTML);
+            $galleryItems.html($ol[0].outerHTML);
 
             $navigation.mCustomScrollbar({
+                scrollInertia: 250
+            });
+            $gallery.mCustomScrollbar({
                 scrollInertia: 250
             });
 
             this.initLazyLoading();
 
-            $navigation.find(".hv-navigation__item").tooltip({
+            var tooltipOptions = {
                 trigger: "hover",
                 placement: "bottom",
                 template: '<div class="tooltip hv-tooltip" role="tooltip"><div class="tooltip-inner"></div></div>'
-            });
+            };
+            $navigation.find(".hv-navigation__item").tooltip(tooltipOptions);
+            $gallery.find(".hv-navigation__item").tooltip(tooltipOptions);
         },
 
         getThumbnail: function (image, width, height) {
@@ -420,10 +430,7 @@
 
             var openseadragonId = this.getUniqueId($openseadragon[0]);
 
-            var tileSource = "https://digital.library.villanova.edu/Item/vudl:92879/Manifest";
-            //var tileSource = "https://openseadragon.github.io/example-images/highsmith/highsmith.dzi";
-
-            manifesto.loadManifest(tileSource).then(function (manifest) {
+            manifesto.loadManifest(this.settings.manifest).then(function (manifest) {
 
                 self.manifest = manifesto.create(manifest);
 

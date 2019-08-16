@@ -54,7 +54,7 @@
 						<i class="material-icons">fullscreen</i>
 					</button> -->
 				</div>
-				<div class="hv-navigation">
+				<div class="hv-paging">
 					<!-- <button type="button" class="hv-button" data-toggle="first" title="First page">
 						<i class="material-icons">first_page</i>
 					</button> -->
@@ -141,8 +141,14 @@
 			<!-- End Sidebars -->
 
 			<!-- Overlays -->
-			<aside class="hv-sidebar hv-sidebar__overlay hv-sidebar__left">
-				test
+			<aside class="hv-sidebar hv-sidebar__overlay hv-sidebar__gallery">
+				<div class="hv-navigation">
+					<div class="row no-gutters">
+						<div class="col-12">
+							<div class="hv-navigation__items"></div>
+						</div>
+					</div>
+				</div>
 			</aside>
 			<!-- End Overlays -->
 
@@ -173,7 +179,7 @@
 	<script type="text/javascript">
 		$(function () {
 			av = $('#harmonized-viewer').harmonizedViewer({
-				propertyName: "a custom value"
+				manifest: "https://digital.library.villanova.edu/Item/vudl:92879/Manifest",
 			});
 		});
 	</script>
