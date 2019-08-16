@@ -11,15 +11,15 @@
     border-top: $toolbar-border-color--light 1px solid;
     border-bottom: $toolbar-border-color--light 1px solid;
     background-color: $toolbar-background-color--light;
+  }
+}
 
-    .#{$ns}-button {
-      color: $toolbar-button-icon-color--light;
-      background-color: $toolbar-button-background-color--light;
+.#{$ns}-button {
+  color: $toolbar-button-icon-color--light;
+  background-color: $toolbar-background-color--light;
 
-      &-toggle--active {
-        color: #3c3c3c;
-        background: rgba(0, 0, 0, 0.2);
-      }
-    }
+  &-toggle--active {
+    color: #3c3c3c;
+    background: rgba(0, 0, 0, 0.2);
   }
 }

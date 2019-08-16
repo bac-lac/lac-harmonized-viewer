@@ -66,13 +66,13 @@
             this.bindEventControls("next");
             this.bindEventControls("navigation");
             this.bindEventControls("metadata");
-            this.bindEventControls("navigation-full");
+            this.bindEventControls("gallery");
 
             this.addHandler("navigation", function () {
                 self.toggleSidebar(".hv-sidebar__navigation");
             });
-            this.addHandler("navigation-full", function () {
-                self.toggleSidebar(".hv-sidebar__overlay");
+            this.addHandler("gallery", function () {
+                self.toggleOverlay(".hv-overlay__gallery");
             });
 
             this.addHandler("metadata", function () {
@@ -139,7 +139,7 @@
             var self = this;
 
             var $navigation = this.getSidebar(".hv-sidebar__navigation");
-            var $gallery = this.getSidebar(".hv-sidebar__gallery");
+            var $gallery = this.getSidebar(".hv-overlay__gallery");
 
             var $navigationItems = $navigation.find(".hv-navigation__items");
             var $galleryItems = $gallery.find(".hv-navigation__items");
@@ -218,20 +218,45 @@
             return $(this.element).find(".hv-viewport");
         },
 
+        getOverlay: function (selector) {
+            return $(this.element).find(selector);
+        },
+
+        openOverlay: function (selector) {
+            this.getOverlay(selector).addClass("hv-overlay--open");
+        },
+
+        closeOverlay: function (selector) {
+            this.getOverlay(selector).removeClass("hv-overlay--open");
+        },
+
+        toggleOverlay: function (selector) {
+            if (this.isOverlayOpen(selector)) {
+                this.closeOverlay(selector);
+            }
+            else {
+                this.openOverlay(selector);
+            }
+        },
+
+        isOverlayOpen: function (selector) {
+            return this.getOverlay(selector).hasClass("hv-overlay--open");
+        },
+
         getSidebar: function (selector) {
             return $(this.element).find(selector);
         },
 
         openSidebar: function (selector) {
-            $(selector).addClass("hv-sidebar--open");
+            this.getSidebar(selector).addClass("hv-sidebar--open");
         },
 
         closeSidebar: function (selector) {
-            $(selector).removeClass("hv-sidebar--open");
+            this.getSidebar(selector).removeClass("hv-sidebar--open");
         },
 
         isSidebarOpen: function (selector) {
-            return $(this.element).find(selector).hasClass("hv-sidebar--open");
+            return this.getSidebar(selector).hasClass("hv-sidebar--open");
         },
 
         refresh: function () {
@@ -501,6 +526,8 @@
                     //self.refreshZoomSlider();
                 });
 
+                self.initPageSlider();
+
                 self.populateAnnotations();
                 self.populateNavigation();
 
@@ -508,6 +535,26 @@
                 console.error(err);
                 self.hideSpinner();
                 self.showError(err);
+            });
+        },
+
+        initPageSlider: function () {
+            var pageCount = this.manifest
+                .getSequenceByIndex(0)
+                .getCanvases()
+                .length;
+
+            console.log(pageCount);
+
+            $(this.element).find(".hv-page").ionRangeSlider({
+                type: "single",
+                skin: "big",
+                min: 1,
+                max: pageCount,
+                from: 1,
+                grid: true,
+                grid_snap: true,
+                hide_min_max: true
             });
         },
 

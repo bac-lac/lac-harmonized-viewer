@@ -6,11 +6,12 @@
     border-top: #eee 1px solid;
     border-bottom: #eee 1px solid;
     background-color: #eee; }
-    .hv-viewer .hv-toolbar .hv-button {
-      color: #5c5c5c;
-      background-color: #eee; }
-      .hv-viewer .hv-toolbar .hv-button-toggle--active {
-        color: #3c3c3c;
-        background: rgba(0, 0, 0, 0.2); }
+
+.hv-button {
+  color: #5c5c5c;
+  background-color: #eee; }
+  .hv-button-toggle--active {
+    color: #3c3c3c;
+    background: rgba(0, 0, 0, 0.2); }
 
 /*# sourceMappingURL=harmonized-viewer-theme.css.map */

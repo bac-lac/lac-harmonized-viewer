@@ -13,6 +13,14 @@ module.exports = function (grunt) {
 			vendors: {
 				files: [
 					{
+						src: 'node_modules/ion-rangeslider/js/ion.rangeSlider.min.js',
+						dest: 'tmp/vendors/ion-rangeslider/ion.rangeSlider.min.js'
+					},
+					{
+						src: 'node_modules/ion-rangeslider/css/ion.rangeSlider.min.css',
+						dest: 'tmp/vendors/ion-rangeslider/ion.rangeSlider.min.css'
+					},
+					{
 						src: 'node_modules/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js',
 						dest: 'tmp/vendors/malihu-scrollbar/malihu-scrollbar.js'
 					},
@@ -120,20 +128,6 @@ module.exports = function (grunt) {
 			}
 		},
 
-		svgcss: {
-			options: {
-			},
-			dist: {
-				files: {
-					'dist/lib/feather/webfont.css': ['node_modules/feather-icons/dist/icons/*.svg']
-				},
-				options: {
-					cssprefix: 'hv-icon__',
-					csstemplate: 'tasks/grunt-svgmin-template.hbs'
-				},
-			},
-		},
-
 		// Clean temp folder
 		clean: {
 			tmp: {
@@ -155,7 +149,6 @@ module.exports = function (grunt) {
 	});
 
 	grunt.loadNpmTasks("grunt-sass");
-	grunt.loadNpmTasks("grunt-svg-css");
 	grunt.loadNpmTasks("grunt-contrib-concat");
 	grunt.loadNpmTasks("grunt-contrib-copy");
 	grunt.loadNpmTasks("grunt-contrib-jshint");
@@ -166,6 +159,6 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks("grunt-contrib-watch");
 	grunt.loadNpmTasks("grunt-karma");
 
-	grunt.registerTask("build", ["clean:dist", "sass", "svgcss", "copy:vendors", "concat:css", "concat:js", "copy:themes", "uglify", "cssmin", "clean:tmp"]);
+	grunt.registerTask("build", ["clean:dist", "sass", "copy:vendors", "concat:css", "concat:js", "copy:themes", "uglify", "cssmin", "clean:tmp"]);
 	grunt.registerTask("default", ["build"]);
 };
