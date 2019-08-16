@@ -9,10 +9,10 @@
 	<script type="text/javascript" src="/dist/harmonized-viewer.bundle.js"></script>
 
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css" rel="stylesheet">
 
 	<link href="/dist/harmonized-viewer.css" rel="stylesheet" type="text/css">
 	<link href="/dist/harmonized-viewer-theme.css" rel="stylesheet" type="text/css">
-	<link href="/dist/lib/feather/webfont.css" rel="stylesheet" type="text/css">
 
 	<style type="text/css">
 		html,
@@ -43,11 +43,11 @@
 				<div class="hv-toolbar__left">
 					<button type="button" class="hv-button hv-button__icon hv-button-toggle" data-toggle="navigation"
 						title="Toggle navigation view">
-						<span class="hv-icon hv-icon__menu"></span>
+						<i class="fas fa-bars"></i>
 					</button>
-					<button type="button" class="hv-button hv-button__icon hv-button-toggle"
-						data-toggle="navigation-full" title="Toggle navigation view">
-						<span class="hv-icon hv-icon__menu"></span>
+					<button type="button" class="hv-button hv-button__icon hv-button-toggle" data-toggle="gallery"
+						title="Toggle gallery view">
+						<i class="fas fa-th-large"></i>
 					</button>
 					<div class="separator"></div>
 					<!-- <button type="button" class="hv-button" data-toggle="fullscreen" title="Toggle fullscreen view">
@@ -60,7 +60,7 @@
 					</button> -->
 					<button type="button" class="hv-button hv-button__icon" data-toggle="previous"
 						title="Previous page">
-						<span class="hv-icon hv-icon__chevron-left"></span>
+						<i class="fas fa-angle-left"></i>
 					</button>
 					<div class="hv-navigation__current">
 						<button type="button" class="hv-button">
@@ -68,7 +68,7 @@
 						</button>
 					</div>
 					<button type="button" class="hv-button hv-button__icon" data-toggle="next" title="Next page">
-						<span class="hv-icon hv-icon__chevron-right"></span>
+						<i class="fas fa-angle-right"></i>
 					</button>
 					<!-- <button type="button" class="hv-button" data-toggle="last" title="Last page">
 						<i class="material-icons">last_page</i>
@@ -81,11 +81,11 @@
 					</button>
 					<div class="separator"></div>
 					<button type="button" class="hv-button hv-button__icon" data-toggle="zoom-out" title="Zoom out">
-						<span class="hv-icon hv-icon__zoom-out"></span>
+						<i class="fas fa-search-minus"></i>
 					</button>
 					<div class="hv-zoom"></div>
 					<button type="button" class="hv-button hv-button__icon" data-toggle="zoom-in" title="Zoom in">
-						<span class="hv-icon hv-icon__zoom-in"></span>
+						<i class="fas fa-search-plus"></i>
 					</button>
 					<!-- <button type="button" class="hv-button" data-toggle="gallery" title="Toggle gallery view">
 						<i class="material-icons">view_list</i>
@@ -93,7 +93,7 @@
 					<div class="separator"></div>
 					<button type="button" class="hv-button hv-button-toggle" data-toggle="metadata"
 						title="Toggle metadata view">
-						<span class="hv-icon hv-icon__columns"></span>
+						<i class="fas fa-columns"></i>
 						Details
 					</button>
 				</div>
@@ -106,10 +106,10 @@
 				<div class="hv-content__container">
 					<div class="hv-viewport">
 						<button type="button" class="hv-viewport__prev" data-toggle="previous" title="Previous page">
-							<span class="hv-icon hv-icon__chevron-left"></span>
+							<i class="fas fa-angle-left"></i>
 						</button>
 						<button type="button" class="hv-viewport__next" data-toggle="next" title="Next page">
-							<span class="hv-icon hv-icon__chevron-right"></span>
+							<i class="fas fa-angle-right"></i>
 						</button>
 					</div>
 				</div>
@@ -141,13 +141,17 @@
 			<!-- End Sidebars -->
 
 			<!-- Overlays -->
-			<aside class="hv-sidebar hv-sidebar__overlay hv-sidebar__gallery">
-				<div class="hv-navigation">
-					<div class="row no-gutters">
-						<div class="col-12">
-							<div class="hv-navigation__items"></div>
-						</div>
+			<aside class="hv-overlay hv-overlay__gallery">
+				<div class="row no-gutters align-items-center hv-search">
+					<div class="col-auto">
+						<i class="fas fa-search"></i>
 					</div>
+					<div class="col">
+						<input type="text" class="hv-search__input" placeholder="Search">
+					</div>
+				</div>
+				<div class="hv-navigation">
+					<div class="hv-navigation__items"></div>
 				</div>
 			</aside>
 			<!-- End Overlays -->
@@ -156,7 +160,10 @@
 
 		<footer class="hv-footer">
 			<div class="hv-toolbar">
-				<div class="hv-toolbar__left">
+				<div class="w-100">
+					<input type="text" class="hv-page" name="" value="">
+				</div>
+				<!-- <div class="hv-toolbar__left">
 					<button type="button" class="hv-button" title="Download a copy">
 						<span class="hv-icon hv-icon__download"></span>
 						Download
@@ -170,7 +177,7 @@
 					<button type="button" class="hv-button hv-button__icon hv-button-toggle" title="Fullscreen">
 						<span class="hv-icon hv-icon__maximize"></span>
 					</button>
-				</div>
+				</div> -->
 			</div>
 		</footer>
 
