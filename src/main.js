@@ -26,6 +26,7 @@
 
     var manifest;
     var openseadragon;
+    var pageSlider;
 
     // The actual plugin constructor
     function Plugin(element, options) {
@@ -84,7 +85,6 @@
                 if (page > 0) {
                     openseadragon.goToPage(page - 1);
                 }
-                self.scrollActiveNavigation();
             });
 
             this.addHandler("next", function () {
@@ -93,12 +93,13 @@
                 if (page < (pageCount - 1)) {
                     openseadragon.goToPage(page + 1);
                 }
-                self.scrollActiveNavigation();
             });
 
             this.addHandler("page", function (event) {
                 self.enableToggleButtons(false);
-                openseadragon.goToPage(event.page);
+                self.scrollActiveNavigation();
+                pageSlider.update({ from: openseadragon.currentPage() + 1 });
+                //openseadragon.goToPage(event.page);
             });
 
             this.debug = (window.sessionStorage.getItem("debug") === "true") ? true : false;
@@ -505,8 +506,8 @@
                     //self.setImageLabel(label.value);
                 });
 
-                openseadragon.addHandler("page", function () {
-
+                openseadragon.addHandler("page", function (args) {
+                    self.raiseEvent("page", args);
                 });
 
                 openseadragon.addHandler("open-failed", function (err) {
@@ -544,9 +545,7 @@
                 .getCanvases()
                 .length;
 
-            console.log(pageCount);
-
-            $(this.element).find(".hv-page").ionRangeSlider({
+            pageSlider = $(this.element).find(".hv-page").ionRangeSlider({
                 type: "single",
                 skin: "big",
                 min: 1,
@@ -554,8 +553,11 @@
                 from: 1,
                 grid: true,
                 grid_snap: true,
-                hide_min_max: true
-            });
+                hide_min_max: true,
+                onFinish: function (data) {
+                    openseadragon.goToPage(data.from);
+                }
+            }).data("ionRangeSlider");
         },
 
         getUniqueId: function (element) {
