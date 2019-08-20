@@ -13,12 +13,16 @@ module.exports = function (grunt) {
 			vendors: {
 				files: [
 					{
-						src: 'node_modules/ion-rangeslider/js/ion.rangeSlider.min.js',
-						dest: 'tmp/vendors/ion-rangeslider/ion.rangeSlider.min.js'
+						src: 'node_modules/nouislider/distribute/nouislider.min.js',
+						dest: 'tmp/vendors/nouislider/nouislider.min.js'
 					},
 					{
-						src: 'node_modules/ion-rangeslider/css/ion.rangeSlider.min.css',
-						dest: 'tmp/vendors/ion-rangeslider/ion.rangeSlider.min.css'
+						src: 'node_modules/nouislider/distribute/nouislider.min.css',
+						dest: 'tmp/vendors/nouislider/nouislider.min.css'
+					},
+					{
+						src: 'node_modules/animate.css/animate.min.css',
+						dest: 'tmp/vendors/animate/animate.min.css'
 					},
 					{
 						src: 'node_modules/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js',
@@ -83,7 +87,7 @@ module.exports = function (grunt) {
 		uglify: {
 			dist: {
 				src: ["dist/harmonized-viewer.bundle.js"],
-				dest: "dist/harmonized-viewer.bundle.js"
+				dest: "dist/harmonized-viewer.bundle.min.js"
 			}
 		},
 

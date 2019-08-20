@@ -6,9 +6,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	<script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
-	<script type="text/javascript" src="/dist/harmonized-viewer.bundle.js"></script>
+	<script type="text/javascript" src="/dist/harmonized-viewer.bundle.min.js"></script>
 
-	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Noto+Sans:400,700&display=swap" rel="stylesheet">
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css" rel="stylesheet">
 
 	<link href="/dist/harmonized-viewer.css" rel="stylesheet" type="text/css">
@@ -21,7 +21,6 @@
 		}
 
 		body {
-			font-family: 'Open Sans', Helvetica, Arial, sans-serif;
 			padding: 0;
 			margin: 0;
 		}
@@ -33,20 +32,37 @@
 	<div id="harmonized-viewer" class="hv-viewer">
 		<header class="hv-header">
 
-			<div class="hv-titlebar">
-				<div>
-					<h1 class="hv-manifest-label"></h1>
-				</div>
-			</div>
-
-			<div class="hv-toolbar">
-				<div class="hv-toolbar__left">
+			<div class="hv-toolbar hv-toolbar__primary row no-gutters justify-content-between">
+				<div class="col-auto d-flex">
 					<button type="button" class="hv-button hv-button__icon hv-button-toggle" data-toggle="navigation"
 						title="Toggle navigation view">
 						<i class="fas fa-bars"></i>
 					</button>
-					<button type="button" class="hv-button hv-button__icon hv-button-toggle" data-toggle="gallery"
-						title="Toggle gallery view">
+				</div>
+				<div class="col-auto">
+					<div class="dropdown">
+						<button class="btn btn-secondary hv-button dropdown-toggle" type="button" id="dropdownMenuButton"
+							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="far fa-window-maximize"></i>
+							Single page
+						</button>
+						<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+							<a class="dropdown-item" href="#">Action</a>
+							<a class="dropdown-item" href="#">Another action</a>
+							<a class="dropdown-item" href="#">Something else here</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="hv-toolbar hv-toolbar__secondary row no-gutters">
+				<div class="col-auto d-flex align-items-center">
+					<button type="button" class="btn btn-secondary hv-button hv-button__icon hv-button-toggle"
+						data-toggle="navigation" title="Toggle navigation view">
+						<i class="fas fa-bars"></i>
+					</button>
+					<button type="button" class="btn btn-secondary hv-button hv-button__icon hv-button-toggle"
+						data-toggle="gallery" title="Toggle gallery view">
 						<i class="fas fa-th-large"></i>
 					</button>
 					<div class="separator"></div>
@@ -54,44 +70,46 @@
 						<i class="material-icons">fullscreen</i>
 					</button> -->
 				</div>
-				<div class="hv-paging">
-					<!-- <button type="button" class="hv-button" data-toggle="first" title="First page">
-						<i class="material-icons">first_page</i>
-					</button> -->
-					<button type="button" class="hv-button hv-button__icon" data-toggle="previous"
-						title="Previous page">
-						<i class="fas fa-angle-left"></i>
-					</button>
-					<div class="hv-navigation__current">
-						<button type="button" class="hv-button">
-							Page 1 of 16
+				<div class="col d-flex align-items-center">
+					<span class="hv-toolbar__group-text">
+						Page
+					</span>
+					<div class="hv-toolbar__group">
+						<button type="button" class="btn btn-white hv-button hv-button__icon" data-toggle="previous"
+							title="Previous page">
+							<i class="fas fa-angle-left"></i>
+						</button>
+						<input type="text" class="form-control form-control-sm" style="width:45px" name="page"
+							value="1">
+						<button type="button" class="btn btn-white hv-button hv-button__icon" data-toggle="next"
+							title="Next page">
+							<i class="fas fa-angle-right"></i>
 						</button>
 					</div>
-					<button type="button" class="hv-button hv-button__icon" data-toggle="next" title="Next page">
-						<i class="fas fa-angle-right"></i>
-					</button>
-					<!-- <button type="button" class="hv-button" data-toggle="last" title="Last page">
-						<i class="material-icons">last_page</i>
-					</button> -->
+					<span class="hv-toolbar__group-text">
+						of 16
+					</span>
 				</div>
-				<div class="hv-toolbar__right">
-					<button type="button" class="hv-button hv-button__icon hv-button-toggle" data-toggle="debug"
-						title="Toggle debug mode">
+				<div class="col-auto d-flex">
+					<button type="button" class="btn btn-secondary hv-button hv-button__icon hv-button-toggle"
+						data-toggle="debug" title="Toggle debug mode">
 						<span class="hv-icon hv-icon__code"></span>
 					</button>
 					<div class="separator"></div>
-					<button type="button" class="hv-button hv-button__icon" data-toggle="zoom-out" title="Zoom out">
+					<button type="button" class="btn btn-secondary hv-button hv-button__icon" data-toggle="zoom-out"
+						title="Zoom out">
 						<i class="fas fa-search-minus"></i>
 					</button>
 					<div class="hv-zoom"></div>
-					<button type="button" class="hv-button hv-button__icon" data-toggle="zoom-in" title="Zoom in">
+					<button type="button" class="btn btn-secondary hv-button hv-button__icon" data-toggle="zoom-in"
+						title="Zoom in">
 						<i class="fas fa-search-plus"></i>
 					</button>
 					<!-- <button type="button" class="hv-button" data-toggle="gallery" title="Toggle gallery view">
 						<i class="material-icons">view_list</i>
 					</button> -->
 					<div class="separator"></div>
-					<button type="button" class="hv-button hv-button-toggle" data-toggle="metadata"
+					<button type="button" class="btn btn-secondary hv-button hv-button-toggle" data-toggle="metadata"
 						title="Toggle metadata view">
 						<i class="fas fa-columns"></i>
 						Details
@@ -111,6 +129,11 @@
 						<button type="button" class="hv-viewport__next" data-toggle="next" title="Next page">
 							<i class="fas fa-angle-right"></i>
 						</button>
+					</div>
+					<div class="hv-toolbar hv-toolbar--dark row justify-content-center">
+						<div class="col-xl-3">
+							<div class="hv-pageslider"></div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -158,35 +181,12 @@
 
 		</main>
 
-		<footer class="hv-footer">
-			<div class="hv-toolbar">
-				<div class="w-100">
-					<input type="text" class="hv-page" name="" value="">
-				</div>
-				<!-- <div class="hv-toolbar__left">
-					<button type="button" class="hv-button" title="Download a copy">
-						<span class="hv-icon hv-icon__download"></span>
-						Download
-					</button>
-					<button type="button" class="hv-button" title="Printable version">
-						<span class="hv-icon hv-icon__printer"></span>
-						Printable version
-					</button>
-				</div>
-				<div class="hv-toolbar__right">
-					<button type="button" class="hv-button hv-button__icon hv-button-toggle" title="Fullscreen">
-						<span class="hv-icon hv-icon__maximize"></span>
-					</button>
-				</div> -->
-			</div>
-		</footer>
-
 	</div>
 
 	<script type="text/javascript">
 		$(function () {
 			av = $('#harmonized-viewer').harmonizedViewer({
-				manifest: "https://digital.library.villanova.edu/Item/vudl:92879/Manifest",
+				manifest: "https://damsssl.llgc.org.uk/iiif/2.0/4389767/manifest.json",
 			});
 		});
 	</script>

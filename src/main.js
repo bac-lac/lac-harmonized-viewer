@@ -95,10 +95,13 @@
                 }
             });
 
-            this.addHandler("page", function (event) {
+            this.addHandler("page", function () {
+                var page = openseadragon.currentPage();
+
                 self.enableToggleButtons(false);
                 self.scrollActiveNavigation();
-                pageSlider.update({ from: openseadragon.currentPage() + 1 });
+
+                pageSlider.update({ from: (page + 1) });
                 //openseadragon.goToPage(event.page);
             });
 
@@ -171,7 +174,7 @@
                 // Use base64 transparent pixel as placeholder
                 $("<img/>")
                     .attr("src", "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==")
-                    .addClass("hv-thumbnail hv-placeholder hv-lazy")
+                    .addClass("hv-thumbnail hv-lazy")
                     .attr("data-src", thumbnail)
                     .attr("data-srcset", self.format("{0} 1x", thumbnail))
                     .appendTo($a);
@@ -181,21 +184,54 @@
             $galleryItems.html($ol[0].outerHTML);
 
             $navigation.mCustomScrollbar({
-                scrollInertia: 250
+                skin: "inset-3-dark",
+                scrollInertia: 250,
+                keyboard: {
+                    enable: false
+                },
+                advanced: {
+                    autoScrollOnFocus: ".hv-navigation__item"
+                }
             });
             $gallery.mCustomScrollbar({
-                scrollInertia: 250
+                skin: "inset-3-dark",
+                scrollInertia: 250,
+                keyboard: {
+                    enable: false
+                },
+                advanced: {
+                    autoScrollOnFocus: ".hv-navigation__item"
+                }
             });
 
             this.initLazyLoading();
 
             var tooltipOptions = {
-                trigger: "hover",
+                trigger: "hover focus",
                 placement: "bottom",
                 template: '<div class="tooltip hv-tooltip" role="tooltip"><div class="tooltip-inner"></div></div>'
             };
             $navigation.find(".hv-navigation__item").tooltip(tooltipOptions);
             $gallery.find(".hv-navigation__item").tooltip(tooltipOptions);
+
+            $navigation.keydown(function (e) {
+                switch (e.which) {
+                    case 37: // left            
+                    case 38: // up
+                        $navigation.find(".hv-navigation__item:focus")
+                            .parent().prev().children(".hv-navigation__item").eq(0).focus();
+                        break;
+
+                    case 39: // right
+                    case 40: // down
+                        $navigation.find(".hv-navigation__item:focus")
+                            .parent().next().children(".hv-navigation__item").eq(0).focus();
+                        break;
+
+                    default: return; // exit this handler for other keys
+                }
+                e.preventDefault(); // prevent the default action (scroll / move caret)
+            });
         },
 
         getThumbnail: function (image, width, height) {
@@ -224,11 +260,16 @@
         },
 
         openOverlay: function (selector) {
-            this.getOverlay(selector).addClass("hv-overlay--open");
+            var $element = this.getOverlay(selector);
+            $element.addClass("hv-overlay--open");
+            this.animate($element, "fadeInUpBig");
         },
 
         closeOverlay: function (selector) {
-            this.getOverlay(selector).removeClass("hv-overlay--open");
+            var $element = this.getOverlay(selector);
+            this.animate($element, "fadeOutDownBig", function () {
+                $element.removeClass("hv-overlay--open");
+            });
         },
 
         toggleOverlay: function (selector) {
@@ -249,11 +290,18 @@
         },
 
         openSidebar: function (selector) {
-            this.getSidebar(selector).addClass("hv-sidebar--open");
+            var $sidebar = this.getSidebar(selector).addClass("hv-sidebar--open");
+            this.animate($sidebar, "slideInLeft", function () {
+                this.refresh();
+            });
         },
 
         closeSidebar: function (selector) {
-            this.getSidebar(selector).removeClass("hv-sidebar--open");
+            var $sidebar = this.getSidebar(selector);
+            this.animate($sidebar, "slideOutLeft", function () {
+                $sidebar.removeClass("hv-sidebar--open");
+                this.refresh();
+            });
         },
 
         isSidebarOpen: function (selector) {
@@ -286,7 +334,6 @@
             else {
                 this.openSidebar(selector);
             }
-            this.refresh();
         },
 
         enableButton: function (button) {
@@ -305,19 +352,19 @@
             var $viewport = this.getViewport();
             var $spinner = $viewport.find(".hv-spinner");
             if ($spinner.length === 0) {
-                $spinner = $("<div/>").addClass("hv-spinner").appendTo($viewport);
+                $spinner = $("<div/>").addClass("hv-spinner animated fadeIn delay-1s").attr("role", "status").appendTo($viewport);
+                var $spinnerInner = $("<div/>").addClass("spinner-border").appendTo($spinner);
+                $("<span/>").addClass("sr-only").text("Loading...").appendTo($spinnerInner);
             }
             return $spinner;
         },
 
         showSpinner: function () {
-            var $spinner = this.getSpinner();
-            $spinner.css("opacity", 0).animate({ "opacity": 1 }, 800);
+            this.getSpinner().show();
         },
 
         hideSpinner: function () {
-            var $spinner = this.getSpinner();
-            $spinner.css("opacity", 0).hide(); // hide the spinner immediately
+            this.getSpinner().hide();
         },
 
         initToolbar: function () {
@@ -343,19 +390,17 @@
             return (page >= (pageCount - 1));
         },
 
-        scrollActiveNavigation: function () {
-            var page = openseadragon.currentPage();
-
+        scrollTo: function (element) {
             var $navigation = this.getSidebar(".hv-sidebar__navigation");
-            var $active = $navigation.find(".hv-navigation__item[data-page=" + page + "]");
+            //var $active = $navigation.find(".hv-navigation__item[data-page=" + page + "]");
 
             if (this.settings.navigation.enableCustomScrollbar) {
                 // Use scroll method from mCustomScrollbar
-                $navigation.mCustomScrollbar("scrollTo", $active);
+                $navigation.mCustomScrollbar("scrollTo", $(element));
             }
             else {
                 // Use native scroll method when
-                $active[0].scrollIntoView({
+                $(element)[0].scrollIntoView({
                     behavior: "smooth",
                     block: "nearest",
                     inline: "nearest"
@@ -467,7 +512,7 @@
                         var images = canvas.getImages();
                         var id = images[0].getResource().getServices()[0].id;
                         sources.push({
-                            id: id,
+                            id: id + "/info.json",
                             sequenceIndex: sequenceIndex,
                             canvasIndex: canvasIndex
                         });
@@ -545,19 +590,21 @@
                 .getCanvases()
                 .length;
 
-            pageSlider = $(this.element).find(".hv-page").ionRangeSlider({
-                type: "single",
-                skin: "big",
-                min: 1,
-                max: pageCount,
-                from: 1,
-                grid: true,
-                grid_snap: true,
-                hide_min_max: true,
-                onFinish: function (data) {
-                    openseadragon.goToPage(data.from);
-                }
-            }).data("ionRangeSlider");
+            var pageSlider = $(this.element).find(".hv-pageslider")[0];
+
+            noUiSlider.create(pageSlider, {
+                start: [1],
+                step: 1,
+                range: {
+                    min: [1],
+                    max: [pageCount]
+                },
+                tooltips: true
+            });
+
+            pageSlider.noUiSlider.on("end", function (values, handle) {
+                console.log(values[handle]);
+            });
         },
 
         getUniqueId: function (element) {
@@ -611,9 +658,25 @@
             $error.appendTo($viewport);
         },
 
+        animate: function (node, animationName, callback) {
+            var $element = $(this.element).find(node);
+            $element.addClass("animated").addClass(animationName);
+
+            function handleAnimationEnd() {
+                $element.removeClass("animated").removeClass(animationName);
+                $element[0].removeEventListener("animationend", handleAnimationEnd);
+
+                if (typeof callback === "function") callback();
+            }
+
+            $element[0].addEventListener("animationend", handleAnimationEnd);
+        },
+
         initLazyLoading: function () {
 
-            var lazyImages = [].slice.call(document.querySelectorAll("img.hv-lazy"));
+            var lazyImages = [].slice.call(document.querySelectorAll(".hv-lazy"));
+
+            $(lazyImages).addClass("hv-lazy--pending");
 
             if ("IntersectionObserver" in window) {
                 var lazyImageObserver = new IntersectionObserver(function (entries, observer) {
@@ -622,7 +685,8 @@
                             var lazyImage = entry.target;
                             lazyImage.src = lazyImage.dataset.src;
                             lazyImage.srcset = lazyImage.dataset.srcset;
-                            lazyImage.classList.remove("hz-lazy");
+                            lazyImage.classList.remove("hv-lazy--pending");
+                            lazyImage.classList.add("hv-lazy--loaded");
                             lazyImageObserver.unobserve(lazyImage);
                         }
                     });

@@ -3,7 +3,8 @@
 
 .#{$ns}-viewer,
 .#{$ns}-button {
-  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-family: "Noto Sans", Helvetica, Arial, sans-serif;
 }
 
 .#{$ns}-viewer {
@@ -31,7 +32,6 @@
   flex-wrap: nowrap;
   justify-content: flex-start;
   flex-shrink: 0;
-  box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.2);
   z-index: 10;
 }
 
@@ -62,24 +62,18 @@
 }
 
 .#{$ns}-button {
-  color: #5a5a5a;
-  padding: 6px 14px;
+  padding: 0.65rem 1.2rem;
   display: flex;
   align-items: center;
-  border-radius: 3px;
   border: none;
+  border-radius: 0;
 
-  &:hover {
-    background-color: rgba(158, 158, 158, 0.4);
-  }
-
-  .fas {
-    color: #5a5a5a;
-    font-size: 22px;
+  i {
+    font-size: 20px;
     margin-right: 10px;
   }
 
-  &__icon > .fas {
+  &__icon > i {
     margin-right: 0;
   }
 
@@ -91,30 +85,51 @@
     cursor: not-allowed;
   }
 
-  &:active {
-    background-color: rgba(158, 158, 158, 0.4);
+  &:active,
+  &:focus {
+    outline: none;
+    box-shadow: none;
   }
 }
 
 .#{$ns}-toolbar {
-  height: 50px;
-  padding: 0 0.5rem;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  flex-shrink: 0;
-  align-self: stretch;
   align-items: center;
-  box-sizing: border-box;
 
-  &__left,
-  &__right {
+  &__group {
     display: flex;
     align-items: center;
-  }
 
-  &__right {
-    margin-left: auto;
+    &-text {
+      padding: 0 0.5rem;
+    }
+
+    .form-control {
+      height: 100%;
+      font-size: 13px;
+      margin: 0 1px;
+      padding: 0.25rem 0.5rem;
+      text-align: center;
+      border: none;
+      border-radius: 0;
+      outline: none;
+      box-shadow: none;
+    }
+
+    .#{$ns}-button {
+      height: 100%;
+      padding: 0.25rem 0.5rem;
+      border-radius: 2px;
+      background-color: #fff;
+
+      &:first-child {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+
+      &__icon > i {
+        font-size: 18px;
+      }
+    }
   }
 
   .#{$ns}-paging {
@@ -130,25 +145,21 @@
 
   .separator {
     width: 1px;
-    height: 36px;
+    height: 30px;
     margin: 0 0.3rem;
-    background: rgba(158, 158, 158, 0.5);
   }
 }
 
 .#{$ns}-overlay {
-  opacity: 0;
   width: 100%;
   height: 100%;
+  display: none;
   overflow: auto;
   position: absolute;
-  top: 100%;
-  transition: all 0.5s cubic-bezier(0.22, 0.68, 0, 1);
   background-color: #414141;
 
   &--open {
-    top: 0;
-    opacity: 1;
+    display: block;
   }
 
   .mCSB_inside {
@@ -159,14 +170,14 @@
 }
 
 .#{$ns}-sidebar {
-  left: 0;
+  left: -300px;
   width: 300px;
   height: 100%;
   overflow: auto;
   position: absolute;
-  margin-left: -300px;
-  transition: all 0.25s ease;
   background-color: #f5f5f5;
+  -webkit-animation-duration: 0.5s !important;
+  animation-duration: 0.5s !important;
 
   .mCSB_scrollTools_vertical {
     width: 8px;
@@ -190,7 +201,7 @@
   }
 
   &--open {
-    margin-left: 0;
+    left: 0;
   }
 
   &__right {
@@ -269,13 +280,15 @@
         background-position: 50% 50%;
 
         &:hover,
+        &:focus,
         &.hv-navigation__item--active {
+          outline: 0;
           opacity: 1;
-          box-shadow: 0 0 0 0.2rem #9E9E9E;
+          box-shadow: 0 0 0 0.2rem #757575;
         }
 
         &.hv-navigation__item--active {
-          box-shadow: 0 0 0 0.2rem #eee;
+          box-shadow: 0 0 0 0.2rem #e0e0e0;
         }
 
         img {
@@ -341,7 +354,6 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  border: #616161 7px solid;
 
   .navigator {
     border: #000 4px solid !important;
@@ -391,6 +403,10 @@
   }
 }
 
+.#{$ns}-spinner {
+  color: #424242;
+}
+
 .#{$ns}-error {
   width: 400px;
   text-align: center;
@@ -417,9 +433,14 @@
   }
 }
 
-.#{$ns}-footer {
-  .#{$ns}-toolbar {
-    margin-bottom: 0;
+.#{$ns}-pageslider {
+  width: 100%;
+
+  .noUi-tooltip {
+    display: none;
+  }
+  .noUi-active .noUi-tooltip {
+    display: block;
   }
 }
 
@@ -444,16 +465,7 @@
   }
 }
 
-.#{$ns}-spinner {
-  border: 10px solid rgba(0, 0, 0, 0.05);
-  border-top: 10px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  animation: #{$ns}-spinner 1.5s ease infinite;
-}
-
-.#{$ns}-placeholder {
+.#{$ns}-thumbnail.#{$ns}-lazy {
   background: -webkit-gradient(
     linear,
     left top,
@@ -467,15 +479,6 @@
   background-size: 400% 100% !important;
   -webkit-animation: #{$ns}-placeholder 1.4s ease infinite;
   animation: #{$ns}-placeholder 1.4s ease infinite;
-}
-
-@keyframes #{$ns}-spinner {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }
 
 @keyframes #{$ns}-placeholder {

@@ -1,25 +1,68 @@
 @import "variables";
 
 .#{$ns}-viewer {
-  background-color: $viewport-background-color--light;
+  background-color: $viewport-background-color;
 
   .#{$ns}-header {
-    background-color: $header-background-color--light;
-  }
+    .#{$ns}-toolbar.#{$ns}-toolbar__primary {
+      z-index: 1;
+      box-shadow: 0 3px 4px 0px rgba(0, 0, 0, 0.2);
+      border-bottom: none;
+      background-color: $toolbar-primary-background-color;
 
-  .#{$ns}-toolbar {
-    border-top: $toolbar-border-color--light 1px solid;
-    border-bottom: $toolbar-border-color--light 1px solid;
-    background-color: $toolbar-background-color--light;
+      .#{$ns}-button {
+        color: #fff;
+        padding: 0.9rem 1.4rem;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.2);
+        }
+      }
+    }
   }
 }
 
-.#{$ns}-button {
-  color: $toolbar-button-icon-color--light;
-  background-color: $toolbar-background-color--light;
+.#{$ns}-toolbar {
+  box-shadow: 0 3px 6px 0px rgba(0, 0, 0, 0.3);
+  border-bottom: $toolbar-border-color 2px solid;
+  background-color: $toolbar-background-color;
 
-  &-toggle--active {
-    color: #3c3c3c;
-    background: rgba(0, 0, 0, 0.2);
+  &__group {
+    .form-control,
+    .#{$ns}-button {
+      background-color: $toolbar-button-group-background-color;
+
+      &:hover {
+        background-color: $toolbar-button-group-background-color;
+      }
+
+      &__icon > i {
+        color: $toolbar-button-group-icon-color;
+      }
+    }
+  }
+
+  .#{$ns}-button {
+    color: $toolbar-button-icon-color;
+    background-color: transparent;
+
+    &:hover {
+      color: $toolbar-button-icon-color;
+      background-color: $toolbar-background-hover-color;
+    }
+    
+    &:not(:disabled):not(.disabled):active,
+    &:not(:disabled):not(.disabled).active {
+      background-color: #414141;
+    }
+
+    &-toggle--active {
+      color: #3c3c3c;
+      background: rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .separator {
+    background-color: $toolbar-border-color;
   }
 }
