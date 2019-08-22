@@ -6,9 +6,10 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	<script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
-	<script type="text/javascript" src="/dist/harmonized-viewer.bundle.min.js"></script>
+	<script type="text/javascript" src="/dist/harmonized-viewer.bundle.js"></script>
 
 	<link href="https://fonts.googleapis.com/css?family=Noto+Sans:400,700&display=swap" rel="stylesheet">
+
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css" rel="stylesheet">
 
 	<link href="/dist/harmonized-viewer.css" rel="stylesheet" type="text/css">
@@ -32,96 +33,144 @@
 	<div id="harmonized-viewer" class="hv-viewer">
 		<header class="hv-header">
 
-			<div class="hv-toolbar hv-toolbar__primary row no-gutters justify-content-between">
+			<div class="hv-toolbar hv-toolbar__primary row justify-content-between">
 				<div class="col-auto d-flex">
 					<button type="button" class="hv-button hv-button__icon hv-button-toggle" data-toggle="navigation"
 						title="Toggle navigation view">
 						<i class="fas fa-bars"></i>
 					</button>
 				</div>
+				<div class="col">
+					<h1 class="hv-manifest-label"></h1>
+				</div>
 				<div class="col-auto">
+
+				</div>
+				<div class="col-auto d-flex">
 					<div class="dropdown">
-						<button class="btn btn-secondary hv-button dropdown-toggle" type="button" id="dropdownMenuButton"
-							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							<i class="far fa-window-maximize"></i>
-							Single page
+						<button class="btn btn-secondary hv-button hv-button__icon hv-button__display dropdown-toggle" type="button"
+							id="hv_button_display" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="fas fa-window-maximize"></i>
+							<span>
+								Single page
+							</span>
 						</button>
-						<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-							<a class="dropdown-item" href="#">Action</a>
-							<a class="dropdown-item" href="#">Another action</a>
-							<a class="dropdown-item" href="#">Something else here</a>
+						<div class="dropdown-menu dropdown-menu-right hv-dropdown__display" style="width:200px"
+							aria-labelledby="hv_button_display">
+							<div class="row no-gutters">
+								<a href="#" class="dropdown-item col-md-6 col-sm-12">
+									<i class="far fa-window-maximize"></i>
+									<div>
+										Single page
+									</div>
+								</a>
+								<a href="#" class="dropdown-item col-md-6 col-sm-12">
+									<i class="fas fa-columns"></i>
+									<div>
+										Dual page
+									</div>
+								</a>
+							</div>
+						</div>
+					</div>
+					<button class="btn btn-secondary hv-button hv-button__icon" type="button" id="hv_button_settings">
+						<i class="fas fa-cog"></i>
+					</button>
+					<div class="dropdown">
+						<button class="btn btn-secondary hv-button hv-button__icon" type="button" id="hv_button_more"
+							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="fas fa-ellipsis-v"></i>
+						</button>
+						<div class="dropdown-menu dropdown-menu-right" style="width:200px"
+							aria-labelledby="hv_button_more">
+							<a href="#" class="dropdown-item hv-button__display col-md-6 col-sm-12">
+								<i class="fas fa-columns"></i>
+								<div>
+									Dual page
+								</div>
+							</a>
 						</div>
 					</div>
 				</div>
 			</div>
 
-			<div class="hv-toolbar hv-toolbar__secondary row no-gutters">
-				<div class="col-auto d-flex align-items-center">
-					<button type="button" class="btn btn-secondary hv-button hv-button__icon hv-button-toggle"
-						data-toggle="navigation" title="Toggle navigation view">
-						<i class="fas fa-bars"></i>
-					</button>
-					<button type="button" class="btn btn-secondary hv-button hv-button__icon hv-button-toggle"
-						data-toggle="gallery" title="Toggle gallery view">
-						<i class="fas fa-th-large"></i>
-					</button>
-					<div class="separator"></div>
-					<!-- <button type="button" class="hv-button" data-toggle="fullscreen" title="Toggle fullscreen view">
-						<i class="material-icons">fullscreen</i>
-					</button> -->
-				</div>
-				<div class="col d-flex align-items-center">
-					<span class="hv-toolbar__group-text">
-						Page
-					</span>
-					<div class="hv-toolbar__group">
-						<button type="button" class="btn btn-white hv-button hv-button__icon" data-toggle="previous"
-							title="Previous page">
-							<i class="fas fa-angle-left"></i>
-						</button>
-						<input type="text" class="form-control form-control-sm" style="width:45px" name="page"
-							value="1">
-						<button type="button" class="btn btn-white hv-button hv-button__icon" data-toggle="next"
-							title="Next page">
-							<i class="fas fa-angle-right"></i>
-						</button>
-					</div>
-					<span class="hv-toolbar__group-text">
-						of 16
-					</span>
-				</div>
-				<div class="col-auto d-flex">
-					<button type="button" class="btn btn-secondary hv-button hv-button__icon hv-button-toggle"
-						data-toggle="debug" title="Toggle debug mode">
-						<span class="hv-icon hv-icon__code"></span>
-					</button>
-					<div class="separator"></div>
-					<button type="button" class="btn btn-secondary hv-button hv-button__icon" data-toggle="zoom-out"
-						title="Zoom out">
-						<i class="fas fa-search-minus"></i>
-					</button>
-					<div class="hv-zoom"></div>
-					<button type="button" class="btn btn-secondary hv-button hv-button__icon" data-toggle="zoom-in"
-						title="Zoom in">
-						<i class="fas fa-search-plus"></i>
-					</button>
-					<!-- <button type="button" class="hv-button" data-toggle="gallery" title="Toggle gallery view">
-						<i class="material-icons">view_list</i>
-					</button> -->
-					<div class="separator"></div>
-					<button type="button" class="btn btn-secondary hv-button hv-button-toggle" data-toggle="metadata"
-						title="Toggle metadata view">
-						<i class="fas fa-columns"></i>
-						Details
-					</button>
-				</div>
-			</div>
 		</header>
 
 		<main class="hv-main">
 
 			<div class="hv-content">
 				<div class="hv-content__container">
+
+					<div class="hv-toolbar hv-toolbar__secondary row justify-content-between">
+						<div class="hv-toolbar__section align-items-center col-auto">
+							<button type="button" class="btn btn-secondary hv-button hv-button__icon hv-button-toggle"
+								data-toggle="navigation" title="Toggle navigation view">
+								<i class="fas fa-bars"></i>
+							</button>
+							<button type="button" class="btn btn-secondary hv-button hv-button__icon hv-button-toggle"
+								data-toggle="gallery" title="Toggle gallery view">
+								<i class="fas fa-th-large"></i>
+							</button>
+							<!-- <button type="button" class="hv-button" data-toggle="fullscreen" title="Toggle fullscreen view">
+										<i class="material-icons">fullscreen</i>
+									</button> -->
+						</div>
+						<div class="col d-flex align-items-center">
+							<div class="hv-toolbar__controls">
+								<span class="hv-toolbar__controls-text">
+									Page
+								</span>
+								<div class="btn-group" role="group">
+									<button type="button" class="btn btn-white hv-button hv-button__icon"
+										data-toggle="previous" title="Previous page">
+										<i class="fas fa-angle-left"></i>
+									</button>
+									<input type="text" class="form-control form-control-sm" style="width:45px"
+										name="page" value="1">
+									<button type="button" class="btn btn-white hv-button hv-button__icon"
+										data-toggle="next" title="Next page">
+										<i class="fas fa-angle-right"></i>
+									</button>
+								</div>
+								<span class="hv-toolbar__controls-text">
+									of 16
+								</span>
+							</div>
+						</div>
+						<div class="col-auto d-flex">
+							<div class="hv-toolbar__section">
+								<button type="button" class="btn btn-secondary hv-button hv-button__icon"
+									data-toggle="zoom-out" title="Zoom out">
+									<i class="fas fa-minus-circle"></i>
+								</button>
+								<div class="hv-toolbar__controls">
+									<div class="dropdown">
+										<button class="btn btn-secondary hv-button dropdown-toggle hz-zoom"
+											type="button" id="hv_zoom-control" data-toggle="dropdown"
+											aria-haspopup="true" aria-expanded="false">
+											Auto
+										</button>
+										<div class="dropdown-menu" aria-labelledby="hv_zoom-control">
+											<a class="dropdown-item" href="#">Auto</a>
+											<a class="dropdown-item" href="#">100%</a>
+											<a class="dropdown-item" href="#">50%</a>
+										</div>
+									</div>
+								</div>
+								<button type="button" class="btn btn-secondary hv-button hv-button__icon"
+									data-toggle="zoom-in" title="Zoom in">
+									<i class="fas fa-plus-circle"></i>
+								</button>
+							</div>
+							<button type="button" class="btn btn-secondary hv-button hv-button-toggle"
+								data-toggle="metadata" title="Toggle metadata view">
+								<i class="fas fa-columns"></i>
+								Details
+							</button>
+
+						</div>
+					</div>
+
 					<div class="hv-viewport">
 						<button type="button" class="hv-viewport__prev" data-toggle="previous" title="Previous page">
 							<i class="fas fa-angle-left"></i>
@@ -139,7 +188,7 @@
 			</div>
 
 			<!-- Sidebars -->
-			<aside class="hv-sidebar hv-sidebar__push hv-sidebar__navigation hv-sidebar__left">
+			<aside class="hv-sidebar hv-sidebar__push hv-sidebar__navigation hv-sidebar__left faster">
 				<div class="hv-navigation">
 					<!-- <div class="row no-gutters justify-content-center hv-navigation__display">
 						<div class="btn-group btn-group-sm" role="group">
@@ -160,7 +209,7 @@
 					</div>
 				</div>
 			</aside>
-			<aside class="hv-sidebar hv-sidebar__push hv-sidebar__metadata hv-sidebar__right"></aside>
+			<aside class="hv-sidebar hv-sidebar__push hv-sidebar__metadata hv-sidebar__right faster"></aside>
 			<!-- End Sidebars -->
 
 			<!-- Overlays -->

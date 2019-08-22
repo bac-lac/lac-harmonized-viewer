@@ -1,28 +1,33 @@
 .hv-viewer {
   background-color: #dfdfdf; }
-  .hv-viewer .hv-header .hv-toolbar.hv-toolbar__primary {
-    z-index: 1;
-    box-shadow: 0 3px 4px 0px rgba(0, 0, 0, 0.2);
-    border-bottom: none;
-    background-color: #00838F; }
-    .hv-viewer .hv-header .hv-toolbar.hv-toolbar__primary .hv-button {
+
+.hv-header .hv-toolbar__primary {
+  z-index: 1;
+  border-bottom: none;
+  background-color: #3f464c; }
+  .hv-header .hv-toolbar__primary .hv-button {
+    color: #b0bec5;
+    padding: 0.9rem 1.4rem; }
+    .hv-header .hv-toolbar__primary .hv-button:hover {
       color: #fff;
-      padding: 0.9rem 1.4rem; }
-      .hv-viewer .hv-header .hv-toolbar.hv-toolbar__primary .hv-button:hover {
-        background-color: rgba(0, 0, 0, 0.2); }
+      background-color: rgba(16, 31, 39, 0.5); }
+
+.hv-toolbar__secondary {
+  box-shadow: 0 1px 5px 3px rgba(63, 70, 76, 0.2); }
 
 .hv-toolbar {
-  box-shadow: 0 3px 6px 0px rgba(0, 0, 0, 0.3);
-  border-bottom: #dadada 2px solid;
+  border-bottom: #dadada 3px solid;
   background-color: #eee; }
-  .hv-toolbar__group .form-control,
-  .hv-toolbar__group .hv-button {
+  .hv-toolbar .hv-toolbar__section {
+    border-right: #e1e1e1 2px solid; }
+  .hv-toolbar .hv-toolbar__group .form-control,
+  .hv-toolbar .hv-toolbar__group .hv-button {
     background-color: #fff; }
-    .hv-toolbar__group .form-control:hover,
-    .hv-toolbar__group .hv-button:hover {
+    .hv-toolbar .hv-toolbar__group .form-control:hover,
+    .hv-toolbar .hv-toolbar__group .hv-button:hover {
       background-color: #fff; }
-    .hv-toolbar__group .form-control__icon > i,
-    .hv-toolbar__group .hv-button__icon > i {
+    .hv-toolbar .hv-toolbar__group .form-control__icon > i,
+    .hv-toolbar .hv-toolbar__group .hv-button__icon > i {
       color: #a8a8a8; }
   .hv-toolbar .hv-button {
     color: #787878;
@@ -35,7 +40,5 @@
     .hv-toolbar .hv-button-toggle--active {
       color: #3c3c3c;
       background: rgba(0, 0, 0, 0.2); }
-  .hv-toolbar .separator {
-    background-color: #dadada; }
 
 /*# sourceMappingURL=harmonized-viewer-theme.css.map */

@@ -2,20 +2,23 @@
 
 .#{$ns}-viewer {
   background-color: $viewport-background-color;
+}
 
-  .#{$ns}-header {
-    .#{$ns}-toolbar.#{$ns}-toolbar__primary {
+.#{$ns}-header {
+  .#{$ns}-toolbar {
+    &__primary {
       z-index: 1;
-      box-shadow: 0 3px 4px 0px rgba(0, 0, 0, 0.2);
+      // box-shadow: 0 1px 2px 3px rgba(0, 0, 0, 0.1);
       border-bottom: none;
       background-color: $toolbar-primary-background-color;
 
       .#{$ns}-button {
-        color: #fff;
+        color: $toolbar-primary-button-icon-color;
         padding: 0.9rem 1.4rem;
 
         &:hover {
-          background-color: rgba(0, 0, 0, 0.2);
+          color: $toolbar-primary-button-icon-hover-color;
+          background-color: $toolbar-primary-button-hover-background-color;
         }
       }
     }
@@ -23,11 +26,20 @@
 }
 
 .#{$ns}-toolbar {
-  box-shadow: 0 3px 6px 0px rgba(0, 0, 0, 0.3);
-  border-bottom: $toolbar-border-color 2px solid;
+  &__secondary {
+    box-shadow: 0 1px 5px 3px rgba(63, 70, 76, 0.2);
+  }
+}
+
+.#{$ns}-toolbar {
+  border-bottom: $toolbar-border-color 3px solid;
   background-color: $toolbar-background-color;
 
-  &__group {
+  & .#{$ns}-toolbar__section {
+    border-right: $toolbar-secondary-separator-color 2px solid;
+  }
+
+  & &__group {
     .form-control,
     .#{$ns}-button {
       background-color: $toolbar-button-group-background-color;
@@ -50,7 +62,7 @@
       color: $toolbar-button-icon-color;
       background-color: $toolbar-background-hover-color;
     }
-    
+
     &:not(:disabled):not(.disabled):active,
     &:not(:disabled):not(.disabled).active {
       background-color: #414141;
@@ -60,9 +72,5 @@
       color: #3c3c3c;
       background: rgba(0, 0, 0, 0.2);
     }
-  }
-
-  .separator {
-    background-color: $toolbar-border-color;
   }
 }

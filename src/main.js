@@ -96,12 +96,13 @@
             });
 
             this.addHandler("page", function () {
-                var page = openseadragon.currentPage();
-
                 self.enableToggleButtons(false);
-                self.scrollActiveNavigation();
 
-                pageSlider.update({ from: (page + 1) });
+                var $active = $(this.element).find(".hv-navigation__item--active");
+
+                self.scrollTo($active);
+
+                //pageSlider.update({ from: (page + 1) });
                 //openseadragon.goToPage(event.page);
             });
 
@@ -290,17 +291,20 @@
         },
 
         openSidebar: function (selector) {
+            var self = this;
             var $sidebar = this.getSidebar(selector).addClass("hv-sidebar--open");
             this.animate($sidebar, "slideInLeft", function () {
-                this.refresh();
+                self.refresh();
             });
         },
 
         closeSidebar: function (selector) {
+            var self = this;
             var $sidebar = this.getSidebar(selector);
+
             this.animate($sidebar, "slideOutLeft", function () {
                 $sidebar.removeClass("hv-sidebar--open");
-                this.refresh();
+                self.refresh();
             });
         },
 
@@ -522,8 +526,11 @@
                 openseadragon = new OpenSeadragon({
                     id: openseadragonId,
                     prefixUrl: "../node_modules/openseadragon/build/openseadragon/images/",
-                    tileSources: sources.map(function (i) { return i.id }),
-                    sequenceMode: true,
+                    tileSources: sources.map(function (i) { return i.id }).slice(0, 2),
+                    sequenceMode: false,
+                    collectionMode: true,
+                    collectionLayout: "vertical",
+                    collectionTileMargin: 15,
                     showNavigator: true,
                     navigatorPosition: "BOTTOM_RIGHT",
                     showNavigationControl: false,
@@ -604,6 +611,15 @@
 
             pageSlider.noUiSlider.on("end", function (values, handle) {
                 console.log(values[handle]);
+            });
+        },
+
+        enableDualPageDisplay: function () {
+            openseadragon.addTiledImage({
+                tileSource: 'my-image.dzi',
+                x: 5,
+                y: 0,
+                width: 10
             });
         },
 

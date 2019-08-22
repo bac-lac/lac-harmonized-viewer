@@ -1,8 +1,10 @@
 @import "variables";
+@import "mixins";
 @import "node_modules/bootstrap/scss/bootstrap";
 
 .#{$ns}-viewer,
-.#{$ns}-button {
+.#{$ns}-button,
+.dropdown-menu {
   font-size: 14px;
   font-family: "Noto Sans", Helvetica, Arial, sans-serif;
 }
@@ -35,30 +37,13 @@
   z-index: 10;
 }
 
-.#{$ns}-titlebar {
-  height: 64px;
-  min-height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0 1rem;
-
-  & h1,
-  & h2,
-  & h3,
-  & h4,
-  & h5,
-  & h6 {
-    margin: 0;
-    padding: 0;
-    letter-spacing: 0.02em;
-  }
-
-  .#{$ns}-manifest-label {
-    color: #fff;
-    font-size: 1.1rem;
-    font-weight: normal;
-  }
+.#{$ns}-manifest-label {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: normal;
+  margin: 0;
+  padding: 0;
+  letter-spacing: 0.02em;
 }
 
 .#{$ns}-button {
@@ -67,6 +52,22 @@
   align-items: center;
   border: none;
   border-radius: 0;
+
+  &.dropdown-toggle::after {
+    @include dropdown-toggle;
+  }
+
+  &.dropdown-toggle {
+    ~ .dropdown-menu {
+      font-size: inherit;
+      padding: 0.4rem;
+
+      .dropdown-item {
+        padding: 0.4rem 0.6rem;
+        text-align: center;
+      }
+    }
+  }
 
   i {
     font-size: 20px;
@@ -92,10 +93,31 @@
   }
 }
 
+.#{$ns}-dropdown__display {
+  border-radius: 2px;
+
+  &.dropdown-toggle::after {
+    @include dropdown-toggle;
+  }
+
+  .dropdown-item {
+    i {
+      color: #3f464c;
+      font-size: 26px;
+    }
+  }
+}
+
 .#{$ns}-toolbar {
+  margin-right: 0;
+  margin-left: 0;
   align-items: center;
 
-  &__group {
+  &__section {
+    display: flex;
+  }
+
+  & &__controls {
     display: flex;
     align-items: center;
 
@@ -115,19 +137,36 @@
       box-shadow: none;
     }
 
+    .dropdown {
+      .btn.dropdown-toggle::after {
+        color: #e1e2e1;
+      }
+    }
+
     .#{$ns}-button {
       height: 100%;
       padding: 0.25rem 0.5rem;
       border-radius: 2px;
       background-color: #fff;
 
+      &__icon > i {
+        font-size: 18px;
+      }
+    }
+  }
+
+  &-group {
+    .#{$ns}-button {
       &:first-child {
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
+        margin-right: 2px;
       }
 
-      &__icon > i {
-        font-size: 18px;
+      &:last-child {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        margin-left: 2px;
       }
     }
   }
@@ -143,10 +182,11 @@
     text-align: center;
   }
 
-  .separator {
-    width: 1px;
-    height: 30px;
-    margin: 0 0.3rem;
+  .#{$ns}-button__display {
+    span {
+      font-size: 0.8rem;
+      margin-left: 0.5rem;
+    }
   }
 }
 
@@ -170,14 +210,12 @@
 }
 
 .#{$ns}-sidebar {
-  left: -300px;
+  display: none;
   width: 300px;
   height: 100%;
   overflow: auto;
   position: absolute;
   background-color: #f5f5f5;
-  -webkit-animation-duration: 0.5s !important;
-  animation-duration: 0.5s !important;
 
   .mCSB_scrollTools_vertical {
     width: 8px;
@@ -201,7 +239,7 @@
   }
 
   &--open {
-    left: 0;
+    display: block;
   }
 
   &__right {
@@ -329,6 +367,7 @@
   display: flex;
   overflow: hidden;
   transition: all 0.5s ease;
+  -webkit-transition: all 0.5s ease;
 
   &--push-left {
     padding-left: 300px;
@@ -343,7 +382,6 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    transition: all 0.5s ease;
   }
 }
 
@@ -404,7 +442,7 @@
 }
 
 .#{$ns}-spinner {
-  color: #424242;
+  color: #3f464c !important;
 }
 
 .#{$ns}-error {
