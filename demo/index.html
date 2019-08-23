@@ -33,7 +33,7 @@
 	<div id="harmonized-viewer" class="hv-viewer">
 		<header class="hv-header">
 
-			<div class="hv-toolbar hv-toolbar__primary row justify-content-between">
+			<div class="hv-toolbar hv-toolbar__primary row no-gutters justify-content-between">
 				<div class="col-auto d-flex">
 					<button type="button" class="hv-button hv-button__icon hv-button-toggle" data-toggle="navigation"
 						title="Toggle navigation view">
@@ -41,7 +41,7 @@
 					</button>
 				</div>
 				<div class="col">
-					<h1 class="hv-manifest-label"></h1>
+					<h1 class="hv-manifest-label ml-3"></h1>
 				</div>
 				<div class="col-auto">
 
@@ -101,12 +101,8 @@
 			<div class="hv-content">
 				<div class="hv-content__container">
 
-					<div class="hv-toolbar hv-toolbar__secondary row justify-content-between">
+					<div class="hv-toolbar hv-toolbar__secondary row no-gutters justify-content-between">
 						<div class="hv-toolbar__section align-items-center col-auto">
-							<button type="button" class="btn btn-secondary hv-button hv-button__icon hv-button-toggle"
-								data-toggle="navigation" title="Toggle navigation view">
-								<i class="fas fa-bars"></i>
-							</button>
 							<button type="button" class="btn btn-secondary hv-button hv-button__icon hv-button-toggle"
 								data-toggle="gallery" title="Toggle gallery view">
 								<i class="fas fa-th-large"></i>
@@ -179,7 +175,7 @@
 							<i class="fas fa-angle-right"></i>
 						</button>
 					</div>
-					<div class="hv-toolbar hv-toolbar--dark row justify-content-center">
+					<div class="hv-toolbar row no-gutters py-3 justify-content-center">
 						<div class="col-xl-3">
 							<div class="hv-pageslider"></div>
 						</div>
@@ -188,7 +184,7 @@
 			</div>
 
 			<!-- Sidebars -->
-			<aside class="hv-sidebar hv-sidebar__push hv-sidebar__navigation hv-sidebar__left faster">
+			<aside class="hv-sidebar hv-sidebar__push hv-sidebar__left hv-sidebar--closed faster hv-sidebar__navigation">
 				<div class="hv-navigation">
 					<!-- <div class="row no-gutters justify-content-center hv-navigation__display">
 						<div class="btn-group btn-group-sm" role="group">
@@ -209,24 +205,21 @@
 					</div>
 				</div>
 			</aside>
-			<aside class="hv-sidebar hv-sidebar__push hv-sidebar__metadata hv-sidebar__right faster"></aside>
+			<aside class="hv-sidebar hv-sidebar__push hv-sidebar__right hv-sidebar--closed faster hv-sidebar__metadata"></aside>
+			<aside class="hv-sidebar hv-sidebar__overlay hv-sidebar__top hv-sidebar--closed faster hv-overlay__gallery">
+					<div class="row no-gutters align-items-center hv-search">
+						<div class="col-auto">
+							<i class="fas fa-search"></i>
+						</div>
+						<div class="col">
+							<input type="text" class="hv-search__input" placeholder="Search">
+						</div>
+					</div>
+					<div class="hv-navigation">
+						<div class="hv-navigation__items"></div>
+					</div>
+				</aside>
 			<!-- End Sidebars -->
-
-			<!-- Overlays -->
-			<aside class="hv-overlay hv-overlay__gallery">
-				<div class="row no-gutters align-items-center hv-search">
-					<div class="col-auto">
-						<i class="fas fa-search"></i>
-					</div>
-					<div class="col">
-						<input type="text" class="hv-search__input" placeholder="Search">
-					</div>
-				</div>
-				<div class="hv-navigation">
-					<div class="hv-navigation__items"></div>
-				</div>
-			</aside>
-			<!-- End Overlays -->
 
 		</main>
 

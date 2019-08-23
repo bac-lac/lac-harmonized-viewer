@@ -27,12 +27,13 @@
 
 .#{$ns}-toolbar {
   &__secondary {
+    padding: 0.3rem 0.5rem;
     box-shadow: 0 1px 5px 3px rgba(63, 70, 76, 0.2);
+    border-bottom: $toolbar-border-color 2px solid;
   }
 }
 
 .#{$ns}-toolbar {
-  border-bottom: $toolbar-border-color 3px solid;
   background-color: $toolbar-background-color;
 
   & .#{$ns}-toolbar__section {

@@ -22,8 +22,6 @@
             }
         };
 
-    var debug;
-
     var manifest;
     var openseadragon;
     var pageSlider;
@@ -73,7 +71,7 @@
                 self.toggleSidebar(".hv-sidebar__navigation");
             });
             this.addHandler("gallery", function () {
-                self.toggleOverlay(".hv-overlay__gallery");
+                self.toggleSidebar(".hv-overlay__gallery");
             });
 
             this.addHandler("metadata", function () {
@@ -83,6 +81,7 @@
             this.addHandler("previous", function () {
                 var page = openseadragon.currentPage();
                 if (page > 0) {
+                    self.getViewport().addClass("hv-viewport--loading");
                     openseadragon.goToPage(page - 1);
                 }
             });
@@ -91,12 +90,14 @@
                 var page = openseadragon.currentPage();
                 var pageCount = openseadragon.tileSources.length;
                 if (page < (pageCount - 1)) {
+                    self.getViewport().addClass("hv-viewport--loading");
                     openseadragon.goToPage(page + 1);
                 }
             });
 
             this.addHandler("page", function () {
-                self.enableToggleButtons(false);
+                self.disableToolbar(".hv-toolbar__secondary");
+                self.disableNavigationButtons();
 
                 var $active = $(this.element).find(".hv-navigation__item--active");
 
@@ -106,19 +107,21 @@
                 //openseadragon.goToPage(event.page);
             });
 
-            this.debug = (window.sessionStorage.getItem("debug") === "true") ? true : false;
-            if (this.debug) {
-                this.getEventControls("debug").addClass("hv-button-toggle--active");
-            }
+            this.addHandler("loaded", function () {
+
+                self.getViewport().removeClass("hv-viewport--loading");
+
+                self.hideSpinner();
+                $(openseadragon.element).show();
+
+                self.enableToolbar(".hv-toolbar__secondary");
+                self.enableNavigationButtons();
+                self.updateNavigationControls();
+            });
         },
 
         populateAnnotations: function () {
             var $sidebar = this.getSidebar(".hv-sidebar__metadata");
-
-            var $title = $("<h4/>")
-                .addClass("hv-sidebar-title")
-                .text("Details")
-                .appendTo($sidebar);
 
             var $content = $("<div/>")
                 .addClass("hv-sidebar-content")
@@ -256,75 +259,59 @@
             return $(this.element).find(".hv-viewport");
         },
 
-        getOverlay: function (selector) {
-            return $(this.element).find(selector);
-        },
-
-        openOverlay: function (selector) {
-            var $element = this.getOverlay(selector);
-            $element.addClass("hv-overlay--open");
-            this.animate($element, "fadeInUpBig");
-        },
-
-        closeOverlay: function (selector) {
-            var $element = this.getOverlay(selector);
-            this.animate($element, "fadeOutDownBig", function () {
-                $element.removeClass("hv-overlay--open");
-            });
-        },
-
-        toggleOverlay: function (selector) {
-            if (this.isOverlayOpen(selector)) {
-                this.closeOverlay(selector);
-            }
-            else {
-                this.openOverlay(selector);
-            }
-        },
-
-        isOverlayOpen: function (selector) {
-            return this.getOverlay(selector).hasClass("hv-overlay--open");
-        },
-
         getSidebar: function (selector) {
             return $(this.element).find(selector);
         },
 
         openSidebar: function (selector) {
-            var self = this;
-            var $sidebar = this.getSidebar(selector).addClass("hv-sidebar--open");
-            this.animate($sidebar, "slideInLeft", function () {
-                self.refresh();
+            var $sidebar = this.getSidebar(selector)
+                .removeClass("hv-sidebar--closing hv-sidebar--closed hv-sidebar--opened")
+                .addClass("hv-sidebar--opening");
+
+            var animation = $sidebar.hasClass("hv-sidebar__right") ? "slideInRight" :
+                $sidebar.hasClass("hv-sidebar__top") ? "slideInUp" :
+                    $sidebar.hasClass("hv-sidebar__bottom") ? "slideInDown" : "slideInLeft";
+
+            this.animate($sidebar, animation, function () {
+                $sidebar.addClass("hv-sidebar--opened");
             });
+            this.resizeViewport();
         },
 
         closeSidebar: function (selector) {
-            var self = this;
-            var $sidebar = this.getSidebar(selector);
+            var $sidebar = this.getSidebar(selector)
+                .removeClass("hv-sidebar--opening hv-sidebar--opened hv-sidebar--closed")
+                .addClass("hv-sidebar--closing");
 
-            this.animate($sidebar, "slideOutLeft", function () {
-                $sidebar.removeClass("hv-sidebar--open");
-                self.refresh();
+            var animation = $sidebar.hasClass("hv-sidebar__right") ? "slideOutRight" :
+                $sidebar.hasClass("hv-sidebar__top") ? "slideOutUp" :
+                    $sidebar.hasClass("hv-sidebar__bottom") ? "slideOutDown" : "slideOutLeft";
+
+            this.animate($sidebar, animation, function () {
+                $sidebar.addClass("hv-sidebar--closed");
             });
+            this.resizeViewport();
         },
 
-        isSidebarOpen: function (selector) {
-            return this.getSidebar(selector).hasClass("hv-sidebar--open");
+        isSidebarOpened: function (selector) {
+            var $sidebar = this.getSidebar(selector);
+            return $sidebar.hasClass("hv-sidebar--opened") || $sidebar.hasClass("hv-sidebar--opening");
         },
 
-        refresh: function () {
-            var offsetLeft = this.getSidebarWidth(".hv-sidebar.hv-sidebar__push.hv-sidebar__left");
-            var offsetRight = this.getSidebarWidth(".hv-sidebar.hv-sidebar__push.hv-sidebar__right");
+        resizeViewport: function () {
+
+            var offsetLeft = this.caculateSidebarWidth(".hv-sidebar.hv-sidebar__push.hv-sidebar__left");
+            var offsetRight = this.caculateSidebarWidth(".hv-sidebar.hv-sidebar__push.hv-sidebar__right");
 
             this.getContent()
                 .css("padding-left", this.format("{0}px", offsetLeft))
                 .css("padding-right", this.format("{0}px", offsetRight));
         },
 
-        getSidebarWidth: function (selector) {
+        caculateSidebarWidth: function (selector) {
             var self = this, width = 0;
             $(this.element).find(selector).each(function () {
-                if (self.isSidebarOpen(this)) {
+                if (self.isSidebarOpened(this)) {
                     width += $(this).outerWidth();
                 }
             });
@@ -332,7 +319,7 @@
         },
 
         toggleSidebar: function (selector) {
-            if (this.isSidebarOpen(selector)) {
+            if (this.isSidebarOpened(selector)) {
                 this.closeSidebar(selector);
             }
             else {
@@ -377,10 +364,17 @@
             });
         },
 
-        enableToggleButtons: function (enable) {
+        enableToolbar: function (selector, enable) {
+            if (typeof enable === "undefined")
+                enable = true;
             $(this.element)
-                .find(".hv-button[data-toggle]")
-                .prop("disabled", (enable === false));
+                .find(selector)
+                .find(".hv-button")
+                .prop("disabled", !enable);
+        },
+
+        disableToolbar: function (selector) {
+            this.enableToolbar(selector, false);
         },
 
         isFirstPage: function () {
@@ -412,6 +406,17 @@
             }
         },
 
+        enableNavigationButtons: function (enable) {
+            if (typeof enable === "undefined")
+                enable = true;
+            this.getViewport().find(".hv-viewport__prev, .hv-viewport__next")
+                .prop("disabled", !enable);
+        },
+
+        disableNavigationButtons: function () {
+            this.enableNavigationButtons(false);
+        },
+
         updateNavigationControls: function () {
             var page = openseadragon.currentPage();
 
@@ -430,10 +435,10 @@
                 .addClass("hv-navigation__item--active");
         },
 
-        getManifestCanvas: function () {
+        getManifestCanvas: function (pageIndex) {
             return this.manifest
                 .getSequenceByIndex(0)
-                .getCanvasByIndex(openseadragon.currentPage());
+                .getCanvasByIndex(pageIndex);
         },
 
         bindEventControls: function (eventName, eventArgs) {
@@ -448,9 +453,8 @@
         },
 
         raiseEvent: function (eventName, eventArgs) {
-            if (this.debug) {
-                console.log(this.format("Event raised: {0}", eventName));
-            }
+            console.log(this.format("Event raised: {0}", eventName));
+
             var handler = this.getHandler(eventName);
             if (handler) {
                 if (!eventArgs) {
@@ -505,90 +509,94 @@
 
             var openseadragonId = this.getUniqueId($openseadragon[0]);
 
-            manifesto.loadManifest(this.settings.manifest).then(function (manifest) {
+            manifesto.loadManifest(this.settings.manifest)
+                .then(function (manifest) {
 
-                self.manifest = manifesto.create(manifest);
+                    self.manifest = manifesto.create(manifest);
 
-                var sources = new Array();
-                $.each(self.manifest.getSequences(), function (sequenceIndex, sequence) {
-                    var canvases = sequence.getCanvases();
-                    $.each(canvases, function (canvasIndex, canvas) {
+                    var sequence = self.manifest.getSequences()[0];
+
+                    var sources = sequence.getCanvases().map(function (canvas) {
                         var images = canvas.getImages();
-                        var id = images[0].getResource().getServices()[0].id;
-                        sources.push({
-                            id: id + "/info.json",
-                            sequenceIndex: sequenceIndex,
-                            canvasIndex: canvasIndex
-                        });
+                        return images[0].getResource().getServices()[0].id + "/info.json";
                     });
-                });
+                    console.log(sources);
+                    // $.each(self.manifest.getSequences(), function (sequenceIndex, sequence) {
+                    //     var canvases = sequence.getCanvases();
+                    //     $.each(canvases, function (canvasIndex, canvas) {
+                    //         var images = canvas.getImages();
+                    //         var id = images[0].getResource().getServices()[0].id;
+                    //         sources.push({
+                    //             id: id + "/info.json",
+                    //             sequenceIndex: sequenceIndex,
+                    //             canvasIndex: canvasIndex
+                    //         });
+                    //     });
+                    // });
 
-                openseadragon = new OpenSeadragon({
-                    id: openseadragonId,
-                    prefixUrl: "../node_modules/openseadragon/build/openseadragon/images/",
-                    tileSources: sources.map(function (i) { return i.id }).slice(0, 2),
-                    sequenceMode: false,
-                    collectionMode: true,
-                    collectionLayout: "vertical",
-                    collectionTileMargin: 15,
-                    showNavigator: true,
-                    navigatorPosition: "BOTTOM_RIGHT",
-                    showNavigationControl: false,
-                    showSequenceControl: false,
-                    minZoomImageRatio: 1.0,
-                    preserveViewport: true,
-                    animationTime: 0.25,
-                    springStiffness: 10.0
-                });
+                    openseadragon = new OpenSeadragon({
+                        id: openseadragonId,
+                        prefixUrl: "../node_modules/openseadragon/build/openseadragon/images/",
+                        tileSources: sources,//.slice(0, 2),
+                        sequenceMode: true,
+                        //collectionMode: true,
+                        //collectionLayout: "vertical",
+                        //collectionTileMargin: 15,
+                        showNavigator: true,
+                        navigatorPosition: "BOTTOM_RIGHT",
+                        showNavigationControl: false,
+                        showSequenceControl: false,
+                        minZoomImageRatio: 1.0,
+                        preserveViewport: true,
+                        animationTime: 0.25,
+                        springStiffness: 10.0
+                    });
 
-                openseadragon.addHandler("open", function () {
+                    openseadragon.addHandler("open", function (args) {
+
+                        self.setManifestLabel(self.manifest.getDefaultLabel());
+
+                        //var label = canvas.getLabel().filter(function (i) { return (i.locale === self.settings.locale); })[0];
+                        //self.setImageLabel(label.value);
+
+                        self.raiseEvent("loaded", args);
+                    });
+
+                    openseadragon.addHandler("page", function (args) {
+                        self.raiseEvent("page", args);
+                    });
+
+                    openseadragon.addHandler("tile-loaded", function (args) {
+                        self.raiseEvent("tile-loaded", args);
+                    });
+
+                    openseadragon.addHandler("open-failed", function (err) {
+                        $(openseadragon.element).hide();
+                        self.showError(err);
+                    });
+
+                    openseadragon.addHandler("animation", function () {
+
+                        var minZoom = openseadragon.viewport.getMinZoom();
+                        var maxZoom = openseadragon.viewport.getMaxZoom();
+
+                        var current = openseadragon.viewport.getZoom(false);
+                        var currentPercentage = Math.round((current - minZoom) * 100 / (maxZoom - minZoom), 0);
+
+                        $(self.element).find(".hv-zoom").text(self.format("{0}%", currentPercentage));
+                        //self.refreshZoomSlider();
+                    });
+
+                    self.initPageSlider();
+
+                    self.populateAnnotations();
+                    self.populateNavigation();
+
+                }, function (err) {
+                    console.error(err);
                     self.hideSpinner();
-                    $(openseadragon.element).show();
-
-                    self.enableToggleButtons(true);
-                    self.updateNavigationControls();
-
-                    $(self.element).find(".hv-logo").css("background-image", self.format("url('{0}')", self.manifest.getLogo()));
-
-                    self.setManifestLabel(self.manifest.getDefaultLabel());
-
-                    var canvas = self.getManifestCanvas();
-
-                    //var label = canvas.getLabel().filter(function (i) { return (i.locale === self.settings.locale); })[0];
-                    //self.setImageLabel(label.value);
-                });
-
-                openseadragon.addHandler("page", function (args) {
-                    self.raiseEvent("page", args);
-                });
-
-                openseadragon.addHandler("open-failed", function (err) {
-                    $(openseadragon.element).hide();
                     self.showError(err);
                 });
-
-                openseadragon.addHandler("animation", function () {
-
-                    var minZoom = openseadragon.viewport.getMinZoom();
-                    var maxZoom = openseadragon.viewport.getMaxZoom();
-
-                    var current = openseadragon.viewport.getZoom(false);
-                    var currentPercentage = Math.round((current - minZoom) * 100 / (maxZoom - minZoom), 0);
-
-                    $(self.element).find(".hv-zoom").text(self.format("{0}%", currentPercentage));
-                    //self.refreshZoomSlider();
-                });
-
-                self.initPageSlider();
-
-                self.populateAnnotations();
-                self.populateNavigation();
-
-            }, function (err) {
-                console.error(err);
-                self.hideSpinner();
-                self.showError(err);
-            });
         },
 
         initPageSlider: function () {
@@ -606,12 +614,63 @@
                     min: [1],
                     max: [pageCount]
                 },
-                tooltips: true
+                behaviour: "hover-snap"
+            });
+
+            var self = this;
+
+            $(pageSlider).hover(function () {
+            },
+                function () {
+                    $(".hv-tooltip").remove();
+                });
+
+            $(pageSlider).mousemove(function (e) {
+                var offsetTop = $(this).offset().top;
+                //$(this).parents("body").find(".hv-tooltip").css({ top: offsetTop - tooltipSize.height, left: e.pageX - (tooltipSize.width / 2) });
+                var offsetBottom = $(this).offset().top + $(this).outerHeight(true);
+                var bottom = $(window).height() - offsetTop;// - $(this).outerHeight(true);
+                console.log(bottom);
+                $(this).parents("body").find(".hv-tooltip").css({ bottom: bottom, left: e.pageX - ($(".hv-tooltip").outerWidth() / 2) });
+            });
+
+            pageSlider.noUiSlider.on("hover", function (value) {
+                var pageIndex = parseInt(value) - 1;
+                self.updateSliderPreview(pageIndex);
+            });
+            pageSlider.noUiSlider.on("slide", function (values, handle) {
+                var pageIndex = parseInt(values[handle]) - 1;
+                self.updateSliderPreview(pageIndex);
             });
 
             pageSlider.noUiSlider.on("end", function (values, handle) {
                 console.log(values[handle]);
             });
+        },
+
+        updateSliderPreview: function (pageIndex) {
+
+            //console.log(pageIndex);
+            var canvas = this.getManifestCanvas(pageIndex);
+            var image = canvas.getImages(0)[0];
+            //console.log(image);
+
+            var thumbnail = this.getThumbnail(image, undefined, 120);
+
+            //console.log(thumbnail);
+
+            if ($(".hv-tooltip").length === 0) {
+                var $tooltip = $("<div/>").addClass("hv-tooltip animated bounceIn2 faster").attr("role", "tooltip").appendTo("body");
+                var $tooltipArrow = $("<div/>").addClass("arrow").appendTo($tooltip);
+                var $tooltipInner = $("<div/>").addClass("tooltip-inner").appendTo($tooltip);
+                $("<img/>").addClass("hv-thumbnail").appendTo($tooltipInner);
+            }
+
+            $(".hv-tooltip").find("img").one("load", function () {
+                $(".hv-tooltip").find(".arrow").css({ left: $(this).width() / 2 });
+            }).attr("src", thumbnail);
+
+            //$(this.element).find(".hv-pageslider").tooltip("show");
         },
 
         enableDualPageDisplay: function () {
