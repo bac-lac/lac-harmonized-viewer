@@ -27,12 +27,15 @@
     "animate.css": "^3.7.2",
     "bootstrap": "^4.3.1",
     "feather-icons": "^4.24.0",
+    "handlebars": "^4.1.2",
     "jquery": ">=1.5.1",
     "malihu-custom-scrollbar-plugin": "^3.1.5",
     "manifesto.js": "^3.0.12",
+    "mocha": "^6.2.0",
     "nouislider": "^14.0.2",
     "openseadragon": "^2.4.1",
-    "popper.js": "^1.15.0"
+    "popper.js": "^1.15.0",
+    "swiper": "^4.5.0"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

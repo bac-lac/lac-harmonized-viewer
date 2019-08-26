@@ -13,12 +13,24 @@ module.exports = function (grunt) {
 			vendors: {
 				files: [
 					{
+						src: 'node_modules/handlebars/dist/handlebars.js',
+						dest: 'tmp/vendors/handlebars/handlebars.js'
+					},
+					{
 						src: 'node_modules/nouislider/distribute/nouislider.min.js',
 						dest: 'tmp/vendors/nouislider/nouislider.min.js'
 					},
 					{
 						src: 'node_modules/nouislider/distribute/nouislider.min.css',
 						dest: 'tmp/vendors/nouislider/nouislider.min.css'
+					},
+					{
+						src: 'node_modules/swiper/dist/js/swiper.min.js',
+						dest: 'tmp/vendors/swiper/swiper.min.js'
+					},
+					{
+						src: 'node_modules/swiper/dist/css/swiper.css',
+						dest: 'tmp/vendors/swiper/swiper.css'
 					},
 					{
 						src: 'node_modules/animate.css/animate.min.css',

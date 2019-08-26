@@ -47,50 +47,17 @@
 
 				</div>
 				<div class="col-auto d-flex">
-					<div class="dropdown">
-						<button class="btn btn-secondary hv-button hv-button__icon hv-button__display dropdown-toggle" type="button"
-							id="hv_button_display" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							<i class="fas fa-window-maximize"></i>
-							<span>
-								Single page
-							</span>
-						</button>
-						<div class="dropdown-menu dropdown-menu-right hv-dropdown__display" style="width:200px"
-							aria-labelledby="hv_button_display">
-							<div class="row no-gutters">
-								<a href="#" class="dropdown-item col-md-6 col-sm-12">
-									<i class="far fa-window-maximize"></i>
-									<div>
-										Single page
-									</div>
-								</a>
-								<a href="#" class="dropdown-item col-md-6 col-sm-12">
-									<i class="fas fa-columns"></i>
-									<div>
-										Dual page
-									</div>
-								</a>
-							</div>
-						</div>
-					</div>
-					<button class="btn btn-secondary hv-button hv-button__icon" type="button" id="hv_button_settings">
+
+					<button class="btn btn-secondary hv-button hv-button__icon" type="button" id="hv_button_help"
+						title="">
+						<i class="fas fa-question-circle"></i>
+					</button>
+
+					<button class="btn btn-secondary hv-button hv-button__icon" type="button" id="hv_button_settings"
+						title="Settings">
 						<i class="fas fa-cog"></i>
 					</button>
-					<div class="dropdown">
-						<button class="btn btn-secondary hv-button hv-button__icon" type="button" id="hv_button_more"
-							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							<i class="fas fa-ellipsis-v"></i>
-						</button>
-						<div class="dropdown-menu dropdown-menu-right" style="width:200px"
-							aria-labelledby="hv_button_more">
-							<a href="#" class="dropdown-item hv-button__display col-md-6 col-sm-12">
-								<i class="fas fa-columns"></i>
-								<div>
-									Dual page
-								</div>
-							</a>
-						</div>
-					</div>
+
 				</div>
 			</div>
 
@@ -129,11 +96,13 @@
 									</button>
 								</div>
 								<span class="hv-toolbar__controls-text">
-									of 16
+									of
+									<span data-bind="totalPages">0</span>
 								</span>
 							</div>
 						</div>
 						<div class="col-auto d-flex">
+
 							<div class="hv-toolbar__section">
 								<button type="button" class="btn btn-secondary hv-button hv-button__icon"
 									data-toggle="zoom-out" title="Zoom out">
@@ -158,10 +127,48 @@
 									<i class="fas fa-plus-circle"></i>
 								</button>
 							</div>
-							<button type="button" class="btn btn-secondary hv-button hv-button-toggle"
-								data-toggle="metadata" title="Toggle metadata view">
-								<i class="fas fa-columns"></i>
-								Details
+
+							<div class="hv-toolbar__section">
+								<div class="dropdown">
+									<button class="btn btn-secondary hv-button dropdown-toggle hv-button__display" type="button"
+										title="Display mode" data-placement="top" id="hv_button_display"
+										data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										<i class="fas fa-window-maximize"></i>
+										<span class="hv-button__text">Single page</span>
+									</button>
+									<div class="dropdown-menu dropdown-menu-right hv-dropdown__display"
+										style="width:200px" aria-labelledby="hv_button_display">
+										<div class="row no-gutters">
+											<a href="javascript:;" class="dropdown-item col-md-6 col-sm-12"
+												data-toggle="displayMode" data-display-mode="1">
+												<i class="far fa-window-maximize"></i>
+												<div>
+													Single page
+												</div>
+											</a>
+											<a href="#" class="dropdown-item col-md-6 col-sm-12"
+												data-toggle="displayMode" data-display-mode="2">
+												<i class="fas fa-columns"></i>
+												<div>
+													Dual page
+												</div>
+											</a>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="hv-toolbar__section">
+								<button type="button" class="btn btn-secondary hv-button hv-button-toggle"
+									data-toggle="metadata" title="Toggle metadata view">
+									<i class="fas fa-columns"></i>
+									Details
+								</button>
+							</div>
+
+							<button type="button" class="btn btn-secondary hv-button hv-button__icon hv-button-toggle"
+								data-toggle="fullscreen" title="Enter fullscreen">
+								<i class="fas fa-expand"></i>
 							</button>
 
 						</div>
@@ -175,18 +182,30 @@
 							<i class="fas fa-angle-right"></i>
 						</button>
 					</div>
-					<div class="hv-toolbar row no-gutters py-3 justify-content-center">
-						<div class="col-xl-3">
-							<div class="hv-pageslider"></div>
+
+					<div class="hv-toolbar hv-toolbar__secondary">
+						<div class="row no-gutters justify-content-center my-2">
+							<div class="col-xl-3">
+								<div class="hv-pageslider"></div>
+							</div>
 						</div>
+						<div class="row no-gutters" style="display:none">
+							<div class="col-12">
+								<div class="hv-navigation__carousel swiper-container">
+									<div class="swiper-wrapper">
+									</div>
+								</div>
+							</div>
+						</div>
+
 					</div>
 				</div>
-			</div>
 
-			<!-- Sidebars -->
-			<aside class="hv-sidebar hv-sidebar__push hv-sidebar__left hv-sidebar--closed faster hv-sidebar__navigation">
-				<div class="hv-navigation">
-					<!-- <div class="row no-gutters justify-content-center hv-navigation__display">
+				<!-- Sidebars -->
+				<aside
+					class="hv-sidebar hv-sidebar__push hv-sidebar__left hv-sidebar--closed faster hv-sidebar__navigation">
+					<div class="hv-navigation">
+						<!-- <div class="row no-gutters justify-content-center hv-navigation__display">
 						<div class="btn-group btn-group-sm" role="group">
 							<button type="button" class="btn btn-dark col-6">
 								<span class="hv-icon hv-icon__list"></span>
@@ -198,15 +217,18 @@
 							</button>
 						</div>
 					</div> -->
-					<div class="row no-gutters">
-						<div class="col-12">
-							<div class="hv-navigation__items"></div>
+						<div class="row no-gutters">
+							<div class="col-12">
+								<div class="hv-navigation__items"></div>
+							</div>
 						</div>
 					</div>
-				</div>
-			</aside>
-			<aside class="hv-sidebar hv-sidebar__push hv-sidebar__right hv-sidebar--closed faster hv-sidebar__metadata"></aside>
-			<aside class="hv-sidebar hv-sidebar__overlay hv-sidebar__top hv-sidebar--closed faster hv-overlay__gallery">
+				</aside>
+				<aside
+					class="hv-sidebar hv-sidebar__push hv-sidebar__right hv-sidebar--closed faster hv-sidebar__metadata">
+				</aside>
+				<aside
+					class="hv-sidebar hv-sidebar__overlay hv-sidebar__top hv-sidebar--closed faster hv-overlay__gallery">
 					<div class="row no-gutters align-items-center hv-search">
 						<div class="col-auto">
 							<i class="fas fa-search"></i>
@@ -219,7 +241,7 @@
 						<div class="hv-navigation__items"></div>
 					</div>
 				</aside>
-			<!-- End Sidebars -->
+				<!-- End Sidebars -->
 
 		</main>
 

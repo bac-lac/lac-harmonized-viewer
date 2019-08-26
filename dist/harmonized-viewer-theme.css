@@ -1,5 +1,5 @@
 .hv-viewer {
-  background-color: #dfdfdf; }
+  background-color: #fafafa; }
 
 .hv-header .hv-toolbar__primary {
   z-index: 1;
@@ -15,7 +15,7 @@
 .hv-toolbar__secondary {
   padding: 0.3rem 0.5rem;
   box-shadow: 0 1px 5px 3px rgba(63, 70, 76, 0.2);
-  border-bottom: #dadada 2px solid; }
+  border-bottom: #f5f5f5 2px solid; }
 
 .hv-toolbar {
   background-color: #eee; }

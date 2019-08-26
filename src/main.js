@@ -22,7 +22,6 @@
             }
         };
 
-    var manifest;
     var openseadragon;
     var pageSlider;
 
@@ -37,6 +36,16 @@
         this.settings = $.extend({}, defaults, options);
         this._defaults = defaults;
         this._name = pluginName;
+
+        this.displayMode = 1;
+
+        this.manifest = null;
+
+        this.currentPage = 0;
+        this.pages = [];
+
+        this.carousel = null;
+
         this.init();
     }
 
@@ -56,7 +65,7 @@
 
             this.initSpinner();
             this.initToolbar();
-            this.initOpenSeadragon();
+            this.loadManifest();
 
             var self = this;
 
@@ -66,6 +75,7 @@
             this.bindEventControls("navigation");
             this.bindEventControls("metadata");
             this.bindEventControls("gallery");
+            this.bindEventControls("displayMode");
 
             this.addHandler("navigation", function () {
                 self.toggleSidebar(".hv-sidebar__navigation");
@@ -78,33 +88,38 @@
                 self.toggleSidebar(".hv-sidebar__metadata");
             });
 
+            this.addHandler("displayMode", function (event) {
+                var value = parseInt(event.displayMode);
+                self.displayMode = (value === 1 || value === 2) ? value : 1;
+                self.initOpenSeadragon();
+            });
+
             this.addHandler("previous", function () {
-                var page = openseadragon.currentPage();
-                if (page > 0) {
-                    self.getViewport().addClass("hv-viewport--loading");
-                    openseadragon.goToPage(page - 1);
-                }
+                self.goTo(self.currentPage - self.displayMode);
             });
 
             this.addHandler("next", function () {
-                var page = openseadragon.currentPage();
-                var pageCount = openseadragon.tileSources.length;
-                if (page < (pageCount - 1)) {
-                    self.getViewport().addClass("hv-viewport--loading");
-                    openseadragon.goToPage(page + 1);
-                }
+                self.goTo(self.currentPage + self.displayMode);
             });
 
             this.addHandler("page", function () {
-                self.disableToolbar(".hv-toolbar__secondary");
-                self.disableNavigationButtons();
 
-                var $active = $(this.element).find(".hv-navigation__item--active");
+
+                self.enableNavigationPrevious(self.isFirstPage());
+                self.enableNavigationNext(self.isLastPage());
+
+                self.carousel.slick("goTo", self.currentPage);
+
+                //console.log(event);
+                //self.disableToolbar(".hv-toolbar__secondary");
+                //self.disableNavigationButtons();
+
+                //console.log(page);
+                //openseadragon.goToPage(self.currentPage);
+
+                var $active = $(self.element).find(".hv-navigation__item--active");
 
                 self.scrollTo($active);
-
-                //pageSlider.update({ from: (page + 1) });
-                //openseadragon.goToPage(event.page);
             });
 
             this.addHandler("loaded", function () {
@@ -115,7 +130,7 @@
                 $(openseadragon.element).show();
 
                 self.enableToolbar(".hv-toolbar__secondary");
-                self.enableNavigationButtons();
+                //self.enableNavigationButtons();
                 self.updateNavigationControls();
             });
         },
@@ -152,15 +167,21 @@
             var $navigationItems = $navigation.find(".hv-navigation__items");
             var $galleryItems = $gallery.find(".hv-navigation__items");
 
-            var $ol = $("<ol/>");
-            var sequence = this.manifest.getSequenceByIndex(0);
+            var items = [];
 
-            $.each(sequence.getCanvases(), function (index, canvas) {
-
+            var canvases = this.manifest.getSequenceByIndex(0).getCanvases();
+            canvases.forEach(function (canvas) {
                 var image = canvas.getImages()[0];
                 var label = canvas.getLabel()[0];
-
                 var thumbnail = self.getThumbnail(image, undefined, 120);
+                items.push({
+                    title: label.value,
+                    imageUrl: thumbnail
+                });
+            });
+
+            var $ol = $("<ol/>");
+            items.forEach(function (item, index) {
 
                 var $li = $("<li/>")
                     .attr("data-index", index)
@@ -169,19 +190,14 @@
                 var $a = $("<a/>")
                     .attr("href", "javascript:;")
                     .addClass("hv-navigation__item")
-                    .attr("title", label.value)
+                    .attr("title", item.title)
                     .attr("data-toggle", "page")
                     .attr("data-page", index)
                     .appendTo($li);
 
                 // Lazy loading (send request only when the element is visible)
                 // Use base64 transparent pixel as placeholder
-                $("<img/>")
-                    .attr("src", "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==")
-                    .addClass("hv-thumbnail hv-lazy")
-                    .attr("data-src", thumbnail)
-                    .attr("data-srcset", self.format("{0} 1x", thumbnail))
-                    .appendTo($a);
+                self.createThumbnail(item.imageUrl).appendTo($a);
             });
 
             $navigationItems.html($ol[0].outerHTML);
@@ -207,6 +223,19 @@
                     autoScrollOnFocus: ".hv-navigation__item"
                 }
             });
+
+            var $carousel = $(this.element).find(".hv-navigation__carousel .swiper-wrapper");
+            items.forEach(function (item) {
+                var $li = $("<div/>").addClass("swiper-slide").appendTo($carousel);
+                self.createThumbnail(item.imageUrl).appendTo($li);
+            });
+
+            this.carousel = new Swiper(".hv-navigation__carousel", {
+                //slidesPerView: 25,
+                centeredSlides: true,
+                slidesPerColumnFill: "row",
+                spaceBetween: 30
+            })
 
             this.initLazyLoading();
 
@@ -238,6 +267,28 @@
             });
         },
 
+        goTo: function (page) {
+            if (page < 0) {
+                console.error("Page index must be equal to or greater than zero.");
+                return;
+            }
+            if (page > this.pages.length - 1) {
+                console.error("Page index must be less than the total number of pages.");
+                return;
+            }
+            this.currentPage = page;
+            this.initOpenSeadragon();
+            this.raiseEvent("page", { page: page });
+        },
+
+        isFirstPage: function () {
+            return (this.currentPage < this.displayMode);
+        },
+
+        isLastPage: function () {
+            return this.currentPage >= (this.pages.length - 1) - (this.displayMode - 1);
+        },
+
         getThumbnail: function (image, width, height) {
 
             var resource = image.getResource();
@@ -249,6 +300,15 @@
 
         setManifestLabel: function (label) {
             $(this.element).find(".hv-manifest-label").html(label);
+        },
+
+        bindProperty: function (name, value) {
+            $(this.element)
+                .find("[data-bind]")
+                .filter(function () {
+                    return $(this).attr("data-bind").toLowerCase().indexOf(name.toLowerCase()) > -1;
+                })
+                .text(value);
         },
 
         getContent: function () {
@@ -327,12 +387,14 @@
             }
         },
 
-        enableButton: function (button) {
-            $(this.element).find(button).prop("disabled", false);
+        enableButton: function (selector, enable) {
+            if (typeof enable === "undefined")
+                enable = true;
+            $(this.element).find(selector).prop("disabled", !enable);
         },
 
-        disableButton: function (button) {
-            $(this.element).find(button).prop("disabled", true);
+        disableButton: function (selector, enable) {
+            return this.enableButton(selector, false);
         },
 
         initSpinner: function () {
@@ -359,6 +421,9 @@
         },
 
         initToolbar: function () {
+            // $(this.element).find(".hv-button[title]").tooltip({
+            //     container: "body"
+            // });
             $(this.element).on("click", ".hv-button-toggle", function () {
                 $(this).toggleClass("hv-button-toggle--active");
             });
@@ -377,16 +442,16 @@
             this.enableToolbar(selector, false);
         },
 
-        isFirstPage: function () {
-            var page = openseadragon.currentPage();
-            return (page === 0);
-        },
+        // isFirstPage: function () {
+        //     var page = openseadragon.currentPage();
+        //     return (page === 0);
+        // },
 
-        isLastPage: function () {
-            var page = openseadragon.currentPage();
-            var pageCount = openseadragon.tileSources.length;
-            return (page >= (pageCount - 1));
-        },
+        // isLastPage: function () {
+        //     var page = openseadragon.currentPage();
+        //     var pageCount = openseadragon.tileSources.length;
+        //     return (page >= (pageCount - 1));
+        // },
 
         scrollTo: function (element) {
             var $navigation = this.getSidebar(".hv-sidebar__navigation");
@@ -406,15 +471,31 @@
             }
         },
 
-        enableNavigationButtons: function (enable) {
-            if (typeof enable === "undefined")
-                enable = true;
-            this.getViewport().find(".hv-viewport__prev, .hv-viewport__next")
-                .prop("disabled", !enable);
+        enableNavigation: function (enable) {
+            this.enableNavigationPrevious(enable);
+            this.enableNavigationNext(enable);
         },
 
-        disableNavigationButtons: function () {
-            this.enableNavigationButtons(false);
+        disableNavigation: function () {
+            return this.enableNavigation(false);
+        },
+
+        enableNavigationPrevious: function (enable) {
+            var $button = this.getViewport().find(".hv-viewport__prev");
+            return this.enableButton($button, enable);
+        },
+
+        disableNavigationPrevious: function () {
+            return enableNavigationPrevious(false);
+        },
+
+        enableNavigationNext: function (enable) {
+            var $button = this.getViewport().find(".hv-viewport__next");
+            return this.enableButton($button, enable);
+        },
+
+        disableNavigationNext: function () {
+            return enableNavigationNext(false);
         },
 
         updateNavigationControls: function () {
@@ -453,7 +534,7 @@
         },
 
         raiseEvent: function (eventName, eventArgs) {
-            console.log(this.format("Event raised: {0}", eventName));
+            //console.log(this.format("Event raised: {0}", eventName), eventArgs);
 
             var handler = this.getHandler(eventName);
             if (handler) {
@@ -495,6 +576,14 @@
             };
         },
 
+        createThumbnail: function (url) {
+            return $("<img/>")
+                .attr("src", "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==")
+                .addClass("hv-thumbnail hv-lazy")
+                .attr("data-src", url)
+                .attr("data-srcset", this.format("{0} 1x", url));
+        },
+
         initOpenSeadragon: function () {
             var self = this;
 
@@ -505,87 +594,90 @@
 
             // Create root OpenSeadragon element inside viewport
             var $viewport = this.getViewport();
-            var $openseadragon = $("<div/>").hide().width("100%").height("100%").appendTo($viewport);
+            $viewport.find(".hv-openseadragon").remove();
+            var $openseadragon = $("<div/>").addClass("hv-openseadragon").hide().width("100%").height("100%").appendTo($viewport);
 
             var openseadragonId = this.getUniqueId($openseadragon[0]);
 
-            manifesto.loadManifest(this.settings.manifest)
+            var tileSources = self.pages.slice(self.currentPage, self.currentPage + self.displayMode);
+
+            openseadragon = new OpenSeadragon({
+                id: openseadragonId,
+                prefixUrl: "../node_modules/openseadragon/build/openseadragon/images/",
+                tileSources: tileSources,
+                sequenceMode: false,
+                collectionMode: true,
+                collectionRows: 1,
+                collectionColumns: 1,
+                collectionLayout: "horizontal",
+                collectionTileMargin: 30,
+                showNavigator: true,
+                navigatorPosition: "BOTTOM_RIGHT",
+                showNavigationControl: false,
+                showSequenceControl: false,
+                minZoomImageRatio: 1.0,
+                preserveViewport: true,
+                animationTime: 0.25,
+                springStiffness: 10.0
+            });
+
+            openseadragon.addHandler("open", function (args) {
+
+                self.setManifestLabel(self.manifest.getDefaultLabel());
+
+                //var label = canvas.getLabel().filter(function (i) { return (i.locale === self.settings.locale); })[0];
+                //self.setImageLabel(label.value);
+
+                self.raiseEvent("loaded", args);
+            });
+
+            openseadragon.addHandler("page", function (args) {
+
+            });
+
+            openseadragon.addHandler("tile-loaded", function (args) {
+                self.raiseEvent("tile-loaded", args);
+            });
+
+            openseadragon.addHandler("open-failed", function (err) {
+                $(openseadragon.element).hide();
+                self.showError(err);
+            });
+
+            openseadragon.addHandler("animation", function () {
+
+                var minZoom = openseadragon.viewport.getMinZoom();
+                var maxZoom = openseadragon.viewport.getMaxZoom();
+
+                var current = openseadragon.viewport.getZoom(false);
+                var currentPercentage = Math.round((current - minZoom) * 100 / (maxZoom - minZoom), 0);
+
+                $(self.element).find(".hv-zoom").text(self.format("{0}%", currentPercentage));
+                //self.refreshZoomSlider();
+            });
+        },
+
+        loadManifest: function () {
+            var self = this;
+            manifesto
+                .loadManifest(this.settings.manifest)
                 .then(function (manifest) {
 
                     self.manifest = manifesto.create(manifest);
 
                     var sequence = self.manifest.getSequences()[0];
-
                     var sources = sequence.getCanvases().map(function (canvas) {
                         var images = canvas.getImages();
                         return images[0].getResource().getServices()[0].id + "/info.json";
                     });
-                    console.log(sources);
-                    // $.each(self.manifest.getSequences(), function (sequenceIndex, sequence) {
-                    //     var canvases = sequence.getCanvases();
-                    //     $.each(canvases, function (canvasIndex, canvas) {
-                    //         var images = canvas.getImages();
-                    //         var id = images[0].getResource().getServices()[0].id;
-                    //         sources.push({
-                    //             id: id + "/info.json",
-                    //             sequenceIndex: sequenceIndex,
-                    //             canvasIndex: canvasIndex
-                    //         });
-                    //     });
-                    // });
 
-                    openseadragon = new OpenSeadragon({
-                        id: openseadragonId,
-                        prefixUrl: "../node_modules/openseadragon/build/openseadragon/images/",
-                        tileSources: sources,//.slice(0, 2),
-                        sequenceMode: true,
-                        //collectionMode: true,
-                        //collectionLayout: "vertical",
-                        //collectionTileMargin: 15,
-                        showNavigator: true,
-                        navigatorPosition: "BOTTOM_RIGHT",
-                        showNavigationControl: false,
-                        showSequenceControl: false,
-                        minZoomImageRatio: 1.0,
-                        preserveViewport: true,
-                        animationTime: 0.25,
-                        springStiffness: 10.0
+                    sources.forEach(function (source) {
+                        self.pages.push(source);
                     });
 
-                    openseadragon.addHandler("open", function (args) {
+                    self.bindProperty("TotalPages", self.pages.length);
 
-                        self.setManifestLabel(self.manifest.getDefaultLabel());
-
-                        //var label = canvas.getLabel().filter(function (i) { return (i.locale === self.settings.locale); })[0];
-                        //self.setImageLabel(label.value);
-
-                        self.raiseEvent("loaded", args);
-                    });
-
-                    openseadragon.addHandler("page", function (args) {
-                        self.raiseEvent("page", args);
-                    });
-
-                    openseadragon.addHandler("tile-loaded", function (args) {
-                        self.raiseEvent("tile-loaded", args);
-                    });
-
-                    openseadragon.addHandler("open-failed", function (err) {
-                        $(openseadragon.element).hide();
-                        self.showError(err);
-                    });
-
-                    openseadragon.addHandler("animation", function () {
-
-                        var minZoom = openseadragon.viewport.getMinZoom();
-                        var maxZoom = openseadragon.viewport.getMaxZoom();
-
-                        var current = openseadragon.viewport.getZoom(false);
-                        var currentPercentage = Math.round((current - minZoom) * 100 / (maxZoom - minZoom), 0);
-
-                        $(self.element).find(".hv-zoom").text(self.format("{0}%", currentPercentage));
-                        //self.refreshZoomSlider();
-                    });
+                    self.initOpenSeadragon();
 
                     self.initPageSlider();
 
@@ -671,15 +763,6 @@
             }).attr("src", thumbnail);
 
             //$(this.element).find(".hv-pageslider").tooltip("show");
-        },
-
-        enableDualPageDisplay: function () {
-            openseadragon.addTiledImage({
-                tileSource: 'my-image.dzi',
-                x: 5,
-                y: 0,
-                width: 10
-            });
         },
 
         getUniqueId: function (element) {
