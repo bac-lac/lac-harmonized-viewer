@@ -108,7 +108,8 @@
                 self.enableNavigationPrevious(self.isFirstPage());
                 self.enableNavigationNext(self.isLastPage());
 
-                self.carousel.slick("goTo", self.currentPage);
+                var swiper = $(self.element).find(".hv-navigation__carousel")[0].swiper;
+                swiper.slideTo(self.currentPage);
 
                 //console.log(event);
                 //self.disableToolbar(".hv-toolbar__secondary");
@@ -226,15 +227,15 @@
 
             var $carousel = $(this.element).find(".hv-navigation__carousel .swiper-wrapper");
             items.forEach(function (item) {
-                var $li = $("<div/>").addClass("swiper-slide").appendTo($carousel);
+                var $li = $("<li/>").addClass("swiper-slide").css({ width: "90px", height: "90px" }).appendTo($carousel);
                 self.createThumbnail(item.imageUrl).appendTo($li);
             });
 
             this.carousel = new Swiper(".hv-navigation__carousel", {
-                //slidesPerView: 25,
+                slidesPerView: "auto",
                 centeredSlides: true,
                 slidesPerColumnFill: "row",
-                spaceBetween: 30
+                spaceBetween: 10
             })
 
             this.initLazyLoading();
@@ -242,7 +243,7 @@
             var tooltipOptions = {
                 trigger: "hover focus",
                 placement: "bottom",
-                template: '<div class="tooltip hv-tooltip" role="tooltip"><div class="tooltip-inner"></div></div>'
+                template: "<div class=\"tooltip hv-tooltip\" role=\"tooltip\"><div class=\"tooltip-inner\"></div></div>"
             };
             $navigation.find(".hv-navigation__item").tooltip(tooltipOptions);
             $gallery.find(".hv-navigation__item").tooltip(tooltipOptions);
@@ -363,7 +364,7 @@
             var offsetLeft = this.caculateSidebarWidth(".hv-sidebar.hv-sidebar__push.hv-sidebar__left");
             var offsetRight = this.caculateSidebarWidth(".hv-sidebar.hv-sidebar__push.hv-sidebar__right");
 
-            this.getContent()
+            this.getContent().find(".hv-content__container")
                 .css("padding-left", this.format("{0}px", offsetLeft))
                 .css("padding-right", this.format("{0}px", offsetRight));
         },
@@ -718,12 +719,10 @@
                 });
 
             $(pageSlider).mousemove(function (e) {
-                var offsetTop = $(this).offset().top;
-                //$(this).parents("body").find(".hv-tooltip").css({ top: offsetTop - tooltipSize.height, left: e.pageX - (tooltipSize.width / 2) });
-                var offsetBottom = $(this).offset().top + $(this).outerHeight(true);
-                var bottom = $(window).height() - offsetTop;// - $(this).outerHeight(true);
-                console.log(bottom);
-                $(this).parents("body").find(".hv-tooltip").css({ bottom: bottom, left: e.pageX - ($(".hv-tooltip").outerWidth() / 2) });
+                self.setSliderTooltipPosition(pageSlider, {
+                    x: e.pageX,
+                    y: e.pageY
+                });
             });
 
             pageSlider.noUiSlider.on("hover", function (value) {
@@ -736,7 +735,19 @@
             });
 
             pageSlider.noUiSlider.on("end", function (values, handle) {
-                console.log(values[handle]);
+                //console.log(values[handle]);
+            });
+        },
+
+        setSliderTooltipPosition: function (pageSlider, mousePosition) {
+            var $tooltip = $(".hv-tooltip");
+
+            var offsetTop = $(pageSlider).offset().top;
+            var bottom = $(window).height() - offsetTop;
+
+            $tooltip.css({
+                bottom: bottom,
+                left: mousePosition.x - ($tooltip.outerWidth() / 2)
             });
         },
 
@@ -758,6 +769,7 @@
                 $("<img/>").addClass("hv-thumbnail").appendTo($tooltipInner);
             }
 
+            var self = this;
             $(".hv-tooltip").find("img").one("load", function () {
                 $(".hv-tooltip").find(".arrow").css({ left: $(this).width() / 2 });
             }).attr("src", thumbnail);

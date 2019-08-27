@@ -7246,9 +7246,7 @@ a.text-dark:hover, a.text-dark:focus {
   flex: 0 0 100%;
   height: 100%;
   display: flex;
-  overflow: hidden;
-  transition: all 0.5s ease;
-  -webkit-transition: all 0.5s ease; }
+  overflow: hidden; }
   .hv-content--push-left {
     padding-left: 300px; }
   .hv-content--push-right {
@@ -7257,7 +7255,9 @@ a.text-dark:hover, a.text-dark:focus {
     width: 100%;
     height: 100%;
     display: flex;
-    flex-direction: column; }
+    flex-direction: column;
+    transition: all 0.5s ease;
+    -webkit-transition: all 0.5s ease; }
 
 .hv-viewport {
   width: 100%;
@@ -7267,9 +7267,9 @@ a.text-dark:hover, a.text-dark:focus {
   justify-content: center;
   position: relative; }
   .hv-viewport__prev {
-    left: 1.0rem; }
+    left: 1rem; }
   .hv-viewport__next {
-    right: 1.0rem; }
+    right: 1rem; }
   .hv-viewport__prev, .hv-viewport__next {
     color: #787878;
     cursor: pointer;
@@ -7355,6 +7355,10 @@ a.text-dark:hover, a.text-dark:focus {
 .hv-navigation__carousel {
   margin: 0;
   padding: 0; }
+  .hv-navigation__carousel .swiper-wrapper {
+    margin: 0;
+    padding: 0;
+    list-style-type: none; }
   .hv-navigation__carousel .hv-thumbnail {
     height: 90px;
     margin: 0.2rem 0.3rem; }

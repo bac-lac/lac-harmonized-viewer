@@ -339,8 +339,6 @@
   height: 100%;
   display: flex;
   overflow: hidden;
-  transition: all 0.5s ease;
-  -webkit-transition: all 0.5s ease;
 
   &--push-left {
     padding-left: 300px;
@@ -355,6 +353,8 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    transition: all 0.5s ease;
+    -webkit-transition: all 0.5s ease;
   }
 }
 
@@ -367,11 +367,11 @@
   position: relative;
 
   &__prev {
-    left: 1.0rem;
+    left: 1rem;
   }
 
   &__next {
-    right: 1.0rem;
+    right: 1rem;
   }
 
   &__prev,
@@ -490,6 +490,12 @@
 .#{$ns}-navigation__carousel {
   margin: 0;
   padding: 0;
+
+  .swiper-wrapper {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
 
   .#{$ns}-thumbnail {
     height: 90px;
