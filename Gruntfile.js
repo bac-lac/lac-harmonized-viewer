@@ -12,6 +12,10 @@ module.exports = function (grunt) {
 		copy: {
 			vendors: {
 				files: [
+					// {
+					// 	src: 'node_modules/i18n/i18n.js',
+					// 	dest: 'tmp/vendors/i18n/i18n.js'
+					// },
 					{
 						src: 'node_modules/handlebars/dist/handlebars.js',
 						dest: 'tmp/vendors/handlebars/handlebars.js'

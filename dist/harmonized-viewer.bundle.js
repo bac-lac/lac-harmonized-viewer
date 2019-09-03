@@ -64,6 +64,8 @@
 
             this.events = {};
 
+            this.configureLocales();
+
             this.initSpinner();
             this.initToolbar();
             this.loadManifest();
@@ -131,10 +133,21 @@
                 self.hideSpinner();
                 $(openseadragon.element).show();
 
+                self.showToolbars();
                 self.enableToolbar(".hv-toolbar__secondary");
                 //self.enableNavigationButtons();
                 self.updateNavigationControls();
             });
+        },
+
+        configureLocales: function () {
+            // if (typeof i18n === "undefined") {
+            //     console.error("Failed to configure the viewer's locale settings.");
+            // }
+            // i18n.configure({
+            //     locales: ["en"],
+            //     directory: __dirname + "/locales"
+            // });
         },
 
         populateAnnotations: function () {
@@ -206,8 +219,8 @@
             $galleryItems.html($ol[0].outerHTML);
 
             $navigation.mCustomScrollbar({
-                skin: "inset-3-dark",
-                scrollInertia: 250,
+                skin: "dark-think",
+                scrollInertia: 0,
                 keyboard: {
                     enable: false
                 },
@@ -216,8 +229,8 @@
                 }
             });
             $gallery.mCustomScrollbar({
-                skin: "inset-3-dark",
-                scrollInertia: 250,
+                skin: "dark-think",
+                scrollInertia: 0,
                 keyboard: {
                     enable: false
                 },
@@ -236,7 +249,7 @@
                 slidesPerView: "auto",
                 centeredSlides: true,
                 slidesPerColumnFill: "row",
-                spaceBetween: 10
+                spaceBetween: 3
             })
 
             this.initLazyLoading();
@@ -300,17 +313,14 @@
                 (width !== undefined ? width : ""), (height !== undefined ? height : ""), "jpg");
         },
 
-        setManifestLabel: function (label) {
-            $(this.element).find(".hv-manifest-label").html(label);
-        },
-
         bindProperty: function (name, value) {
             $(this.element)
                 .find("[data-bind]")
                 .filter(function () {
                     return $(this).attr("data-bind").toLowerCase().indexOf(name.toLowerCase()) > -1;
                 })
-                .text(value);
+                .text(value)
+                .removeClass("hv-skeleton");
         },
 
         getContent: function () {
@@ -407,7 +417,7 @@
             var $viewport = this.getViewport();
             var $spinner = $viewport.find(".hv-spinner");
             if ($spinner.length === 0) {
-                $spinner = $("<div/>").addClass("hv-spinner animated fadeIn delay-1s").attr("role", "status").appendTo($viewport);
+                $spinner = $("<div/>").addClass("hv-spinner animated fadeIn").attr("role", "status").appendTo($viewport);
                 var $spinnerInner = $("<div/>").addClass("spinner-border").appendTo($spinner);
                 $("<span/>").addClass("sr-only").text("Loading...").appendTo($spinnerInner);
             }
@@ -420,6 +430,11 @@
 
         hideSpinner: function () {
             this.getSpinner().hide();
+        },
+
+        showToolbars: function () {
+            var $toolbar = $(this.element).find(".hv-toolbar__secondary.invisible").removeClass("invisible");
+            this.animate($toolbar, "slideInDown");
         },
 
         initToolbar: function () {
@@ -624,12 +639,6 @@
             });
 
             openseadragon.addHandler("open", function (args) {
-
-                self.setManifestLabel(self.manifest.getDefaultLabel());
-
-                //var label = canvas.getLabel().filter(function (i) { return (i.locale === self.settings.locale); })[0];
-                //self.setImageLabel(label.value);
-
                 self.raiseEvent("loaded", args);
             });
 
@@ -661,6 +670,7 @@
 
         loadManifest: function () {
             var self = this;
+
             manifesto
                 .loadManifest(this.settings.manifest)
                 .then(function (manifest) {
@@ -677,19 +687,23 @@
                         self.pages.push(source);
                     });
 
-                    self.bindProperty("TotalPages", self.pages.length);
+                    //self.bindProperty("manifest-label", self.manifest.getDefaultLabel());
+                    self.bindProperty("total-pages", self.pages.length);
 
                     self.initOpenSeadragon();
-
                     self.initPageSlider();
 
                     self.populateAnnotations();
                     self.populateNavigation();
 
                 }, function (err) {
-                    console.error(err);
                     self.hideSpinner();
+                    console.error(err);
                     self.showError(err);
+                })
+                .catch(function (ex) {
+                    self.hideSpinner();
+                    self.showError(ex.message);
                 });
         },
 
@@ -818,8 +832,8 @@
             this.hideSpinner();
 
             var $error = $("<div />").addClass("hv-error");
-            $("<span/>").addClass("hv-error-icon").addClass("hv-icon hv-icon__alert-triangle").appendTo($error);
-            $("<div/>").addClass("hv-error-text").html("An unexpected error occurred.<br />Please try again later.").appendTo($error);
+            $("<i/>").addClass("hv-error-icon fas fa-exclamation-triangle").appendTo($error);
+            $("<div/>").addClass("hv-error-text").html("Something went wrong.<br />Please try again later.").appendTo($error);
 
             if (this.debug) {
                 $("<div />").addClass("hv-debug").html(err.message).appendTo($error);
