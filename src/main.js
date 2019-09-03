@@ -343,9 +343,9 @@
                 $sidebar.hasClass("hv-sidebar__top") ? "slideInUp" :
                     $sidebar.hasClass("hv-sidebar__bottom") ? "slideInDown" : "slideInLeft";
 
-            this.animate($sidebar, animation, function () {
+            //this.animate($sidebar, animation, function () {
                 $sidebar.addClass("hv-sidebar--opened");
-            });
+            //});
             this.resizeViewport();
         },
 
@@ -358,9 +358,9 @@
                 $sidebar.hasClass("hv-sidebar__top") ? "slideOutUp" :
                     $sidebar.hasClass("hv-sidebar__bottom") ? "slideOutDown" : "slideOutLeft";
 
-            this.animate($sidebar, animation, function () {
+            //this.animate($sidebar, animation, function () {
                 $sidebar.addClass("hv-sidebar--closed");
-            });
+            //});
             this.resizeViewport();
         },
 
@@ -433,7 +433,7 @@
 
         showToolbars: function () {
             var $toolbar = $(this.element).find(".hv-toolbar__secondary.invisible").removeClass("invisible");
-            this.animate($toolbar, "slideInDown");
+            //this.animate($toolbar, "slideInDown");
         },
 
         initToolbar: function () {

@@ -5,22 +5,14 @@
 	<title>Archives Canada Viewer Demo</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<script type="text/javascript" src="/dist/harmonized-viewer.bundle.js"></script>
-
-	<link href="https://fonts.googleapis.com/css?family=Noto+Sans:400,700&display=swap" rel="stylesheet">
-
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css" rel="stylesheet">
 
 	<link href="/dist/harmonized-viewer.css" rel="stylesheet" type="text/css">
 	<link href="/dist/harmonized-viewer-theme.css" rel="stylesheet" type="text/css">
 
 	<style type="text/css">
 		html,
-		body {
-			height: 100%;
-		}
-
 		body {
 			padding: 0;
 			margin: 0;
@@ -30,7 +22,68 @@
 
 <body>
 
-	<div id="harmonized-viewer" class="hv-viewer">
+	<div id="harmonized-viewer" class="harmonized-viewer" style="height:500px;">
+		<div class="hv-topbar ui menu">
+			<a class="item">
+				<i class="sidebar icon"></i>
+			</a>
+		</div>
+
+		<div class="hv-toolbar ui small menu">
+			<div class="right">
+				<div class="ui dropdown item">
+					<i class="window maximize outline icon"></i>
+					Single page
+					<i class="dropdown icon"></i>
+					<div class="menu">
+						<a class="item">English</a>
+						<a class="item">Russian</a>
+						<a class="item">Spanish</a>
+					</div>
+				</div>
+			</div>
+			<a class="orange item">Orange</a>
+			<a class="yellow item">Yellow</a>
+		</div>
+
+		<div class="hv-content">
+			<div class="hv-content__container">
+				<div class="hv-viewport"></div>
+			</div>
+		</div>
+
+		<div class="ui bottom attached segment pushable">
+			<div class="ui inverted labeled icon left inline vertical sidebar menu" style="">
+				<a class="item">
+					<i class="home icon"></i>
+					Home
+				</a>
+				<a class="item">
+					<i class="block layout icon"></i>
+					Topics
+				</a>
+				<a class="item">
+					<i class="smile icon"></i>
+					Friends
+				</a>
+				<a class="item">
+					<i class="calendar icon"></i>
+					History
+				</a>
+			</div>
+			<div class="pusher">
+				<div class="ui basic segment">
+					<h3 class="ui header">Application Content</h3>
+					<p></p>
+					<p></p>
+					<p></p>
+					<p></p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="harmonized-viewer2" class="hv-viewer" style="display:none">
 		<header class="hv-header">
 
 			<div class="hv-toolbar hv-toolbar__primary">
@@ -244,6 +297,16 @@
 	</div>
 
 	<script type="text/javascript">
+
+		$(document).ready(function () {
+			// using context
+			$('.ui.sidebar')
+				.sidebar({
+					context: $('.bottom.segment')
+				})
+				.sidebar('attach events', '.menu .item');
+		});
+
 		$(function () {
 			av = $('#harmonized-viewer').harmonizedViewer({
 				manifest: "https://damsssl.llgc.org.uk/iiif/2.0/4389767/manifest.json",

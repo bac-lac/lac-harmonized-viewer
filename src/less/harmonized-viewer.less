@@ -1,0 +1,25 @@
+@import "_variables";
+
+.harmonized-viewer {
+
+  @import "../../vendor/semantic/src/semantic.less";
+
+  .@{prefix}topbar.ui.menu {
+    margin       : 0;
+    box-shadow   : none;
+    border-radius: 0;
+  }
+
+  .@{prefix}toolbar.ui.menu {
+    margin-top      : 0;
+    border-radius   : 0;
+    background-color: #eee;
+  }
+
+  .@{prefix}content,
+  .@{prefix}content__container,
+  .@{prefix}viewport {
+    height: 100%;
+  }
+
+}
