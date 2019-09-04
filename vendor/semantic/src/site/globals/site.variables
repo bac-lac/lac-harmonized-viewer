@@ -2,4 +2,5 @@
      User Global Variables
 *******************************/
 
+@fontName: "Roboto";
 @fontPath: "lib/semantic/themes/default/assets/fonts";

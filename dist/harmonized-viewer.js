@@ -65,7 +65,6 @@
 
             this.configureLocales();
 
-            this.initSpinner();
             this.initToolbar();
             this.loadManifest();
 
@@ -77,7 +76,7 @@
             this.bindEventControls("navigation");
             this.bindEventControls("metadata");
             this.bindEventControls("gallery");
-            this.bindEventControls("displayMode");
+            this.bindEventControls("display");
 
             this.addHandler("navigation", function () {
                 self.toggleSidebar(".hv-sidebar__navigation");
@@ -90,7 +89,7 @@
                 self.toggleSidebar(".hv-sidebar__metadata");
             });
 
-            this.addHandler("displayMode", function (event) {
+            this.addHandler("display", function (event) {
                 var value = parseInt(event.displayMode);
                 self.displayMode = (value === 1 || value === 2) ? value : 1;
                 self.initOpenSeadragon();
@@ -110,8 +109,8 @@
                 self.enableNavigationPrevious(self.isFirstPage());
                 self.enableNavigationNext(self.isLastPage());
 
-                var swiper = $(self.element).find(".hv-navigation__carousel")[0].swiper;
-                swiper.slideTo(self.currentPage);
+                //var swiper = $(self.element).find(".hv-navigation__carousel")[0].swiper;
+                //swiper.slideTo(self.currentPage);
 
                 //console.log(event);
                 //self.disableToolbar(".hv-toolbar__secondary");
@@ -127,15 +126,15 @@
 
             this.addHandler("loaded", function () {
 
-                self.getViewport().removeClass("hv-viewport--loading");
+                //$(self.element).find(".hv-topbar").find(".placeholder").removeClass("placeholder").find(".item.hidden").removeClass("hidden");
 
-                self.hideSpinner();
+                self.getViewport().removeClass("loading");
+                
                 $(openseadragon.element).show();
 
                 self.showToolbars();
                 self.enableToolbar(".hv-toolbar__secondary");
-                //self.enableNavigationButtons();
-                self.updateNavigationControls();
+                //self.updateNavigationControls();
             });
         },
 
@@ -408,29 +407,6 @@
             return this.enableButton(selector, false);
         },
 
-        initSpinner: function () {
-            this.showSpinner();
-        },
-
-        getSpinner: function () {
-            var $viewport = this.getViewport();
-            var $spinner = $viewport.find(".hv-spinner");
-            if ($spinner.length === 0) {
-                $spinner = $("<div/>").addClass("hv-spinner animated fadeIn").attr("role", "status").appendTo($viewport);
-                var $spinnerInner = $("<div/>").addClass("spinner-border").appendTo($spinner);
-                $("<span/>").addClass("sr-only").text("Loading...").appendTo($spinnerInner);
-            }
-            return $spinner;
-        },
-
-        showSpinner: function () {
-            this.getSpinner().show();
-        },
-
-        hideSpinner: function () {
-            this.getSpinner().hide();
-        },
-
         showToolbars: function () {
             var $toolbar = $(this.element).find(".hv-toolbar__secondary.invisible").removeClass("invisible");
             //this.animate($toolbar, "slideInDown");
@@ -608,10 +584,11 @@
                 openseadragon = null;
             }
 
-            // Create root OpenSeadragon element inside viewport
+            // Create OpenSeadragon element inside viewport
             var $viewport = this.getViewport();
             $viewport.find(".hv-openseadragon").remove();
-            var $openseadragon = $("<div/>").addClass("hv-openseadragon").hide().width("100%").height("100%").appendTo($viewport);
+            var $openseadragon = $("<div/>").addClass("hv-openseadragon")
+                .hide().width("100%").height("100%").appendTo($viewport);
 
             var openseadragonId = this.getUniqueId($openseadragon[0]);
 
@@ -686,22 +663,21 @@
                         self.pages.push(source);
                     });
 
-                    //self.bindProperty("manifest-label", self.manifest.getDefaultLabel());
+                    self.bindProperty("manifest-label", self.manifest.getDefaultLabel());
                     self.bindProperty("total-pages", self.pages.length);
 
                     self.initOpenSeadragon();
-                    self.initPageSlider();
+                    //self.initPageSlider();
 
-                    self.populateAnnotations();
-                    self.populateNavigation();
+                    //self.populateAnnotations();
+                    //self.populateNavigation();
 
                 }, function (err) {
-                    self.hideSpinner();
                     console.error(err);
                     self.showError(err);
                 })
                 .catch(function (ex) {
-                    self.hideSpinner();
+                    console.error(ex);
                     self.showError(ex.message);
                 });
         },
@@ -828,15 +804,10 @@
         },
 
         showError: function (err) {
-            this.hideSpinner();
-
-            var $error = $("<div />").addClass("hv-error");
-            $("<i/>").addClass("hv-error-icon fas fa-exclamation-triangle").appendTo($error);
-            $("<div/>").addClass("hv-error-text").html("Something went wrong.<br />Please try again later.").appendTo($error);
-
-            if (this.debug) {
-                $("<div />").addClass("hv-debug").html(err.message).appendTo($error);
-            }
+            var $error = $("<div />").addClass("hv-error ui negative message");
+            $("<i/>").addClass("close icon").appendTo($error);
+            $("<div/>").addClass("header").html("Oops...").appendTo($error);
+            $("<p/>").html("Something went wrong. Please try again later.").appendTo($error);
 
             var $viewport = this.getViewport();
             $error.appendTo($viewport);

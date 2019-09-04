@@ -40,6 +40,17 @@ function compileJS() {
         .pipe(dest('dist'));
 };
 
+function compileVendorJS() {
+    return src([
+        'node_modules/openseadragon/build/openseadragon/openseadragon.js',
+        'node_modules/manifesto.js/dist/client/manifesto.bundle.js',
+        'vendor/semantic/dist/semantic.js'
+    ])
+        .pipe(gulp.concat('harmonized-viewer.vendor.js'))
+        .pipe(gulp.uglify())
+        .pipe(dest('dist'));
+};
+
 function minifyJS() {
     return src(['dist/**/*.js', '!dist/**/*.min.js'])
         .pipe(gulp.rename({ extname: '.min.js' }))
@@ -60,9 +71,7 @@ function bundleCSS() {
 function bundleJS() {
     return src([
         'dist/harmonized-viewer.js',
-        'node_modules/openseadragon/build/openseadragon/openseadragon.js',
-        'node_modules/manifesto.js/dist/client/manifesto.bundle.js',
-        'vendor/semantic/dist/semantic.js'
+        'dist/harmonized-viewer.vendor.js'
     ])
         .pipe(gulp.concat('harmonized-viewer.bundle.js'))
         .pipe(gulp.uglify())
@@ -75,15 +84,15 @@ function copyThemes() {
 };
 
 const buildCSS = gulp.series(compileLess, minifyCSS, bundleCSS);
-const buildJS = gulp.series(compileJS, minifyJS, bundleJS);
+const buildJS = gulp.series(gulp.parallel(compileJS, compileVendorJS), minifyJS, bundleJS);
 
 const build = gulp.series(cleanDist, gulp.parallel(buildCSS, buildJS, copyThemes), cleanTemp);
 
 function watchLess() {
-    gulp.watch('src/**/*.less', gulp.series(compileLess, minifyCSS));
+    gulp.watch('src/**/*.less', compileLess);
 };
 function watchJS() {
-    gulp.watch('src/**/*.js', build);
+    gulp.watch('src/**/*.js', gulp.series(compileJS));
 };
 
 const watch = gulp.parallel(watchLess, watchJS);

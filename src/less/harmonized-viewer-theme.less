@@ -1,10 +1,29 @@
 @import "_variables";
 
-.@{prefix}topbar.ui.menu {
-    background-color: #405c77;
+.harmonized-viewer {
 
-    .item { 
-        color: #fff;
-        font-size: 20px;
+    .@{prefix}topbar.ui.menu.inverted {
+        background-color: #405c77;
+
+        .ui.placeholder {
+            background-color: #405c77;
+        }
+
+        a.item {
+            color: #fff;
+        }
+
+        a.item:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .item.header {
+            font-weight: normal;
+        }
     }
+
+    .@{prefix}content .@{prefix}viewport_container {
+        background-color: #fff;
+    }
+
 }

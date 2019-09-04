@@ -1,7 +1,18 @@
-.hv-topbar.ui.menu {
+.harmonized-viewer .hv-topbar.ui.menu.inverted {
   background-color: #405c77;
 }
-.hv-topbar.ui.menu .item {
+.harmonized-viewer .hv-topbar.ui.menu.inverted .ui.placeholder {
+  background-color: #405c77;
+}
+.harmonized-viewer .hv-topbar.ui.menu.inverted a.item {
   color: #fff;
-  font-size: 20px;
+}
+.harmonized-viewer .hv-topbar.ui.menu.inverted a.item:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+.harmonized-viewer .hv-topbar.ui.menu.inverted .item.header {
+  font-weight: normal;
+}
+.harmonized-viewer .hv-content .hv-viewport_container {
+  background-color: #fff;
 }
