@@ -6,54 +6,74 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-	<script type="text/javascript" src="/dist/harmonized-viewer.bundle.js"></script>
+	<script type="text/javascript" src="/dist/harmonized-viewer.vendor.min.js"></script>
+	<script type="text/javascript" src="/dist/harmonized-viewer.js"></script>
 
 	<link href="/dist/harmonized-viewer.css" rel="stylesheet" type="text/css">
 	<link href="/dist/harmonized-viewer-theme.css" rel="stylesheet" type="text/css">
+
+	<link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
 
 	<style type="text/css">
 		html,
 		body {
 			padding: 0;
 			margin: 0;
+			font: 15px 'Roboto', Arial, Helvetica, sans-serif !important;
 		}
 	</style>
 </head>
 
 <body>
 
-	<div id="harmonized-viewer" class="harmonized-viewer" style="height:500px;">
-		<div class="hv-topbar ui menu">
-			<a class="item">
+	<div id="harmonized-viewer" class="harmonized-viewer">
+		<div class="hv-topbar ui huge menu inverted borderless">
+			<a class="hv-sidebar-toggle item icon">
 				<i class="sidebar icon"></i>
 			</a>
+			<div class="header item" data-bind="manifest-label"></div>
+			<div class="right menu">
+				<a class="item icon">
+					<i class="cog icon"></i>
+				</a>
+			</div>
 		</div>
 
-		<div class="hv-toolbar ui small menu">
-			<div class="right">
+		<div class="hv-toolbar ui menu">
+			<div class="right menu">
+
+				<div class="ui dropdown item">
+					<i class="search icon"></i>
+					Auto
+					<i class="dropdown icon"></i>
+					<div class="menu">
+						<a class="item active" data-toggle="zoom" data-zoom="auto">
+							Auto
+						</a>
+					</div>
+				</div>
+
 				<div class="ui dropdown item">
 					<i class="window maximize outline icon"></i>
 					Single page
 					<i class="dropdown icon"></i>
 					<div class="menu">
-						<a class="item">English</a>
-						<a class="item">Russian</a>
-						<a class="item">Spanish</a>
+						<a class="item active" data-toggle="display" data-display-mode="1">
+							<i class="window maximize outline icon"></i>
+							Single page
+						</a>
+						<a class="item" data-toggle="display" data-display-mode="2">
+							<i class="columns icon"></i>
+							Dual page
+						</a>
 					</div>
 				</div>
-			</div>
-			<a class="orange item">Orange</a>
-			<a class="yellow item">Yellow</a>
-		</div>
 
-		<div class="hv-content">
-			<div class="hv-content__container">
-				<div class="hv-viewport"></div>
 			</div>
 		</div>
 
-		<div class="ui bottom attached segment pushable">
-			<div class="ui inverted labeled icon left inline vertical sidebar menu" style="">
+		<div class="hv-content ui bottom attached pushable">
+			<div class="sidebar ui inverted labeled left inline vertical sidebar menu">
 				<a class="item">
 					<i class="home icon"></i>
 					Home
@@ -71,16 +91,11 @@
 					History
 				</a>
 			</div>
-			<div class="pusher">
-				<div class="ui basic segment">
-					<h3 class="ui header">Application Content</h3>
-					<p></p>
-					<p></p>
-					<p></p>
-					<p></p>
-				</div>
+			<div class="hv-viewport_container pusher">
+				<div class="hv-viewport ui basic segment loading"></div>
 			</div>
 		</div>
+
 	</div>
 
 	<div id="harmonized-viewer2" class="hv-viewer" style="display:none">
@@ -299,12 +314,28 @@
 	<script type="text/javascript">
 
 		$(document).ready(function () {
+
+			$('.ui.dropdown').dropdown({
+				useLabels: false
+			});
+
 			// using context
 			$('.ui.sidebar')
 				.sidebar({
-					context: $('.bottom.segment')
+					context: $('.hv-content'),
+					dimPage: false,
+					closable: false,
+					onVisible: function () {
+						var contentWidth = $('.hv-content').width();
+						var sidebarWidth = $('.hv-viewport_container').siblings('.sidebar').width();
+						$('.hv-viewport_container').width(contentWidth - sidebarWidth);
+					},
+					onHide: function () {
+						var contentWidth = $('.hv-content').width();
+						$('.hv-viewport_container').width(contentWidth);
+					}
 				})
-				.sidebar('attach events', '.menu .item');
+				.sidebar('attach events', '.hv-sidebar-toggle');
 		});
 
 		$(function () {
