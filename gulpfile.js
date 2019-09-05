@@ -1,3 +1,4 @@
+const path = require('path');
 const gulp = { src, dest, series, parallel } = require('gulp');
 
 const less = require('gulp-less');
@@ -6,6 +7,12 @@ gulp.uglify = require('gulp-uglify');
 gulp.clean = require('gulp-clean');
 gulp.rename = require('gulp-rename');
 gulp.cleanCSS = require('gulp-clean-css');
+gulp.wrap = require('gulp-wrap');
+gulp.handlebars = require('gulp-handlebars');
+gulp.jsoncombine = require('gulp-jsoncombine');
+gulp.bro = require('gulp-bro');
+gulp.print = require('gulp-print').default;
+gulp.changed = require('gulp-changed');
 
 function cleanDist() {
     return src('dist', { allowEmpty: true, read: false })
@@ -17,85 +24,146 @@ function cleanTemp() {
         .pipe(gulp.clean({ force: true }));
 };
 
-/**
- * @name compileLess
- * @description Compile LESS source files to unminified CSS stylesheets
- */
-function compileLess() {
-    return src(['src/less/**/*.less', '!src/less/_variables.less'])
-        .pipe(less())
-        .pipe(dest('dist'));
+function compileLocales() {
+    return src('src/locales/**/*.json')
+        .pipe(gulp.jsoncombine('harmonized-viewer.locales.js', function (data) {
+            var locales = new Array();
+            for (var key in data) {
+                var item = {};
+                item.code = key;
+                if (item.code.indexOf('\\') > -1) {
+                    item.code = item.code.substring(0, key.indexOf('\\')).toLowerCase();
+                }
+                item.strings = data[key];
+                locales.push(item);
+            }
+            return Buffer.from("harmonizedviewer_locales = " + JSON.stringify(locales) + ";");
+        }))
+        .pipe(dest('tmp/js'))
+        .pipe(gulp.print());
 };
 
-function minifyCSS() {
-    return src(['dist/**/*.css', '!dist/**/*.min.css'])
-        .pipe(gulp.rename({ extname: '.min.css' }))
-        .pipe(gulp.cleanCSS())
-        .pipe(dest('dist'));
+function compileTemplates() {
+    return src('src/templates/*.handlebars')
+        .pipe(gulp.handlebars())
+        .pipe(gulp.wrap('Handlebars.registerPartial(<%= processPartialName(file.relative) %>, Handlebars.template(<%= contents %>));', {}, {
+            imports: {
+                processPartialName: function (fileName) {
+                    // Strip the extension and the underscore
+                    // Escape the output with JSON.stringify
+                    return JSON.stringify(path.basename(fileName, '.js'));
+                }
+            }
+        }))
+        .pipe(gulp.concat('harmonized-viewer.partials.js'))
+        .pipe(dest('tmp/js'))
+        .pipe(gulp.print());
 };
 
 function compileJS() {
     return src('src/**/*.js')
         .pipe(gulp.concat('harmonized-viewer.js'))
-        .pipe(dest('dist'));
+        .pipe(dest('tmp/js'))
+        .pipe(gulp.print());
 };
 
-function compileVendorJS() {
+function concatJS() {
     return src([
-        'node_modules/openseadragon/build/openseadragon/openseadragon.js',
-        'node_modules/manifesto.js/dist/client/manifesto.bundle.js',
-        'vendor/semantic/dist/semantic.js'
+        'tmp/js/**/*.js'
     ])
-        .pipe(gulp.concat('harmonized-viewer.vendor.js'))
-        .pipe(gulp.uglify())
-        .pipe(dest('dist'));
+        .pipe(gulp.concat('harmonized-viewer.js'))
+        .pipe(dest('dist/js'))
+        .pipe(gulp.print());
 };
 
 function minifyJS() {
-    return src(['dist/**/*.js', '!dist/**/*.min.js'])
+    return src([
+        'dist/js/**/*.js',
+        '!dist/js/**/*.min.js'
+    ])
         .pipe(gulp.rename({ extname: '.min.js' }))
         .pipe(gulp.uglify())
-        .pipe(dest('dist'));
-};
-
-function bundleCSS() {
-    return src([
-        'dist/harmonized-viewer.css',
-        'vendor/semantic/dist/semantic.css'
-    ])
-        .pipe(gulp.concat('harmonized-viewer.bundle.css'))
-        .pipe(gulp.cleanCSS())
-        .pipe(dest('dist'));
+        .pipe(dest('dist/js'))
+        .pipe(gulp.print());
 };
 
 function bundleJS() {
     return src([
-        'dist/harmonized-viewer.js',
-        'dist/harmonized-viewer.vendor.js'
+        'dist/js/**/*.min.js',
+        'dist/vendor/**/*.min.js'
     ])
-        .pipe(gulp.concat('harmonized-viewer.bundle.js'))
+        .pipe(gulp.bro())
         .pipe(gulp.uglify())
-        .pipe(dest('dist'));
+        .pipe(gulp.rename('harmonized-viewer.bundle.js'))
+        .pipe(dest('dist/js'))
+        .pipe(gulp.print());
 };
 
-function copyThemes() {
-    return src('vendor/semantic/dist/**/*')
-        .pipe(dest('dist/lib/semantic'));
+/**
+ * @name compileLess
+ * @description Compile LESS source files to unminified CSS stylesheets
+ */
+function compileLess() {
+    return src([
+        'src/less/**/*.less',
+        '!src/less/_variables.less'
+    ])
+        .pipe(less())
+        .pipe(dest('dist/css'));
 };
 
-const buildCSS = gulp.series(compileLess, minifyCSS, bundleCSS);
-const buildJS = gulp.series(gulp.parallel(compileJS, compileVendorJS), minifyJS, bundleJS);
+function minifyCSS() {
+    return src([
+        'dist/css/**/*.css',
+        '!dist/css/**/*.min.css'
+    ])
+        .pipe(gulp.rename({ extname: '.min.css' }))
+        .pipe(gulp.cleanCSS())
+        .pipe(dest('dist/css'));
+};
 
-const build = gulp.series(cleanDist, gulp.parallel(buildCSS, buildJS, copyThemes), cleanTemp);
+function bundleCSS() {
+    return src([
+        'dist/js/**/*.min.css',
+        'dist/vendor/**/*.min.css'
+    ])
+        .pipe(gulp.concat('harmonized-viewer.bundle.css'))
+        .pipe(gulp.cleanCSS())
+        .pipe(dest('dist/css'));
+};
+
+function copySemantic() {
+    return src([
+        'vendor/semantic/dist/**/*',
+    ])
+        .pipe(gulp.changed('dist/vendor/semantic'))
+        .pipe(dest('dist/vendor/semantic'));
+};
 
 function watchLess() {
     gulp.watch('src/**/*.less', compileLess);
 };
+
 function watchJS() {
     gulp.watch('src/**/*.js', gulp.series(compileJS));
 };
 
-const watch = gulp.parallel(watchLess, watchJS);
+function watchTemplates() {
+    gulp.watch('src/**/*.handlebars', gulp.series(compileTemplates));
+};
 
-exports.watch = watch;
-exports.default = build;
+// Gulp Tasks
+// Define which tasks can run in parallel and which tasks must run one after the other.
+
+const buildCSS = gulp.series(compileLess, minifyCSS, bundleCSS);
+const buildJS = gulp.series(compileJS, compileLocales, compileTemplates, concatJS, minifyJS, bundleJS);
+
+const build = gulp.series(cleanDist, gulp.parallel(buildCSS, buildJS, copySemantic), cleanTemp);
+const watch = gulp.parallel(watchLess, watchJS, watchTemplates);
+
+gulp.task('default', build);
+gulp.task('build-css', buildCSS);
+gulp.task('build-js', gulp.series(cleanTemp, cleanDist, buildJS));
+gulp.task('build-locales', compileLocales);
+gulp.task('build-templates', compileTemplates);
+gulp.task('watch', watch);

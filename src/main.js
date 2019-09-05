@@ -1,3 +1,7 @@
+var handlebars = require("handlebars");
+var openseadragon = require("openseadragon");
+var manifesto = require("manifesto.js");
+var getUserLocale = require("get-user-locale");
 
 ; (function ($, window, document, undefined) {
 
@@ -65,6 +69,8 @@
 
             this.configureLocales();
 
+            alert(this.localeString("display_mode_single_page"));
+
             this.initToolbar();
             this.loadManifest();
 
@@ -129,7 +135,7 @@
                 //$(self.element).find(".hv-topbar").find(".placeholder").removeClass("placeholder").find(".item.hidden").removeClass("hidden");
 
                 self.getViewport().removeClass("loading");
-                
+
                 $(openseadragon.element).show();
 
                 self.showToolbars();
@@ -139,13 +145,7 @@
         },
 
         configureLocales: function () {
-            // if (typeof i18n === "undefined") {
-            //     console.error("Failed to configure the viewer's locale settings.");
-            // }
-            // i18n.configure({
-            //     locales: ["en"],
-            //     directory: __dirname + "/locales"
-            // });
+
         },
 
         populateAnnotations: function () {
@@ -343,7 +343,7 @@
                     $sidebar.hasClass("hv-sidebar__bottom") ? "slideInDown" : "slideInLeft";
 
             //this.animate($sidebar, animation, function () {
-                $sidebar.addClass("hv-sidebar--opened");
+            $sidebar.addClass("hv-sidebar--opened");
             //});
             this.resizeViewport();
         },
@@ -358,7 +358,7 @@
                     $sidebar.hasClass("hv-sidebar__bottom") ? "slideOutDown" : "slideOutLeft";
 
             //this.animate($sidebar, animation, function () {
-                $sidebar.addClass("hv-sidebar--closed");
+            $sidebar.addClass("hv-sidebar--closed");
             //});
             this.resizeViewport();
         },
@@ -418,6 +418,19 @@
             // });
             $(this.element).on("click", ".hv-button-toggle", function () {
                 $(this).toggleClass("hv-button-toggle--active");
+            });
+
+            $(this.element)
+                .append(Handlebars.partials["modal-settings"]()).find(".modal").modal({
+                    autofocus: false,
+                    detachable: true,
+                    blurring: true
+                });
+
+            $(this.element).find(".hv-modal_settings .ui.dropdown").dropdown();
+
+            $(this.element).on("click", ".hv-menu_settings", function () {
+                $(".hv-modal_settings").modal("show");
             });
         },
 
@@ -759,12 +772,47 @@
                 $("<img/>").addClass("hv-thumbnail").appendTo($tooltipInner);
             }
 
-            var self = this;
             $(".hv-tooltip").find("img").one("load", function () {
                 $(".hv-tooltip").find(".arrow").css({ left: $(this).width() / 2 });
             }).attr("src", thumbnail);
 
             //$(this.element).find(".hv-pageslider").tooltip("show");
+        },
+
+        getLocale: function () {
+            alert(getUserLocale.getUserLocales());
+            return window.localStorage.getItem("locale") ||
+                window.navigator.language ||
+                window.navigator.userLanguage;
+        },
+
+        resolveLocale: function (locale) {
+            if (typeof harmonizedviewer_locales === "undefined") {
+                return null;
+            }
+            if (typeof locale === "undefined") {
+                locale = this.getLocale();
+            }
+
+            var selectedLocales = harmonizedviewer_locales
+                .filter(function (i) {
+                    return (i.code === locale && i.code !== null);
+                });
+
+            if (selectedLocales.length > 0) {
+                return selectedLocales[0];
+            }
+            else {
+                // Could not find locale, fallback (e.g. en-US, en)
+                if (locale.indexOf("-")) {
+                    var language = locale.substring(0, locale.indexOf("-"));
+                    return this.resolveLocale(language);
+                }
+            }
+        },
+
+        localeString: function (key) {
+            return this.resolveLocale().strings[key];
         },
 
         getUniqueId: function (element) {
@@ -805,11 +853,12 @@
 
         showError: function (err) {
             var $error = $("<div />").addClass("hv-error ui negative message");
-            $("<i/>").addClass("close icon").appendTo($error);
+            //$("<i/>").addClass("close icon").appendTo($error);
             $("<div/>").addClass("header").html("Oops...").appendTo($error);
             $("<p/>").html("Something went wrong. Please try again later.").appendTo($error);
 
             var $viewport = this.getViewport();
+            $viewport.removeClass("loading");
             $error.appendTo($viewport);
         },
 

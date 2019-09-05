@@ -13,6 +13,9 @@
 .harmonized-viewer .hv-topbar.ui.menu.inverted .item.header {
   font-weight: normal;
 }
+.harmonized-viewer .hv-toolbar .item .icon {
+  color: #757575;
+}
 .harmonized-viewer .hv-content .hv-viewport_container {
   background-color: #fff;
 }
