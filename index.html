@@ -3,14 +3,17 @@
 
 <head>
 	<title>Archives Canada Viewer Demo</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-	<script type="text/javascript" src="/dist/js/harmonized-viewer.bundle.js"></script>
+	<script type="text/javascript" src="https://use.fontawesome.com/releases/v5.10.2/js/all.js" defer></script>
 
-	<link href="/dist/harmonized-viewer.bundle.css" rel="stylesheet" type="text/css">
-	<link href="/dist/harmonized-viewer.css" rel="stylesheet" type="text/css">
-	<link href="/dist/harmonized-viewer-theme.css" rel="stylesheet" type="text/css">
+	<script type="text/javascript" src="/dist/js/harmonized-viewer.js"></script>
+
+	<link href="/dist/css/index.css" rel="stylesheet" type="text/css">
+	<link href="/dist/css/theme.css" rel="stylesheet" type="text/css">
 
 	<link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
 
@@ -26,324 +29,131 @@
 
 <body>
 
-	<div id="harmonized-viewer" class="harmonized-viewer">
-		<div class="hv-topbar ui massive menu inverted borderless">
-			<a class="hv-sidebar-toggle item icon">
-				<i class="sidebar icon"></i>
-			</a>
-			<div class="header item" data-bind="manifest-label"></div>
-			<div class="right menu">
-				<a class="hv-menu_settings item icon">
-					<i class="cog icon"></i>
-				</a>
+	<div id="harmonized-viewer" class="harmonized-viewer" style="display:none">
+
+		<nav class="hv-topbar navbar is-primary" role="navigation" aria-label="dropdown navigation">
+
+			<div class="navbar-brand">
+				<div class="navbar-burger burger">
+					<span></span>
+					<span></span>
+					<span></span>
+				</div>
 			</div>
-		</div>
 
-		<div class="hv-toolbar ui menu">
-			<div class="right menu">
+			<div class="navbar-menu">
+				<div class="navbar-start">
 
-				<div class="ui dropdown item">
-					<i class="search icon"></i>
-					Auto
-					<i class="dropdown icon"></i>
-					<div class="menu">
-						<a class="item active" data-toggle="zoom" data-zoom="auto">
-							Auto
+				</div>
+				<div class="navbar-end">
+
+					<div class="navbar-item has-dropdown">
+						<a class="navbar-link">
+							Docs
 						</a>
-					</div>
-				</div>
 
-				<div class="ui dropdown item">
-					<i class="window maximize outline icon"></i>
-					Single page
-					<i class="dropdown icon"></i>
-					<div class="menu">
-						<a class="item active" data-toggle="display" data-display-mode="1">
-							<i class="window maximize outline icon"></i>
-							Single page
+						<div class="navbar-dropdown is-right">
+							<a class="navbar-item">
+								Overview
+							</a>
+							<a class="navbar-item is-active">
+								Elements
+							</a>
+							<a class="navbar-item">
+								Components
+							</a>
+							<hr class="navbar-divider">
+							<div class="navbar-item">
+								Version 0.7.5
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+		</nav>
+
+		<nav class="hv-toolbar navbar is-light" role="navigation" aria-label="dropdown navigation">
+
+			<div class="navbar-brand">
+				<div class="navbar-burger burger">
+					<span></span>
+					<span></span>
+					<span></span>
+				</div>
+			</div>
+
+			<div class="navbar-menu">
+				<div class="navbar-start">
+
+					<div class="navbar-item has-dropdown">
+						<a class="navbar-link">
+							Docs
 						</a>
-						<a class="item" data-toggle="display" data-display-mode="2">
-							<i class="columns icon"></i>
-							Dual page
-						</a>
-					</div>
-				</div>
 
-			</div>
-		</div>
-
-		<div class="hv-content ui bottom attached pushable">
-			<div class="sidebar ui inverted labeled left inline vertical sidebar menu">
-				<a class="item">
-					<i class="home icon"></i>
-					Home
-				</a>
-				<a class="item">
-					<i class="block layout icon"></i>
-					Topics
-				</a>
-				<a class="item">
-					<i class="smile icon"></i>
-					Friends
-				</a>
-				<a class="item">
-					<i class="calendar icon"></i>
-					History
-				</a>
-			</div>
-			<div class="hv-viewport_container pusher">
-				<div class="hv-viewport ui basic segment loading"></div>
-			</div>
-		</div>
-
-	</div>
-
-	<div id="harmonized-viewer2" class="hv-viewer" style="display:none">
-		<header class="hv-header">
-
-			<div class="hv-toolbar hv-toolbar__primary">
-				<div class="row no-gutters justify-content-between">
-					<div class="col-auto">
-						<button type="button" class="hv-button hv-button__icon hv-button-toggle"
-							data-toggle="navigation" title="Toggle navigation view">
-							<i class="fas fa-bars"></i>
-						</button>
-					</div>
-					<div class="col d-flex align-items-center">
-						<h1 class="hv-manifest__label" data-bind="manifest-label"></h1>
-					</div>
-					<div class="col-auto">
-
-					</div>
-					<div class="col-auto d-flex">
-
-						<button class="btn btn-secondary hv-button hv-button__icon" type="button" id="hv_button_help"
-							title="">
-							<i class="fas fa-question-circle"></i>
-						</button>
-
-						<button class="btn btn-secondary hv-button hv-button__icon" type="button"
-							id="hv_button_settings" title="Settings">
-							<i class="fas fa-cog"></i>
-						</button>
-
-					</div>
-				</div>
-			</div>
-
-		</header>
-
-		<main class="hv-main">
-
-			<div class="hv-toolbar hv-toolbar__secondary invisible">
-				<div class="row no-gutters justify-content-between">
-					<div class="hv-toolbar__section align-items-center col-auto">
-						<button type="button" class="btn btn-secondary hv-button hv-button__icon hv-button-toggle"
-							data-toggle="gallery" title="Toggle gallery view">
-							<i class="fas fa-th-large"></i>
-						</button>
-						<!-- <button type="button" class="hv-button" data-toggle="fullscreen" title="Toggle fullscreen view">
-														<i class="material-icons">fullscreen</i>
-													</button> -->
-					</div>
-					<div class="col d-flex align-items-center">
-						<div class="hv-toolbar__controls">
-							<span class="hv-toolbar__controls-text">
-								Page
-							</span>
-							<div class="btn-group" role="group">
-								<button type="button" class="btn btn-white hv-button hv-button__icon"
-									data-toggle="previous" title="Previous page">
-									<i class="fas fa-angle-left"></i>
-								</button>
-								<input type="text" class="form-control form-control-sm" style="width:45px" name="page"
-									value="1">
-								<button type="button" class="btn btn-white hv-button hv-button__icon" data-toggle="next"
-									title="Next page">
-									<i class="fas fa-angle-right"></i>
-								</button>
-							</div>
-							<span class="hv-toolbar__controls-text">
-								of
-								<span data-bind="total-pages">0</span>
-							</span>
-						</div>
-					</div>
-					<div class="col-auto d-flex">
-
-						<div class="hv-toolbar__section">
-							<button type="button" class="btn btn-secondary hv-button hv-button__icon"
-								data-toggle="zoom-out" title="Zoom out">
-								<i class="fas fa-minus-circle"></i>
-							</button>
-							<div class="hv-toolbar__controls">
-								<div class="dropdown">
-									<button class="btn btn-secondary hv-button dropdown-toggle hz-zoom" type="button"
-										id="hv_zoom-control" data-toggle="dropdown" aria-haspopup="true"
-										aria-expanded="false">
-										Auto
-									</button>
-									<div class="dropdown-menu" aria-labelledby="hv_zoom-control">
-										<a class="dropdown-item" href="#">Auto</a>
-										<a class="dropdown-item" href="#">100%</a>
-										<a class="dropdown-item" href="#">50%</a>
-									</div>
-								</div>
-							</div>
-							<button type="button" class="btn btn-secondary hv-button hv-button__icon"
-								data-toggle="zoom-in" title="Zoom in">
-								<i class="fas fa-plus-circle"></i>
-							</button>
-						</div>
-
-						<div class="hv-toolbar__section">
-							<div class="dropdown">
-								<button class="btn btn-secondary hv-button dropdown-toggle hv-button__display"
-									type="button" title="Display mode" data-placement="top" id="hv_button_display"
-									data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-									<i class="fas fa-window-maximize"></i>
-									<span class="hv-button__text">Single page</span>
-								</button>
-								<div class="dropdown-menu dropdown-menu-right hv-dropdown__display" style="width:200px"
-									aria-labelledby="hv_button_display">
-									<div class="row no-gutters">
-										<a href="javascript:;" class="dropdown-item col-md-6 col-sm-12"
-											data-toggle="displayMode" data-display-mode="1">
-											<i class="far fa-window-maximize"></i>
-											<div>
-												Single page
-											</div>
-										</a>
-										<a href="#" class="dropdown-item col-md-6 col-sm-12" data-toggle="displayMode"
-											data-display-mode="2">
-											<i class="fas fa-columns"></i>
-											<div>
-												Dual page
-											</div>
-										</a>
-									</div>
-								</div>
-							</div>
-						</div>
-
-						<div class="hv-toolbar__section">
-							<button type="button" class="btn btn-secondary hv-button hv-button-toggle"
-								data-toggle="metadata" title="Toggle metadata view">
-								<i class="fas fa-columns"></i>
-								Details
-							</button>
-						</div>
-
-						<button type="button" class="btn btn-secondary hv-button hv-button__icon hv-button-toggle"
-							data-toggle="fullscreen" title="Enter fullscreen">
-							<i class="fas fa-expand"></i>
-						</button>
-
-					</div>
-				</div>
-			</div>
-
-			<div class="hv-content">
-
-				<div class="hv-content__container">
-
-					<div class="hv-viewport">
-						<button type="button" class="hv-viewport__prev" data-toggle="previous" title="Previous page">
-							<i class="fas fa-angle-left"></i>
-						</button>
-						<button type="button" class="hv-viewport__next" data-toggle="next" title="Next page">
-							<i class="fas fa-angle-right"></i>
-						</button>
-					</div>
-
-					<div class="row no-gutters justify-content-center">
-						<div class="col-4">
-							<div class="hv-paging">
-								<div class="hv-pageslider"></div>
-							</div>
-						</div>
-					</div>
-
-					<div class="row no-gutters" style="display:none">
-						<div class="col-12">
-							<div class="hv-navigation__carousel swiper-container">
-								<ol class="swiper-wrapper">
-								</ol>
+						<div class="navbar-dropdown">
+							<a class="navbar-item">
+								Overview
+							</a>
+							<a class="navbar-item is-active">
+								Elements
+							</a>
+							<a class="navbar-item">
+								Components
+							</a>
+							<hr class="navbar-divider">
+							<div class="navbar-item">
+								Version 0.7.5
 							</div>
 						</div>
 					</div>
 
 				</div>
-
-				<!-- Sidebars -->
-				<aside
-					class="hv-sidebar hv-sidebar__push hv-sidebar__left hv-sidebar--closed faster hv-sidebar__navigation">
-					<div class="hv-navigation">
-						<div class="row no-gutters">
-							<div class="col-12">
-								<div class="hv-navigation__items"></div>
-							</div>
-						</div>
-					</div>
-				</aside>
-				<aside
-					class="hv-sidebar hv-sidebar__push hv-sidebar__right hv-sidebar--closed faster hv-sidebar__metadata">
-				</aside>
-				<aside
-					class="hv-sidebar hv-sidebar__overlay hv-sidebar__top hv-sidebar--closed faster hv-overlay__gallery">
-					<div class="row no-gutters align-items-center hv-search">
-						<div class="col-auto">
-							<i class="fas fa-search"></i>
-						</div>
-						<div class="col">
-							<input type="text" class="hv-search__input" placeholder="Search">
-						</div>
-					</div>
-					<div class="hv-navigation">
-						<div class="hv-navigation__items"></div>
-					</div>
-				</aside>
-				<!-- End Sidebars -->
-
 			</div>
 
-		</main>
+		</nav>
 
-	</div>
+		<div class="hv-spinner" style="font-size:4rem"></div>
 
-	<script type="text/javascript">
+		<script type="text/javascript">
 
-		$(document).ready(function () {
+			// $(document).ready(function () {
 
-			$('.ui.dropdown').dropdown({
-				useLabels: false
+			// 	$('.ui.dropdown').dropdown({
+			// 		useLabels: false
+			// 	});
+
+			// 	// using context
+			// 	$('.ui.sidebar')
+			// 		.sidebar({
+			// 			context: $('.hv-content'),
+			// 			dimPage: false,
+			// 			closable: false,
+			// 			onVisible: function () {
+			// 				var contentWidth = $('.hv-content').width();
+			// 				var sidebarWidth = $('.hv-viewport_container').siblings('.sidebar').width();
+			// 				$('.hv-viewport_container').width(contentWidth - sidebarWidth);
+			// 			},
+			// 			onHide: function () {
+			// 				var contentWidth = $('.hv-content').width();
+			// 				$('.hv-viewport_container').width(contentWidth);
+			// 			}
+			// 		})
+			// 		.sidebar('attach events', '.hv-sidebar-toggle');
+			// });
+
+			// $(function () {
+			// 	av = $('#harmonized-viewer').harmonizedViewer({
+			// 		manifest: "https://damsssl.llgc.org.uk/iiif/2.0/4389767/manifest.json",
+			// 	});
+			// });
+
+			$(document).ready(function () {
+				var viewer = new HarmonizedViewer('#harmonized-viewer');
 			});
 
-			// using context
-			$('.ui.sidebar')
-				.sidebar({
-					context: $('.hv-content'),
-					dimPage: false,
-					closable: false,
-					onVisible: function () {
-						var contentWidth = $('.hv-content').width();
-						var sidebarWidth = $('.hv-viewport_container').siblings('.sidebar').width();
-						$('.hv-viewport_container').width(contentWidth - sidebarWidth);
-					},
-					onHide: function () {
-						var contentWidth = $('.hv-content').width();
-						$('.hv-viewport_container').width(contentWidth);
-					}
-				})
-				.sidebar('attach events', '.hv-sidebar-toggle');
-		});
-
-		$(function () {
-			av = $('#harmonized-viewer').harmonizedViewer({
-				manifest: "https://damsssl.llgc.org.uk/iiif/2.0/4389767/manifest.json",
-			});
-		});
-	</script>
+		</script>
 </body>
 
 </html>
