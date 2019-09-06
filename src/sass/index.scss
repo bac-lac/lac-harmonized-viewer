@@ -1,0 +1,41 @@
+@import "_variables";
+@import "_animations";
+
+@import "../../node_modules/bulma/bulma.sass";
+
+.harmonized-viewer {
+  font: 15px Roboto, Arial, Helvetica, sans-serif;
+
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .#{$ns}content,
+  .#{$ns}viewport_container,
+  .#{$ns}viewport {
+    height: 100%;
+  }
+
+  .#{$ns}spinner {
+    @include loader;
+    animation: spinAround 1s ease-in-out infinite;
+    border-width: 4px;
+    border-color: rgba(0, 0, 0, 0.1);
+    border-top-color: rgba(0, 0, 0, 0.4);
+  }
+
+  .#{$ns}placeholder {
+    position: static;
+    overflow: hidden;
+    animation: #{$ns}placeholder 2s linear;
+    animation-iteration-count: infinite;
+    background-image: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.08) 0%,
+      rgba(0, 0, 0, 0.02) 15%,
+      rgba(0, 0, 0, 0.08) 30%
+    );
+    background-size: 1200px 100%;
+    background-color: #fff;
+  }
+}

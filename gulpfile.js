@@ -1,7 +1,11 @@
 const path = require('path');
 const gulp = { src, dest, series, parallel } = require('gulp');
 
-const less = require('gulp-less');
+const sass = require('gulp-sass');
+
+const postcss = require('gulp-postcss');
+const postcssModules = require('postcss-modules');
+
 gulp.concat = require('gulp-concat');
 gulp.uglify = require('gulp-uglify');
 gulp.clean = require('gulp-clean');
@@ -99,16 +103,17 @@ function bundleJS() {
         .pipe(gulp.print());
 };
 
-/**
- * @name compileLess
- * @description Compile LESS source files to unminified CSS stylesheets
- */
-function compileLess() {
+function compileSass() {
     return src([
-        'src/less/**/*.less',
-        '!src/less/_variables.less'
+        'src/sass/**/*.scss',
+        '!src/sass/_variables.scss'
     ])
-        .pipe(less())
+        .pipe(sass().on('error', sass.logError))
+        // .pipe(postcss([
+        //     postcssModules({
+        //         generateScopedName: 'hv-[local]__[hash:base64:5]'
+        //     })
+        // ]))
         .pipe(dest('dist/css'));
 };
 
@@ -132,20 +137,20 @@ function bundleCSS() {
         .pipe(dest('dist/css'));
 };
 
-function copySemantic() {
-    return src([
-        'vendor/semantic/dist/**/*',
-    ])
-        .pipe(gulp.changed('dist/vendor/semantic'))
-        .pipe(dest('dist/vendor/semantic'));
-};
+// function copySemantic() {
+//     return src([
+//         'vendor/semantic/dist/**/*',
+//     ])
+//         .pipe(gulp.changed('dist/vendor/semantic'))
+//         .pipe(dest('dist/vendor/semantic'));
+// };
 
-function watchLess() {
-    gulp.watch('src/**/*.less', compileLess);
+function watchSass() {
+    gulp.watch('src/**/*.scss', buildCSS);
 };
 
 function watchJS() {
-    gulp.watch('src/**/*.js', gulp.series(compileJS));
+    gulp.watch('src/**/*.js', buildJS);
 };
 
 function watchTemplates() {
@@ -155,11 +160,11 @@ function watchTemplates() {
 // Gulp Tasks
 // Define which tasks can run in parallel and which tasks must run one after the other.
 
-const buildCSS = gulp.series(compileLess, minifyCSS, bundleCSS);
-const buildJS = gulp.series(compileJS, compileLocales, compileTemplates, concatJS, minifyJS, bundleJS);
+const buildCSS = gulp.series(compileSass, minifyCSS, bundleCSS);
+const buildJS = gulp.series(compileJS, compileLocales, concatJS, minifyJS, bundleJS);
 
-const build = gulp.series(cleanDist, gulp.parallel(buildCSS, buildJS, copySemantic), cleanTemp);
-const watch = gulp.parallel(watchLess, watchJS, watchTemplates);
+const build = gulp.series(cleanDist, gulp.parallel(buildCSS, buildJS), cleanTemp);
+const watch = gulp.parallel(watchSass, watchJS);
 
 gulp.task('default', build);
 gulp.task('build-css', buildCSS);

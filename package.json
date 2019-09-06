@@ -24,7 +24,8 @@
   },
   "homepage": "https://github.com/bac-lac/lac-harmonized-viewer#readme",
   "dependencies": {
-    "fomantic-ui": "^2.7.8",
+    "bulma": "^0.7.5",
+    "bulma-tooltip": "^2.0.2",
     "get-user-locale": "^1.2.0",
     "handlebars": "^4.1.2",
     "jquery": "^3.4.1",
@@ -48,7 +49,12 @@
     "gulp-postcss": "^8.0.0",
     "gulp-print": "^5.0.2",
     "gulp-rename": "^1.4.0",
+    "gulp-sass": "^4.0.2",
     "gulp-uglify": "^3.0.2",
-    "gulp-wrap": "^0.15.0"
+    "gulp-wrap": "^0.15.0",
+    "node-sass": "^4.12.0",
+    "postcss": "^7.0.18",
+    "postcss-modules": "^1.4.1",
+    "rework-css-prefix": "0.0.1"
   }
 }

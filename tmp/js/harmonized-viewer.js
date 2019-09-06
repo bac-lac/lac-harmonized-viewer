@@ -310,4 +310,3 @@ function HarmonizedViewer(selector) {
     };
 
 }(HarmonizedViewer));
-harmonizedviewer_locales = [{"code":"en","strings":{"name":"English","display_mode_single_page":"Single page","display_mode_dual_page":"Dual page"}},{"code":"fr","strings":{"name":"Français","display_mode_single_page":"Single page","display_mode_dual_page":"Dual page"}}];
