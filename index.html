@@ -7,13 +7,12 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<script type="text/javascript" src="https://use.fontawesome.com/releases/v5.10.2/js/all.js" defer></script>
 
-	<script type="text/javascript" src="/dist/js/harmonized-viewer.js"></script>
+	<script type="text/javascript" src="/dist/harmonized-viewer.bundle.js"></script>
 
-	<link href="/dist/css/index.css" rel="stylesheet" type="text/css">
-	<link href="/dist/css/theme.css" rel="stylesheet" type="text/css">
+	<link href="/dist/index.css" rel="stylesheet" type="text/css">
+	<link href="/dist/theme.css" rel="stylesheet" type="text/css">
 
 	<link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
 
@@ -29,9 +28,9 @@
 
 <body>
 
-	<div id="harmonized-viewer" class="harmonized-viewer" style="display:none">
+	<div id="harmonized-viewer" class="harmonized-viewer">
 
-		<nav class="hv-topbar navbar is-primary" role="navigation" aria-label="dropdown navigation">
+		<!-- <nav class="hv-topbar navbar is-primary" role="navigation" aria-label="dropdown navigation">
 
 			<div class="navbar-brand">
 				<div class="navbar-burger burger">
@@ -89,24 +88,10 @@
 
 					<div class="navbar-item has-dropdown">
 						<a class="navbar-link">
-							Docs
-						</a>
+							
+							Test
 
-						<div class="navbar-dropdown">
-							<a class="navbar-item">
-								Overview
-							</a>
-							<a class="navbar-item is-active">
-								Elements
-							</a>
-							<a class="navbar-item">
-								Components
-							</a>
-							<hr class="navbar-divider">
-							<div class="navbar-item">
-								Version 0.7.5
-							</div>
-						</div>
+						</a>
 					</div>
 
 				</div>
@@ -114,7 +99,9 @@
 
 		</nav>
 
-		<div class="hv-spinner" style="font-size:4rem"></div>
+		<main>
+			<div class="hv-viewport"></div>
+		</main> -->
 
 		<script type="text/javascript">
 
@@ -149,11 +136,10 @@
 			// 	});
 			// });
 
-			$(document).ready(function () {
+			//$(document).ready(function () {
 				var viewer = new HarmonizedViewer('#harmonized-viewer');
-			});
+			//});
 
 		</script>
 </body>
-
 </html>
