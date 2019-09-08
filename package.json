@@ -28,20 +28,20 @@
     "bulma-tooltip": "^2.0.2",
     "get-user-locale": "^1.2.0",
     "handlebars": "^4.1.2",
-    "jquery": "^3.4.1",
     "malihu-custom-scrollbar-plugin": "^3.1.5",
     "manifesto.js": "^3.0.12",
     "nouislider": "^14.0.2",
-    "openseadragon": "^2.4.1",
-    "swiper": "^4.5.0"
+    "openseadragon": "^2.4.1"
   },
   "devDependencies": {
+    "@types/node": "^12.7.4",
     "gulp": "^4.0.2",
     "gulp-bro": "^1.0.3",
     "gulp-changed": "^4.0.1",
     "gulp-clean": "^0.4.0",
     "gulp-clean-css": "^4.2.0",
     "gulp-concat": "^2.6.1",
+    "gulp-declare": "^0.3.0",
     "gulp-handlebars": "^5.0.2",
     "gulp-if": "^3.0.0",
     "gulp-jsoncombine": "^1.0.4",
@@ -50,11 +50,16 @@
     "gulp-print": "^5.0.2",
     "gulp-rename": "^1.4.0",
     "gulp-sass": "^4.0.2",
+    "gulp-typescript": "^5.0.1",
     "gulp-uglify": "^3.0.2",
     "gulp-wrap": "^0.15.0",
     "node-sass": "^4.12.0",
     "postcss": "^7.0.18",
     "postcss-modules": "^1.4.1",
-    "rework-css-prefix": "0.0.1"
+    "rework-css-prefix": "0.0.1",
+    "ts-loader": "^6.0.4",
+    "typescript": "^3.6.2",
+    "webpack": "^4.39.3",
+    "webpack-stream": "^5.2.1"
   }
 }

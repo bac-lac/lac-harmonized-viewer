@@ -5,15 +5,14 @@
     $.Viewer = function (element) {
 
         this.element = element;
-
         this.init();
+
+        console.log($);
     };
 
     $.Viewer.prototype = {
 
         init: function () {
-
-            // Initialize UI dropdowns
 
             var dropdowns = this.element.querySelectorAll(".dropdown:not(.is-hoverable), .navbar .has-dropdown");
 

@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "rootDir": "src",
+        "outDir": "dist",
+        "sourceMap": true,
+        "jsx": "preserve",
+        "lib": ["es5", "es6", "dom"]
+        //"isolatedModules": true,
+        // "experimentalDecorators": true,
+        // "emitDecoratorMetadata": true,
+        // "declaration": false,
+        // "noImplicitAny": false,
+        // "removeComments": true,
+        // "noLib": false,
+        // "preserveConstEnums": true,
+        // "suppressImplicitAnyIndexErrors": true,
+        // "noUnusedParameters": false,
+        // "noUnusedLocals": false,
+    },
+    "include": [
+        "src"
+    ]
+}
