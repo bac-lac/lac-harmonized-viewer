@@ -1,45 +1,41 @@
-import { Navbar } from "./components/navbar/navbar";
-import { Component } from "./base/component";
+import { EventEmitter } from "events";
+import { Component, IComponent } from "./components/base";
 
-import { MDCRipple } from '@material/ripple/index';
+export class Controller extends Component {
 
-import * as Openseadragon from 'openseadragon';
+    element: Element;
+    events: EventEmitter;
 
-export class Viewer extends Component {
-
-    element: HTMLElement;
-
-    openseadragon: any;
-
-    manifestUrl: string;
-    //manifest: Manifesto.Manifest;
-
-    constructor(selector: string, manifestUrl: string) {
-
-        super();
-        this.element = document.querySelector(selector);
-
-        this.manifestUrl = manifestUrl;
-
-        let topbar = new Navbar();
-        this.append(topbar.GetElement());
-
-        this.append(new Openseadragon({
-            id: "osd",
-            prefixUrl: "/openseadragon/images/",
-            tileSources: "/path/to/my/image.dzi"
-        }));
-
-        const ripple = new MDCRipple(document.querySelector('.hv-button'));
+    constructor(element: Element) {
+        super(null);
+        this.element = element;
+        this.events = new EventEmitter();
     }
 
     // async load(): Promise<string> {
     //     return await Manifesto.Utils.loadResource(this.manifestUrl);
     // }
 
+    configure() {
+        document.addEventListener("click", eventArgs => this.events.emit("click", eventArgs));
+    }
+
+    execute() {
+        this.init();
+        this.configure();
+        this.render();
+        return this;
+    }
+
+    protected createComponent(selector: string, callback: (elem: Element) => IComponent) {
+        const instances = this.element.querySelectorAll(selector);
+        return Array.from(instances).map(elem => callback(elem));
+    }
 }
 
-function HarmonizedViewer(selector: string, manifest: string): Viewer {
-    return new Viewer(selector, manifest);
+function HarmonizedViewer(id: string, manifest: string): Controller {
+
+    var element = document.getElementById(id);
+    return new Controller(element).execute();
 }
 (window as any).HarmonizedViewer = HarmonizedViewer;

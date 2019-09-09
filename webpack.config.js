@@ -1,5 +1,6 @@
 const path = require('path');
 const autoprefixer = require('autoprefixer');
+const circularDependency = require('circular-dependency-plugin');
 
 module.exports = {
     entry: ['./src/sass/index.scss', './src/index.ts'],
