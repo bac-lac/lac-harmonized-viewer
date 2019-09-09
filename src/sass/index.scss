@@ -1,32 +1,69 @@
 @import "_variables";
 @import "_animations";
 
-@import "@material/button/mdc-button";
-@import "@material/top-app-bar/mdc-top-app-bar";
-@import "@material/icon-button/mdc-icon-button";
+//$mdc-theme-primary: #232f34;
 
-$mdc-theme-primary: #ff0000;
+@import "@material/ripple/mdc-ripple";
+
+@import "@material/button/mdc-button";
+@import "@material/icon-button/mdc-icon-button";
+@import "@material/layout-grid/mdc-layout-grid";
+@import "@material/top-app-bar/mdc-top-app-bar";
 
 //@import "../../node_modules/material/button/mdc-button.scss";
 // @import "../../node_modules/bulma/bulma.sass";
 
 .harmonized-viewer {
-  font: 15px Roboto, Arial, Helvetica, sans-serif;
-
   height: 100%;
   display: flex;
   flex-direction: column;
+  background-color: #ebeff2;
 
-  .hv-topbar {
-    @extend .mdc-top-app-bar;
-    @include mdc-top-app-bar-fill-color(#68829E);
-  }
-
-  .hv-button {
+  .#{$ns}button {
     @extend .mdc-button;
-    @include mdc-button-core-styles();
+
     @include mdc-button-ink-color(#ff0000);
     @include mdc-button-filled-accessible(#eeeeee);
+  }
+
+  .#{$ns}button-icon {
+    @extend .mdc-icon-button;
+    @include mdc-icon-button-ripple();
+    // &:before,
+    // &:after {
+    //   border-radius: 2px;
+    // }
+  }
+
+  .#{$ns}topbar {
+    @extend .mdc-top-app-bar;
+    @include mdc-top-app-bar-ink-color(#ffffff);
+    @include mdc-top-app-bar-fill-color(#3b444b);
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
+
+    &__row {
+      @extend .mdc-top-app-bar__row;
+    }
+
+    &__section {
+      @extend .mdc-top-app-bar__section;
+    }
+  }
+
+  .#{$ns}content {
+    @extend .mdc-top-app-bar--fixed-adjust;
+  }
+
+  .#{$ns}toolbar {
+    @extend .mdc-layout-grid;
+    padding: 0.4rem 0.6rem;
+    background-color: #ffffff;
+
+    .#{$ns}button {
+      @include mdc-button-ink-color(#7a8289);
+      @include mdc-button-filled-accessible(#ffffff);
+      //@include mdc-icon-button-size(24px, 24px, 8px);
+    }
   }
 
   .#{$ns}content,
