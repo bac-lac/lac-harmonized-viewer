@@ -20,6 +20,7 @@
 	<style type="text/css">
 		html,
 		body {
+			height: 100%;
 			padding: 0;
 			margin: 0;
 			font: 15px 'Roboto', Arial, Helvetica, sans-serif !important;
@@ -32,133 +33,76 @@
 <body>
 
 	<div id="harmonized-viewer" class="harmonized-viewer">
-
-		<header class="mdc-top-app-bar">
-			<div class="mdc-top-app-bar__row">
-				<section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+		<header class="hv-topbar">
+			<div class="hv-topbar__row">
+				<section class="hv-topbar__section mdc-top-app-bar__section--align-start">
 					<button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">menu</button>
 					<span class="mdc-top-app-bar__title">Title</span>
 				</section>
 			</div>
 		</header>
 
-		<button class="hv-button">
-			<span class="mdc-button__label">Button</span>
-		</button>
+		<div class="hv-content">
 
-		<div id="osd"></div>
+			<div class="hv-toolbar">
 
-		<!-- <nav class="hv-topbar navbar is-primary" role="navigation" aria-label="dropdown navigation">
+				<button type="button" class="hv-button">
+					<i class="material-icons">computer</i>
+				</button>
 
-			<div class="navbar-brand">
-				<div class="navbar-burger burger">
-					<span></span>
-					<span></span>
-					<span></span>
-				</div>
+				<!-- <div class="mdc-layout-grid__inner">
+									<div class="mdc-layout-grid__cell">
+										<div class="mdc-layout-grid__inner">
+											<div class="mdc-layout-grid__cell"><span>Second level</span></div>
+											<div class="mdc-layout-grid__cell"><span>Second level</span></div>
+										</div>
+									</div>
+									<div class="mdc-layout-grid__cell">First level</div>
+									<div class="mdc-layout-grid__cell">First level</div>
+								</div> -->
 			</div>
 
-			<div class="navbar-menu">
-				<div class="navbar-start">
+		</div>
+	</div>
 
-				</div>
-				<div class="navbar-end">
+	<script type="text/javascript">
 
-					<div class="navbar-item has-dropdown">
-						<a class="navbar-link">
-							Docs
-						</a>
+		// $(document).ready(function () {
 
-						<div class="navbar-dropdown is-right">
-							<a class="navbar-item">
-								Overview
-							</a>
-							<a class="navbar-item is-active">
-								Elements
-							</a>
-							<a class="navbar-item">
-								Components
-							</a>
-							<hr class="navbar-divider">
-							<div class="navbar-item">
-								Version 0.7.5
-							</div>
-						</div>
-					</div>
+		// 	$('.ui.dropdown').dropdown({
+		// 		useLabels: false
+		// 	});
 
-				</div>
-			</div>
+		// 	// using context
+		// 	$('.ui.sidebar')
+		// 		.sidebar({
+		// 			context: $('.hv-content'),
+		// 			dimPage: false,
+		// 			closable: false,
+		// 			onVisible: function () {
+		// 				var contentWidth = $('.hv-content').width();
+		// 				var sidebarWidth = $('.hv-viewport_container').siblings('.sidebar').width();
+		// 				$('.hv-viewport_container').width(contentWidth - sidebarWidth);
+		// 			},
+		// 			onHide: function () {
+		// 				var contentWidth = $('.hv-content').width();
+		// 				$('.hv-viewport_container').width(contentWidth);
+		// 			}
+		// 		})
+		// 		.sidebar('attach events', '.hv-sidebar-toggle');
+		// });
 
-		</nav>
+		// $(function () {
+		// 	av = $('#harmonized-viewer').harmonizedViewer({
+		// 		manifest: "https://damsssl.llgc.org.uk/iiif/2.0/4389767/manifest.json",
+		// 	});
+		// });
 
-		<nav class="hv-toolbar navbar is-light" role="navigation" aria-label="dropdown navigation">
-
-			<div class="navbar-brand">
-				<div class="navbar-burger burger">
-					<span></span>
-					<span></span>
-					<span></span>
-				</div>
-			</div>
-
-			<div class="navbar-menu">
-				<div class="navbar-start">
-
-					<div class="navbar-item has-dropdown">
-						<a class="navbar-link">
-							
-							Test
-
-						</a>
-					</div>
-
-				</div>
-			</div>
-
-		</nav>
-
-		<main>
-			<div class="hv-viewport"></div>
-		</main> -->
-
-		<script type="text/javascript">
-
-			// $(document).ready(function () {
-
-			// 	$('.ui.dropdown').dropdown({
-			// 		useLabels: false
-			// 	});
-
-			// 	// using context
-			// 	$('.ui.sidebar')
-			// 		.sidebar({
-			// 			context: $('.hv-content'),
-			// 			dimPage: false,
-			// 			closable: false,
-			// 			onVisible: function () {
-			// 				var contentWidth = $('.hv-content').width();
-			// 				var sidebarWidth = $('.hv-viewport_container').siblings('.sidebar').width();
-			// 				$('.hv-viewport_container').width(contentWidth - sidebarWidth);
-			// 			},
-			// 			onHide: function () {
-			// 				var contentWidth = $('.hv-content').width();
-			// 				$('.hv-viewport_container').width(contentWidth);
-			// 			}
-			// 		})
-			// 		.sidebar('attach events', '.hv-sidebar-toggle');
-			// });
-
-			// $(function () {
-			// 	av = $('#harmonized-viewer').harmonizedViewer({
-			// 		manifest: "https://damsssl.llgc.org.uk/iiif/2.0/4389767/manifest.json",
-			// 	});
-			// });
-
-			//$(document).ready(function () {
-			var viewer = new HarmonizedViewer('#harmonized-viewer');
+		//$(document).ready(function () {
+		var viewer = new HarmonizedViewer('harmonized-viewer', 'https://openseadragon.github.io/example-images/pnp/pan/6a32000/6a32400/6a32487.dzi');
 			//});
 
-		</script>
+	</script>
 </body>
 
 </html>
