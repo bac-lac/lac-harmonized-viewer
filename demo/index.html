@@ -7,12 +7,13 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<script type="text/javascript" src="https://use.fontawesome.com/releases/v5.10.2/js/all.js" defer></script>
+	<!-- <script type="text/javascript" src="https://use.fontawesome.com/releases/v5.10.2/js/all.js" defer></script> -->
 
-	<script type="text/javascript" src="/dist/harmonized-viewer.bundle.js"></script>
+	<script src="/bundle.js" async></script>
+	<script type="text/javascript" src="/bundle.js"></script>
 
-	<link href="/dist/index.css" rel="stylesheet" type="text/css">
-	<link href="/dist/theme.css" rel="stylesheet" type="text/css">
+	<link href="/bundle.css" rel="stylesheet" type="text/css">
+	<!-- <link href="/dist/theme.css" rel="stylesheet" type="text/css"> -->
 
 	<link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
 
@@ -24,11 +25,28 @@
 			font: 15px 'Roboto', Arial, Helvetica, sans-serif !important;
 		}
 	</style>
+
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 
 <body>
 
 	<div id="harmonized-viewer" class="harmonized-viewer">
+
+		<header class="mdc-top-app-bar">
+			<div class="mdc-top-app-bar__row">
+				<section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+					<button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">menu</button>
+					<span class="mdc-top-app-bar__title">Title</span>
+				</section>
+			</div>
+		</header>
+
+		<button class="hv-button">
+			<span class="mdc-button__label">Button</span>
+		</button>
+
+		<div id="osd"></div>
 
 		<!-- <nav class="hv-topbar navbar is-primary" role="navigation" aria-label="dropdown navigation">
 
@@ -137,9 +155,10 @@
 			// });
 
 			//$(document).ready(function () {
-				var viewer = new HarmonizedViewer('#harmonized-viewer');
+			var viewer = new HarmonizedViewer('#harmonized-viewer');
 			//});
 
 		</script>
 </body>
+
 </html>

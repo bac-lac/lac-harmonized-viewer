@@ -4,7 +4,9 @@
   "description": "Open-source web-based viewer for archival material. IIIF compliant & based on JQuery and Openseadragon.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "start": "webpack-dev-server"
   },
   "repository": {
     "type": "git",
@@ -30,11 +32,19 @@
     "handlebars": "^4.1.2",
     "malihu-custom-scrollbar-plugin": "^3.1.5",
     "manifesto.js": "^3.0.12",
+    "material-components-web": "^3.1.1",
     "nouislider": "^14.0.2",
     "openseadragon": "^2.4.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
     "@types/node": "^12.7.4",
+    "autoprefixer": "^9.6.1",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^3.2.0",
+    "extract-loader": "^3.1.0",
+    "file-loader": "^4.2.0",
     "gulp": "^4.0.2",
     "gulp-bro": "^1.0.3",
     "gulp-changed": "^4.0.1",
@@ -55,11 +65,15 @@
     "gulp-wrap": "^0.15.0",
     "node-sass": "^4.12.0",
     "postcss": "^7.0.18",
+    "postcss-loader": "^3.0.0",
     "postcss-modules": "^1.4.1",
     "rework-css-prefix": "0.0.1",
+    "sass-loader": "^8.0.0",
     "ts-loader": "^6.0.4",
     "typescript": "^3.6.2",
     "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.8",
+    "webpack-dev-server": "^3.8.0",
     "webpack-stream": "^5.2.1"
   }
 }

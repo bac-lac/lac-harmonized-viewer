@@ -1,6 +1,10 @@
 import { Navbar } from "./components/navbar/navbar";
 import { Component } from "./base/component";
 
+import { MDCRipple } from '@material/ripple/index';
+
+import * as Openseadragon from 'openseadragon';
+
 export class Viewer extends Component {
 
     element: HTMLElement;
@@ -19,6 +23,14 @@ export class Viewer extends Component {
 
         let topbar = new Navbar();
         this.append(topbar.GetElement());
+
+        this.append(new Openseadragon({
+            id: "osd",
+            prefixUrl: "/openseadragon/images/",
+            tileSources: "/path/to/my/image.dzi"
+        }));
+
+        const ripple = new MDCRipple(document.querySelector('.hv-button'));
     }
 
     // async load(): Promise<string> {

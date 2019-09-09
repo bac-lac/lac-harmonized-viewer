@@ -114,7 +114,9 @@ function bundleJS() {
 
 function compileSass() {
     return src([
-        'src/sass/**/*.scss'
+        'src/sass/**/*.scss',
+        'node_modules/@material/button/_mixins.scss',
+        'node_modules/@material/button/mdc-button.scss'
     ])
         .pipe(sass().on('error', sass.logError))
         // .pipe(postcss([
