@@ -18,6 +18,8 @@ $mdc-theme-primary: #ff0000;
   flex-direction: column;
 
   .hv-topbar {
+    @extend .mdc-top-app-bar;
+    @include mdc-top-app-bar-fill-color(#68829E);
   }
 
   .hv-button {
