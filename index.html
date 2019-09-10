@@ -27,17 +27,18 @@
 		}
 	</style>
 
-	<link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.3.95/css/materialdesignicons.min.css">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 </head>
 
 <body>
 
 	<div id="harmonized-viewer" class="harmonized-viewer">
+
 		<header class="hv-topbar">
 			<div class="hv-topbar__row">
 				<section class="hv-topbar__section mdc-top-app-bar__section--align-start">
-					<button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">menu</button>
+					<button class="hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">menu</button>
 					<span class="mdc-top-app-bar__title">Title</span>
 				</section>
 			</div>
@@ -100,8 +101,9 @@
 		// });
 
 		//$(document).ready(function () {
-		var viewer = new HarmonizedViewer('harmonized-viewer', 'https://openseadragon.github.io/example-images/pnp/pan/6a32000/6a32400/6a32487.dzi');
-			//});
+		var url = 'https://openseadragon.github.io/example-images/pnp/pan/6a32000/6a32400/6a32487.dzi';
+		var viewer = new HV.HarmonizedViewer('harmonized-viewer');
+		//});
 
 	</script>
 </body>
