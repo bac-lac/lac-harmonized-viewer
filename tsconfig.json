@@ -11,7 +11,7 @@
         "outDir": "dist",
         "sourceMap": true,
         "jsx": "preserve",
-        "lib": ["es5", "es6", "dom"]
+        "lib": ["es5", "es6", "es2015", "dom"]
         //"isolatedModules": true,
         // "experimentalDecorators": true,
         // "emitDecoratorMetadata": true,

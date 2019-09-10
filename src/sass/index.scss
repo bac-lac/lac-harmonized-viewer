@@ -4,14 +4,12 @@
 //$mdc-theme-primary: #232f34;
 
 @import "@material/ripple/mdc-ripple";
-
 @import "@material/button/mdc-button";
 @import "@material/icon-button/mdc-icon-button";
+@import "@material/drawer/mdc-drawer";
+@import "@material/list/mdc-list";
 @import "@material/layout-grid/mdc-layout-grid";
 @import "@material/top-app-bar/mdc-top-app-bar";
-
-//@import "../../node_modules/material/button/mdc-button.scss";
-// @import "../../node_modules/bulma/bulma.sass";
 
 .harmonized-viewer {
   height: 100%;
@@ -21,13 +19,11 @@
 
   .#{$ns}button {
     @extend .mdc-button;
-
     @include mdc-button-core-styles;
   }
 
   .#{$ns}button-icon {
     @extend .mdc-icon-button;
-
     @include mdc-button-without-ripple;
 
     // &:before,
@@ -57,18 +53,28 @@
 
   .#{$ns}toolbar {
     @extend .mdc-layout-grid;
+    width: 100%;
     padding: 0.4rem 0.6rem;
     background-color: #ffffff;
 
     .#{$ns}button {
       @include mdc-button-ink-color(#7a8289);
       @include mdc-button-filled-accessible(#ffffff);
-      //@include mdc-icon-button-size(24px, 24px, 8px);
+      border-radius: 2px;
     }
   }
 
+  .#{$ns}sidebar {
+    @extend .mdc-drawer;
+  }
+
   .#{$ns}content,
-  .#{$ns}viewport_container,
+  .#{$ns}viewport {
+    display: flex;
+    flex: auto;
+    flex-direction: column;
+  }
+
   .#{$ns}viewport {
     height: 100%;
   }

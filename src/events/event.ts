@@ -1,7 +1,7 @@
 import { Listener } from "@modules/events";
 import { Disposable } from '@modules/disposables';
 
-class TypedEvent<T> {
+export class TypedEvent<T> {
     private listeners: Listener<T>[] = [];
     private listenersOncer: Listener<T>[] = [];
 

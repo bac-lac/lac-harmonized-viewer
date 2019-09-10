@@ -1,36 +1,32 @@
-import { EventEmitter } from "events";
-import { Component } from "./components/base";
-import { Topbar } from "./components/topbar";
-import { MDCRipple } from "@material/ripple";
+import { ComponentFactory } from "./factories/component.factory";
 
 export class HarmonizedViewer {
 
-    element: Element;
-    components: Component[];
+    element: HTMLElement;
+
+    private factory: ComponentFactory;
 
     constructor(id: string) {
-        this.components = [];
         this.element = document.getElementById(id);
 
-        this.initTopbars();
-        this.initRipple();
+        this.factory = new ComponentFactory();
+
+        this.parse(this.element);
+
+        this.factory.components.forEach(component => component.render());
     }
 
-    initTopbars() {
+    parse(element: HTMLElement) {
 
-        let elements = this.element.querySelectorAll(".hv-topbar");
-        
+        if (this.factory.isComponent(element)) {
+            this.factory.create(element);
+        }
+
         Array
-            .from(elements)
-            .forEach(i => {
-                this.components.push(new Topbar(i));
+            .from(element.children)
+            .forEach(child => {
+                this.parse(child as HTMLElement);
             });
-    }
-
-    initRipple() {
-        document
-            .querySelectorAll("button")
-            .forEach(button => new MDCRipple(button));
     }
 }
 
