@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/bac-lac/lac-harmonized-viewer#readme",
   "dependencies": {
+    "@webcomponents/webcomponentsjs": "^2.2.10",
     "bulma": "^0.7.5",
     "bulma-tooltip": "^2.0.2",
     "get-user-locale": "^1.2.0",

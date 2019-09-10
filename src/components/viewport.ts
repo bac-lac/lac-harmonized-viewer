@@ -3,8 +3,8 @@ import { Component } from "./base";
 
 export class Viewport extends Component {
 
-    constructor(parent: Component) {
-        super(parent);
+    constructor(element: Element) {
+        super(element);
     }
 
     render() {

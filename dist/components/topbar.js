@@ -13,15 +13,20 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+var ripple_1 = require("@material/ripple");
 var Topbar = /** @class */ (function (_super) {
     __extends(Topbar, _super);
-    function Topbar() {
-        var _this = this;
-        var element = document.createElement("header");
-        element.className = "hv-topbar";
-        _this = _super.call(this, element) || this;
-        return _this;
+    function Topbar(parent) {
+        return _super.call(this, parent) || this;
     }
+    Topbar.prototype.init = function () {
+        console.log('configure topbar');
+    };
+    Topbar.prototype.configure = function () {
+        console.log('configure topbar');
+        console.log(this.element.querySelectorAll(".hv-button"));
+        this.element.querySelectorAll(".hv-button").forEach(function (button) { return new ripple_1.MDCRipple(button); });
+    };
     return Topbar;
 }(Component));
 exports.Topbar = Topbar;

@@ -13,12 +13,11 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var Openseadragon = require("openseadragon");
-var base_1 = require("./base");
+var Openseadragon = require("@modules/openseadragon");
 var Viewport = /** @class */ (function (_super) {
     __extends(Viewport, _super);
-    function Viewport(controller, element) {
-        return _super.call(this, controller, element) || this;
+    function Viewport(parent) {
+        return _super.call(this, parent) || this;
     }
     Viewport.prototype.render = function () {
         var openseadragon = new Openseadragon({
@@ -27,6 +26,5 @@ var Viewport = /** @class */ (function (_super) {
         });
     };
     return Viewport;
-}(base_1.Component));
-exports.Viewport = Viewport;
+}(Component));
 //# sourceMappingURL=viewport.js.map

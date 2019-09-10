@@ -1,14 +1,17 @@
 import { EventEmitter } from "events";
-import { Component, IComponent } from "./components/base";
+import { Component } from "./components/base";
+import { IRootComponent, RootComponent } from "./components/base/root-component";
 
-export class Controller extends Component {
+import("./components/topbar");
 
-    element: Element;
+export class HarmonizedViewer extends RootComponent implements IRootComponent {
+
     events: EventEmitter;
 
-    constructor(element: Element) {
-        super(null);
-        this.element = element;
+    constructor(id: string) {
+        let element = document.getElementById(id);
+        super(element);
+        element["hv-instance"] = this;
         this.events = new EventEmitter();
     }
 
@@ -16,42 +19,18 @@ export class Controller extends Component {
     //     return await Manifesto.Utils.loadResource(this.manifestUrl);
     // }
 
-    configure() {
-        document.addEventListener("click", eventArgs => this.events.emit("click", eventArgs));
-    }
+    //configure() {
+        //document.addEventListener("click", args => this.events.emit("click", args));
+    //}
 
-    execute() {
-        //this.children = [];
-        let items = Array.from(this.element.children).filter(i => i.matches(".hv-topbar"));
-        items.forEach(item => {
-            //let instance = new Store["topbar"]();
-            //console.log(instance);
-            //let test = new Topbar();
-            //console.log(component);
-            //this.children.push(component);
-        });
-        //console.log(.map(i => new Topbar(this)));
-        // if (this.element != null && this.element.children != null) {
-        //     this.children = Array.from(this.element.children)
-        //         .filter(i => i.matches(".hv-topbar"))
-        //         .map(i => { console.log(this); return new Topbar(this).bind(i); });
-        // }
-        
-        this.init();
-        this.configure();
-        this.render();
-        return this;
-    }
-
-    protected createComponent(selector: string, callback: (elem: Element) => IComponent) {
-        const instances = this.element.querySelectorAll(selector);
-        return Array.from(instances).map(elem => callback(elem));
-    }
+    // protected createComponent(selector: string, callback: (elem: Element) => IComponent) {
+    //     const instances = this.element.querySelectorAll(selector);
+    //     return Array.from(instances).map(elem => callback(elem));
+    // }
 }
 
-function HarmonizedViewer(id: string, manifest: string): Controller {
-
-    var element = document.getElementById(id);
-    return new Controller(element).execute();
+export function harmonizedViewer(id: string): HarmonizedViewer {
+    //var element = document.getElementById(id);
+    return new HarmonizedViewer(id);
 }
-(window as any).HarmonizedViewer = HarmonizedViewer;
+//(window as any).HarmonizedViewer = HarmonizedViewer;

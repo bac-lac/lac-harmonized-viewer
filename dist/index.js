@@ -1,36 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var topbar_1 = require("./components/topbar");
-var Controller = /** @class */ (function () {
-    function Controller(id, manifestUrl, theme) {
-        if (theme === void 0) { theme = "default"; }
-        this.enableRipple = true;
+var events_1 = require("events");
+var HarmonizedViewer = /** @class */ (function () {
+    function HarmonizedViewer(id) {
         this.element = document.getElementById(id);
-        //this.configure();
-        this.render();
+        this.events = new events_1.EventEmitter();
+        window.customElements.define("car-component", Car);
     }
-    // async load(): Promise<string> {
-    //     return await Manifesto.Utils.loadResource(this.manifestUrl);
-    // }
-    Controller.prototype.configure = function () {
-    };
-    Controller.prototype.render = function () {
-        var _this = this;
-        if (this.enableRipple) {
-            // this.element.querySelectorAll(".hv-button")
-            //     .forEach(button => new MDCRipple(button));
-        }
-        this.createComponent(".hv-topbar", function (elem) { return new topbar_1.Topbar(_this, elem); });
-    };
-    Controller.prototype.createComponent = function (selector, callback) {
-        var instances = this.element.querySelectorAll(selector);
-        Array.from(instances).map(function (elem) { return callback(elem); });
-    };
-    return Controller;
+    return HarmonizedViewer;
 }());
-exports.Controller = Controller;
-function HarmonizedViewer(selector, manifest) {
-    return new Controller(selector, manifest);
+exports.HarmonizedViewer = HarmonizedViewer;
+function harmonizedViewer(id) {
+    //var element = document.getElementById(id);
+    return new HarmonizedViewer(id);
 }
-window.HarmonizedViewer = HarmonizedViewer;
+exports.harmonizedViewer = harmonizedViewer;
+//(window as any).HarmonizedViewer = HarmonizedViewer;
 //# sourceMappingURL=index.js.map

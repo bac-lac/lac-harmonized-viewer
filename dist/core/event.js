@@ -35,5 +35,4 @@ var TypedEvent = /** @class */ (function () {
     }
     return TypedEvent;
 }());
-exports.TypedEvent = TypedEvent;
 //# sourceMappingURL=event.js.map

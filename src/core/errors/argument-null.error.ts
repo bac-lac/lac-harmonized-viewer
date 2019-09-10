@@ -1,4 +1,4 @@
-class ArgumentNullError extends InvalidArgumentError {
+class ArgumentNullError extends ArgumentInvalidError {
     constructor(argument?: string) {
         super(argument);
         // see: typescriptlang.org/docs/handbook/release-notes/typescript-2-2.html
