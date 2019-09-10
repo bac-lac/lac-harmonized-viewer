@@ -1,1 +1,0 @@
-{"version":3,"file":"viewport.js","sourceRoot":"","sources":["../../src/components/viewport.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;AAAA,sDAAwD;AAExD;IAAuB,4BAAS;IAE5B,kBAAY,MAAiB;eACzB,kBAAM,MAAM,CAAC;IACjB,CAAC;IAED,yBAAM,GAAN;QACI,IAAI,aAAa,GAAG,IAAI,aAAa,CAAC;YAClC,EAAE,EAAE,KAAK;YACT,WAAW,EAAE,oFAAoF;SACpG,CAAC,CAAC;IACP,CAAC;IAEL,eAAC;AAAD,CAAC,AAbD,CAAuB,SAAS,GAa/B"}

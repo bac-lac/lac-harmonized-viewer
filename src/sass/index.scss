@@ -22,13 +22,14 @@
   .#{$ns}button {
     @extend .mdc-button;
 
-    @include mdc-button-ink-color(#ff0000);
-    @include mdc-button-filled-accessible(#eeeeee);
+    @include mdc-button-core-styles;
   }
 
   .#{$ns}button-icon {
     @extend .mdc-icon-button;
-    @include mdc-icon-button-ripple();
+
+    @include mdc-button-without-ripple;
+
     // &:before,
     // &:after {
     //   border-radius: 2px;

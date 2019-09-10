@@ -5,7 +5,7 @@ module.exports = {
     entry: ['./src/sass/index.scss', './src/index.ts'],
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'bundle.js',
+        filename: 'harmonized-viewer.bundle.js',
         library: 'HV'
     },
     resolve: {
@@ -20,7 +20,7 @@ module.exports = {
                     {
                         loader: 'file-loader',
                         options: {
-                            name: 'bundle.css',
+                            name: 'harmonized-viewer.bundle.css',
                         },
                     },
                     { loader: 'extract-loader' },

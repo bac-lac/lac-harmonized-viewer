@@ -11,11 +11,11 @@
         "outDir": "dist",
         "sourceMap": true,
         "jsx": "preserve",
-        "lib": ["es5", "es6", "dom"],
+        "lib": ["es5", "es6", "dom"]
         //"isolatedModules": true,
         // "experimentalDecorators": true,
         // "emitDecoratorMetadata": true,
-        "declaration": true
+        //"declaration": false
         // "noImplicitAny": false,
         // "removeComments": true,
         // "noLib": false,

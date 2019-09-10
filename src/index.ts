@@ -1,36 +1,39 @@
 import { EventEmitter } from "events";
 import { Component } from "./components/base";
-import { IRootComponent, RootComponent } from "./components/base/root-component";
+import { Topbar } from "./components/topbar";
+import { MDCRipple } from "@material/ripple";
 
-import("./components/topbar");
+export class HarmonizedViewer {
 
-export class HarmonizedViewer extends RootComponent implements IRootComponent {
-
-    events: EventEmitter;
+    element: Element;
+    components: Component[];
 
     constructor(id: string) {
-        let element = document.getElementById(id);
-        super(element);
-        element["hv-instance"] = this;
-        this.events = new EventEmitter();
+        this.components = [];
+        this.element = document.getElementById(id);
+
+        this.initTopbars();
+        this.initRipple();
     }
 
-    // async load(): Promise<string> {
-    //     return await Manifesto.Utils.loadResource(this.manifestUrl);
-    // }
+    initTopbars() {
 
-    //configure() {
-        //document.addEventListener("click", args => this.events.emit("click", args));
-    //}
+        let elements = this.element.querySelectorAll(".hv-topbar");
+        
+        Array
+            .from(elements)
+            .forEach(i => {
+                this.components.push(new Topbar(i));
+            });
+    }
 
-    // protected createComponent(selector: string, callback: (elem: Element) => IComponent) {
-    //     const instances = this.element.querySelectorAll(selector);
-    //     return Array.from(instances).map(elem => callback(elem));
-    // }
+    initRipple() {
+        document
+            .querySelectorAll("button")
+            .forEach(button => new MDCRipple(button));
+    }
 }
 
 export function harmonizedViewer(id: string): HarmonizedViewer {
-    //var element = document.getElementById(id);
     return new HarmonizedViewer(id);
 }
-//(window as any).HarmonizedViewer = HarmonizedViewer;

@@ -9,11 +9,13 @@
 
 	<!-- <script type="text/javascript" src="https://use.fontawesome.com/releases/v5.10.2/js/all.js" defer></script> -->
 
-	<script src="/bundle.js" async></script>
-	<script type="text/javascript" src="/bundle.js"></script>
+	<script src="/harmonized-viewer.bundle.js" async></script>
 
-	<link href="/bundle.css" rel="stylesheet" type="text/css">
+	<link href="/harmonized-viewer.bundle.css" .css" rel="stylesheet" type="text/css">
 	<!-- <link href="/dist/theme.css" rel="stylesheet" type="text/css"> -->
+
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 
 	<link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
 
@@ -38,7 +40,8 @@
 		<header class="hv-topbar">
 			<div class="hv-topbar__row">
 				<section class="hv-topbar__section mdc-top-app-bar__section--align-start">
-					<button class="hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">menu</button>
+					<button
+						class="hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">menu</button>
 					<span class="mdc-top-app-bar__title">Title</span>
 				</section>
 			</div>
@@ -48,7 +51,7 @@
 
 			<div class="hv-toolbar">
 
-				<button type="button" class="hv-button">
+				<button id="test" type="button" class="hv-button">
 					<i class="material-icons">computer</i>
 				</button>
 
@@ -100,10 +103,10 @@
 		// 	});
 		// });
 
-		//$(document).ready(function () {
-		var url = 'https://openseadragon.github.io/example-images/pnp/pan/6a32000/6a32400/6a32487.dzi';
-		var viewer = new HV.HarmonizedViewer('harmonized-viewer');
-		//});
+		$(document).ready(function () {
+			var url = 'https://openseadragon.github.io/example-images/pnp/pan/6a32000/6a32400/6a32487.dzi';
+			var viewer = HV.harmonizedViewer('harmonized-viewer');
+		});
 
 	</script>
 </body>
