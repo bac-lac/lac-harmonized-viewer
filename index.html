@@ -37,25 +37,45 @@
 
 	<div id="harmonized-viewer" class="harmonized-viewer">
 
-		<header class="hv-topbar">
-			<div class="hv-topbar__row">
-				<section class="hv-topbar__section mdc-top-app-bar__section--align-start">
-					<button
-						class="hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">menu</button>
-					<span class="mdc-top-app-bar__title">Title</span>
-				</section>
+		<aside class="mdc-drawer mdc-drawer--dismissible">
+			<div class="mdc-drawer__content">
+				<div class="mdc-list">
+					<a class="mdc-list-item mdc-list-item--activated" href="#" aria-current="page">
+						<i class="material-icons mdc-list-item__graphic" aria-hidden="true">inbox</i>
+						<span class="mdc-list-item__text">Inbox</span>
+					</a>
+					<a class="mdc-list-item" href="#">
+						<i class="material-icons mdc-list-item__graphic" aria-hidden="true">send</i>
+						<span class="mdc-list-item__text">Outgoing</span>
+					</a>
+					<a class="mdc-list-item" href="#">
+						<i class="material-icons mdc-list-item__graphic" aria-hidden="true">drafts</i>
+						<span class="mdc-list-item__text">Drafts</span>
+					</a>
+				</div>
 			</div>
-		</header>
+		</aside>
 
-		<div class="hv-content">
+		<div class="mdc-drawer-app-content">
+			<header class="hv-topbar" id="app-bar">
+				<div class="hv-topbar__row">
+					<section class="hv-topbar__section mdc-top-app-bar__section--align-start">
+						<button
+							class="hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">menu</button>
+						<span class="mdc-top-app-bar__title">Title</span>
+					</section>
+				</div>
+			</header>
 
-			<div class="hv-toolbar">
+			<main class="hv-content main-content" id="main-content">
 
-				<button id="test" type="button" class="hv-button">
-					<i class="material-icons">computer</i>
-				</button>
+				<div class="hv-toolbar">
 
-				<!-- <div class="mdc-layout-grid__inner">
+					<button id="test" type="button" class="hv-button">
+						<i class="material-icons">computer</i>
+					</button>
+
+					<!-- <div class="mdc-layout-grid__inner">
 									<div class="mdc-layout-grid__cell">
 										<div class="mdc-layout-grid__inner">
 											<div class="mdc-layout-grid__cell"><span>Second level</span></div>
@@ -65,8 +85,11 @@
 									<div class="mdc-layout-grid__cell">First level</div>
 									<div class="mdc-layout-grid__cell">First level</div>
 								</div> -->
-			</div>
+				</div>
 
+				<div id="osd" class="hv-viewport"></div>
+
+			</main>
 		</div>
 	</div>
 
