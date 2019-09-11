@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var topbar_component_1 = require("../components/topbar.component");
 var viewport_component_1 = require("../components/viewport.component");
+var drawer_component_1 = require("../components/drawer.component");
 var ComponentFactory = /** @class */ (function () {
     function ComponentFactory() {
         this.components = [];
@@ -11,6 +12,9 @@ var ComponentFactory = /** @class */ (function () {
     };
     ComponentFactory.prototype.createViewport = function (element) {
         return new viewport_component_1.ViewportComponent(element);
+    };
+    ComponentFactory.prototype.createSidebar = function (element) {
+        return new drawer_component_1.DrawerComponent(element);
     };
     ComponentFactory.prototype.create = function (element) {
         var component = this.get(element);
@@ -38,6 +42,9 @@ var ComponentFactory = /** @class */ (function () {
         }
         else if (element.classList.contains('hv-viewport')) {
             component = this.createViewport(element);
+        }
+        else if (element.classList.contains('mdc-drawer')) {
+            component = this.createSidebar(element);
         }
         if (component) {
             return component;

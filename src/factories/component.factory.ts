@@ -1,7 +1,7 @@
 import { IComponent } from "../components/base.component";
 import { TopbarComponent } from "../components/topbar.component";
 import { ViewportComponent } from "../components/viewport.component";
-import { SidebarComponent } from "../components/sidebar.component";
+import { DrawerComponent } from "../components/drawer.component";
 
 export class ComponentFactory {
 
@@ -20,7 +20,7 @@ export class ComponentFactory {
     }
 
     createSidebar(element: HTMLElement): IComponent {
-        return new SidebarComponent(element);
+        return new DrawerComponent(element);
     }
 
     create(element: HTMLElement): IComponent {

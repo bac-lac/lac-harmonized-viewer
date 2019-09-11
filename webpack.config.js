@@ -48,6 +48,7 @@ module.exports = {
             },
             {
                 test: /\.js$/,
+                include: [path.resolve(__dirname, 'src'), path.resolve(__dirname, 'node_modules')],
                 loader: 'babel-loader',
                 query: {
                     presets: ['@babel/preset-env'],

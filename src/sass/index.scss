@@ -1,42 +1,39 @@
 @import "_variables";
 @import "_animations";
 
-//$mdc-theme-primary: #232f34;
-
-@import "@material/ripple/mdc-ripple";
-@import "@material/button/mdc-button";
-@import "@material/icon-button/mdc-icon-button";
-@import "@material/drawer/mdc-drawer";
-@import "@material/list/mdc-list";
-@import "@material/layout-grid/mdc-layout-grid";
-@import "@material/top-app-bar/mdc-top-app-bar";
+$mdc-theme-primary: #183c9c;
 
 .harmonized-viewer {
+
+  @import "@material/ripple/mdc-ripple";
+  @import "@material/button/mdc-button";
+  @import "@material/icon-button/mdc-icon-button";
+  @import "@material/drawer/mdc-drawer";
+  @import "@material/list/mdc-list";
+  @import "@material/layout-grid/mdc-layout-grid";
+  @import "@material/top-app-bar/mdc-top-app-bar";
+
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: #ebeff2;
+  background-color:hsl(218, 7%, 94%);
 
-  .#{$ns}button {
-    @extend .mdc-button;
-    @include mdc-button-core-styles;
-  }
+  // .#{$ns}button {
+  //   @extend .mdc-button;
+  //   @include mdc-button-core-styles;
+  // }
 
-  .#{$ns}button-icon {
-    @extend .mdc-icon-button;
-    @include mdc-button-without-ripple;
-
-    // &:before,
-    // &:after {
-    //   border-radius: 2px;
-    // }
-  }
+  // .#{$ns}button-icon {
+  //   @extend .mdc-icon-button;
+  //   @include mdc-button-without-ripple;
+  // }
 
   .#{$ns}topbar {
     @extend .mdc-top-app-bar;
     @include mdc-top-app-bar-ink-color(#ffffff);
-    @include mdc-top-app-bar-fill-color(#3b444b);
+    @include mdc-top-app-bar-fill-color(#2e3131);
     box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
+    z-index: 99999;
 
     &__row {
       @extend .mdc-top-app-bar__row;
@@ -47,29 +44,51 @@
     }
   }
 
-  .#{$ns}content {
-    @extend .mdc-top-app-bar--fixed-adjust;
-  }
-
   .#{$ns}toolbar {
     @extend .mdc-layout-grid;
     width: 100%;
-    padding: 0.4rem 0.6rem;
+    padding: 0.6rem;
+    margin-top: 0.1rem;
     background-color: #ffffff;
 
-    .#{$ns}button {
-      @include mdc-button-ink-color(#7a8289);
-      @include mdc-button-filled-accessible(#ffffff);
-      border-radius: 2px;
+    .mdc-button {
+      @include mdc-button-horizontal-padding(0.8rem);
+      @include mdc-button-icon-color(#D8DEE9);
+      @include mdc-button-ink-color(#777);
+      @include mdc-button-shape-radius(2px);
+      @include mdc-ripple-surface();
+      @include mdc-ripple-radius-bounded();
+      //@include mdc-states();
+      @include mdc-states(#446cb3, false);
+
+      height: 36px;
+      padding: 0 0.8rem;
+
+      .mdc-button__icon {
+        width: 22px;
+        height: 22px;
+        font-size: 22px;
+      }
+
+      .mdc-button__label {
+        font-size: 16px;
+        letter-spacing: 0;
+        text-transform: none;
+      }
     }
   }
 
-  .#{$ns}sidebar {
-    @extend .mdc-drawer;
+  .mdc-drawer {
+    @include mdc-drawer-width(360px);
+    @include mdc-drawer-z-index(9999);
+
+    & + .mdc-drawer-app-content {
+      height: 100%;
+    }
   }
 
-  .#{$ns}content,
-  .#{$ns}viewport {
+  .#{$ns}content {
+    height: 100%;
     display: flex;
     flex: auto;
     flex-direction: column;
@@ -89,10 +108,14 @@
   .#{$ns}placeholder {
     position: static;
     overflow: hidden;
-    animation: #{$ns}placeholder 2s linear;
+    animation: #{$ns}placeholder 2s ease;
     animation-iteration-count: infinite;
-    background-image: linear-gradient(to right, #f5f5f5, rgba(0, 0, 0, 0.08) 15%, #f5f5f5);
+    background-image: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0.02) 15%,
+      rgba(255, 255, 255, 0.1)
+    );
     background-size: 1200px 100%;
-    background-color: #fff;
   }
 }

@@ -37,7 +37,17 @@
 
 	<div id="harmonized-viewer" class="harmonized-viewer">
 
-		<aside class="mdc-drawer mdc-drawer--dismissible">
+		<header class="hv-topbar" id="app-bar">
+			<div class="hv-topbar__row">
+				<section class="hv-topbar__section mdc-top-app-bar__section--align-start">
+					<button
+						class="hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">menu</button>
+					<span class="mdc-top-app-bar__title hv-placeholder"></span>
+				</section>
+			</div>
+		</header>
+
+		<aside class="mdc-drawer mdc-drawer--dismissible mdc-top-app-bar--fixed-adjust">
 			<div class="mdc-drawer__content">
 				<div class="mdc-list">
 					<a class="mdc-list-item mdc-list-item--activated" href="#" aria-current="page">
@@ -56,23 +66,23 @@
 			</div>
 		</aside>
 
-		<div class="mdc-drawer-app-content">
-			<header class="hv-topbar" id="app-bar">
-				<div class="hv-topbar__row">
-					<section class="hv-topbar__section mdc-top-app-bar__section--align-start">
-						<button
-							class="hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">menu</button>
-						<span class="mdc-top-app-bar__title">Title</span>
-					</section>
-				</div>
-			</header>
+		<div class="mdc-drawer-app-content mdc-top-app-bar--fixed-adjust">
 
 			<main class="hv-content main-content" id="main-content">
-
 				<div class="hv-toolbar">
 
-					<button id="test" type="button" class="hv-button">
-						<i class="material-icons">computer</i>
+					<button type="button" class="mdc-button">
+						<i class="material-icons mdc-button__icon" aria-hidden="true">desktop_windows</i>
+						<span class="mdc-button__label">
+							Single Page
+						</span>
+					</button>
+
+					<button type="button" class="mdc-button">
+						<i class="material-icons mdc-button__icon" aria-hidden="true">cloud_download</i>
+						<span class="mdc-button__label">
+							Download
+						</span>
 					</button>
 
 					<!-- <div class="mdc-layout-grid__inner">
@@ -86,10 +96,9 @@
 									<div class="mdc-layout-grid__cell">First level</div>
 								</div> -->
 				</div>
-
-				<div id="osd" class="hv-viewport"></div>
-
+				<div id="osd" class="hv-viewport" style="height:100%"></div>
 			</main>
+
 		</div>
 	</div>
 

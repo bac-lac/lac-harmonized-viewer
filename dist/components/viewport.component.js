@@ -13,7 +13,8 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var openseadragon = require('openseadragon');
+var openseadragon = require('openseadragon/build/openseadragon');
+//import { Openseadragon } from '@modules/openseadragon/build/openseadragon';
 var base_component_1 = require("./base.component");
 var ViewportComponent = /** @class */ (function (_super) {
     __extends(ViewportComponent, _super);

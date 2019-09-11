@@ -26,31 +26,34 @@ export abstract class Component implements IComponent {
     }
 
     render() {
+        Array.from(document.querySelectorAll(".mdc-button")).forEach(elem => {
+            console.log(elem);
+            MDCRipple.attachTo(elem);
+        });
     }
 
-    enableRipple() {
-        if (this.rippleState) {
-            this.rippleState.activate();
-        }
-        else {
-            if (this.element.matches(".hv-button")) {
-                this.rippleState = new MDCRipple(this.element);
-            }
-            this.rippleState.activate();
-        }
-    }
+    // enableRipple() {
+    //     if (this.rippleState) {
+    //         this.rippleState.activate();
+    //     }
+    //     else {
+    //         Array.from(document.querySelectorAll(".mdc-button")).forEach(elem => {
+    //             console.log(elem);
+    //             const ripple = new MDCRipple(elem);
+    //             ripple.activate();
+    //         });
+    //     }
+    // }
 
-    disableRipple() {
-        if (this.rippleState) {
-            this.rippleState.deactivate();
-        }
-        else {
-            if (this.element.matches(".hv-button")) {
-                this.rippleState = new MDCRipple(this.element);
-            }
-            this.rippleState.deactivate();
-        }
-    }
+    // disableRipple() {
+    //     if (this.rippleState) {
+    //         this.rippleState.deactivate();
+    //     }
+    //     else {
+    //         this.rippleState = new MDCRipple(this.element);
+    //         this.rippleState.deactivate();
+    //     }
+    // }
 
     protected generateId(): string {
         let id = null;

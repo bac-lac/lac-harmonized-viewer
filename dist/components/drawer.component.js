@@ -14,26 +14,28 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var base_component_1 = require("./base.component");
+var drawer_1 = require("@material/drawer");
 var list_event_1 = require("../events/list.event");
-var TopbarComponent = /** @class */ (function (_super) {
-    __extends(TopbarComponent, _super);
-    function TopbarComponent(element) {
+var DrawerComponent = /** @class */ (function (_super) {
+    __extends(DrawerComponent, _super);
+    function DrawerComponent(element) {
         var _this = _super.call(this, element) || this;
-        _this.text = "OK";
+        _this.drawer = new drawer_1.MDCDrawer(element);
         return _this;
     }
-    TopbarComponent.prototype.bindEvents = function () {
-        this.element.querySelector('.mdc-top-app-bar__navigation-icon').addEventListener('click', function () {
-            list_event_1.events.onClick.emit(new list_event_1.ClickEventArgs());
+    DrawerComponent.prototype.bindEvents = function () {
+        var _this = this;
+        list_event_1.events.onClick.on(function () {
+            var foundation = _this.drawer.getDefaultFoundation();
+            if (foundation.isOpen() || foundation.isOpening()) {
+                foundation.close();
+            }
+            else {
+                foundation.open();
+            }
         });
     };
-    TopbarComponent.prototype.click = function () {
-        console.log('workeroni');
-    };
-    TopbarComponent.prototype.render = function () {
-        this.element.querySelector(".mdc-top-app-bar__title").textContent = this.text;
-    };
-    return TopbarComponent;
+    return DrawerComponent;
 }(base_component_1.Component));
-exports.TopbarComponent = TopbarComponent;
-//# sourceMappingURL=topbar.component.js.map
+exports.DrawerComponent = DrawerComponent;
+//# sourceMappingURL=drawer.component.js.map
