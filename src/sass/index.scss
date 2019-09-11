@@ -84,7 +84,9 @@ $mdc-theme-primary: #5e81ac;
     background-color: #d8dee9;
 
     & + .mdc-drawer-app-content {
-      height: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
 
     &__content {
