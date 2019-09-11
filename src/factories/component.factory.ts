@@ -2,6 +2,7 @@ import { IComponent } from "../components/base.component";
 import { TopbarComponent } from "../components/topbar.component";
 import { ViewportComponent } from "../components/viewport.component";
 import { DrawerComponent } from "../components/drawer.component";
+import { ImageListComponent } from "../components/imagelist.component";
 
 export class ComponentFactory {
 
@@ -19,8 +20,12 @@ export class ComponentFactory {
         return new ViewportComponent(element);
     }
 
-    createSidebar(element: HTMLElement): IComponent {
+    createDrawer(element: HTMLElement): IComponent {
         return new DrawerComponent(element);
+    }
+
+    createImageList(element: HTMLElement): IComponent {
+        return new ImageListComponent(element);
     }
 
     create(element: HTMLElement): IComponent {
@@ -56,7 +61,7 @@ export class ComponentFactory {
             component = this.createViewport(element);
         }
         else if(element.classList.contains('mdc-drawer')) {
-            component = this.createSidebar(element);
+            component = this.createDrawer(element);
         }
 
         if(component) {

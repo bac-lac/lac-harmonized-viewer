@@ -37,7 +37,7 @@
 
 	<div id="harmonized-viewer" class="harmonized-viewer">
 
-		<header class="hv-topbar" id="app-bar">
+		<header class="hv-topbar mdc-top-app-bar" id="app-bar">
 			<div class="hv-topbar__row">
 				<section class="hv-topbar__section mdc-top-app-bar__section--align-start">
 					<button
@@ -49,57 +49,148 @@
 
 		<aside class="mdc-drawer mdc-drawer--dismissible mdc-top-app-bar--fixed-adjust">
 			<div class="mdc-drawer__content">
-				<div class="mdc-list">
-					<a class="mdc-list-item mdc-list-item--activated" href="#" aria-current="page">
-						<i class="material-icons mdc-list-item__graphic" aria-hidden="true">inbox</i>
-						<span class="mdc-list-item__text">Inbox</span>
-					</a>
-					<a class="mdc-list-item" href="#">
-						<i class="material-icons mdc-list-item__graphic" aria-hidden="true">send</i>
-						<span class="mdc-list-item__text">Outgoing</span>
-					</a>
-					<a class="mdc-list-item" href="#">
-						<i class="material-icons mdc-list-item__graphic" aria-hidden="true">drafts</i>
-						<span class="mdc-list-item__text">Drafts</span>
-					</a>
-				</div>
+
+				<ul class="mdc-image-list hv-image-list">
+					<li class="mdc-image-list__item">
+						<a href="#" class="mdc-image-list__image-aspect-container"><img class="mdc-image-list__image"
+								src="https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/1.jpg"
+								alt="Text label">
+							</a>
+					</li>
+					<li class="mdc-image-list__item">
+						<div class="mdc-image-list__image-aspect-container"><img class="mdc-image-list__image"
+								src="https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/2.jpg"
+								alt="Text label"></div>
+					</li>
+					<li class="mdc-image-list__item">
+						<div class="mdc-image-list__image-aspect-container"><img class="mdc-image-list__image"
+								src="https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/3.jpg"
+								alt="Text label"></div>
+						<div class="mdc-image-list__supporting"><span class="mdc-image-list__label">Text label</span>
+						</div>
+					</li>
+					<li class="mdc-image-list__item">
+						<div class="mdc-image-list__image-aspect-container"><img class="mdc-image-list__image"
+								src="https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/4.jpg"
+								alt="Text label"></div>
+						<div class="mdc-image-list__supporting"><span class="mdc-image-list__label">Text label</span>
+						</div>
+					</li>
+					<li class="mdc-image-list__item">
+						<div class="mdc-image-list__image-aspect-container"><img class="mdc-image-list__image"
+								src="https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/5.jpg"
+								alt="Text label"></div>
+						<div class="mdc-image-list__supporting"><span class="mdc-image-list__label">Text label</span>
+						</div>
+					</li>
+					<li class="mdc-image-list__item">
+						<div class="mdc-image-list__image-aspect-container"><img class="mdc-image-list__image"
+								src="https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/6.jpg"
+								alt="Text label"></div>
+						<div class="mdc-image-list__supporting"><span class="mdc-image-list__label">Text label</span>
+						</div>
+					</li>
+					<li class="mdc-image-list__item">
+						<div class="mdc-image-list__image-aspect-container"><img class="mdc-image-list__image"
+								src="https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/7.jpg"
+								alt="Text label"></div>
+						<div class="mdc-image-list__supporting"><span class="mdc-image-list__label">Text label</span>
+						</div>
+					</li>
+					<li class="mdc-image-list__item">
+						<div class="mdc-image-list__image-aspect-container"><img class="mdc-image-list__image"
+								src="https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/8.jpg"
+								alt="Text label"></div>
+						<div class="mdc-image-list__supporting"><span class="mdc-image-list__label">Text label</span>
+						</div>
+					</li>
+					<li class="mdc-image-list__item">
+						<div class="mdc-image-list__image-aspect-container"><img class="mdc-image-list__image"
+								src="https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/9.jpg"
+								alt="Text label"></div>
+						<div class="mdc-image-list__supporting"><span class="mdc-image-list__label">Text label</span>
+						</div>
+					</li>
+					<li class="mdc-image-list__item">
+						<div class="mdc-image-list__image-aspect-container"><img class="mdc-image-list__image"
+								src="https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/10.jpg"
+								alt="Text label"></div>
+						<div class="mdc-image-list__supporting"><span class="mdc-image-list__label">Text label</span>
+						</div>
+					</li>
+					<li class="mdc-image-list__item">
+						<div class="mdc-image-list__image-aspect-container"><img class="mdc-image-list__image"
+								src="https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/11.jpg"
+								alt="Text label"></div>
+						<div class="mdc-image-list__supporting"><span class="mdc-image-list__label">Text label</span>
+						</div>
+					</li>
+					<li class="mdc-image-list__item">
+						<div class="mdc-image-list__image-aspect-container"><img class="mdc-image-list__image"
+								src="https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/12.jpg"
+								alt="Text label"></div>
+						<div class="mdc-image-list__supporting"><span class="mdc-image-list__label">Text label</span>
+						</div>
+					</li>
+					<li class="mdc-image-list__item">
+						<div class="mdc-image-list__image-aspect-container"><img class="mdc-image-list__image"
+								src="https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/13.jpg"
+								alt="Text label"></div>
+						<div class="mdc-image-list__supporting"><span class="mdc-image-list__label">Text label</span>
+						</div>
+					</li>
+					<li class="mdc-image-list__item">
+						<div class="mdc-image-list__image-aspect-container"><img class="mdc-image-list__image"
+								src="https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/14.jpg"
+								alt="Text label"></div>
+						<div class="mdc-image-list__supporting"><span class="mdc-image-list__label">Text label</span>
+						</div>
+					</li>
+					<li class="mdc-image-list__item">
+						<div class="mdc-image-list__image-aspect-container"><img class="mdc-image-list__image"
+								src="https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/15.jpg"
+								alt="Text label"></div>
+						<div class="mdc-image-list__supporting"><span class="mdc-image-list__label">Text label</span>
+						</div>
+					</li>
+				</ul>
+
 			</div>
 		</aside>
 
 		<div class="mdc-drawer-app-content mdc-top-app-bar--fixed-adjust">
+			<div class="hv-toolbar">
 
+				<button type="button" class="mdc-button">
+					<i class="material-icons mdc-button__icon" aria-hidden="true">desktop_windows</i>
+					<span class="mdc-button__label">
+						Single Page
+					</span>
+				</button>
+
+				<button type="button" class="mdc-button">
+					<i class="material-icons mdc-button__icon" aria-hidden="true">cloud_download</i>
+					<span class="mdc-button__label">
+						Download
+					</span>
+				</button>
+
+				<!-- <div class="mdc-layout-grid__inner">
+											<div class="mdc-layout-grid__cell">
+												<div class="mdc-layout-grid__inner">
+													<div class="mdc-layout-grid__cell"><span>Second level</span></div>
+													<div class="mdc-layout-grid__cell"><span>Second level</span></div>
+												</div>
+											</div>
+											<div class="mdc-layout-grid__cell">First level</div>
+											<div class="mdc-layout-grid__cell">First level</div>
+										</div> -->
+			</div>
 			<main class="hv-content main-content" id="main-content">
-				<div class="hv-toolbar">
-
-					<button type="button" class="mdc-button">
-						<i class="material-icons mdc-button__icon" aria-hidden="true">desktop_windows</i>
-						<span class="mdc-button__label">
-							Single Page
-						</span>
-					</button>
-
-					<button type="button" class="mdc-button">
-						<i class="material-icons mdc-button__icon" aria-hidden="true">cloud_download</i>
-						<span class="mdc-button__label">
-							Download
-						</span>
-					</button>
-
-					<!-- <div class="mdc-layout-grid__inner">
-									<div class="mdc-layout-grid__cell">
-										<div class="mdc-layout-grid__inner">
-											<div class="mdc-layout-grid__cell"><span>Second level</span></div>
-											<div class="mdc-layout-grid__cell"><span>Second level</span></div>
-										</div>
-									</div>
-									<div class="mdc-layout-grid__cell">First level</div>
-									<div class="mdc-layout-grid__cell">First level</div>
-								</div> -->
-				</div>
 				<div id="osd" class="hv-viewport" style="height:100%"></div>
 			</main>
-
 		</div>
+
 	</div>
 
 	<script type="text/javascript">

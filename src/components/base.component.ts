@@ -19,7 +19,7 @@ export abstract class Component implements IComponent {
         this.events.on(event, callback);
     }
 
-    emit(event: string | symbol, ...args: any[]): boolean {
+    trigger(event: string | symbol, ...args: any[]): boolean {
         return this.events.emit(event, args);
     }
 
@@ -76,6 +76,6 @@ export interface IComponent {
     element: HTMLElement;
     init();
     on(event: string | symbol, callback: (...args: any[]) => void);
-    emit(event: string | symbol, ...args: any[]): boolean;
+    trigger(event: string | symbol, ...args: any[]): boolean;
     render();
 }

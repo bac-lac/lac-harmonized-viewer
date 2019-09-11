@@ -1,22 +1,22 @@
 @import "_variables";
 @import "_animations";
 
-$mdc-theme-primary: #5E81AC;
+$mdc-theme-primary: #5e81ac;
 
 .harmonized-viewer {
-
   @import "@material/ripple/mdc-ripple";
   @import "@material/button/mdc-button";
   @import "@material/icon-button/mdc-icon-button";
   @import "@material/drawer/mdc-drawer";
   @import "@material/list/mdc-list";
+  @import "@material/image-list/mdc-image-list";
   @import "@material/layout-grid/mdc-layout-grid";
   @import "@material/top-app-bar/mdc-top-app-bar";
 
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color:hsl(218, 7%, 94%);
+  background-color: hsl(218, 7%, 94%);
 
   // .#{$ns}button {
   //   @extend .mdc-button;
@@ -31,7 +31,7 @@ $mdc-theme-primary: #5E81AC;
   .#{$ns}topbar {
     @extend .mdc-top-app-bar;
     @include mdc-top-app-bar-ink-color(#ffffff);
-    @include mdc-top-app-bar-fill-color(#2E3440);
+    @include mdc-top-app-bar-fill-color(#2e3440);
     box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
     z-index: 99999;
 
@@ -53,7 +53,7 @@ $mdc-theme-primary: #5E81AC;
 
     .mdc-button {
       @include mdc-button-horizontal-padding(0.8rem);
-      @include mdc-button-icon-color(#D8DEE9);
+      @include mdc-button-icon-color(#d8dee9);
       @include mdc-button-ink-color(#777);
       @include mdc-button-shape-radius(2px);
       @include mdc-ripple-surface();
@@ -81,9 +81,23 @@ $mdc-theme-primary: #5E81AC;
   .mdc-drawer {
     @include mdc-drawer-width(360px);
     @include mdc-drawer-z-index(9999);
+    background-color: #d8dee9;
 
     & + .mdc-drawer-app-content {
       height: 100%;
+    }
+
+    &__content {
+      padding: 1rem;
+    }
+
+    .#{$ns}image-list {
+      @include mdc-image-list-standard-columns(2, 16px);
+
+      .mdc-image-list__image-aspect-container {
+        display: block;
+        border: 10px #fff solid;
+      }
     }
   }
 
