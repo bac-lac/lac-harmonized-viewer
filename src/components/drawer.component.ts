@@ -1,19 +1,14 @@
-import { Component } from "./base.component";
+import { Component } from "./component";
 import { MDCDrawer } from "@material/drawer";
+import { TopbarComponent } from "./topbar.component";
 
 export class DrawerComponent extends Component {
 
     drawer: MDCDrawer;
 
-    constructor(element: HTMLElement) {
-        super(element);
-        this.drawer = new MDCDrawer(element);
-    }
-
-    init() {
-        this.events.on('toggle', () => {
-            this.toggle();
-        });
+    async init() {
+        this.drawer = new MDCDrawer(this.element);
+        this.on(TopbarComponent.Events.onNavigationButtonClick, () => this.toggle());
     }
 
     open(): void {

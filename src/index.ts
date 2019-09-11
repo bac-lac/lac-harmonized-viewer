@@ -1,36 +1,44 @@
-import { ComponentFactory } from "./factories/component.factory";
+import { RootComponent } from "./components/root.component";
+import tippy from 'tippy.js'
 
-export class HarmonizedViewer {
+export class HarmonizedViewer extends RootComponent {
+
+    //static instances: HarmonizedViewer[];
 
     element: HTMLElement;
+    options: any;
 
-    private factory: ComponentFactory;
+    constructor(id: string, options: any) {
+        super();
 
-    constructor(id: string) {
         this.element = document.getElementById(id);
+        this.options = options || {};
 
-        this.factory = new ComponentFactory();
-
-        this.parse(this.element);
-
-        this.factory.components.forEach(component => component.init());
-        this.factory.components.forEach(component => component.render());
+        // if (!HarmonizedViewer.instances) {
+        //     HarmonizedViewer.instances = [];
+        // }
+        // HarmonizedViewer.instances.push(this);
+        // this.element['hv-instance-index'] = HarmonizedViewer.instances.length - 1;
     }
 
-    parse(element: HTMLElement) {
+    async init() {
+        this.build(this.element, this.options);
+        this.execute();
 
-        if (this.factory.isComponent(element)) {
-            this.factory.create(element);
-        }
+        this.initializeTooltips();
+    }
 
-        Array
-            .from(element.children)
-            .forEach(child => {
-                this.parse(child as HTMLElement);
-            });
+    initializeTooltips() {
+        tippy('[data-tippy-content]', {
+            animation: 'shift-away',
+            boundary: this.element,
+            delay: [500, 100],
+            duration: 200,
+            placement: 'bottom',
+        });
     }
 }
 
-export function harmonizedViewer(id: string): HarmonizedViewer {
-    return new HarmonizedViewer(id);
+export function harmonizedViewer(id: string, options: any) {
+    return new HarmonizedViewer(id, options).init();
 }

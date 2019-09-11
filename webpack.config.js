@@ -1,16 +1,23 @@
 const path = require('path');
 const autoprefixer = require('autoprefixer');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: ['./src/sass/index.scss', './src/index.ts'],
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'harmonized-viewer.bundle.js',
+        filename: 'dist/harmonized-viewer.bundle.js',
         library: 'HV'
     },
     resolve: {
         extensions: ['.scss', '.ts', '.tsx', '.js']
     },
+    plugins: [
+        new CopyWebpackPlugin([{
+            from: 'node_modules/openseadragon/build/openseadragon',
+            to: 'vendors/openseadragon'
+        }])
+    ],
     module: {
         rules: [
             {
@@ -20,7 +27,7 @@ module.exports = {
                     {
                         loader: 'file-loader',
                         options: {
-                            name: 'harmonized-viewer.bundle.css',
+                            name: 'dist/harmonized-viewer.bundle.css',
                         },
                     },
                     { loader: 'extract-loader' },
@@ -53,7 +60,15 @@ module.exports = {
                 query: {
                     presets: ['@babel/preset-env'],
                 },
-            }
+            },
+            {
+                test: /\.(jpe?g|gif|png|svg)$/,
+                include: path.resolve(__dirname, 'node_modules/openseadragon'),
+                loader: "file-loader",
+                options: {
+                    path: 'openseadragon'
+                }
+            },
         ]
     }
 }

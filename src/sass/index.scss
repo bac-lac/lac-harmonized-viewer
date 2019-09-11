@@ -79,7 +79,7 @@ $mdc-theme-primary: #5e81ac;
   }
 
   .mdc-drawer {
-    @include mdc-drawer-width(360px);
+    @include mdc-drawer-width(300px);
     @include mdc-drawer-z-index(9999);
     background-color: #d8dee9;
 
@@ -91,14 +91,20 @@ $mdc-theme-primary: #5e81ac;
 
     &__content {
       padding: 1rem;
-    }
 
-    .#{$ns}image-list {
-      @include mdc-image-list-standard-columns(2, 16px);
+      .#{$ns}image-list {
+        @include mdc-image-list-aspect(5/6);
+        @include mdc-image-list-standard-columns(2, 16px);
 
-      .mdc-image-list__image-aspect-container {
-        display: block;
-        border: 10px #fff solid;
+        .mdc-image-list__item {
+          .mdc-image-list__image-aspect-container {
+            display: block;
+
+            :hover {
+              outline: #446cb3 4px solid;
+            }
+          }
+        }
       }
     }
   }

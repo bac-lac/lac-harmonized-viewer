@@ -1,33 +1,46 @@
-import { EventEmitter } from "events";
 import { MDCRipple } from "@material/ripple";
 
-export abstract class Component implements IComponent {
+export abstract class ComponentBase implements IComponentBase {
 
     element: HTMLElement;
-    events: EventEmitter;
+    options: any;
 
-    constructor(element: HTMLElement) {
+    constructor(element: HTMLElement, options: any) {
         this.element = element;
-        this.element['hv-instance'] = this;
-        this.events = new EventEmitter();
+        this.options = options;
     }
 
-    init() {
+    async init() {
     }
 
-    on(event: string | symbol, callback: (...args: any[]) => void) {
-        this.events.on(event, callback);
-    }
-
-    trigger(event: string | symbol, ...args: any[]): boolean {
-        return this.events.emit(event, args);
-    }
-
-    render() {
+    async render() {
         Array.from(document.querySelectorAll(".mdc-button")).forEach(elem => {
             MDCRipple.attachTo(elem);
         });
     }
+
+    async destroy() {
+    }
+
+    // root(elem: HTMLElement = this.element): RootComponent {
+    //     if (this.rootComponent) {
+    //         return this.rootComponent;
+    //     }
+    //     if (!elem) {
+    //         return undefined;
+    //     }
+
+    //     if (Number.isInteger(elem['hv-instance-index'])) {
+    //         let index = parseInt(elem['hv-instance-index']);
+    //         return RootComponent.instances[index];
+    //     }
+    //     else if (elem.parentElement) {
+    //         return this.root(elem.parentElement);
+    //     }
+    //     else {
+    //         return undefined;
+    //     }
+    // }
 
     // enableRipple() {
     //     if (this.rippleState) {
@@ -72,10 +85,13 @@ export abstract class Component implements IComponent {
     }
 }
 
-export interface IComponent {
+export interface IComponentBase {
     element: HTMLElement;
+    options: any;
+    
     init();
-    on(event: string | symbol, callback: (...args: any[]) => void);
-    trigger(event: string | symbol, ...args: any[]): boolean;
     render();
+    destroy();
+
+    //root(elem: HTMLElement): RootComponent;
 }

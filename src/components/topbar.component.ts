@@ -1,24 +1,25 @@
-import { Component } from "./base.component";
-import { DrawerComponent } from "./drawer.component";
+import { Component } from "./component";
+import { ManifestLoaded } from "../events/manifest-loaded.event";
 
 export class TopbarComponent extends Component {
 
     text: string;
 
-    constructor(element: HTMLElement) {
-        super(element);
-        this.text = "OK";
-    }
+    async init() {
+        this.element.querySelector('.mdc-top-app-bar__navigation-icon')
+            .addEventListener('click', (eventArgs: any) => this.publish(TopbarComponent.Events.onNavigationButtonClick, eventArgs));
 
-    init() {
-        this.element.querySelector('.mdc-top-app-bar__navigation-icon').addEventListener('click', () => {
-            let drawer = document.querySelector('.mdc-drawer')['hv-instance'] as Component;
-            drawer.events.emit('toggle');
+        this.on<ManifestLoaded>('manifest-loaded', (eventArgs: ManifestLoaded) => {
+            this.text = eventArgs.manifest.getDefaultLabel();
         });
     }
 
-    render() {
+    async render() {
         this.element.querySelector(".mdc-top-app-bar__title").textContent = this.text;
     }
+
+    static Events = {
+        onNavigationButtonClick: 'topbar.navigation-button.click'
+    };
 
 }
