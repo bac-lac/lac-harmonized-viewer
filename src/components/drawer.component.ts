@@ -1,6 +1,5 @@
 import { Component } from "./base.component";
 import { MDCDrawer } from "@material/drawer";
-import { events } from "../events/list.event";
 
 export class DrawerComponent extends Component {
 
@@ -11,16 +10,28 @@ export class DrawerComponent extends Component {
         this.drawer = new MDCDrawer(element);
     }
 
-    bindEvents() {
-        events.onClick.on(() => {
-            let foundation = this.drawer.getDefaultFoundation();
-            if(foundation.isOpen() || foundation.isOpening()) {
-                foundation.close();
-            }
-            else {
-                foundation.open();
-            }
+    init() {
+        this.events.on('toggle', () => {
+            this.toggle();
         });
+    }
+
+    open(): void {
+        this.drawer.getDefaultFoundation().open();
+    }
+
+    close(): void {
+        this.drawer.getDefaultFoundation().close();
+    }
+
+    toggle(): void {
+        let foundation = this.drawer.getDefaultFoundation();
+        if (foundation.isOpen() || foundation.isOpening()) {
+            foundation.close();
+        }
+        else {
+            foundation.open();
+        }
     }
 
 }

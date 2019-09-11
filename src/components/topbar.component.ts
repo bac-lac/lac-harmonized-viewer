@@ -1,5 +1,5 @@
 import { Component } from "./base.component";
-import { events, ClickEventArgs } from "../events/list.event";
+import { DrawerComponent } from "./drawer.component";
 
 export class TopbarComponent extends Component {
 
@@ -10,14 +10,11 @@ export class TopbarComponent extends Component {
         this.text = "OK";
     }
 
-    bindEvents() {
+    init() {
         this.element.querySelector('.mdc-top-app-bar__navigation-icon').addEventListener('click', () => {
-            events.onClick.emit(new ClickEventArgs());
+            let drawer = document.querySelector('.mdc-drawer')['hv-instance'] as Component;
+            drawer.events.emit('toggle');
         });
-    }
-
-    click() {
-        console.log('workeroni');
     }
 
     render() {

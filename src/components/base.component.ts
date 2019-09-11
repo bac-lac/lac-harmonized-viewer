@@ -6,18 +6,16 @@ export abstract class Component implements IComponent {
     element: HTMLElement;
     events: EventEmitter;
 
-    private rippleState: MDCRipple;
-
     constructor(element: HTMLElement) {
         this.element = element;
+        this.element['hv-instance'] = this;
         this.events = new EventEmitter();
-        this.bindEvents();
     }
 
-    bindEvents() {
+    init() {
     }
 
-    listen(event: string | symbol, callback: (...args: any[]) => void) {
+    on(event: string | symbol, callback: (...args: any[]) => void) {
         this.events.on(event, callback);
     }
 
@@ -27,7 +25,6 @@ export abstract class Component implements IComponent {
 
     render() {
         Array.from(document.querySelectorAll(".mdc-button")).forEach(elem => {
-            console.log(elem);
             MDCRipple.attachTo(elem);
         });
     }
@@ -77,8 +74,8 @@ export abstract class Component implements IComponent {
 
 export interface IComponent {
     element: HTMLElement;
-    bindEvents();
-    listen(event: string | symbol, callback: (...args: any[]) => void);
+    init();
+    on(event: string | symbol, callback: (...args: any[]) => void);
     emit(event: string | symbol, ...args: any[]): boolean;
     render();
 }

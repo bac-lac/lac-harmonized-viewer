@@ -13,6 +13,7 @@ export class HarmonizedViewer {
 
         this.parse(this.element);
 
+        this.factory.components.forEach(component => component.init());
         this.factory.components.forEach(component => component.render());
     }
 

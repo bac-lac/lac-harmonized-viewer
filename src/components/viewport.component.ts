@@ -8,7 +8,9 @@ export class ViewportComponent extends Component {
     }
 
     render() {
-        console.log('render');
+
+        
+
         let instance = openseadragon({
             id: "osd",
             tileSources: [

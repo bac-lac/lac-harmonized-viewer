@@ -1,7 +1,7 @@
 @import "_variables";
 @import "_animations";
 
-$mdc-theme-primary: #183c9c;
+$mdc-theme-primary: #5E81AC;
 
 .harmonized-viewer {
 
@@ -31,7 +31,7 @@ $mdc-theme-primary: #183c9c;
   .#{$ns}topbar {
     @extend .mdc-top-app-bar;
     @include mdc-top-app-bar-ink-color(#ffffff);
-    @include mdc-top-app-bar-fill-color(#2e3131);
+    @include mdc-top-app-bar-fill-color(#2E3440);
     box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
     z-index: 99999;
 
