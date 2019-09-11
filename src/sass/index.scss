@@ -4,6 +4,7 @@
 $mdc-theme-primary: #5e81ac;
 
 .harmonized-viewer {
+  @import "@material/elevation/mdc-elevation";
   @import "@material/ripple/mdc-ripple";
   @import "@material/button/mdc-button";
   @import "@material/icon-button/mdc-icon-button";
@@ -94,14 +95,18 @@ $mdc-theme-primary: #5e81ac;
 
       .#{$ns}image-list {
         @include mdc-image-list-aspect(5/6);
-        @include mdc-image-list-standard-columns(2, 16px);
+        @include mdc-image-list-standard-columns(2, 9px);
 
         .mdc-image-list__item {
+          //@extend .mdc-elevation--z1;
+
           .mdc-image-list__image-aspect-container {
             display: block;
+            border-radius: 1px;
+            transition: box-shadow 200ms ease;
 
-            :hover {
-              outline: #446cb3 4px solid;
+            &:hover {
+              box-shadow: 0 0 0 4px #4C566A;
             }
           }
         }
@@ -139,5 +144,20 @@ $mdc-theme-primary: #5e81ac;
       rgba(255, 255, 255, 0.1)
     );
     background-size: 1200px 100%;
+  }
+
+  .tippy-tooltip.tomato-theme {
+    background-color: #4C566A;
+    color: #fff;
+    font-size: 1.0rem;
+    padding: 0.4rem 0.7rem;
+  }
+  
+  .tippy-tooltip.tomato-theme[data-animatefill] {
+    background-color: transparent;
+  }
+  
+  .tippy-tooltip.tomato-theme .tippy-backdrop {
+    background-color: #4C566A;
   }
 }

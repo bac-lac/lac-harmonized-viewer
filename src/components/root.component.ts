@@ -1,10 +1,13 @@
 import { ComponentFactory } from "../services/component.factory";
+import tippy from 'tippy.js';
 
 export class RootComponent implements IRootComponent {
 
+    element: HTMLElement;
     factory: ComponentFactory;
 
-    constructor() {
+    constructor(id: string) {
+        this.element = document.getElementById(id);
         this.factory = new ComponentFactory();
     }
 
@@ -21,6 +24,20 @@ export class RootComponent implements IRootComponent {
     async execute() {
         await Promise.all(this.factory.components.map(i => i.init()));
         await Promise.all(this.factory.components.map(i => i.render()));
+        this.tooltips();
+    }
+
+    private tooltips() {
+        console.log(this.element);
+        tippy('[data-tippy-content]', {
+            animation: 'shift-away',
+            appendTo: 'parent',
+            boundary: this.element,
+            delay: [500, 100],
+            duration: 200,
+            placement: 'bottom',
+            theme: 'tomato'
+        });
     }
 
 }
