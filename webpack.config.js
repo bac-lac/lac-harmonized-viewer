@@ -5,7 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
     entry: ['./src/sass/index.scss', './src/index.ts'],
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname),
         filename: 'dist/harmonized-viewer.bundle.js',
         library: 'HV'
     },

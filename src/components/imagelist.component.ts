@@ -1,15 +1,16 @@
 import { Component } from "./component";
-import { ManifestLoaded } from "../events/manifest-loaded.event";
+import { ManifestLoad } from "../events/manifest-load.event";
 
 export class ImageListComponent extends Component {
 
     async init() {
-
-        this.on<ManifestLoaded>('manifest-loaded', (event) => {
-            this.build(event.manifest);
-        });
-
-        
+        this.bind('click', 'canvas-load', (eventTarget: HTMLElement) => {
+            return {
+                sequenceIndex: 7,
+                canvasIndex: 3
+            }
+        }, '[data-goto]');
+        this.on('manifest-load', (event: ManifestLoad) => this.build(event.manifest));
     }
 
     private build(manifest: Manifesto.Manifest) {
@@ -18,11 +19,10 @@ export class ImageListComponent extends Component {
         let canvases = sequence.getCanvases();
 
         canvases.forEach((canvas, index) => {
-
             let thumbnail = this.createThumbnail(index, canvas);
             this.element.append(thumbnail);
-
         });
+
     }
 
     private createThumbnail(index: number, canvas: Manifesto.ICanvas): HTMLElement {
@@ -40,7 +40,7 @@ export class ImageListComponent extends Component {
         let a = document.createElement('a');
         a.href = 'javascript:;';
         a.className = 'mdc-image-list__image-aspect-container';
-        a.setAttribute('data-goto-page', index.toString());
+        a.setAttribute('data-goto', index.toString());
         a.setAttribute('data-tippy-content', canvas.getDefaultLabel());
         li.append(a);
 

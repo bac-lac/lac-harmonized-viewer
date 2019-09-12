@@ -8,7 +8,7 @@ export class DrawerComponent extends Component {
 
     async init() {
         this.drawer = new MDCDrawer(this.element);
-        this.on(TopbarComponent.Events.onNavigationButtonClick, () => this.toggle());
+        this.on('navigation-open', () => this.toggle());
     }
 
     open(): void {

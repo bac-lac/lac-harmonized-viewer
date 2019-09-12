@@ -24,11 +24,11 @@ export class RootComponent implements IRootComponent {
     async execute() {
         await Promise.all(this.factory.components.map(i => i.init()));
         await Promise.all(this.factory.components.map(i => i.render()));
+        
         this.tooltips();
     }
 
     private tooltips() {
-        console.log(this.element);
         tippy('[data-tippy-content]', {
             animation: 'shift-away',
             appendTo: 'parent',

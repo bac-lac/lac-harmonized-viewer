@@ -1,20 +1,17 @@
 import { Component } from "./component";
-import { ManifestLoaded } from "../events/manifest-loaded.event";
-import { bindNativeListener } from "../event";
+import { ManifestLoad } from "../events/manifest-load.event";
+import { NavigationOpen } from "../events/navigation-open";
 
 export class TopbarComponent extends Component {
 
     text: string;
 
     async init() {
-        // this.element.querySelector('.mdc-top-app-bar__navigation-icon')
-        //     .addEventListener('click', (eventArgs: any) => this.publish(TopbarComponent.Events.onNavigationButtonClick, eventArgs));
 
-        let buttonDrawer = this.element.querySelector('.mdc-top-app-bar__navigation-icon');
-        bindNativeListener(buttonDrawer as HTMLElement, 'click', TopbarComponent.Events.onNavigationButtonClick);
+        this.bind('click', 'navigation-open', undefined, '.mdc-top-app-bar__navigation-icon');
 
-        this.on<ManifestLoaded>('manifest-loaded', (eventArgs: ManifestLoaded) => {
-            this.text = eventArgs.manifest.getDefaultLabel();
+        this.on('manifest-load', (event: ManifestLoad) => {
+            this.text = event.manifest.getDefaultLabel();
         });
     }
 

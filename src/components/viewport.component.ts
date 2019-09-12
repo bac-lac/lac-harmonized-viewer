@@ -1,21 +1,25 @@
 import "manifesto.js";
 import { Component } from "./component";
-import { ManifestLoaded } from "../events/manifest-loaded.event";
+import { ManifestLoad } from "../events/manifest-load.event";
+import { CanvasLoad } from "../events/canvas-load.event";
 
 const openseadragon = require('openseadragon');
 
 export class ViewportComponent extends Component {
 
-    //private manifest: Manifesto.Manifest;
     private openseadragon: any;
     private manifest: Manifesto.Manifest;
 
     async init() {
 
+        this.on('canvas-load', (event: CanvasLoad) => {
+            console.log('load', event);
+        });
+
         this.manifest = manifesto.create(
             await manifesto.loadManifest(this.options.manifestUrl)) as Manifesto.Manifest;
 
-        this.publish<ManifestLoaded>('manifest-loaded', new ManifestLoaded(this.manifest));
+        this.publish('manifest-load', new ManifestLoad(this.manifest));
     }
 
     async render() {
