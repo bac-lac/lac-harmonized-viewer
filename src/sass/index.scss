@@ -17,7 +17,7 @@ $mdc-theme-primary: #5e81ac;
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: hsl(218, 7%, 94%);
+  background-color: #efeff1;
 
   // .#{$ns}button {
   //   @extend .mdc-button;
@@ -32,7 +32,7 @@ $mdc-theme-primary: #5e81ac;
   .#{$ns}topbar {
     @extend .mdc-top-app-bar;
     @include mdc-top-app-bar-ink-color(#ffffff);
-    @include mdc-top-app-bar-fill-color(#2e3440);
+    @include mdc-top-app-bar-fill-color(#434356);
     box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
     z-index: 99999;
 
@@ -54,7 +54,7 @@ $mdc-theme-primary: #5e81ac;
 
     .mdc-button {
       @include mdc-button-horizontal-padding(0.8rem);
-      @include mdc-button-icon-color(#d8dee9);
+      @include mdc-button-icon-color(#434356);
       @include mdc-button-ink-color(#777);
       @include mdc-button-shape-radius(2px);
       @include mdc-ripple-surface();

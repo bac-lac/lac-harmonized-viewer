@@ -45,14 +45,14 @@ export class ImageListComponent extends Component {
         img.className = 'mdc-image-list__image';
         a.append(img);
 
-        // let supporting = document.createElement('div');
-        // supporting.className = 'mdc-image-list__supporting';
-        // li.append(supporting);
+        let supporting = document.createElement('div');
+        supporting.className = 'mdc-image-list__supporting';
+        li.append(supporting);
 
-        // let label = document.createElement('span');
-        // label.className = 'mdc-image-list__label';
-        // label.textContent = canvas.getDefaultLabel();
-        // supporting.append(label);
+        let label = document.createElement('span');
+        label.className = 'mdc-image-list__label';
+        label.textContent = canvas.getDefaultLabel();
+        supporting.append(label);
 
         return li;
 
