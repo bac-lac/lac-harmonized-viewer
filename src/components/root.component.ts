@@ -36,7 +36,7 @@ export class RootComponent implements IRootComponent {
             delay: [500, 100],
             duration: 200,
             placement: 'bottom',
-            theme: 'tomato'
+            theme: 'hv'
         });
     }
 

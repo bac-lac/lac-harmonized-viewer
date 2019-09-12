@@ -4,9 +4,12 @@ import { ManifestLoaded } from "../events/manifest-loaded.event";
 export class ImageListComponent extends Component {
 
     async init() {
+
         this.on<ManifestLoaded>('manifest-loaded', (event) => {
             this.build(event.manifest);
         });
+
+        
     }
 
     private build(manifest: Manifesto.Manifest) {
@@ -14,15 +17,15 @@ export class ImageListComponent extends Component {
         let sequence = manifest.getSequenceByIndex(0);
         let canvases = sequence.getCanvases();
 
-        canvases.forEach(canvas => {
+        canvases.forEach((canvas, index) => {
 
-            let thumbnail = this.createThumbnail(canvas);
+            let thumbnail = this.createThumbnail(index, canvas);
             this.element.append(thumbnail);
 
         });
     }
 
-    private createThumbnail(canvas: Manifesto.ICanvas): HTMLElement {
+    private createThumbnail(index: number, canvas: Manifesto.ICanvas): HTMLElement {
 
         if (!canvas) {
             return undefined;
@@ -37,6 +40,7 @@ export class ImageListComponent extends Component {
         let a = document.createElement('a');
         a.href = 'javascript:;';
         a.className = 'mdc-image-list__image-aspect-container';
+        a.setAttribute('data-goto-page', index.toString());
         a.setAttribute('data-tippy-content', canvas.getDefaultLabel());
         li.append(a);
 

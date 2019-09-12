@@ -33,28 +33,25 @@ $mdc-theme-primary: #5e81ac;
     @extend .mdc-top-app-bar;
     @include mdc-top-app-bar-ink-color(#ffffff);
     @include mdc-top-app-bar-fill-color(#434356);
-    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
+
     z-index: 99999;
 
-    &__row {
-      @extend .mdc-top-app-bar__row;
-    }
-
-    &__section {
-      @extend .mdc-top-app-bar__section;
+    &__header {
+      box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
     }
   }
 
   .#{$ns}toolbar {
     @extend .mdc-layout-grid;
     width: 100%;
+    height: 54px;
     padding: 0.6rem;
-    margin-top: 0.1rem;
+    //margin-top: 0.1rem;
     background-color: #ffffff;
 
     .mdc-button {
       @include mdc-button-horizontal-padding(0.8rem);
-      @include mdc-button-icon-color(#434356);
+      @include mdc-button-icon-color(hsl(230, 34%, 73%));
       @include mdc-button-ink-color(#777);
       @include mdc-button-shape-radius(2px);
       @include mdc-ripple-surface();
@@ -71,6 +68,10 @@ $mdc-theme-primary: #5e81ac;
         font-size: 22px;
       }
 
+      .#{$ns}button__icon-dropdown {
+        margin-left: 4px;
+      }
+
       .mdc-button__label {
         font-size: 16px;
         letter-spacing: 0;
@@ -79,10 +80,14 @@ $mdc-theme-primary: #5e81ac;
     }
   }
 
+  .mdc-top-app-bar--prominent-fixed-adjust {
+    padding-top: 118px;
+  }
+
   .mdc-drawer {
-    @include mdc-drawer-width(300px);
+    @include mdc-drawer-width(260px);
     @include mdc-drawer-z-index(9999);
-    background-color: #d8dee9;
+    background-color: #d8d9df;
 
     & + .mdc-drawer-app-content {
       flex: 1;
@@ -106,7 +111,16 @@ $mdc-theme-primary: #5e81ac;
             transition: box-shadow 200ms ease;
 
             &:hover {
-              box-shadow: 0 0 0 4px #4C566A;
+              box-shadow: 0 0 0 4px #4c566a;
+            }
+          }
+
+          .mdc-image-list__supporting {
+            padding: 0.2rem 0.4rem;
+            justify-content: center;
+
+            .mdc-image-list__label {
+              font-size: 0.9rem;
             }
           }
         }
@@ -146,18 +160,19 @@ $mdc-theme-primary: #5e81ac;
     background-size: 1200px 100%;
   }
 
-  .tippy-tooltip.tomato-theme {
-    background-color: #4C566A;
+  .tippy-tooltip.hv-theme {
+    opacity: 0.9;
+    background-color: #434356;
     color: #fff;
-    font-size: 1.0rem;
+    font-size: 1rem;
     padding: 0.4rem 0.7rem;
   }
-  
-  .tippy-tooltip.tomato-theme[data-animatefill] {
+
+  .tippy-tooltip.hv-theme[data-animatefill] {
     background-color: transparent;
   }
-  
-  .tippy-tooltip.tomato-theme .tippy-backdrop {
-    background-color: #4C566A;
+
+  .tippy-tooltip.hv-theme .tippy-backdrop {
+    background-color: #434356;
   }
 }

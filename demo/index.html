@@ -44,24 +44,13 @@
 	<div id="harmonized-viewer" class="harmonized-viewer">
 
 		<header class="hv-topbar mdc-top-app-bar" id="app-bar">
-			<div class="hv-topbar__row">
-				<section class="hv-topbar__section mdc-top-app-bar__section--align-start">
+			<div class="mdc-top-app-bar__row">
+				<section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start hv-topbar__header">
 					<button
 						class="hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">menu</button>
 					<span class="mdc-top-app-bar__title"></span>
 				</section>
 			</div>
-		</header>
-
-		<aside class="mdc-drawer mdc-drawer--dismissible mdc-top-app-bar--fixed-adjust">
-			<div class="mdc-drawer__content">
-
-				<ul class="mdc-image-list hv-image-list"></ul>
-
-			</div>
-		</aside>
-
-		<div class="mdc-drawer-app-content mdc-top-app-bar--fixed-adjust">
 			<div class="hv-toolbar">
 
 				<button type="button" class="mdc-button" data-tippy-content="Display mode">
@@ -83,20 +72,32 @@
 					<span class="mdc-button__label">
 						Auto
 					</span>
-					<i class="material-icons mdc-button__icon" aria-hidden="true">arrow_drop_</i>
+					<i class="material-icons mdc-button__icon hv-button__icon-dropdown" aria-hidden="true">expand_more</i>
 				</button>
 
 				<!-- <div class="mdc-layout-grid__inner">
-											<div class="mdc-layout-grid__cell">
-												<div class="mdc-layout-grid__inner">
-													<div class="mdc-layout-grid__cell"><span>Second level</span></div>
-													<div class="mdc-layout-grid__cell"><span>Second level</span></div>
-												</div>
-											</div>
-											<div class="mdc-layout-grid__cell">First level</div>
-											<div class="mdc-layout-grid__cell">First level</div>
-										</div> -->
+													<div class="mdc-layout-grid__cell">
+														<div class="mdc-layout-grid__inner">
+															<div class="mdc-layout-grid__cell"><span>Second level</span></div>
+															<div class="mdc-layout-grid__cell"><span>Second level</span></div>
+														</div>
+													</div>
+													<div class="mdc-layout-grid__cell">First level</div>
+													<div class="mdc-layout-grid__cell">First level</div>
+												</div> -->
 			</div>
+		</header>
+
+		<aside class="mdc-drawer mdc-drawer--dismissible mdc-top-app-bar--prominent-fixed-adjust">
+			<div class="mdc-drawer__content">
+
+				<ul class="mdc-image-list hv-image-list"></ul>
+
+			</div>
+		</aside>
+
+		<div class="mdc-drawer-app-content mdc-top-app-bar--prominent-fixed-adjust">
+
 			<main class="hv-content main-content" id="main-content">
 				<div id="osd" class="hv-viewport" style="height:100%"></div>
 			</main>
