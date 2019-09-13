@@ -103,10 +103,9 @@ $mdc-theme-primary: #5e81ac;
         @include mdc-image-list-standard-columns(2, 7px);
 
         .mdc-image-list__item {
-          //@extend .mdc-elevation--z1;
+          padding: 8px;
           margin-bottom: 0.4rem;
-          border: #fff 8px solid;
-          box-shadow: 1px 1px 3px 2px #bbb;
+          box-shadow: 1px 1px 7px 2px #ff;
           background-color: transparent;
 
           .mdc-image-list__image-aspect-container {
@@ -114,12 +113,14 @@ $mdc-theme-primary: #5e81ac;
 
             opacity: 0.75;
             display: block;
-            border-radius: 0;
+            border-radius: 2px;
+            background-color: #fff;
             transition: all 150ms ease;
 
             &:hover {
+
               opacity: 1.0;
-              // box-shadow: 0 0 2px 3px hsl(230, 20%, 63%);
+              box-shadow: 0 0 1px 5px #D08770;
 
               & + .mdc-image-list__supporting {
                 opacity: 0.8;
