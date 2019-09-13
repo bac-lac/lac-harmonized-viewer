@@ -22,6 +22,7 @@ export class RootComponent implements IRootComponent {
     }
 
     async execute() {
+
         await Promise.all(this.factory.components.map(i => i.init()));
         await Promise.all(this.factory.components.map(i => i.render()));
         

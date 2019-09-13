@@ -1,34 +1,47 @@
 import { Component } from "./component";
-import { ManifestLoad } from "../events/manifest-load.event";
+import { ManifestLoad, GoToPage, PageLoaded } from "../events/event";
 
 export class ImageListComponent extends Component {
 
     async init() {
-        
-        // this.bind('click', 'canvas-load', (eventTarget: HTMLElement) => {
-        //     return {
-        //         sequenceIndex: 0,
-        //         canvasIndex: parseInt(eventTarget.getAttribute('data-canvas'))
-        //     }
-        // }, '[data-goto]');
-
-        //this.on('click', '.hv-canvas-thumbnail', (event: any) => {
-        // ??
-        //});
 
         this.on('manifest-load', (event: ManifestLoad) => this.build(event.manifest));
+
+        this.addListener('click', '.hv-canvas-thumbnail', (eventTarget: HTMLElement) => {
+            const canvasIndex = parseInt(eventTarget.getAttribute('data-page'));
+            return new GoToPage(canvasIndex);
+        });
     }
 
     private build(manifest: Manifesto.Manifest) {
 
-        let sequence = manifest.getSequenceByIndex(0);
-        let canvases = sequence.getCanvases();
+        if(!manifest) {
+            return;
+        }
+
+        const sequence = manifest.getSequenceByIndex(0);
+        const canvases = sequence.getCanvases();
 
         canvases.forEach((canvas, index) => {
             let thumbnail = this.createThumbnail(index, canvas);
             this.element.append(thumbnail);
         });
 
+        this.setActive(0);
+        this.on('page-loaded', (event: PageLoaded) => this.setActive(event.page));
+
+    }
+
+    setActive(index: number) {
+
+        const items = Array.from(this.element.children).map(child => child as HTMLElement);
+
+        items.forEach(item =>
+            item.classList.remove('active'));
+
+        if (index < items.length) {
+            items[index].classList.add('active');
+        }
     }
 
     private createThumbnail(index: number, canvas: Manifesto.ICanvas): HTMLElement {
@@ -46,7 +59,7 @@ export class ImageListComponent extends Component {
         let a = document.createElement('a');
         a.href = 'javascript:;';
         a.className = 'hv-canvas-thumbnail mdc-image-list__image-aspect-container';
-        a.setAttribute('data-canvas', index.toString());
+        a.setAttribute('data-page', index.toString());
         //a.setAttribute('data-tippy-content', canvas.getDefaultLabel());
         li.append(a);
 

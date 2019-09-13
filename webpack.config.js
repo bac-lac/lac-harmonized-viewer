@@ -15,7 +15,7 @@ module.exports = {
     plugins: [
         new CopyWebpackPlugin([{
             from: 'node_modules/openseadragon/build/openseadragon',
-            to: 'vendors/openseadragon'
+            to: 'dist/vendors/openseadragon'
         }])
     ],
     module: {

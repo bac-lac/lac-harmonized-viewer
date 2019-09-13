@@ -13,7 +13,7 @@
 
 		function initialize() {
 			var viewer = HV.harmonizedViewer('harmonized-viewer', {
-				manifestUrl: 'https://d.lib.ncsu.edu/collections/catalog/nubian-message-1992-11-30/manifest'
+				manifestUrl: 'https://localhost:44389/api/main/manifest/1/97640'
 			});
 		}
 
@@ -67,13 +67,28 @@
 					</span>
 				</button>
 
-				<button type="button" class="mdc-button" data-tippy-content="Zoom">
-					<i class="material-icons mdc-button__icon" aria-hidden="true">search</i>
-					<span class="mdc-button__label">
-						Auto
-					</span>
-					<i class="material-icons mdc-button__icon hv-button__icon-dropdown" aria-hidden="true">expand_more</i>
-				</button>
+				<div class="mdc-menu-surface--anchor">
+					<button type="button" class="mdc-button hv-zoom-button" data-tippy-content="Zoom">
+						<i class="material-icons mdc-button__icon" aria-hidden="true">search</i>
+						<span class="mdc-button__label" data-bind="zoom-percentage">
+							Auto
+						</span>
+						<i class="material-icons mdc-button__icon hv-button__icon-dropdown"
+							aria-hidden="true">expand_more</i>
+					</button>
+					<div class="mdc-menu mdc-menu-surface">
+						<ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
+							<li class="mdc-list-item" role="menuitem">
+								<span class="mdc-list-item__text">
+									Auto
+								</span>
+							</li>
+							<li class="mdc-list-item" role="menuitem">
+								<span class="mdc-list-item__text">Another Menu Item</span>
+							</li>
+						</ul>
+					</div>
+				</div>
 
 				<!-- <div class="mdc-layout-grid__inner">
 													<div class="mdc-layout-grid__cell">

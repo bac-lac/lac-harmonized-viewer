@@ -1,20 +1,51 @@
 import { ComponentBase } from "./base.component";
-import { events } from "../event";
+import { eventSource, TEvent, IEvent } from "../events/event";
 
 export abstract class Component extends ComponentBase implements IComponent {
 
-    on(eventName: string, listener: (event: any) => void): void {
-        if (!eventName) {
-            return undefined;
-        }
-        events.on(eventName, (event: any) => listener(event));
+    on(event: string, listener: (event: any) => void): void {
+        eventSource.on(event, (event: any) => listener(event));
     }
 
-    publish(eventName: string, event: any = undefined): boolean {
-        if (!eventName) {
+    publish(event: string | TEvent, eventArgs?: any): boolean {
+        if (!event) {
+            return false;
+        }
+        if (typeof event == 'string') {
+            return eventSource.emit(event, eventArgs);
+        }
+        else {
+            console.log((event as TEvent).name, event)
+            return eventSource.emit((event as TEvent).name, event);
+        }
+    }
+
+    addListener(event: string, selector: string, resolver: (target: HTMLElement) => IEvent): void {
+        if (!event) {
+            return;
+        }
+        this.element.addEventListener(event, (eventNative) => {
+            if (selector) {
+                const eventTarget = this.getEventTarget(eventNative.target as HTMLElement, selector);
+                if (eventTarget) {
+                    const forwardTo = resolver(eventTarget);
+                    this.publish(forwardTo.name, forwardTo);
+                }
+            }
+            // else {
+            //     this.publish(event);
+            // }
+        });
+    }
+
+    private getEventTarget(child: HTMLElement, selector: string): HTMLElement {
+        if (!selector) {
             return undefined;
         }
-        return events.emit(eventName, event);
+        return Array
+            .from(this.element.querySelectorAll(selector))
+            .map(elem => elem as HTMLElement)
+            .find(elem => elem.isSameNode(child) || elem.contains(child));
     }
 
     bind(eventNativeName: string, eventName: string, map: (eventTarget: HTMLElement) => any = undefined, selector: string = undefined): void {
@@ -54,6 +85,6 @@ export abstract class Component extends ComponentBase implements IComponent {
 }
 
 export interface IComponent {
-    on(eventName: string, listener: (event: any) => void): void;
-    publish(eventName: string, event: Event): boolean;
+    on(event: string, listener: (event: any) => void): void;
+    publish(event: string | TEvent, eventArgs?: any): boolean;
 }
