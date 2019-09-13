@@ -4,12 +4,18 @@ import { ManifestLoad } from "../events/manifest-load.event";
 export class ImageListComponent extends Component {
 
     async init() {
-        this.bind('click', 'canvas-load', (eventTarget: HTMLElement) => {
-            return {
-                sequenceIndex: 7,
-                canvasIndex: 3
-            }
-        }, '[data-goto]');
+        
+        // this.bind('click', 'canvas-load', (eventTarget: HTMLElement) => {
+        //     return {
+        //         sequenceIndex: 0,
+        //         canvasIndex: parseInt(eventTarget.getAttribute('data-canvas'))
+        //     }
+        // }, '[data-goto]');
+
+        //this.on('click', '.hv-canvas-thumbnail', (event: any) => {
+        // ??
+        //});
+
         this.on('manifest-load', (event: ManifestLoad) => this.build(event.manifest));
     }
 
@@ -39,9 +45,9 @@ export class ImageListComponent extends Component {
 
         let a = document.createElement('a');
         a.href = 'javascript:;';
-        a.className = 'mdc-image-list__image-aspect-container';
-        a.setAttribute('data-goto', index.toString());
-        a.setAttribute('data-tippy-content', canvas.getDefaultLabel());
+        a.className = 'hv-canvas-thumbnail mdc-image-list__image-aspect-container';
+        a.setAttribute('data-canvas', index.toString());
+        //a.setAttribute('data-tippy-content', canvas.getDefaultLabel());
         li.append(a);
 
         let img = document.createElement('img');

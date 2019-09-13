@@ -12,8 +12,10 @@ export class ViewportComponent extends Component {
 
     async init() {
 
+        this.on('manifest-load', (event: ManifestLoad) => this.createViewport);
         this.on('canvas-load', (event: CanvasLoad) => {
-            console.log('load', event);
+            console.log('load');
+            this.goTo(event.canvasIndex);
         });
 
         this.manifest = manifesto.create(
@@ -23,6 +25,14 @@ export class ViewportComponent extends Component {
     }
 
     async render() {
+        this.createViewport();
+    }
+
+    private createViewport() {
+
+        if(this.openseadragon) {
+            this.openseadragon.destroy();
+        }
 
         let sequence = this.manifest.getSequences()[0];
 
@@ -37,6 +47,12 @@ export class ViewportComponent extends Component {
             sequenceMode: true,
             tileSources: sources
         });
+    }
+
+    private goTo(page: number) {
+        if(this.openseadragon) {
+            this.openseadragon.goToPage(page);
+        }
     }
 }
 

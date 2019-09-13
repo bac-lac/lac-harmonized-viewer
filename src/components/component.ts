@@ -54,6 +54,6 @@ export abstract class Component extends ComponentBase implements IComponent {
 }
 
 export interface IComponent {
-    on(eventName: string, listener: (event: Event) => void): void;
+    on(eventName: string, listener: (event: any) => void): void;
     publish(eventName: string, event: Event): boolean;
 }
