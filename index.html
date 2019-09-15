@@ -9,18 +9,31 @@
 
 	<!-- <script type="text/javascript" src="https://use.fontawesome.com/releases/v5.10.2/js/all.js" defer></script> -->
 
+	<link type="text/css" href="/node_modules/overlayscrollbars/css/OverlayScrollbars.min.css" rel="stylesheet" />
+	<script type="text/javascript" src="/node_modules/overlayscrollbars/js/OverlayScrollbars.min.js"></script>
+
 	<script type="text/javascript">
 
 		function initialize() {
 			var viewer = HV.harmonizedViewer('harmonized-viewer', {
-				manifestUrl: 'https://localhost:44389/api/main/manifest/1/97640'
+				manifestUrl: 'https://damsssl.llgc.org.uk/iiif/2.0/4389767/manifest.json',
+				navigation: {
+					opened: true
+				}
 			});
 		}
 
-	</script>
-	<script src="/dist/harmonized-viewer.bundle.js" onload="initialize()" async></script>
+		document.addEventListener("DOMContentLoaded", function () {
+			//The first argument are the elements to which the plugin shall be initialized
+			//The second argument has to be at least a empty object or a object with your desired options
+			OverlayScrollbars(document.querySelectorAll('.hv-scrollbar'), {});
+		});
 
-	<link href="/dist/harmonized-viewer.bundle.css" .css" rel="stylesheet" type="text/css">
+	</script>
+
+	<script src="harmonized-viewer.bundle.js" onload="initialize()" async></script>
+
+	<link href="harmonized-viewer.bundle.css" .css" rel="stylesheet" type="text/css">
 	<!-- <link href="/dist/theme.css" rel="stylesheet" type="text/css"> -->
 
 	<link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
@@ -44,69 +57,93 @@
 	<div id="harmonized-viewer" class="harmonized-viewer">
 
 		<header class="hv-topbar mdc-top-app-bar" id="app-bar">
-			<div class="mdc-top-app-bar__row">
-				<section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start hv-topbar__header">
-					<button
-						class="hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">menu</button>
+			<div class="mdc-top-app-bar__row hv-topbar__header">
+				<section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+					<button class="hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button"
+						data-target="navigation">menu</button>
+					<span class="mdc-top-app-bar__title"></span>
+				</section>
+				<section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
+					<button class="hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button"
+						data-target="annotations">menu</button>
 					<span class="mdc-top-app-bar__title"></span>
 				</section>
 			</div>
 			<div class="hv-toolbar">
 
-				<button type="button" class="mdc-button" data-tippy-content="Display mode">
-					<i class="material-icons mdc-button__icon" aria-hidden="true">desktop_windows</i>
-					<span class="mdc-button__label">
-						Single Page
-					</span>
-				</button>
+				<div class="mdc-layout-grid__inner">
+					<div class="mdc-layout-grid__cell">
 
-				<button type="button" class="mdc-button" data-tippy-content="Download">
-					<i class="material-icons mdc-button__icon" aria-hidden="true">cloud_download</i>
-					<span class="mdc-button__label">
-						Download
-					</span>
-				</button>
+						<button type="button" class="mdc-button" data-tippy-content="Display mode">
+							<i class="material-icons mdc-button__icon" aria-hidden="true">desktop_windows</i>
+							<span class="mdc-button__label">
+								Single Page
+							</span>
+						</button>
 
-				<div class="mdc-menu-surface--anchor">
-					<button type="button" class="mdc-button hv-zoom-button" data-tippy-content="Zoom">
-						<i class="material-icons mdc-button__icon" aria-hidden="true">search</i>
-						<span class="mdc-button__label" data-bind="zoom-percentage">
-							Auto
-						</span>
-						<i class="material-icons mdc-button__icon hv-button__icon-dropdown"
-							aria-hidden="true">expand_more</i>
-					</button>
-					<div class="mdc-menu mdc-menu-surface">
-						<ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
-							<li class="mdc-list-item" role="menuitem">
-								<span class="mdc-list-item__text">
+					</div>
+
+					<div class="mdc-layout-grid__cell">
+
+						<button type="button" class="mdc-button" data-tippy-content="Download">
+							<i class="material-icons mdc-button__icon" aria-hidden="true">cloud_download</i>
+							<span class="mdc-button__label">
+								Download
+							</span>
+						</button>
+
+					</div>
+					<div class="mdc-layout-grid__cell">
+
+						<div class="mdc-menu-surface--anchor">
+							<button type="button" class="mdc-button hv-zoom-button" data-tippy-content="Zoom">
+								<i class="material-icons mdc-button__icon" aria-hidden="true">search</i>
+								<span class="mdc-button__label" data-bind="zoom-percentage">
 									Auto
 								</span>
-							</li>
-							<li class="mdc-list-item" role="menuitem">
-								<span class="mdc-list-item__text">Another Menu Item</span>
-							</li>
-						</ul>
+								<i class="material-icons mdc-button__icon hv-button__icon-dropdown"
+									aria-hidden="true">expand_more</i>
+							</button>
+							<div class="mdc-menu mdc-menu-surface">
+								<ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical"
+									tabindex="-1">
+									<li class="mdc-list-item" role="menuitem">
+										<span class="mdc-list-item__text">
+											Auto
+										</span>
+									</li>
+									<li class="mdc-list-item" role="menuitem">
+										<span class="mdc-list-item__text">Another Menu Item</span>
+									</li>
+								</ul>
+							</div>
+						</div>
+
 					</div>
 				</div>
 
-				<!-- <div class="mdc-layout-grid__inner">
-													<div class="mdc-layout-grid__cell">
-														<div class="mdc-layout-grid__inner">
-															<div class="mdc-layout-grid__cell"><span>Second level</span></div>
-															<div class="mdc-layout-grid__cell"><span>Second level</span></div>
-														</div>
-													</div>
-													<div class="mdc-layout-grid__cell">First level</div>
-													<div class="mdc-layout-grid__cell">First level</div>
-												</div> -->
+				<!-- <button type="button" class="mdc-button" data-tippy-content="Display mode">
+					<i class="material-icons mdc-button__icon" aria-hidden="true">desktop_windows</i>
+					<span class="mdc-button__label">
+
+					</span>
+				</button> -->
 			</div>
 		</header>
 
-		<aside class="mdc-drawer mdc-drawer--dismissible mdc-top-app-bar--prominent-fixed-adjust">
-			<div class="mdc-drawer__content">
+		<aside class="hv-annotations mdc-drawer mdc-drawer--dismissible mdc-top-app-bar--prominent-fixed-adjust"
+			dir="rtl">
+			<div class="mdc-drawer__content" dir="ltr">
 
-				<ul class="mdc-image-list mdc-image-list--with-text-protection hv-image-list"></ul>
+				test
+
+			</div>
+		</aside>
+
+		<aside class="hv-navigation mdc-drawer mdc-drawer--dismissible mdc-top-app-bar--prominent-fixed-adjust">
+			<div class="mdc-drawer__content hv-scrollbar" style="height:100%">
+
+				<ul class="mdc-image-list hv-image-list"></ul>
 
 			</div>
 		</aside>
@@ -114,7 +151,13 @@
 		<div class="mdc-drawer-app-content mdc-top-app-bar--prominent-fixed-adjust">
 
 			<main class="hv-content main-content" id="main-content">
-				<div id="osd" class="hv-viewport" style="height:100%"></div>
+				<div id="osd" class="hv-viewport" style="height:100%">
+
+					<button type="button" class="mdc-button hv-button__prev" data-tippy-content="Previous">
+						<i class="material-icons mdc-button__icon" aria-hidden="true">chevron_left</i>
+					</button>
+
+				</div>
 			</main>
 		</div>
 
