@@ -1,5 +1,7 @@
 import { Component } from "./component";
 import { ManifestLoad, GoToPage, PageLoaded } from "../events/event";
+import { median } from "../helpers/math.helper";
+import { AspectRatio } from "../helpers/aspect-ratio.helper";
 
 export class ImageListComponent extends Component {
 
@@ -15,12 +17,20 @@ export class ImageListComponent extends Component {
 
     private build(manifest: Manifesto.Manifest) {
 
-        if(!manifest) {
+        if (!manifest) {
             return;
         }
 
         const sequence = manifest.getSequenceByIndex(0);
         const canvases = sequence.getCanvases();
+
+        // Calculate the median aspect ratio for thumbnails
+        // Assign clostest CSS class to the image grid
+
+        const aspectRatio = median(canvases.map(i => i.getWidth() / i.getHeight()).sort());
+        const closest = AspectRatio.closest(aspectRatio);
+
+        this.element.classList.add(`hv-aspect-ratio--${closest.cssClass}`);
 
         canvases.forEach((canvas, index) => {
             let thumbnail = this.createThumbnail(index, canvas);

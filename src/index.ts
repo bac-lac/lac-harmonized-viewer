@@ -1,14 +1,26 @@
 import { RootComponent } from "./components/root.component";
+import { Options } from "./options";
+
+const deepmerge = require('deepmerge');
 
 export class HarmonizedViewer extends RootComponent {
 
     //static instances: HarmonizedViewer[];
 
-    options: any;
+    options: Options;
 
-    constructor(id: string, options: any) {
+    private defaults: Options = {
+        manifestUrl: undefined,
+        navigation: {
+            enabled: true,
+            opened: false
+        }
+    };
+
+    constructor(id: string, options: Options) {
         super(id);
-        this.options = options || {};
+        this.options = deepmerge(this.defaults, options);
+        console.log(this.options);
 
         // if (!HarmonizedViewer.instances) {
         //     HarmonizedViewer.instances = [];
@@ -23,6 +35,6 @@ export class HarmonizedViewer extends RootComponent {
     }
 }
 
-export function harmonizedViewer(id: string, options: any) {
+export function harmonizedViewer(id: string, options: Options) {
     return new HarmonizedViewer(id, options).init();
 }

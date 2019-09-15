@@ -43,6 +43,10 @@ export class NavigationToggle implements IEvent {
     name: string = 'navigation-toggle';
 }
 
+export class AnnotationsToggle implements IEvent {
+    name: string = 'annotations-toggle';
+}
+
 export class GoToPage implements IEvent {
     name: string = 'goto-page';
     page: number;

@@ -1,11 +1,12 @@
 import { MDCRipple } from "@material/ripple";
+import { Options } from "../options";
 
 export abstract class ComponentBase implements IComponentBase {
 
     element: HTMLElement;
-    options: any;
+    options: Options;
 
-    constructor(element: HTMLElement, options: any) {
+    constructor(element: HTMLElement, options: Options) {
         this.element = element;
         this.options = options;
     }

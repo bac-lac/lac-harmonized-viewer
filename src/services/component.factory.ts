@@ -1,8 +1,10 @@
 import { Component } from "../components/component";
 import { TopbarComponent } from "../components/topbar.component";
 import { ViewportComponent } from "../components/viewport.component";
-import { DrawerComponent } from "../components/drawer.component";
 import { ImageListComponent } from "../components/imagelist.component";
+import { AnnotationsDrawerComponent } from "../components/annotations.component";
+import { NavigationDrawerComponent } from "../components/navigation.component";
+import { Options } from "../options";
 
 export class ComponentFactory {
 
@@ -12,23 +14,27 @@ export class ComponentFactory {
         this.components = [];
     }
 
-    createTopbar(element: HTMLElement, options: any): Component {
+    createTopbar(element: HTMLElement, options: Options): Component {
         return new TopbarComponent(element, options);
     }
 
-    createViewport(element: HTMLElement, options: any): Component {
+    createViewport(element: HTMLElement, options: Options): Component {
         return new ViewportComponent(element, options);
     }
 
-    createDrawer(element: HTMLElement, options: any): Component {
-        return new DrawerComponent(element, options);
+    createNavigationDrawer(element: HTMLElement, options: Options): Component {
+        return new NavigationDrawerComponent(element, options);
     }
 
-    createImageList(element: HTMLElement, options: any): Component {
+    createAnnotationsDrawer(element: HTMLElement, options: Options): Component {
+        return new AnnotationsDrawerComponent(element, options);
+    }
+
+    createImageList(element: HTMLElement, options: Options): Component {
         return new ImageListComponent(element, options);
     }
 
-    create(element: HTMLElement, options: any): Component {
+    create(element: HTMLElement, options: Options): Component {
         let component = this.get(element, options);
 
         if (component) {
@@ -44,7 +50,7 @@ export class ComponentFactory {
         return (element && this.get(element, undefined) ? true : false);
     }
 
-    get(element: HTMLElement, options: any): Component {
+    get(element: HTMLElement, options: Options): Component {
         if (element) {
             if (element.classList.contains('hv-topbar')) {
                 return this.createTopbar(element, options);
@@ -52,8 +58,11 @@ export class ComponentFactory {
             else if (element.classList.contains('hv-viewport')) {
                 return this.createViewport(element, options);
             }
-            else if (element.classList.contains('mdc-drawer')) {
-                return this.createDrawer(element, options);
+            else if (element.classList.contains('hv-navigation')) {
+                return this.createNavigationDrawer(element, options);
+            }
+            else if (element.classList.contains('hv-annotations')) {
+                return this.createAnnotationsDrawer(element, options);
             }
             else if (element.classList.contains('mdc-image-list')) {
                 return this.createImageList(element, options);

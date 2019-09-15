@@ -79,8 +79,8 @@ export class ViewportComponent extends Component {
             this.publish(new PageLoaded(page));
         });
 
-        this.openseadragon.addHandler('drag', (event) => {
-
+        this.openseadragon.addHandler('tile-loaded', (event) => {
+            console.log(event);
         });
 
         this.openseadragon.addHandler('animation', (event) => {
@@ -91,7 +91,6 @@ export class ViewportComponent extends Component {
                 const maxZoom = event.eventSource.viewport.getMaxZoom();
 
                 const imageZoom = event.eventSource.viewport.viewportToImageZoom(zoom);
-                console.log(zoom, imageZoom);
                 const percentage = Math.round((zoom - minZoom) * 100 / (maxZoom - minZoom));
 
                 this.zoom = zoom;

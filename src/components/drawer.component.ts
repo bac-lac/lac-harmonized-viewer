@@ -1,6 +1,5 @@
 import { Component } from "./component";
 import { MDCDrawer } from "@material/drawer";
-import { TopbarComponent } from "./topbar.component";
 
 export class DrawerComponent extends Component {
 
@@ -8,7 +7,6 @@ export class DrawerComponent extends Component {
 
     async init() {
         this.drawer = new MDCDrawer(this.element);
-        this.on('navigation-toggle', () => this.toggle());
     }
 
     open(): void {

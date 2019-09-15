@@ -1,5 +1,6 @@
 import { ComponentFactory } from "../services/component.factory";
 import tippy from 'tippy.js';
+import { Options } from "../options";
 
 export class RootComponent implements IRootComponent {
 
@@ -11,7 +12,7 @@ export class RootComponent implements IRootComponent {
         this.factory = new ComponentFactory();
     }
 
-    build(element: HTMLElement, options: any) {
+    build(element: HTMLElement, options: Options) {
 
         if (this.factory.isComponent(element)) {
             this.factory.create(element, options);

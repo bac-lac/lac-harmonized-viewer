@@ -15,7 +15,6 @@ export abstract class Component extends ComponentBase implements IComponent {
             return eventSource.emit(event, eventArgs);
         }
         else {
-            console.log((event as TEvent).name, event)
             return eventSource.emit((event as TEvent).name, event);
         }
     }

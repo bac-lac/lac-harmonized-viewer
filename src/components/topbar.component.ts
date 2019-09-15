@@ -1,8 +1,7 @@
 import { MDCMenu } from '@material/menu';
-import { MDCMenuDistance } from '@material/menu-surface';
 
 import { Component } from "./component";
-import { NavigationToggle, ManifestLoad, ZoomChange } from "../events/event";
+import { NavigationToggle, ManifestLoad, ZoomChange, AnnotationsToggle } from "../events/event";
 
 export class TopbarComponent extends Component {
 
@@ -12,7 +11,8 @@ export class TopbarComponent extends Component {
 
     async init() {
 
-        this.addListener('click', '.mdc-top-app-bar__navigation-icon', () => new NavigationToggle());
+        this.addListener('click', '.hv-button-icon[data-target=navigation]', () => new NavigationToggle());
+        this.addListener('click', '.hv-button-icon[data-target=annotations]', () => new AnnotationsToggle());
 
         this.on('manifest-load', (event: ManifestLoad) => {
             this.text = (event.manifest) ? event.manifest.getDefaultLabel() : 'Untitled';
