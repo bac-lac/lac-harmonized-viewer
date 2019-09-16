@@ -8,7 +8,6 @@ export class ImageListComponent extends Component {
     async init() {
 
         this.on('manifest-load', (event: ManifestLoad) => this.build(event.manifest));
-        this.on('goto-page', (event: GoToPage) => this.setActive(event.page));
 
         this.addListener('click', '.hv-canvas-thumbnail', (eventTarget: HTMLElement) => {
             const canvasIndex = parseInt(eventTarget.getAttribute('data-page'));
@@ -39,6 +38,13 @@ export class ImageListComponent extends Component {
         });
 
         this.setActive(0);
+
+        console.log('build');
+
+        this.on('goto-page', (event: GoToPage) => {
+            console.log('logo');
+            this.setActive(event.page);
+        });
     }
 
     setActive(index: number) {

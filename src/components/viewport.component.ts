@@ -20,13 +20,13 @@ export class ViewportComponent extends Component {
         this.on('manifest-error', (event: ManifestError) => this.createError(event.error));
 
         this.on('page-load', (event: PageLoad) => this.hideSpinner());
-        
-        this.on('goto-page', (event: GoToPage) => this.goTo(event.page));
+
+        this.on('goto-page', (event: GoToPage) => this.goToHandler(event));
 
         this.on('goto-prev', (event: GoToPrevious) => this.previous());
-        this.on('goto-next', (event: GoToNext) => this.next());
-
-        this.initNavButtons();
+        this.on('goto-next', (event: GoToNext) => {
+            this.next();
+        });
 
         try {
             this.manifest = manifesto.create(
@@ -37,6 +37,8 @@ export class ViewportComponent extends Component {
         }
 
         this.publish(new ManifestLoad(this.manifest));
+
+        this.initNavButtons();
     }
 
     private initNavButtons() {
@@ -161,11 +163,15 @@ export class ViewportComponent extends Component {
     }
 
     goTo(page: number) {
-        if (!this.openseadragon) {
+        this.publish(new GoToPage(page));
+    }
+
+    private goToHandler(event: GoToPage) {
+        if (!event || !this.openseadragon) {
             return undefined;
         }
         this.showSpinner();
-        this.openseadragon.goToPage(page);
+        this.openseadragon.goToPage(event.page);
     }
 
     previous() {
