@@ -68,7 +68,7 @@ export class ImageListComponent extends Component {
 
         let a = document.createElement('a');
         a.href = 'javascript:;';
-        a.className = 'hv-canvas-thumbnail mdc-image-list__image-aspect-container';
+        a.className = 'hv-canvas-thumbnail mdc-image-list__image-aspect-container hv-lazy--loading';
         a.setAttribute('data-page', index.toString());
         //a.setAttribute('data-tippy-content', canvas.getDefaultLabel());
         li.append(a);
@@ -76,6 +76,15 @@ export class ImageListComponent extends Component {
         let img = document.createElement('img');
         img.src = thumbnailUrl;
         img.className = 'mdc-image-list__image';
+        img.setAttribute('loading', 'lazy');
+        img.onload = () => {
+            img.parentElement.classList.remove('hv-lazy--loading');
+            img.parentElement.classList.add('hv-lazy--loaded');
+            let placeholder = img.parentElement.parentElement.querySelector('.mdc-image-list__label');
+            if(placeholder) {
+                placeholder.textContent = placeholder.getAttribute('data-placeholder');
+            }
+        };
         a.append(img);
 
         let supporting = document.createElement('div');
@@ -84,7 +93,8 @@ export class ImageListComponent extends Component {
 
         let label = document.createElement('span');
         label.className = 'mdc-image-list__label';
-        label.textContent = canvas.getDefaultLabel();
+        label.setAttribute('data-placeholder', canvas.getDefaultLabel());
+        //label.textContent = canvas.getDefaultLabel();
         supporting.append(label);
 
         return li;

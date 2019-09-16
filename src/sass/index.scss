@@ -53,7 +53,7 @@ $mdc-theme-tooltip-background: #4c566a;
     height: 54px;
     padding: 0.6rem;
     display: flex;
-    //margin-top: 0.1rem;
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.05), 0 4px 5px 0 rgba(0, 0, 0, 0.03), 0 1px 10px 0 rgba(0, 0, 0, 0.03);
     background-color: #ffffff;
 
     .mdc-button {
@@ -94,7 +94,7 @@ $mdc-theme-tooltip-background: #4c566a;
   .mdc-drawer {
     @include mdc-drawer-width(300px);
     @include mdc-drawer-z-index(9999);
-    background-color: hsl(220, 12%, 40%);
+    background-color: hsl(218, 10%, 94%);
 
     .os-scrollbar-vertical {
       width: 15px;
@@ -128,7 +128,7 @@ $mdc-theme-tooltip-background: #4c566a;
       padding: 1.4rem 1.6rem;
 
       .#{$ns}image-list {
-        @include mdc-image-list-standard-columns(2, 8px);
+        @include mdc-image-list-standard-columns(2, 12px);
 
         &.#{$ns}aspect-ratio--1-1 {
           @include mdc-image-list-aspect(1/1);
@@ -149,70 +149,58 @@ $mdc-theme-tooltip-background: #4c566a;
           @include mdc-image-list-aspect(3/1);
         }
 
-        &.disabled {
-          .mdc-image-list__item {
-            .mdc-image-list__image-aspect-container {
-              opacity: 0.4;
-              background-color: #777;
-            }
-            .mdc-image-list__supporting {
-              opacity: 0;
-            }
-          }
-        }
-
         .mdc-image-list__item {
-          margin-bottom: 0.4rem;
+          margin-bottom: 0.2rem;
 
           &.active {
             .mdc-image-list__image-aspect-container {
               opacity: 1;
-              filter: grayscale(0%);
-              box-shadow: 0 0 0 3px #ebcb8b;
+              box-shadow: 0 0 1px 4px #b48ead;
             }
           }
 
           .mdc-image-list__image-aspect-container {
-            @extend .mdc-elevation--z6;
+            @extend .mdc-elevation--z5;
 
-            filter: grayscale(40%);
+            opacity: 0.65;
+            filter: grayscale(30%);
 
-            opacity: 0.5;
             display: block;
             border-radius: 2px;
-            border: #000 2px solid;
+            border: #fff 6px solid;
             transition: all 250ms ease;
-            background-color: #000;
+
+            &.#{$ns}lazy--loading {
+              .mdc-image-list__image {
+                background-color: #eeeff1;
+
+                animation: #{$ns}placeholder 2s linear;
+                animation-iteration-count: infinite;
+                background: linear-gradient(90deg, #f2f2f2 25%, #e6e6e6 37%, #f2f2f2 63%);
+                background-size: 400% 100%;
+                background-size: 1200px 100%;
+              }
+            }
 
             &:hover {
               opacity: 1;
               filter: grayscale(0%);
-              box-shadow: 0 0 0 3px rgba(216, 222, 233, 0.7);
-
-              & .mdc-image-list__supporting {
-                background-color: rgba(0, 0, 0, 0.7);
-
-                .mdc-image-list__label {
-                  color: rgba(255, 255, 255, 1);
-                }
-              }
             }
           }
 
           .mdc-image-list__supporting {
-            height: auto;
+            height: 20px;
             padding: 4px;
             margin-top: 0.2rem;
             justify-content: center;
             transition: all 200ms ease;
-            border-bottom-left-radius: 2px;
-            border-bottom-right-radius: 2px;
-            background-color: hsl(220, 12%, 34%);
+            padding: 0.3rem 0.6rem;
+            border-radius: 2px;
+            background-color: #ddd;
 
             .mdc-image-list__label {
-              color: #ccc;
               font-size: 0.8rem;
-              line-height: 0.9rem;
+              line-height: 0.8rem;
             }
           }
         }
@@ -268,7 +256,7 @@ $mdc-theme-tooltip-background: #4c566a;
     background-image: linear-gradient(
       to right,
       rgba(255, 255, 255, 0.1),
-      rgba(255, 255, 255, 0.02) 15%,
+      rgba(255, 255, 255, 0) 15%,
       rgba(255, 255, 255, 0.1)
     );
     background-size: 1200px 100%;
