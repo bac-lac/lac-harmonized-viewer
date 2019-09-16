@@ -7,6 +7,14 @@ export class DrawerComponent extends Component {
 
     async init() {
         this.drawer = new MDCDrawer(this.element);
+
+        this.drawer.listen('MDCDrawer:opened', () => {
+            
+        });
+
+        this.drawer.listen('MDCDrawer:closed', () => {
+            
+        });
     }
 
     open(): void {

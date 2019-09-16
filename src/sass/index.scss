@@ -2,9 +2,11 @@
 @import "_animations";
 
 $mdc-theme-primary: #5e81ac;
-$mdc-theme-background: hsl(218, 20%, 97%);
-$mdc-theme-tooltip-text: #eceff4;
-$mdc-theme-tooltip-background: #4c566a;
+$mdc-theme-background: hsl(218, 35%, 98%);
+$mdc-theme-navigation-background: #e5e9f0;
+$mdc-theme-navigation-button-background: #e5e9f0;
+$mdc-theme-tooltip-text: #fff;
+$mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
 
 .harmonized-viewer {
   @import "@material/elevation/mdc-elevation";
@@ -19,9 +21,11 @@ $mdc-theme-tooltip-background: #4c566a;
   @import "@material/layout-grid/mdc-layout-grid";
   @import "@material/top-app-bar/mdc-top-app-bar";
 
+  width: 100%;
   height: 100%;
   display: flex;
-  overflow: hidden;
+  position: relative;
+  overflow-x: hidden;
   flex-direction: column;
   background-color: $mdc-theme-background;
 
@@ -38,7 +42,7 @@ $mdc-theme-tooltip-background: #4c566a;
   .#{$ns}topbar {
     @extend .mdc-top-app-bar;
     @include mdc-top-app-bar-ink-color(#ffffff);
-    @include mdc-top-app-bar-fill-color(#3b4252);
+    @include mdc-top-app-bar-fill-color(#434c5e);
 
     z-index: 99999;
 
@@ -50,21 +54,19 @@ $mdc-theme-tooltip-background: #4c566a;
   .#{$ns}toolbar {
     @extend .mdc-layout-grid;
     width: 100%;
-    height: 54px;
+    //height: 54px;
     padding: 0.6rem;
     display: flex;
-    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.05), 0 4px 5px 0 rgba(0, 0, 0, 0.03), 0 1px 10px 0 rgba(0, 0, 0, 0.03);
     background-color: #ffffff;
 
     .mdc-button {
       @include mdc-button-horizontal-padding(0.8rem);
-      @include mdc-button-icon-color(hsl(230, 34%, 73%));
-      @include mdc-button-ink-color(#777);
+      @include mdc-button-icon-color(#d8dee9);
+      @include mdc-button-ink-color(#4c566a);
       @include mdc-button-shape-radius(2px);
       @include mdc-ripple-surface();
       @include mdc-ripple-radius-bounded();
-      //@include mdc-states();
-      @include mdc-states(#446cb3, false);
+      @include mdc-states();
 
       height: 36px;
       padding: 0 0.8rem;
@@ -80,21 +82,26 @@ $mdc-theme-tooltip-background: #4c566a;
       }
 
       .mdc-button__label {
-        font-size: 16px;
+        font-size: 15px;
+        font-weight: normal;
         letter-spacing: 0;
         text-transform: none;
       }
     }
   }
 
-  .mdc-top-app-bar--prominent-fixed-adjust {
-    padding-top: 118px;
-  }
+  // .mdc-top-app-bar--prominent-fixed-adjust {
+  //   padding-top: 118px;
+  // }
 
   .mdc-drawer {
-    @include mdc-drawer-width(300px);
+    @include mdc-drawer-width(250px);
     @include mdc-drawer-z-index(9999);
-    background-color: hsl(218, 10%, 94%);
+    border: none !important;
+
+    &.#{$ns}navigation {
+      background-color: $mdc-theme-navigation-background;
+    }
 
     .os-scrollbar-vertical {
       width: 15px;
@@ -104,31 +111,43 @@ $mdc-theme-tooltip-background: #4c566a;
       }
     }
 
-    &--right {
-      -webkit-transform: translateX(107%);
-      transform: translateX(107%);
-      -webkit-transform: translateX(calc(100% + 20px));
-      transform: translateX(calc(100% + 20px));
-      left: auto;
-      right: 0;
-    }
-
-    &--right .mdc-drawer__drawer {
-      -webkit-transform: none;
-      transform: none;
-    }
-
     & ~ .mdc-drawer-app-content {
       flex: 1;
       display: flex;
       flex-direction: column;
     }
 
+    & ~ .mdc-drawer-app-content {
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+
+    &.#{$ns}navigation.mdc-drawer--open:not(.mdc-drawer--closing) ~ .mdc-drawer-app-content {
+      margin-left: 250px !important;
+    }
+    &.#{$ns}annotations.mdc-drawer--open:not(.mdc-drawer--closing) ~ .mdc-drawer-app-content {
+      margin-right: 250px !important;
+    }
+
+    &.#{$ns}annotations {
+      line-height: 1.4rem;
+
+      dl {
+        dt {
+          font-weight: bold;
+        }
+        dd {
+          margin: 0 0 1.5rem 0;
+          padding: 0;
+        }
+      }
+    }
+
     &__content {
-      padding: 1.4rem 1.6rem;
+      padding: 1.8rem;
 
       .#{$ns}image-list {
-        @include mdc-image-list-standard-columns(2, 12px);
+        @include mdc-image-list-standard-columns(2, 8px);
 
         &.#{$ns}aspect-ratio--1-1 {
           @include mdc-image-list-aspect(1/1);
@@ -150,28 +169,25 @@ $mdc-theme-tooltip-background: #4c566a;
         }
 
         .mdc-image-list__item {
-          margin-bottom: 0.2rem;
+          margin-bottom: 0rem;
 
           &.active {
             .mdc-image-list__image-aspect-container {
-              opacity: 1;
-              box-shadow: 0 0 1px 4px #b48ead;
+              box-shadow: 0 0 0 4px #81A1C1;
             }
           }
 
           .mdc-image-list__image-aspect-container {
-            @extend .mdc-elevation--z5;
-
-            opacity: 0.65;
-            filter: grayscale(30%);
+            @extend .mdc-elevation--z1;
 
             display: block;
             border-radius: 2px;
-            border: #fff 6px solid;
+            border: #fff 3px solid;
             transition: all 250ms ease;
 
             &.#{$ns}lazy--loading {
-              .mdc-image-list__image {
+              .mdc-image-list__image,
+              .mdc-image-list__supporting {
                 background-color: #eeeff1;
 
                 animation: #{$ns}placeholder 2s linear;
@@ -183,22 +199,19 @@ $mdc-theme-tooltip-background: #4c566a;
             }
 
             &:hover {
-              opacity: 1;
-              filter: grayscale(0%);
+              box-shadow: 0 0 1px 4px #bbb;
             }
           }
 
           .mdc-image-list__supporting {
             height: 20px;
-            padding: 4px;
-            margin-top: 0.2rem;
+            padding: 0.3rem 0.6rem;
+            margin-top: 0.1rem;
             justify-content: center;
             transition: all 200ms ease;
-            padding: 0.3rem 0.6rem;
-            border-radius: 2px;
-            background-color: #ddd;
 
             .mdc-image-list__label {
+              color: #4c566a;
               font-size: 0.8rem;
               line-height: 0.8rem;
             }
@@ -221,12 +234,42 @@ $mdc-theme-tooltip-background: #4c566a;
     align-items: center;
     justify-content: center;
 
-    .#{$ns}button__prev {
-      @extend .mdc-elevation--z1;
-      left: 1rem;
-      font-size: 4rem;
+    &:hover {
+      .#{$ns}button__prev,
+      .#{$ns}button__next {
+        opacity: 1;
+      }
+    }
+
+    .#{$ns}button__prev,
+    .#{$ns}button__next {
+      opacity: 0;
+      min-width: auto;
+      height: auto;
+      padding: 0.8rem 0.4rem;
       position: absolute;
-      background-color: #fff;
+      z-index: 99999;
+      transition: opacity 400ms ease-in;
+
+      //@include mdc-button-horizontal-padding(2.0rem);
+      @include mdc-button-container-fill-color($mdc-theme-navigation-button-background);
+      @include mdc-button-ink-color(#4c566a);
+      @include mdc-button-shape-radius(2px);
+      @include mdc-ripple-surface();
+      @include mdc-ripple-radius-bounded();
+      @include mdc-states();
+
+      .material-icons {
+        font-size: 30px;
+      }
+    }
+
+    .#{$ns}button__prev {
+      left: 1rem;
+    }
+
+    .#{$ns}button__next {
+      right: 1rem;
     }
   }
 
@@ -241,14 +284,9 @@ $mdc-theme-tooltip-background: #4c566a;
     }
   }
 
-  .#{$ns}spinner {
-    animation: spinAround 1s ease-in-out infinite;
-    border-width: 4px;
-    border-color: rgba(0, 0, 0, 0.1);
-    border-top-color: rgba(0, 0, 0, 0.4);
-  }
-
   .#{$ns}placeholder {
+    background-color: $mdc-theme-background;
+
     position: static;
     overflow: hidden;
     animation: #{$ns}placeholder 2s ease;
@@ -276,5 +314,34 @@ $mdc-theme-tooltip-background: #4c566a;
 
   .tippy-tooltip.hv-theme .tippy-backdrop {
     background-color: $mdc-theme-tooltip-background;
+  }
+
+  .#{$ns}spinner {
+    opacity: 1;
+    display: inline-block;
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border: 5px solid #e5e9f0;
+    border-radius: 50%;
+    border-top-color: #81A1C1;
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+    transition: opacity 1s ease;
+
+    &--hidden {
+      opacity: 0;
+    }
+  }
+
+  @keyframes spin {
+    to {
+      -webkit-transform: rotate(360deg);
+    }
+  }
+  @-webkit-keyframes spin {
+    to {
+      -webkit-transform: rotate(360deg);
+    }
   }
 }

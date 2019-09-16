@@ -28,7 +28,6 @@
   "dependencies": {
     "@types/overlayscrollbars": "^1.9.0",
     "@webcomponents/webcomponentsjs": "^2.2.10",
-    "animate.css": "^3.7.2",
     "bulma-tooltip": "^2.0.2",
     "deepmerge": "^4.0.0",
     "get-user-locale": "^1.2.0",

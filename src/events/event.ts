@@ -31,11 +31,13 @@ export class CanvasLoad implements IEvent {
     }
 }
 
-export class PageLoaded implements IEvent {
-    name: string = 'page-loaded';
+export class PageLoad implements IEvent {
+    name: string = 'page-load';
     page: number;
-    constructor(page: number) {
+    canvas: Manifesto.ICanvas;
+    constructor(page: number, canvas: Manifesto.ICanvas) {
         this.page = page;
+        this.canvas = canvas;
     }
 }
 
@@ -53,6 +55,14 @@ export class GoToPage implements IEvent {
     constructor(page: number) {
         this.page = page;
     }
+}
+
+export class GoToPrevious implements IEvent {
+    name: string = 'goto-prev';
+}
+
+export class GoToNext implements IEvent {
+    name: string = 'goto-next';
 }
 
 export class ZoomChange implements IEvent {

@@ -1,7 +1,8 @@
+import { MDCRipple } from '@material/ripple';
 import { MDCMenu } from '@material/menu';
-
+import { AnnotationsToggle, ManifestLoad, NavigationToggle, ZoomChange } from "../events/event";
 import { Component } from "./component";
-import { NavigationToggle, ManifestLoad, ZoomChange, AnnotationsToggle } from "../events/event";
+
 
 export class TopbarComponent extends Component {
 
@@ -17,16 +18,14 @@ export class TopbarComponent extends Component {
         this.on('manifest-load', (event: ManifestLoad) => {
             this.text = (event.manifest) ? event.manifest.getDefaultLabel() : 'Untitled';
         });
-
-        this.on('zoom-change', (event: ZoomChange) => {
-            const elements = this.element.querySelectorAll('[data-bind=zoom-percentage]');
-            Array.from(elements).forEach((elem) => {
-                elem.textContent = Math.round(event.percentage) + '%';
-            });
-        });
     }
 
     async render() {
+
+        Array.from(this.element.querySelectorAll(".mdc-button")).forEach(elem => {
+            MDCRipple.attachTo(elem);
+        });
+
         this.element.querySelector(".mdc-top-app-bar__title").textContent = this.text;
 
         const buttonZoom = document.querySelector('.hv-zoom-button');

@@ -1,5 +1,5 @@
 import { Component } from "./component";
-import { ManifestLoad, GoToPage, PageLoaded } from "../events/event";
+import { ManifestLoad, GoToPage, PageLoad } from "../events/event";
 import { median } from "../helpers/math.helper";
 import { AspectRatio } from "../helpers/aspect-ratio.helper";
 
@@ -8,6 +8,7 @@ export class ImageListComponent extends Component {
     async init() {
 
         this.on('manifest-load', (event: ManifestLoad) => this.build(event.manifest));
+        this.on('page-load', (event: PageLoad) => this.setActive(event.page));
 
         this.addListener('click', '.hv-canvas-thumbnail', (eventTarget: HTMLElement) => {
             const canvasIndex = parseInt(eventTarget.getAttribute('data-page'));
@@ -38,19 +39,29 @@ export class ImageListComponent extends Component {
         });
 
         this.setActive(0);
-        this.on('page-loaded', (event: PageLoaded) => this.setActive(event.page));
-
     }
 
     setActive(index: number) {
 
-        const items = Array.from(this.element.children).map(child => child as HTMLElement);
+        const items = Array
+            .from(this.element.children)
+            .map(child => child as HTMLElement);
 
-        items.forEach(item =>
-            item.classList.remove('active'));
+        const active = (index < items.length) ? items[index] : undefined;
 
-        if (index < items.length) {
-            items[index].classList.add('active');
+        // Apply active CSS class
+
+        items.forEach((item) => item.classList.remove('active'));
+
+        if (active) {
+            active.classList.add('active');
+        }
+
+        // Make sure the canvas thumbnail is visible
+        // by scrolling to its corresponding element
+
+        if (active) {
+            active.scrollIntoView({ block: 'end', behavior: 'smooth' });
         }
     }
 
@@ -77,14 +88,14 @@ export class ImageListComponent extends Component {
         img.src = thumbnailUrl;
         img.className = 'mdc-image-list__image';
         img.setAttribute('loading', 'lazy');
-        img.onload = () => {
-            img.parentElement.classList.remove('hv-lazy--loading');
-            img.parentElement.classList.add('hv-lazy--loaded');
-            let placeholder = img.parentElement.parentElement.querySelector('.mdc-image-list__label');
-            if(placeholder) {
-                placeholder.textContent = placeholder.getAttribute('data-placeholder');
-            }
-        };
+        // img.onload = () => {
+        //     img.parentElement.classList.remove('hv-lazy--loading');
+        //     img.parentElement.classList.add('hv-lazy--loaded');
+        //     let placeholder = img.parentElement.parentElement.querySelector('.mdc-image-list__label');
+        //     if(placeholder) {
+        //         placeholder.textContent = placeholder.getAttribute('data-placeholder');
+        //     }
+        // };
         a.append(img);
 
         let supporting = document.createElement('div');
@@ -93,8 +104,7 @@ export class ImageListComponent extends Component {
 
         let label = document.createElement('span');
         label.className = 'mdc-image-list__label';
-        label.setAttribute('data-placeholder', canvas.getDefaultLabel());
-        //label.textContent = canvas.getDefaultLabel();
+        label.textContent = canvas.getDefaultLabel();
         supporting.append(label);
 
         return li;

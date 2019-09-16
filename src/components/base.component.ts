@@ -1,4 +1,3 @@
-import { MDCRipple } from "@material/ripple";
 import { Options } from "../options";
 
 export abstract class ComponentBase implements IComponentBase {
@@ -15,9 +14,7 @@ export abstract class ComponentBase implements IComponentBase {
     }
 
     async render() {
-        Array.from(document.querySelectorAll(".mdc-button")).forEach(elem => {
-            MDCRipple.attachTo(elem);
-        });
+        
     }
 
     async destroy() {

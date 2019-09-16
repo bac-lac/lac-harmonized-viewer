@@ -3,5 +3,9 @@ export interface Options {
     navigation?: {
         enabled?: boolean,
         opened?: boolean
+    },
+    annotations?: {
+        enabled?: boolean,
+        opened?: boolean
     }
 }

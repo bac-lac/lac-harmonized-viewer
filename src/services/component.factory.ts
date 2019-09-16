@@ -4,6 +4,7 @@ import { ViewportComponent } from "../components/viewport.component";
 import { ImageListComponent } from "../components/imagelist.component";
 import { AnnotationsDrawerComponent } from "../components/annotations.component";
 import { NavigationDrawerComponent } from "../components/navigation.component";
+import { ToolbarComponent } from "../components/toolbar.component";
 import { Options } from "../options";
 
 export class ComponentFactory {
@@ -32,6 +33,10 @@ export class ComponentFactory {
 
     createImageList(element: HTMLElement, options: Options): Component {
         return new ImageListComponent(element, options);
+    }
+
+    createToolbar(element: HTMLElement, options: Options): Component {
+        return new ToolbarComponent(element, options);
     }
 
     create(element: HTMLElement, options: Options): Component {
@@ -66,6 +71,9 @@ export class ComponentFactory {
             }
             else if (element.classList.contains('mdc-image-list')) {
                 return this.createImageList(element, options);
+            }
+            else if (element.classList.contains('hv-toolbar')) {
+                return this.createToolbar(element, options);
             }
         }
         return undefined;

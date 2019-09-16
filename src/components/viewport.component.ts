@@ -1,6 +1,7 @@
 import "manifesto.js";
 import { Component } from "./component";
-import { ManifestLoad, ManifestError, GoToPage, PageLoaded, ZoomChange } from "../events/event";
+import { ManifestLoad, ManifestError, GoToPage, PageLoad, ZoomChange, GoToPrevious, GoToNext } from "../events/event";
+import { MDCRipple } from "@material/ripple";
 
 const openseadragon = require('openseadragon');
 
@@ -13,11 +14,23 @@ export class ViewportComponent extends Component {
 
     async init() {
 
+        this.showSpinner();
+
         this.on('manifest-load', () => this.createViewport);
         this.on('manifest-error', (event: ManifestError) => {
             this.createError(event.error);
         });
+        this.on('page-load', (event: PageLoad) => {
+            this.hideSpinner();
+            console.log('page-load', event);
+        });
+
         this.on('goto-page', (event: GoToPage) => this.goTo(event.page));
+
+        this.on('goto-prev', (event: GoToPrevious) => this.previous());
+        this.on('goto-next', (event: GoToNext) => this.next());
+
+        this.initNavButtons();
 
         try {
             this.manifest = manifesto.create(
@@ -28,6 +41,26 @@ export class ViewportComponent extends Component {
         }
 
         this.publish(new ManifestLoad(this.manifest));
+    }
+
+    private initNavButtons() {
+
+        const back = this.element.querySelector('.hv-button__prev');
+        if (back) {
+            MDCRipple.attachTo(back);
+            back.addEventListener('click', () => {
+                this.publish(new GoToPrevious())
+            });
+        }
+
+        const next = this.element.querySelector('.hv-button__next');
+        if (next) {
+            MDCRipple.attachTo(next);
+            next.addEventListener('click', () => {
+                this.publish(new GoToNext())
+            });
+        }
+
     }
 
     async render() {
@@ -45,7 +78,7 @@ export class ViewportComponent extends Component {
 
     private createViewport() {
 
-        if(!this.manifest) {
+        if (!this.manifest) {
             return;
         }
 
@@ -70,17 +103,16 @@ export class ViewportComponent extends Component {
             showNavigationControl: false,
             showSequenceControl: false,
             sequenceMode: true,
-            placeholderFillStyle: '#dddddd',
             tileSources: sources
         });
 
         this.openseadragon.addHandler('open', (event) => {
             const page = event.eventSource.currentPage();
-            this.publish(new PageLoaded(page));
-        });
+            const canvas = sequence.getCanvasByIndex(page);
 
-        this.openseadragon.addHandler('tile-loaded', (event) => {
-            console.log(event);
+            this.whenFullyLoaded(this.openseadragon.world.getItemAt(0), () => {
+                this.publish(new PageLoad(page, canvas));
+            });
         });
 
         this.openseadragon.addHandler('animation', (event) => {
@@ -90,7 +122,7 @@ export class ViewportComponent extends Component {
                 const minZoom = event.eventSource.viewport.getMinZoom();
                 const maxZoom = event.eventSource.viewport.getMaxZoom();
 
-                const imageZoom = event.eventSource.viewport.viewportToImageZoom(zoom);
+                //const imageZoom = event.eventSource.viewport.viewportToImageZoom(zoom);
                 const percentage = Math.round((zoom - minZoom) * 100 / (maxZoom - minZoom));
 
                 this.zoom = zoom;
@@ -99,13 +131,73 @@ export class ViewportComponent extends Component {
         });
     }
 
-    private goTo(page: number) {
-        if (this.openseadragon) {
-            this.openseadragon.goToPage(page);
+    private whenFullyLoaded(tiledImage: any, callback: () => any) {
+        if (tiledImage.getFullyLoaded()) {
+            setTimeout(callback, 1); // So both paths are asynchronous
+        } else {
+            tiledImage.addOnceHandler('fully-loaded-change', function () {
+                callback(); // Calling it this way keeps the arguments consistent (if we passed callback into addOnceHandler it would get an event on this path but not on the setTimeout path above)
+            });
         }
     }
 
-    private createError(error: Error) {
+    private getSpinner(): HTMLElement {
+
+        let spinner: HTMLElement = this.element.querySelector('.hv-spinner');
+
+        if (!spinner) {
+            spinner = document.createElement('div');
+            spinner.classList.add('hv-spinner');
+            this.element.append(spinner);
+        }
+
+        return spinner;
+    }
+
+    private showSpinner() {
+        let spinner = this.getSpinner();
+        spinner.classList.remove('hv-spinner--hidden');
+    }
+
+    private hideSpinner() {
+        let spinner = this.getSpinner();
+        spinner.classList.add('hv-spinner--hidden');
+    }
+
+    goTo(page: number) {
+        if (!this.openseadragon) {
+            return undefined;
+        }
+        this.showSpinner();
+        this.openseadragon.goToPage(page);
+    }
+
+    previous() {
+        if (!this.openseadragon) {
+            return undefined;
+        }
+        const page = this.page();
+        return this.goTo((page > 0) ? page - 1 : 0);
+    }
+
+    next() {
+        if (!this.openseadragon || !this.manifest) {
+            return undefined;
+        }
+
+        const sequence = this.manifest.getSequenceByIndex(0);
+
+        const page = this.page();
+        const pageCount = sequence.getTotalCanvases();
+
+        return this.goTo((page < pageCount) ? page + 1 : pageCount - 1);
+    }
+
+    private createError(err: Error) {
+
+        if (!err) {
+            return undefined;
+        }
 
         const alert = document.createElement('div');
         alert.className = 'hv-error';
@@ -120,7 +212,6 @@ export class ViewportComponent extends Component {
         alert.append(text);
 
         this.element.append(alert);
-
     }
 }
 
