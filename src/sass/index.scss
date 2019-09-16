@@ -199,7 +199,7 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
             }
 
             &:hover {
-              box-shadow: 0 0 1px 4px #bbb;
+              box-shadow: 0 0 1px 4px #D8DEE9;
             }
           }
 
@@ -249,7 +249,7 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
       padding: 0.8rem 0.4rem;
       position: absolute;
       z-index: 99999;
-      transition: opacity 400ms ease-in;
+      transition: opacity 200ms ease;
 
       //@include mdc-button-horizontal-padding(2.0rem);
       @include mdc-button-container-fill-color($mdc-theme-navigation-button-background);
@@ -304,8 +304,8 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
     opacity: 0.9;
     color: $mdc-theme-tooltip-text;
     background-color: $mdc-theme-tooltip-background;
-    font-size: 1rem;
-    padding: 0.4rem 0.7rem;
+    font-size: 1.0rem;
+    padding: 0.3rem 0.6rem;
   }
 
   .tippy-tooltip.hv-theme[data-animatefill] {

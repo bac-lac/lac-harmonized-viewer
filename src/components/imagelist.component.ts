@@ -8,7 +8,7 @@ export class ImageListComponent extends Component {
     async init() {
 
         this.on('manifest-load', (event: ManifestLoad) => this.build(event.manifest));
-        this.on('page-load', (event: PageLoad) => this.setActive(event.page));
+        this.on('goto-page', (event: GoToPage) => this.setActive(event.page));
 
         this.addListener('click', '.hv-canvas-thumbnail', (eventTarget: HTMLElement) => {
             const canvasIndex = parseInt(eventTarget.getAttribute('data-page'));
@@ -42,6 +42,8 @@ export class ImageListComponent extends Component {
     }
 
     setActive(index: number) {
+
+        console.log('active');
 
         const items = Array
             .from(this.element.children)

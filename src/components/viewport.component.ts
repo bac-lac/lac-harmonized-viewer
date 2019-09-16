@@ -17,14 +17,10 @@ export class ViewportComponent extends Component {
         this.showSpinner();
 
         this.on('manifest-load', () => this.createViewport);
-        this.on('manifest-error', (event: ManifestError) => {
-            this.createError(event.error);
-        });
-        this.on('page-load', (event: PageLoad) => {
-            this.hideSpinner();
-            console.log('page-load', event);
-        });
+        this.on('manifest-error', (event: ManifestError) => this.createError(event.error));
 
+        this.on('page-load', (event: PageLoad) => this.hideSpinner());
+        
         this.on('goto-page', (event: GoToPage) => this.goTo(event.page));
 
         this.on('goto-prev', (event: GoToPrevious) => this.previous());
