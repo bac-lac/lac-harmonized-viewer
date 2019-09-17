@@ -3,7 +3,8 @@ import { EventEmitter } from "events";
 export interface IEvent {
     readonly name: string;
 }
-export type TEvent = IEvent;
+
+export type EventType = IEvent;
 
 export class ManifestError implements IEvent {
     name: string = 'manifest-error';

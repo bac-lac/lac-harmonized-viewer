@@ -5,9 +5,18 @@ export abstract class ComponentBase implements IComponentBase {
     element: HTMLElement;
     options: Options;
 
-    constructor(element: HTMLElement, options: Options) {
-        this.element = element;
+    constructor(options: Options) {
         this.options = options;
+    }
+
+    create(): HTMLElement {
+        return undefined;
+    }
+
+    bind() {
+    }
+
+    init2() {
     }
 
     async init() {
@@ -63,31 +72,34 @@ export abstract class ComponentBase implements IComponentBase {
     //     }
     // }
 
-    protected generateId(): string {
-        let id = null;
-        let characters = "abcdefghijklmnopqrstuvwxyz0123456789";
-        while (true) {
+    // protected generateId(): string {
+    //     let id = null;
+    //     let characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+    //     while (true) {
 
-            let id = "hv-";
-            for (var i = 0; i < 4; i++) {
-                id += characters.charAt(Math.floor(Math.random() * characters.length));
-            }
+    //         let id = "hv-";
+    //         for (var i = 0; i < 4; i++) {
+    //             id += characters.charAt(Math.floor(Math.random() * characters.length));
+    //         }
 
-            let isUnique = (document.getElementById(id) == null);
-            if (isUnique) {
-                this.element.id = id;
-                break;
-            }
-        }
-        return id;
-    }
+    //         let isUnique = (document.getElementById(id) == null);
+    //         if (isUnique) {
+    //             this.element.id = id;
+    //             break;
+    //         }
+    //     }
+    //     return id;
+    // }
 }
 
 export interface IComponentBase {
     element: HTMLElement;
     options: any;
-    
+
     init();
+    init2();
+    create(): HTMLElement;
+    bind();
     render();
     destroy();
 

@@ -3,13 +3,20 @@ const autoprefixer = require('autoprefixer');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-    entry: ['./src/sass/index.scss', './src/index.ts'],
+    target: 'web',
+    entry: [
+        './src/sass/index.scss',
+        './src/index.ts'
+    ],
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'harmonized-viewer.bundle.js',
         library: 'HV'
     },
     resolve: {
+        alias: {
+            handlebars: 'handlebars/dist/handlebars.min.js'
+        },
         extensions: ['.scss', '.ts', '.tsx', '.js']
     },
     plugins: [
@@ -22,7 +29,6 @@ module.exports = {
         rules: [
             {
                 test: /\.scss$/,
-                //include: [{ path.resolve(__dirname, 'src') }, { path.resolve(__dirname, 'node_modules') }],
                 use: [
                     {
                         loader: 'file-loader',
@@ -68,7 +74,10 @@ module.exports = {
                 options: {
                     path: 'openseadragon'
                 }
-            },
+            }
         ]
+    },
+    node: {
+        fs: 'empty'
     }
 }

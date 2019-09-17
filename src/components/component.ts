@@ -1,13 +1,46 @@
 import { ComponentBase } from "./base.component";
-import { eventSource, TEvent, IEvent } from "../events/event";
+import { eventSource, IEvent, EventType } from "../events/event";
+import { Options } from "../options";
 
 export abstract class Component extends ComponentBase implements IComponent {
 
-    on(event: string, listener: (event: any) => void): void {
+    children: Component[];
+
+    constructor(options: Options) {
+        super(options);
+        this.children = [];
+    }
+
+    add(component: Component): Component {
+        if(component) {
+            this.children.push(component);
+        }
+        return component;
+    }
+
+    // create(elementName: string, className?: string): HTMLElement {
+    //     if(!this.element) {
+    //         return undefined;
+    //     }
+    //     const elem = document.createElement(elementName);
+    //     elem.className = className;
+    //     this.element.append(elem);
+    // }
+
+    // listen<TEvent>(callback: (event: TEvent) => void) {
+    //     const nameof = <T>(name: keyof T) => name;
+    //     const eventName = nameof<TEvent>(name) as string;
+
+    //     console.log(eventName);
+
+    //     eventSource.on(eventName, (ev) => callback(ev));
+    // }
+
+    on(event: string, listener: (event: any) => void) {
         eventSource.on(event, (event: any) => listener(event));
     }
 
-    publish(event: string | TEvent, eventArgs?: any): boolean {
+    publish(event: string | EventType, eventArgs?: any): boolean {
         if (!event) {
             return false;
         }
@@ -15,39 +48,39 @@ export abstract class Component extends ComponentBase implements IComponent {
             return eventSource.emit(event, eventArgs);
         }
         else {
-            return eventSource.emit((event as TEvent).name, event);
+            return eventSource.emit((event as EventType).name, event);
         }
     }
 
-    addListener(event: string, selector: string, resolver: (target: HTMLElement) => IEvent): void {
-        if (!event) {
-            return;
-        }
-        this.element.addEventListener(event, (eventNative) => {
-            if (selector) {
-                const eventTarget = this.getEventTarget(eventNative.target as HTMLElement, selector);
-                if (eventTarget) {
-                    const forwardTo = resolver(eventTarget);
-                    this.publish(forwardTo.name, forwardTo);
-                }
-            }
-            // else {
-            //     this.publish(event);
-            // }
-        });
+    addListener(event: IEvent, selector: string): void {
+
+        // if (!event || !selector) {
+        //     return undefined;
+        // }
+
+        // this.element.addEventListener(event.name, (native) => {
+        //     const eventTarget = this.findChild(native.target as HTMLElement, selector);
+        //     if (eventTarget) {
+        //         const destination = resolver(eventTarget);
+        //         if (destination) {
+        //             this.publish(destination);
+        //         }
+        //     }
+        // });
     }
 
-    private getEventTarget(child: HTMLElement, selector: string): HTMLElement {
-        if (!selector) {
+    private findChild(target: HTMLElement, selector: string): HTMLElement {
+        if (!target || !selector) {
             return undefined;
         }
         return Array
             .from(this.element.querySelectorAll(selector))
             .map(elem => elem as HTMLElement)
-            .find(elem => elem.isSameNode(child) || elem.contains(child));
+            .find(elem => elem.isSameNode(target) || elem.contains(target));
     }
 
-    bind(eventNativeName: string, eventName: string, map: (eventTarget: HTMLElement) => any = undefined, selector: string = undefined): void {
+    bind2(eventNativeName: string, eventName: string, map: (eventTarget: HTMLElement) => any = undefined, selector: string = undefined): void {
+
         if (!eventName) {
             return undefined;
         }
@@ -84,6 +117,6 @@ export abstract class Component extends ComponentBase implements IComponent {
 }
 
 export interface IComponent {
-    on(event: string, listener: (event: any) => void): void;
-    publish(event: string | TEvent, eventArgs?: any): boolean;
+    on(event: string, listener: (event: any) => void);
+    publish(event: string | EventType, eventArgs?: any): boolean;
 }

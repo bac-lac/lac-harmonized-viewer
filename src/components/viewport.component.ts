@@ -36,7 +36,7 @@ export class ViewportComponent extends Component {
             this.publish(new ManifestError(err));
         }
 
-        this.publish(new ManifestLoad(this.manifest));
+        //this.publish(new ManifestLoad(this.manifest));
 
         this.initNavButtons();
     }

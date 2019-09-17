@@ -25,7 +25,7 @@ export class HarmonizedViewer extends RootComponent {
     }
 
     async init() {
-        this.build(this.element, this.options);
+        this.build(this.options);
         this.execute();
     }
 }

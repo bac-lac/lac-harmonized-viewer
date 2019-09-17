@@ -57,6 +57,7 @@
     "gulp-changed": "^4.0.1",
     "gulp-clean": "^0.4.0",
     "gulp-clean-css": "^4.2.0",
+    "gulp-compile-handlebars": "^0.6.1",
     "gulp-concat": "^2.6.1",
     "gulp-declare": "^0.3.0",
     "gulp-handlebars": "^5.0.2",

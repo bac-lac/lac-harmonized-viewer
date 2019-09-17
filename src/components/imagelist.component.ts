@@ -1,21 +1,36 @@
 import { Component } from "./component";
-import { ManifestLoad, GoToPage, PageLoad } from "../events/event";
+import { ManifestLoad, GoToPage } from "../events/event";
 import { median } from "../helpers/math.helper";
 import { AspectRatio } from "../helpers/aspect-ratio.helper";
 
 export class ImageListComponent extends Component {
 
-    async init() {
+    create(): HTMLElement {
 
-        this.on('manifest-load', (event: ManifestLoad) => this.build(event.manifest));
+        const list = document.createElement('ul');
+        list.className = 'hv-image-list mdc-image-list';
 
-        this.addListener('click', '.hv-canvas-thumbnail', (eventTarget: HTMLElement) => {
-            const canvasIndex = parseInt(eventTarget.getAttribute('data-page'));
-            return new GoToPage(canvasIndex);
-        });
+        return list;
+
     }
 
-    private build(manifest: Manifesto.Manifest) {
+    bind() {
+console.log('bind');
+        this.on('manifest-load', (event: ManifestLoad) => this.buildManifest(event.manifest));
+
+    }
+
+    async init() {
+
+        this.on('manifest-load', (event: ManifestLoad) => this.buildManifest(event.manifest));
+
+        // this.addListener('click', '.hv-canvas-thumbnail', (eventTarget: HTMLElement) => {
+        //     const canvasIndex = parseInt(eventTarget.getAttribute('data-page'));
+        //     return new GoToPage(canvasIndex);
+        // });
+    }
+
+    private buildManifest(manifest: Manifesto.Manifest) {
 
         if (!manifest) {
             return;
@@ -39,10 +54,7 @@ export class ImageListComponent extends Component {
 
         this.setActive(0);
 
-        console.log('build');
-
         this.on('goto-page', (event: GoToPage) => {
-            console.log('logo');
             this.setActive(event.page);
         });
     }

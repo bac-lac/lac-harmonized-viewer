@@ -1,32 +1,67 @@
-import { ComponentFactory } from "../services/component.factory";
 import tippy from 'tippy.js';
 import { Options } from "../options";
+import { TopbarComponent } from "./topbar.component";
+import { NavigationComponent } from "./navigation.component";
+import { Component } from './component';
 
 export class RootComponent implements IRootComponent {
 
     element: HTMLElement;
-    factory: ComponentFactory;
 
     constructor(id: string) {
         this.element = document.getElementById(id);
-        this.factory = new ComponentFactory();
     }
 
-    build(element: HTMLElement, options: Options) {
+    build(options: Options) {
 
-        if (this.factory.isComponent(element)) {
-            this.factory.create(element, options);
+        const topbar = new TopbarComponent(options);
+        this.element.append(topbar.create());
+
+        const navigation = new NavigationComponent(options);
+        this.element.append(navigation.create());
+
+        const components = Array.from([
+            topbar,
+            navigation
+        ]);
+
+        components.forEach(component => component.init2());
+        components.forEach(x => this.bind(x));
+
+        //this.element.append(this.builder.build());
+
+        //this.factory.build(element, options);
+
+        // Array.from(element.children)
+        //     .forEach(child => this.build(child as HTMLElement, options));
+    }
+
+    bind(component: Component) {
+        if (!component) {
+            return undefined;
         }
-
-        Array.from(element.children)
-            .forEach(child => this.build(child as HTMLElement, options));
+        component.bind();
+        component.children.forEach(x => this.bind(x));
     }
+
+    // components(element: HTMLElement): Component[] {
+
+    //     if (!element) {
+    //         return undefined;
+    //     }
+
+    //     return Array.from(element.children)
+    //         .filter(child => child.hasAttribute('data-viewer-component'))
+    //         .map(child => {
+
+    //         });
+    // }
 
     async execute() {
 
-        await Promise.all(this.factory.components.map(i => i.init()));
-        await Promise.all(this.factory.components.map(i => i.render()));
-        
+        //await Promise.all(this.builder.components.map(i => i.init()));
+        //await Promise.all(this.builder.components.map(i => i.render()));
+
         this.tooltips();
     }
 
@@ -45,5 +80,5 @@ export class RootComponent implements IRootComponent {
 }
 
 export interface IRootComponent {
-    factory: ComponentFactory;
+
 }

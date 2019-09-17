@@ -10,6 +10,7 @@ const declare = require('gulp-declare');
 const wrap = require('gulp-wrap');
 
 const ts = require('gulp-typescript');
+const handlebars = require('gulp-handlebars');
 
 const webpack = require('webpack-stream');
 
@@ -19,7 +20,6 @@ gulp.uglify = require('gulp-uglify');
 gulp.clean = require('gulp-clean');
 gulp.rename = require('gulp-rename');
 gulp.cleanCSS = require('gulp-clean-css');
-gulp.handlebars = require('gulp-handlebars');
 gulp.jsoncombine = require('gulp-jsoncombine');
 gulp.bro = require('gulp-bro');
 gulp.print = require('gulp-print').default;
@@ -129,14 +129,13 @@ function compileSass() {
 
 function compileHandlebars() {
     return src('src/**/*.hbs')
-        .pipe(gulp.handlebars())
+        .pipe(handlebars())
         .pipe(wrap('Handlebars.template(<%= contents %>)'))
         .pipe(declare({
-            namespace: 'MyApp.templates',
+            namespace: 'HV.templates',
             noRedeclare: true, // Avoid duplicate declarations
         }))
-        .pipe(gulp.concat('component.js'))
-        .pipe(dest('dist'));
+        .pipe(dest('src'));
 };
 
 // function minifyCSS() {
@@ -188,5 +187,5 @@ gulp.task('default', build);
 gulp.task('build-css', buildCSS);
 gulp.task('build-js', gulp.series(cleanTemp, cleanDist, buildJS));
 //gulp.task('build-locales', compileLocales);
-//gulp.task('build-templates', compileTemplates);
+gulp.task('build-templates', compileHandlebars);
 gulp.task('watch', watch);

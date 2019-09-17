@@ -3,80 +3,88 @@ import { TopbarComponent } from "../components/topbar.component";
 import { ViewportComponent } from "../components/viewport.component";
 import { ImageListComponent } from "../components/imagelist.component";
 import { AnnotationsDrawerComponent } from "../components/annotations.component";
-import { NavigationDrawerComponent } from "../components/navigation.component";
+//import { NavigationComponent } from "../components/navigation.component";
 import { ToolbarComponent } from "../components/toolbar.component";
 import { Options } from "../options";
 
 export class ComponentFactory {
 
-    components: Component[];
-
     constructor() {
-        this.components = [];
     }
 
-    createTopbar(element: HTMLElement, options: Options): Component {
-        return new TopbarComponent(element, options);
-    }
+    // createTopbar(options: Options): Component {
+    //     return new TopbarComponent(options);
+    // }
 
-    createViewport(element: HTMLElement, options: Options): Component {
-        return new ViewportComponent(element, options);
-    }
+    // createViewport(options: Options): Component {
+    //     return new ViewportComponent(options);
+    // }
 
-    createNavigationDrawer(element: HTMLElement, options: Options): Component {
-        return new NavigationDrawerComponent(element, options);
-    }
+    // createNavigationDrawer(options: Options): Component {
+    //     return new NavigationDrawerComponent(options);
+    // }
 
-    createAnnotationsDrawer(element: HTMLElement, options: Options): Component {
-        return new AnnotationsDrawerComponent(element, options);
-    }
+    // createAnnotationsDrawer(options: Options): Component {
+    //     return new AnnotationsDrawerComponent(options);
+    // }
 
-    createImageList(element: HTMLElement, options: Options): Component {
-        return new ImageListComponent(element, options);
-    }
+    // createImageList(options: Options): Component {
+    //     return new ImageListComponent(options);
+    // }
 
-    createToolbar(element: HTMLElement, options: Options): Component {
-        return new ToolbarComponent(element, options);
-    }
+    // createToolbar(options: Options): Component {
+    //     return new ToolbarComponent(options);
+    // }
 
-    create(element: HTMLElement, options: Options): Component {
-        let component = this.get(element, options);
+    // create(name: string, options: Options): Component {
 
-        if (component) {
-            this.components.push(component);
-            return component;
-        }
-        else {
-            return undefined;
-        }
-    }
+    //     if (!name) {
+    //         return undefined;
+    //     }
 
-    isComponent(element: HTMLElement): boolean {
-        return (element && this.get(element, undefined) ? true : false);
-    }
+    //     let component = undefined;
 
-    get(element: HTMLElement, options: Options): Component {
-        if (element) {
-            if (element.classList.contains('hv-topbar')) {
-                return this.createTopbar(element, options);
-            }
-            else if (element.classList.contains('hv-viewport')) {
-                return this.createViewport(element, options);
-            }
-            else if (element.classList.contains('hv-navigation')) {
-                return this.createNavigationDrawer(element, options);
-            }
-            else if (element.classList.contains('hv-annotations')) {
-                return this.createAnnotationsDrawer(element, options);
-            }
-            else if (element.classList.contains('mdc-image-list')) {
-                return this.createImageList(element, options);
-            }
-            else if (element.classList.contains('hv-toolbar')) {
-                return this.createToolbar(element, options);
-            }
-        }
-        return undefined;
-    }
+    //     switch (name.toLowerCase()) {
+    //         case 'topbar':
+    //                 component = this.createTopbar(options);
+    //             break;
+    //         case 'viewport':
+    //                 component = this.createViewport(options);
+    //             break;
+    //         case 'navigation':
+    //                 component = this.createNavigationDrawer(options);
+    //             break;
+    //         case 'annotations':
+    //             this.createAnnotationsDrawer(options);
+    //             break;
+    //         case 'imagelist':
+    //             this.createImageList(options);
+    //             break;
+    //         case 'imagelist':
+    //             this.createImageList(options);
+    //             break;
+    //     }
+    //     if (element) {
+    //         if (element.classList.contains('hv-topbar')) {
+    //             return this.createTopbar(element, options);
+    //         }
+    //         else if (element.classList.contains('hv-viewport')) {
+    //             return this.createViewport(element, options);
+    //         }
+    //         else if (element.classList.contains('hv-navigation')) {
+    //             return this.createNavigationDrawer(element, options);
+    //         }
+    //         else if (element.classList.contains('hv-annotations')) {
+    //             return this.createAnnotationsDrawer(element, options);
+    //         }
+    //         else if (element.classList.contains('mdc-image-list')) {
+    //             return this.createImageList(element, options);
+    //         }
+    //         else if (element.classList.contains('hv-toolbar')) {
+    //             return this.createToolbar(element, options);
+    //         }
+    //     }
+    //     return undefined;
+    // }
 
 }
