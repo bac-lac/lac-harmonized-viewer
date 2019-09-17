@@ -5,8 +5,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
     entry: ['./src/sass/index.scss', './src/index.ts'],
     output: {
-        path: path.resolve(__dirname, 'demo'),
-        filename: 'demo/harmonized-viewer.bundle.js',
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'harmonized-viewer.bundle.js',
         library: 'HV'
     },
     resolve: {
@@ -27,7 +27,7 @@ module.exports = {
                     {
                         loader: 'file-loader',
                         options: {
-                            name: 'demo/harmonized-viewer.bundle.css',
+                            name: 'harmonized-viewer.bundle.css',
                         },
                     },
                     { loader: 'extract-loader' },

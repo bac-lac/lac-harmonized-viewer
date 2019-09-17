@@ -85,24 +85,24 @@ function concatJS() {
 function compileTS() {
     return src('src/**/*.ts')
         .pipe(gulp.typescript())
-        .pipe(dest('dist'))
+        .pipe(dest('tmp'))
         .pipe(gulp.print());
 };
 
 function minifyJS() {
     return src([
-        'dist/**/*.js',
-        '!dist/**/*.min.js'
+        'tmp/**/*.js',
+        '!tmp/**/*.min.js'
     ])
         .pipe(gulp.rename({ extname: '.min.js' }))
         .pipe(gulp.uglify())
-        .pipe(dest('dist'))
+        .pipe(dest('tmp'))
         .pipe(gulp.print());
 };
 
 function bundleJS() {
     return src([
-        'dist/index.js'
+        'tmp/index.js'
     ])
         .pipe(webpack(require('./webpack.config.js')))
         //.pipe(gulp.bro())
@@ -180,7 +180,8 @@ function watchTS() {
 const buildCSS = gulp.series(compileSass);
 const buildJS = gulp.series(compileTS, minifyJS, bundleJS);
 
-const build = gulp.series(cleanDist, buildJS, buildCSS, cleanTemp);
+//const build = gulp.series(cleanDist, buildJS, buildCSS, cleanTemp);
+const build = gulp.series(cleanDist, buildJS, cleanTemp);
 const watch = gulp.parallel(watchSass, watchTS);
 
 gulp.task('default', build);
