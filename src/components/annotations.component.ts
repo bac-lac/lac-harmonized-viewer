@@ -3,64 +3,69 @@ import { PageLoad, ManifestLoad } from "../events/event";
 
 export class AnnotationsDrawerComponent extends DrawerComponent {
 
-    async init() {
-        await super.init();
+    create(): HTMLElement {
+
+        const element = super.create();
+
+        element.classList.add('hv-annotations');
+        element.classList.add('mdc-top-app-bar--fixed-adjust');
+
+        if (this.options.annotations.enabled && this.options.annotations.opened) {
+            element.classList.add('mdc-drawer--open');
+        }
+
+        // ...
+
+        return element;
+
+    }
+
+    bind(): void {
 
         if (this.options.annotations.enabled) {
-
-            if (this.options.annotations.opened) {
-                this.element.classList.add('mdc-drawer--open');
-            }
-
             this.on('annotations-toggle', () => this.toggle());
         }
 
         this.on('manifest-load', (event: ManifestLoad) => {
-            if (event.manifest) {
-                this.buildManifestMetadata(event.manifest);
-            }
+            this.buildManifest(event.manifest);
         });
 
         this.on('page-load', (event: PageLoad) => {
-            if (event.canvas) {
-                const annotations = event.canvas.getContent();
-                annotations.forEach((annotation) => this.append);
-            }
+            event.canvas.getContent().forEach(x => this.appendAnnotation(x));
         });
     }
 
-    private buildManifestMetadata(manifest: Manifesto.Manifest) {
+    protected buildManifest(manifest: Manifesto.Manifest): void {
 
         if (!manifest) {
             return undefined;
         }
 
         const content = this.element.querySelector('.mdc-drawer__content');
+
         const list = document.createElement('dl');
 
-        manifest.getMetadata().forEach((pair) => {
+        manifest.getMetadata().forEach((item) => {
 
             const label = document.createElement('dt');
-            label.textContent = pair.getLabel();
+            label.textContent = item.getLabel();
             list.append(label);
 
             const value = document.createElement('dd');
-            value.innerHTML = pair.getValue();
+            value.innerHTML = item.getValue();
             list.append(value);
 
         });
 
         content.append(list);
-
     }
 
-    private append(annotation: Manifesto.IAnnotation): void {
+    protected appendAnnotation(annotation: Manifesto.IAnnotation): void {
 
         if (!annotation) {
             return undefined;
         }
 
-        console.log('anot');
         const text = document.createElement('span');
         text.textContent = annotation.getDefaultLabel();
         this.element.append(text);

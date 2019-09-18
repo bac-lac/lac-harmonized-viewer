@@ -1,21 +1,40 @@
-import { ComponentBase } from "./base.component";
 import { eventSource, IEvent, EventType } from "../events/event";
-import { Options } from "../options";
 
-export abstract class Component extends ComponentBase implements IComponent {
+export abstract class Component implements IComponent {
 
-    children: Component[];
+    options: any;
 
-    constructor(options: Options) {
-        super(options);
-        this.children = [];
+    children: IComponent[] = [];
+    element: HTMLElement;
+
+    constructor(options: any, element?: HTMLElement) {
+        this.options = options;
+        this.element = element;
     }
 
-    add(component: Component): Component {
-        if(component) {
-            this.children.push(component);
+    append(component: IComponent) {
+        if (!component) {
+            return undefined;
         }
-        return component;
+        ;
+        this.element.append(component.create());
+        this.children.push(component);
+    }
+
+    init() {
+    }
+
+    create(): HTMLElement {
+        return undefined;
+    }
+
+    bind() {
+    }
+
+    async load() {
+    }
+
+    destroy() {
     }
 
     // create(elementName: string, className?: string): HTMLElement {
@@ -114,9 +133,42 @@ export abstract class Component extends ComponentBase implements IComponent {
         });
     }
 
+    protected id(): string {
+        const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+        while (true) {
+
+            let id = "hv-";
+            for (var i = 0; i < 4; i++) {
+                id += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+
+            const element = document.getElementById(id);
+            if (!element) {
+                return id;
+            }
+        }
+    }
+
 }
 
 export interface IComponent {
-    on(event: string, listener: (event: any) => void);
+
+    options: any;
+
+    children: IComponent[];
+    element: HTMLElement;
+
+    append(component: IComponent): void;
+
+    init(): void;
+    //init2(): void;
+    create(): HTMLElement;
+    bind(): void;
+    load(): Promise<void>;
+    destroy(): void;
+
+    on(event: string, listener: (event: any) => void): void;
     publish(event: string | EventType, eventArgs?: any): boolean;
+
+
 }

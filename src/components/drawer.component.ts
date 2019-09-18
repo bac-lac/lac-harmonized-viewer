@@ -8,21 +8,19 @@ export class DrawerComponent extends Component {
 
     create(): HTMLElement {
 
-        this.element = document.createElement('aside');
-        this.element.className = 'mdc-drawer mdc-drawer--dismissible';
+        const element = document.createElement('aside');
+        element.className = 'mdc-drawer mdc-drawer--dismissible';
 
         const content = document.createElement('div');
         content.className = 'mdc-drawer__content';
-        this.element.append(content);
+        element.append(content);
 
-        return this.element;
+        return element;
 
     }
 
-    init2() {
-
+    init() {
         this.drawer = new MDCDrawer(this.element);
-
     }
 
     bind() {

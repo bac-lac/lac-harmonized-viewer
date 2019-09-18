@@ -1,24 +1,25 @@
 import { DrawerComponent } from "./drawer.component";
-import { ImageListComponent } from "./imagelist.component";
+import { CanvasListComponent } from "./canvaslist.component";
 
 export class NavigationComponent extends DrawerComponent {
 
     create(): HTMLElement {
 
-        const drawer = super.create();
+        const element = super.create();
+        //const content = element.querySelector('.mdc-drawer__content');
 
-        drawer.classList.add('hv-navigation');
-        drawer.classList.add('mdc-top-app-bar--fixed-adjust');
+        element.classList.add('hv-navigation');
+        element.classList.add('mdc-top-app-bar--fixed-adjust');
 
         if (this.options.navigation.enabled && this.options.navigation.opened) {
-            drawer.classList.add('mdc-drawer--open');
+            element.classList.add('mdc-drawer--open');
         }
 
-        const images = this.add(new ImageListComponent(this.options));
-        drawer.append(images.create());
+        const canvasList = new CanvasListComponent(this.options);
+        this.append(canvasList);
+        //content.append(canvasList.create());
 
-        return drawer;
-
+        return element;
     }
 
     bind() {

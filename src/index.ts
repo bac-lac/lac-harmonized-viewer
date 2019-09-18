@@ -24,9 +24,8 @@ export class HarmonizedViewer extends RootComponent {
         this.options = deepmerge(this.defaults, options);
     }
 
-    async init() {
-        this.build(this.options);
-        this.execute();
+    init() {
+        this.execute(this.options);
     }
 }
 

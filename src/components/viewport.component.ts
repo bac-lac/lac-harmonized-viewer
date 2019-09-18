@@ -9,12 +9,34 @@ export class ViewportComponent extends Component {
 
     zoom: number;
 
+    private elementId: string;
     private openseadragon: any;
     private manifest: Manifesto.Manifest;
 
-    async init() {
+    create(): HTMLElement {
 
+        this.elementId = this.id();
+
+        const element = document.createElement('div');
+        element.className = 'mdc-drawer-app-content mdc-top-app-bar--fixed-adjust';
+
+        const main = document.createElement('main');
+        main.className = 'hv-content main-content';
+        element.append(main);
+
+        const viewport = document.createElement('div');
+        viewport.id = this.elementId;
+        viewport.className = 'hv-viewport';
+        main.append(viewport);
+
+        return element;
+    }
+
+    init() {
         this.showSpinner();
+    }
+
+    bind() {
 
         this.on('manifest-load', () => this.createViewport);
         this.on('manifest-error', (event: ManifestError) => this.createError(event.error));
@@ -24,21 +46,23 @@ export class ViewportComponent extends Component {
         this.on('goto-page', (event: GoToPage) => this.goToHandler(event));
 
         this.on('goto-prev', (event: GoToPrevious) => this.previous());
-        this.on('goto-next', (event: GoToNext) => {
-            this.next();
-        });
+        this.on('goto-next', (event: GoToNext) => this.next());
+    }
+
+    async load() {
 
         try {
             this.manifest = manifesto.create(
                 await manifesto.loadManifest(this.options.manifestUrl)) as Manifesto.Manifest;
+            this.publish(new ManifestLoad(this.manifest));
         }
         catch (err) {
             this.publish(new ManifestError(err));
         }
 
-        //this.publish(new ManifestLoad(this.manifest));
-
         this.initNavButtons();
+
+        this.createViewport();
     }
 
     private initNavButtons() {
@@ -59,10 +83,6 @@ export class ViewportComponent extends Component {
             });
         }
 
-    }
-
-    async render() {
-        this.createViewport();
     }
 
     page() {
@@ -92,7 +112,7 @@ export class ViewportComponent extends Component {
         });
 
         this.openseadragon = openseadragon({
-            id: "osd",
+            id: this.elementId,
             prefixUrl: "/dist/vendors/openseadragon/images/",
             animationTime: 0.25,
             springStiffness: 10.0,

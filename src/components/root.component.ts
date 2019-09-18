@@ -2,67 +2,68 @@ import tippy from 'tippy.js';
 import { Options } from "../options";
 import { TopbarComponent } from "./topbar.component";
 import { NavigationComponent } from "./navigation.component";
-import { Component } from './component';
+import { IComponent } from './component';
+import { ViewportComponent } from './viewport.component';
 
 export class RootComponent implements IRootComponent {
 
+    components: IComponent[] = [];
     element: HTMLElement;
 
     constructor(id: string) {
         this.element = document.getElementById(id);
     }
 
-    build(options: Options) {
+    execute(options: Options) {
 
         const topbar = new TopbarComponent(options);
-        this.element.append(topbar.create());
+        this.append(topbar);
 
         const navigation = new NavigationComponent(options);
-        this.element.append(navigation.create());
+        this.append(navigation);
 
-        const components = Array.from([
-            topbar,
-            navigation
-        ]);
+        const viewport = new ViewportComponent(options);
+        this.append(viewport);
 
-        components.forEach(component => component.init2());
-        components.forEach(x => this.bind(x));
-
-        //this.element.append(this.builder.build());
-
-        //this.factory.build(element, options);
-
-        // Array.from(element.children)
-        //     .forEach(child => this.build(child as HTMLElement, options));
+        this.components.forEach(x => this.executeInit(x));
+        this.components.forEach(x => this.executeBind(x));
+        this.components.forEach(x => this.executeLoad(x));
     }
 
-    bind(component: Component) {
+    private append(component: IComponent) {
+
+        if (!component) {
+            return undefined;
+        }
+
+        component.element = component.create();
+
+        this.element.append(component.element);
+        this.components.push(component);
+    }
+
+    private executeInit(component: IComponent) {
+        if (!component) {
+            return undefined;
+        }
+        component.init();
+        component.children.forEach(x => this.executeInit(x));
+    }
+
+    private executeBind(component: IComponent) {
         if (!component) {
             return undefined;
         }
         component.bind();
-        component.children.forEach(x => this.bind(x));
+        component.children.forEach(x => this.executeBind(x));
     }
 
-    // components(element: HTMLElement): Component[] {
-
-    //     if (!element) {
-    //         return undefined;
-    //     }
-
-    //     return Array.from(element.children)
-    //         .filter(child => child.hasAttribute('data-viewer-component'))
-    //         .map(child => {
-
-    //         });
-    // }
-
-    async execute() {
-
-        //await Promise.all(this.builder.components.map(i => i.init()));
-        //await Promise.all(this.builder.components.map(i => i.render()));
-
-        this.tooltips();
+    private executeLoad(component: IComponent) {
+        if (!component) {
+            return undefined;
+        }
+        component.load();
+        component.children.forEach(x => this.executeLoad(x));
     }
 
     private tooltips() {

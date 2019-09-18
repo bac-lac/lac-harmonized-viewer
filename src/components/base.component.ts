@@ -9,24 +9,13 @@ export abstract class ComponentBase implements IComponentBase {
         this.options = options;
     }
 
-    create(): HTMLElement {
-        return undefined;
-    }
-
-    bind() {
-    }
-
-    init2() {
-    }
+    
 
     async init() {
     }
 
     async render() {
         
-    }
-
-    async destroy() {
     }
 
     // root(elem: HTMLElement = this.element): RootComponent {
@@ -93,15 +82,7 @@ export abstract class ComponentBase implements IComponentBase {
 }
 
 export interface IComponentBase {
-    element: HTMLElement;
-    options: any;
-
-    init();
-    init2();
-    create(): HTMLElement;
-    bind();
-    render();
-    destroy();
+    
 
     //root(elem: HTMLElement): RootComponent;
 }

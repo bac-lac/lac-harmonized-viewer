@@ -3,25 +3,17 @@ import { ManifestLoad, GoToPage } from "../events/event";
 import { median } from "../helpers/math.helper";
 import { AspectRatio } from "../helpers/aspect-ratio.helper";
 
-export class ImageListComponent extends Component {
+export class CanvasListComponent extends Component {
 
     create(): HTMLElement {
 
-        const list = document.createElement('ul');
-        list.className = 'hv-image-list mdc-image-list';
+        const element = document.createElement('ul');
+        element.className = 'hv-image-list mdc-image-list';
 
-        return list;
-
+        return element;
     }
 
-    bind() {
-console.log('bind');
-        this.on('manifest-load', (event: ManifestLoad) => this.buildManifest(event.manifest));
-
-    }
-
-    async init() {
-
+    bind(): void {
         this.on('manifest-load', (event: ManifestLoad) => this.buildManifest(event.manifest));
 
         // this.addListener('click', '.hv-canvas-thumbnail', (eventTarget: HTMLElement) => {
@@ -30,7 +22,7 @@ console.log('bind');
         // });
     }
 
-    private buildManifest(manifest: Manifesto.Manifest) {
+    protected buildManifest(manifest: Manifesto.Manifest) {
 
         if (!manifest) {
             return;
@@ -48,7 +40,7 @@ console.log('bind');
         this.element.classList.add(`hv-aspect-ratio--${closest.cssClass}`);
 
         canvases.forEach((canvas, index) => {
-            let thumbnail = this.createThumbnail(index, canvas);
+            const thumbnail = this.createThumbnail(index, canvas);
             this.element.append(thumbnail);
         });
 
@@ -85,7 +77,7 @@ console.log('bind');
         }
     }
 
-    private createThumbnail(index: number, canvas: Manifesto.ICanvas): HTMLElement {
+    protected createThumbnail(index: number, canvas: Manifesto.ICanvas): HTMLElement {
 
         if (!canvas) {
             return undefined;

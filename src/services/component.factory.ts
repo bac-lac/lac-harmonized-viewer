@@ -1,7 +1,7 @@
 import { Component } from "../components/component";
 import { TopbarComponent } from "../components/topbar.component";
 import { ViewportComponent } from "../components/viewport.component";
-import { ImageListComponent } from "../components/imagelist.component";
+import { CanvasListComponent } from "../components/canvaslist.component";
 import { AnnotationsDrawerComponent } from "../components/annotations.component";
 //import { NavigationComponent } from "../components/navigation.component";
 import { ToolbarComponent } from "../components/toolbar.component";
