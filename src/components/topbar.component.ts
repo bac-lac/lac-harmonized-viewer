@@ -2,33 +2,43 @@ import { MDCMenu } from '@material/menu';
 import { NavigationToggle } from "../events/event";
 import { Component } from "./component";
 
+const handlebars = require('handlebars');
+require('./topbar/_partial.js');
+
 export class TopbarComponent extends Component {
 
     text: string;
 
+    private elementName: string = 'header';
+
     create() {
 
-        const element = document.createElement('header');
-        element.className = 'hv-topbar mdc-top-app-bar';
+        const template = handlebars.templates['_partial.hbs'];
 
-        const row = document.createElement('div');
-        row.className = 'hv-topbar__header mdc-top-app-bar__row';
-        element.append(row);
+        // const element = document.createElement('header');
+        // element.className = 'hv-topbar mdc-top-app-bar';
 
-        const start = document.createElement('div');
-        start.className = 'mdc-top-app-bar__section mdc-top-app-bar__section--align-start';
-        row.append(start);
+        // const row = document.createElement('div');
+        // row.className = 'hv-topbar__header mdc-top-app-bar__row';
+        // element.append(row);
 
-        const menu = document.createElement('button');
-        menu.className = 'hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button';
-        menu.textContent = 'menu';
-        start.append(menu);
+        // const start = document.createElement('div');
+        // start.className = 'mdc-top-app-bar__section mdc-top-app-bar__section--align-start';
+        // row.append(start);
 
-        menu.addEventListener('click', () => this.publish(new NavigationToggle()));
+        // const menu = document.createElement('button');
+        // menu.className = 'hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button';
+        // menu.textContent = 'menu';
+        // start.append(menu);
 
-        const title = document.createElement('span');
-        title.className = 'hv-manifest__title mdc-top-app-bar__title';
-        start.append(title);
+        // menu.addEventListener('click', () => this.publish(new NavigationToggle()));
+
+        // const title = document.createElement('span');
+        // title.className = 'hv-manifest__title mdc-top-app-bar__title';
+        // start.append(title);
+
+        const element = document.createElement(this.elementName);
+        element.innerHTML = template();
 
         return element;
 

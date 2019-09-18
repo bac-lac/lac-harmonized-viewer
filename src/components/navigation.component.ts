@@ -1,5 +1,5 @@
 import { DrawerComponent } from "./drawer.component";
-import { CanvasListComponent } from "./canvaslist.component";
+import { CanvasListComponent } from "./canvaslist.component";;
 
 export class NavigationComponent extends DrawerComponent {
 
