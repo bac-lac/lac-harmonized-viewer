@@ -161,7 +161,6 @@ export interface IComponent {
     append(component: IComponent): void;
 
     init(): void;
-    //init2(): void;
     create(): HTMLElement;
     bind(): void;
     load(): Promise<void>;

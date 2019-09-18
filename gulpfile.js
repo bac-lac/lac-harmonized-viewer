@@ -7,10 +7,12 @@ const postcss = require('gulp-postcss');
 const postcssModules = require('postcss-modules');
 
 const declare = require('gulp-declare');
+const defineModule = require('gulp-define-module');
 const wrap = require('gulp-wrap');
 
 const ts = require('gulp-typescript');
 const handlebars = require('gulp-handlebars');
+//const handlebars = require('gulp-precompile-handlebars');
 
 const webpack = require('webpack-stream');
 
@@ -128,14 +130,21 @@ function compileSass() {
 };
 
 function compileHandlebars() {
+    //const script = 'var Handlebars = require("handlebars");  var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};';
     return src('src/**/*.hbs')
         .pipe(handlebars())
         .pipe(wrap('Handlebars.template(<%= contents %>)'))
+        //.pipe(wrap('<%= contents %>'))
+        //.pipe(defineModule('plain'))
         .pipe(declare({
-            namespace: 'HV.templates',
-            noRedeclare: true, // Avoid duplicate declarations
+            root: 'exports',
+            namespace: 'Handlebars.templates'
         }))
-        .pipe(dest('src'));
+        .pipe(gulp.concat('index.js'))
+        // Add the Handlebars module in the final output
+        .pipe(wrap('var Handlebars = require("handlebars"); <%= contents %>'))
+        //.pipe(gulp.concat('templates.js'))
+        .pipe(dest('src/templates'));
 };
 
 // function minifyCSS() {
@@ -180,7 +189,7 @@ const buildCSS = gulp.series(compileSass);
 const buildJS = gulp.series(compileTS, minifyJS, bundleJS);
 
 //const build = gulp.series(cleanDist, buildJS, buildCSS, cleanTemp);
-const build = gulp.series(cleanDist, buildJS, cleanTemp);
+const build = gulp.series(cleanDist, compileHandlebars, buildJS, cleanTemp);
 const watch = gulp.parallel(watchSass, watchTS);
 
 gulp.task('default', build);

@@ -1,6 +1,6 @@
 import tippy from 'tippy.js';
 import { Options } from "../options";
-import { TopbarComponent } from "./topbar.component";
+import { TopbarComponent } from "./topbar/topbar.component";
 import { NavigationComponent } from "./navigation.component";
 import { IComponent } from './component';
 import { ViewportComponent } from './viewport.component';
@@ -14,16 +14,16 @@ export class RootComponent implements IRootComponent {
         this.element = document.getElementById(id);
     }
 
-    execute(options: Options) {
+    execute(options: any) {
 
         const topbar = new TopbarComponent(options);
-        this.append(topbar);
+        this.element.append(topbar.create());
 
         const navigation = new NavigationComponent(options);
-        this.append(navigation);
+        this.element.append(navigation.create());
 
         const viewport = new ViewportComponent(options);
-        this.append(viewport);
+        this.element.append(viewport.create());
 
         this.components.forEach(x => this.executeInit(x));
         this.components.forEach(x => this.executeBind(x));

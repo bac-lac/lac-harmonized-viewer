@@ -8,6 +8,7 @@
         "module": "commonjs",
         "rootDir": "src",
         "outDir": "dist",
+        "allowJs": true,
         "sourceMap": true,
         "jsx": "preserve",
         "lib": ["es5", "es6", "es2015", "dom"]

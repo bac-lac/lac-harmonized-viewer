@@ -1,21 +1,17 @@
 import { MDCMenu } from '@material/menu';
-import { NavigationToggle } from "../events/event";
-import { Component } from "./component";
+import { Component } from "../component";
 
-const handlebars = require('handlebars');
-require('./topbar/_partial.js');
+const templates = require('../../templates').Handlebars.templates;
 
 export class TopbarComponent extends Component {
 
     text: string;
 
-    private elementName: string = 'header';
-
     create() {
 
-        const template = handlebars.templates['_partial.hbs'];
+        const element = document.createElement('div');
+        element.innerHTML = templates.topbar.template();
 
-        // const element = document.createElement('header');
         // element.className = 'hv-topbar mdc-top-app-bar';
 
         // const row = document.createElement('div');
@@ -37,17 +33,14 @@ export class TopbarComponent extends Component {
         // title.className = 'hv-manifest__title mdc-top-app-bar__title';
         // start.append(title);
 
-        const element = document.createElement(this.elementName);
-        element.innerHTML = template();
-
-        return element;
-
         // this.addListener('click', '.hv-button-icon[data-target=navigation]', () => new NavigationToggle());
         // this.addListener('click', '.hv-button-icon[data-target=annotations]', () => new AnnotationsToggle());
 
         // this.on('manifest-load', (event: ManifestLoad) => {
         //     this.text = (event.manifest) ? event.manifest.getDefaultLabel() : 'Untitled';
         // });
+
+        return element.firstChild as HTMLElement;
     }
 
     async load() {

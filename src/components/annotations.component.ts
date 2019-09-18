@@ -1,7 +1,7 @@
 import { DrawerComponent } from "./drawer.component";
 import { PageLoad, ManifestLoad } from "../events/event";
 
-export class AnnotationsDrawerComponent extends DrawerComponent {
+export class AnnotationsComponent extends DrawerComponent {
 
     create(): HTMLElement {
 
@@ -20,7 +20,7 @@ export class AnnotationsDrawerComponent extends DrawerComponent {
 
     }
 
-    bind(): void {
+    bind() {
 
         if (this.options.annotations.enabled) {
             this.on('annotations-toggle', () => this.toggle());
