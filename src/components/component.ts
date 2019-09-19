@@ -7,8 +7,7 @@ export abstract class Component implements IComponent {
     children: IComponent[] = [];
     element: HTMLElement;
 
-    constructor(options: any, element?: HTMLElement) {
-        this.options = options;
+    constructor(element: HTMLElement) {
         this.element = element;
     }
 
@@ -18,7 +17,6 @@ export abstract class Component implements IComponent {
         }
         ;
         this.element.append(component.create());
-        this.children.push(component);
     }
 
     init() {
@@ -35,6 +33,30 @@ export abstract class Component implements IComponent {
     }
 
     destroy() {
+    }
+
+    private executeInit(component: IComponent) {
+        if (!component) {
+            return undefined;
+        }
+        component.init();
+        component.children.forEach(x => this.executeInit(x));
+    }
+
+    private executeBind(component: IComponent) {
+        if (!component) {
+            return undefined;
+        }
+        component.bind();
+        component.children.forEach(x => this.executeBind(x));
+    }
+
+    private executeLoad(component: IComponent) {
+        if (!component) {
+            return undefined;
+        }
+        component.load();
+        component.children.forEach(x => this.executeLoad(x));
     }
 
     // create(elementName: string, className?: string): HTMLElement {
@@ -71,7 +93,7 @@ export abstract class Component implements IComponent {
         }
     }
 
-    addListener(event: IEvent, selector: string): void {
+    //addListener(event: IEvent, selector: string): void {
 
         // if (!event || !selector) {
         //     return undefined;
@@ -86,7 +108,7 @@ export abstract class Component implements IComponent {
         //         }
         //     }
         // });
-    }
+    //}
 
     private findChild(target: HTMLElement, selector: string): HTMLElement {
         if (!target || !selector) {

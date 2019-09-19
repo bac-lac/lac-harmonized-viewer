@@ -1,5 +1,5 @@
 import { Component } from "./component";
-import { ManifestLoad, GoToPage } from "../events/event";
+import { ManifestLoad, GoToPage, NavigationToggle } from "../events/event";
 import { median } from "../helpers/math.helper";
 import { AspectRatio } from "../helpers/aspect-ratio.helper";
 
@@ -13,7 +13,8 @@ export class CanvasListComponent extends Component {
         return element;
     }
 
-    bind(): void {
+    bind() {
+
         this.on('manifest-load', (event: ManifestLoad) => this.buildManifest(event.manifest));
 
         // this.addListener('click', '.hv-canvas-thumbnail', (eventTarget: HTMLElement) => {

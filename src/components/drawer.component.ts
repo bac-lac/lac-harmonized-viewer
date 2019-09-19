@@ -18,7 +18,9 @@ export class DrawerComponent extends Component {
     }
 
     init() {
-        this.drawer = new MDCDrawer(this.element);
+        if (this.element) {
+            this.drawer = new MDCDrawer(this.element);
+        }
     }
 
     bind() {
@@ -27,7 +29,7 @@ export class DrawerComponent extends Component {
         });
         this.drawer.listen('MDCDrawer:closed', () => {
 
-        });        
+        });
     }
 
     open() {
