@@ -2,7 +2,12 @@
     "compilerOptions": {
         "baseUrl": "./",
         "paths": {
-            "@modules/*": ["node_modules/*"]
+            "~/*": [
+                "src/*"
+            ],
+            "@modules/*": [
+                "node_modules/*"
+            ]
         },
         "target": "es5",
         "module": "commonjs",
@@ -11,7 +16,12 @@
         "allowJs": true,
         "sourceMap": true,
         "jsx": "preserve",
-        "lib": ["es5", "es6", "es2015", "dom"]
+        "lib": [
+            "es5",
+            "es6",
+            "es2015",
+            "dom"
+        ]
         //"isolatedModules": true,
         // "experimentalDecorators": true,
         // "emitDecoratorMetadata": true,

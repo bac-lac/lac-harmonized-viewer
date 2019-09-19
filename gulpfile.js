@@ -138,9 +138,9 @@ function compileHandlebars() {
         //.pipe(defineModule('plain'))
         .pipe(declare({
             root: 'exports',
-            namespace: 'Handlebars.templates'
+            namespace: 'components'
         }))
-        .pipe(gulp.concat('index.js'))
+        .pipe(gulp.concat('templates.precompiled.js'))
         // Add the Handlebars module in the final output
         .pipe(wrap('var Handlebars = require("handlebars"); <%= contents %>'))
         //.pipe(gulp.concat('templates.js'))
