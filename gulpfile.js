@@ -131,7 +131,7 @@ function compileSass() {
 
 function compileHandlebars() {
     //const script = 'var Handlebars = require("handlebars");  var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};';
-    return src('src/**/*.hbs')
+    return src('src/**/*.template.hbs')
         .pipe(handlebars())
         .pipe(wrap('Handlebars.template(<%= contents %>)'))
         //.pipe(wrap('<%= contents %>'))
@@ -141,6 +141,32 @@ function compileHandlebars() {
             namespace: 'components'
         }))
         .pipe(gulp.concat('templates.precompiled.js'))
+        // Add the Handlebars module in the final output
+        .pipe(wrap('var Handlebars = require("handlebars"); <%= contents %>'))
+        //.pipe(gulp.concat('templates.js'))
+        .pipe(dest('src/templates'));
+};
+
+function compilePartials() {
+    //const script = 'var Handlebars = require("handlebars");  var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};';
+    return src('src/**/*.partial.hbs')
+        .pipe(handlebars())
+        .pipe(wrap('Handlebars.registerPartial(<%= processPartialName(file.relative) %>, Handlebars.template(<%= contents %>));', {}, {
+            imports: {
+                processPartialName: function (fileName) {
+                    // Strip the extension and the underscore
+                    // Escape the output with JSON.stringify
+                    return JSON.stringify(path.basename(fileName, '.js').substr(1));
+                }
+            }
+        }))
+        //.pipe(wrap('<%= contents %>'))
+        //.pipe(defineModule('plain'))
+        .pipe(declare({
+            root: 'exports',
+            namespace: 'components'
+        }))
+        .pipe(gulp.concat('partials.precompiled.js'))
         // Add the Handlebars module in the final output
         .pipe(wrap('var Handlebars = require("handlebars"); <%= contents %>'))
         //.pipe(gulp.concat('templates.js'))
@@ -189,12 +215,12 @@ const buildCSS = gulp.series(compileSass);
 const buildJS = gulp.series(compileTS, minifyJS, bundleJS);
 
 //const build = gulp.series(cleanDist, buildJS, buildCSS, cleanTemp);
-const build = gulp.series(cleanDist, compileHandlebars, buildJS, cleanTemp);
+const build = gulp.series(cleanDist, buildJS, cleanTemp);
 const watch = gulp.parallel(watchSass, watchTS);
 
 gulp.task('default', build);
 gulp.task('build-css', buildCSS);
 gulp.task('build-js', gulp.series(cleanTemp, cleanDist, buildJS));
 //gulp.task('build-locales', compileLocales);
-gulp.task('build-templates', compileHandlebars);
+//gulp.task('build-templates', compileHandlebars);
 gulp.task('watch', watch);

@@ -1,39 +1,52 @@
-import { Options } from "./common/options";
-import { RootComponent } from "./components/root/root.component";
-import { Component } from "./components/component";
+import { EventEmitter } from "events";
+import { ComponentService } from "./services/component.service";
+import { RootComponent } from "./components/root.component";
+import { HarmonizedViewerOptions } from "./options/options";
 
 const deepmerge = require('deepmerge');
 
-export class HarmonizedViewer extends RootComponent {
+export class HarmonizedViewer {
 
-    options: Options;
+    element: HTMLElement;
 
-    private defaults: Options = {
-        manifestUrl: undefined,
+    options: HarmonizedViewerOptions;
+
+    components: ComponentService;
+    events: EventEmitter;
+
+    private defaults: HarmonizedViewerOptions = {
+        manifest: undefined,
         navigation: {
-            enabled: true,
-            opened: false
+            enable: true,
+            open: false
         },
         annotations: {
-            enabled: true,
-            opened: false
+            enable: true,
+            open: false
+        },
+        viewport: {
+            openseadragon: {
+                path: undefined
+            }
         }
     };
 
-    components: Component[] = [];
+    constructor(id: string, options: HarmonizedViewerOptions) {
 
-    constructor(id: string, options: Options) {
-        super(document.getElementById(id));
-        this.viewer = this;
-        this.viewerId = id;
+        this.element = document.getElementById(id);
         this.options = deepmerge(this.defaults, options);
+
+        this.components = new ComponentService();
+        this.events = new EventEmitter();
     }
 
     init() {
-        this.execute();
+        const root = new RootComponent(this);
+        this.element.append(root.getElement());        
+        this.components.execute();
     }
 }
 
-export function harmonizedViewer(id: string, options: Options) {
+export function harmonizedViewer(id: string, options: HarmonizedViewerOptions) {
     return new HarmonizedViewer(id, options).init();
 }
