@@ -17,12 +17,14 @@
 
 		function initialize() {
 			var viewer = HV.harmonizedViewer('harmonized-viewer', {
-				manifestUrl: 'https://api.bl.uk/metadata/iiif/ark:/81055/vdc_00000004216E/manifest.json',
+				manifest: 'https://api.bl.uk/metadata/iiif/ark:/81055/vdc_00000004216E/manifest.json',
 				navigation: {
-					opened: true
+					enable: true,
+					open: true
 				},
 				annotations: {
-					opened: true
+					enable: true,
+					open: true
 				}
 			});
 		}
