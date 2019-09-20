@@ -7,15 +7,10 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<!-- <script type="text/javascript" src="https://use.fontawesome.com/releases/v5.10.2/js/all.js" defer></script> -->
-
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
-	<link type="text/css" href="" rel="stylesheet" />
-	<script type="text/javascript" src="/node_modules/overlayscrollbars/js/OverlayScrollbars.min.js"></script>
-
 	<script type="text/javascript">
 
-		function initialize() {
+		document.addEventListener('DOMContentLoaded', function () {
+
 			var viewer = HV.harmonizedViewer('harmonized-viewer', {
 				manifest: 'https://api.bl.uk/metadata/iiif/ark:/81055/vdc_00000004216E/manifest.json',
 				navigation: {
@@ -27,20 +22,15 @@
 					open: true
 				}
 			});
-		}
 
-		document.addEventListener("DOMContentLoaded", function () {
-			//The first argument are the elements to which the plugin shall be initialized
-			//The second argument has to be at least a empty object or a object with your desired options
-			OverlayScrollbars(document.querySelectorAll('.hv-scrollbar'), {});
-		});
+		});	
 
 	</script>
 
 	<script type="text/javascript"
 		src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/js/all.min.js"></script>
 
-	<script src="/harmonized-viewer.bundle.js" onload="initialize()" async></script>
+	<script src="/harmonized-viewer.bundle.js"></script>
 
 	<link href="/harmonized-viewer.bundle.css" rel="stylesheet" type="text/css">
 	<!-- <link href="/dist/theme.css" rel="stylesheet" type="text/css"> -->
@@ -64,17 +54,6 @@
 <body>
 
 	<div id="harmonized-viewer" class="harmonized-viewer">
-
-			<div role="progressbar" class="mdc-linear-progress">
-					<div class="mdc-linear-progress__buffering-dots"></div>
-					<div class="mdc-linear-progress__buffer"></div>
-					<div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
-					  <span class="mdc-linear-progress__bar-inner"></span>
-					</div>
-					<div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
-					  <span class="mdc-linear-progress__bar-inner"></span>
-					</div>
-				  </div>
 
 		<!-- <header class="hv-topbar mdc-top-app-bar" id="app-bar">
 			<div class="mdc-top-app-bar__row hv-topbar__header">
