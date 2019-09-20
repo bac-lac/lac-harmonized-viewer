@@ -1,5 +1,5 @@
 import { HarmonizedViewer } from "..";
-import { IEvent } from "~/common/events";
+import { IEvent } from "../common/events";
 
 export class BaseComponent implements Component {
 
@@ -24,18 +24,48 @@ export class BaseComponent implements Component {
         return this.element;
     }
 
-    bind() {
-    }
-
     on(event: string, listener: (event: IEvent) => void) {
         return this.instance.events.on(event, (event: any) => listener(event));
     }
 
-    publish(event: string, ...eventArgs: any[]): boolean {
+    publish(event: string, eventArgs?: IEvent): boolean {
         if (!event) {
             return false;
         }
         return this.instance.events.emit(event, eventArgs);
+    }
+
+    addListener(event: string, selector?: string, listener?: (eventTarget: HTMLElement) => any): void {
+
+        if (!event) {
+            return undefined;
+        }
+
+        this.element.addEventListener(event, (event) => {
+
+            const target = event.target as HTMLElement;
+
+            if (selector) {
+
+                // When a selector is provided, resolve the event target by filtering selected elements
+                // Emit the event only when the event target can be resolved
+
+                const selectorTarget = Array.from(this.element.querySelectorAll(selector))
+                    .map(elem => elem as HTMLElement)
+                    .find(elem => elem.isSameNode(target) || elem.contains(target));
+
+                if (selectorTarget) {
+                    return listener(selectorTarget);
+                }
+
+            }
+            else {
+
+                // Selector not provided, no filtering required
+                return listener(target);
+
+            }
+        });
     }
 
     protected uniqueid(): string {
@@ -61,5 +91,8 @@ export interface Component {
 
     create(): HTMLElement;
     getElement(): HTMLElement;
-    bind();
+
+    init?: () => Promise<void>;
+    bind?: () => Promise<void>;
+    load?: () => Promise<void>;
 }

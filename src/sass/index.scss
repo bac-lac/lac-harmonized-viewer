@@ -2,8 +2,8 @@
 @import "_animations";
 
 $mdc-theme-primary: #5e81ac;
-$mdc-theme-background: hsl(218, 35%, 98%);
-$mdc-theme-navigation-background: #e5e9f0;
+$mdc-theme-background: #f5f6f7;
+$mdc-theme-navigation-background: #e6e9ed;
 $mdc-theme-navigation-button-background: #fff;
 $mdc-theme-tooltip-text: #fff;
 $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
@@ -42,7 +42,7 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
   .#{$ns}topbar {
     @extend .mdc-top-app-bar;
     @include mdc-top-app-bar-ink-color(#ffffff);
-    @include mdc-top-app-bar-fill-color(#434c5e);
+    @include mdc-top-app-bar-fill-color(#434a54);
 
     z-index: 99999;
 
@@ -57,12 +57,14 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
     //height: 54px;
     padding: 0.6rem;
     display: flex;
+    box-shadow: 0 0 3px 1px #eee;
     background-color: #ffffff;
 
     .mdc-button {
       @include mdc-button-horizontal-padding(0.8rem);
-      @include mdc-button-icon-color(#d8dee9);
-      @include mdc-button-ink-color(#4c566a);
+      @include mdc-button-icon-color(#ccd1d9);
+      @include mdc-button-icon-color(#ccd1d9);
+      @include mdc-button-ink-color(#434a54);
       @include mdc-button-shape-radius(2px);
       @include mdc-ripple-surface();
       @include mdc-ripple-radius-bounded();
@@ -144,10 +146,10 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
     }
 
     &__content {
-      padding: 1.8rem;
+      padding: 1.25rem;
 
       .#{$ns}image-list {
-        @include mdc-image-list-standard-columns(2, 8px);
+        @include mdc-image-list-standard-columns(2, 9px);
 
         &.#{$ns}aspect-ratio--1-1 {
           @include mdc-image-list-aspect(1/1);
@@ -173,42 +175,50 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
 
           &.active {
             .mdc-image-list__image-aspect-container {
-              box-shadow: 0 0 0 4px #81A1C1;
+              box-shadow: 0 0 0 3px #5d9cec;
             }
           }
 
           .mdc-image-list__image-aspect-container {
-            @extend .mdc-elevation--z1;
-
             display: block;
             border-radius: 2px;
-            border: #fff 3px solid;
+            border: #fff 2px solid;
             transition: all 250ms ease;
+            box-shadow: 0px 0px 3px 1px #ccd1d9;
+
+            .mdc-image-list__image {
+              filter: grayscale(50%);
+              transition: all 250ms ease;
+            }
 
             &.#{$ns}lazy--loading {
               .mdc-image-list__image,
               .mdc-image-list__supporting {
-                background-color: #eeeff1;
-
                 animation: #{$ns}placeholder 2s linear;
                 animation-iteration-count: infinite;
                 background: linear-gradient(90deg, #f2f2f2 25%, #e6e6e6 37%, #f2f2f2 63%);
                 background-size: 400% 100%;
                 background-size: 1200px 100%;
+                background-color: #eeeff1;
               }
             }
 
             &:hover {
-              box-shadow: 0 0 1px 4px #D8DEE9;
+              .mdc-image-list__image {
+                filter: grayscale(0%);
+              }
+              box-shadow: 0 0 0 2px #aab2bd;
             }
           }
 
           .mdc-image-list__supporting {
             height: 20px;
             padding: 0.3rem 0.6rem;
-            margin-top: 0.1rem;
+            margin: 0.2rem 0 0.3rem 0;
             justify-content: center;
             transition: all 200ms ease;
+            border-radius: 2px;
+            background-color: rgba(255, 255, 255, 0.3);
 
             .mdc-image-list__label {
               color: #4c566a;
@@ -242,7 +252,7 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
     }
 
     .#{$ns}button__prev,
-    .#{$ns}button__next {    
+    .#{$ns}button__next {
       @extend .mdc-elevation--z4;
 
       opacity: 0;
@@ -308,7 +318,7 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
     opacity: 0.9;
     color: $mdc-theme-tooltip-text;
     background-color: $mdc-theme-tooltip-background;
-    font-size: 1.0rem;
+    font-size: 1rem;
     padding: 0.3rem 0.6rem;
   }
 
@@ -328,7 +338,7 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
     height: 50px;
     border: 5px solid #e5e9f0;
     border-radius: 50%;
-    border-top-color: #81A1C1;
+    border-top-color: #81a1c1;
     animation: spin 1s ease-in-out infinite;
     -webkit-animation: spin 1s ease-in-out infinite;
     transition: opacity 1s ease;

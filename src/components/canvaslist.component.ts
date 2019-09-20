@@ -1,20 +1,28 @@
 import "manifesto.js";
-import { BaseComponent, Component } from "./component";
+import { BaseComponent, Component } from "./base.component";
 import { ManifestLoad } from "../events/manifest-load.event";
 import { PageLoad } from "../events/page-load.event";
 import { AspectRatio } from "../common/aspect-ratio";
 import { MathHelpers } from "../helpers/math.helper";
+import { PageRequest } from "../events/page-request.event";
 
 export class CanvasListComponent extends BaseComponent implements Component {
 
+    private list: HTMLElement;
+
     create() {
-        const list = document.createElement('ul');
-        list.className = 'hv-image-list mdc-image-list';
-        return list;
+        this.list = document.createElement('ul');
+        this.list.className = 'hv-image-list mdc-image-list';
+        return this.list;
     }
 
-    bind() {
+    async bind() {
         this.on('manifest-load', (event: ManifestLoad) => this.manifestLoad(event));
+
+        this.addListener('click', '.hv-canvas-thumbnail', (eventTarget: HTMLElement) => {
+            const page = parseInt(eventTarget.getAttribute('data-page'));
+            this.publish('page-request', new PageRequest(page));
+        });
     }
 
     protected manifestLoad(event: ManifestLoad) {

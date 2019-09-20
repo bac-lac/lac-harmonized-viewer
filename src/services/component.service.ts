@@ -1,27 +1,41 @@
-import { Component } from "~/components/component";
+import { Component } from "~/components/base.component";
 
 export class ComponentService {
 
     private components: Component[] = [];
 
     register(component: Component) {
-        if(!component) {
+        if (!component) {
             return undefined;
         }
         this.components.push(component);
     }
 
-    execute() {
-        //this.executeBuild();
-        this.executeBind();
+    async execute() {
+        await this.executeInit();
+        await this.executeBind();
+        await this.executeLoad();
     }
 
-    private executeBuild() {
-        this.components.forEach((component) => component.create());
+    async executeInit(): Promise<void> {
+        await Promise.all(
+            this.components
+                .filter((component) => component.init)
+                .map((component) => component.init()));
     }
 
-    private executeBind() {
-        this.components.forEach((component) => component.bind());
+    async executeBind(): Promise<void> {
+        await Promise.all(
+            this.components
+                .filter((component) => component.bind)
+                .map((component) => component.bind()));
+    }
+
+    async executeLoad(): Promise<void> {
+        await Promise.all(
+            this.components
+                .filter((component) => component.load)
+                .map((component) => component.load()));
     }
 
     // findAll(element: HTMLElement): Component[] {

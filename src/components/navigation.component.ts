@@ -1,8 +1,6 @@
 import { SidebarComponent } from "./sidebar.component";
 import { CanvasListComponent } from "./canvaslist.component";
-import { Component } from "./component";
-import { HarmonizedViewer } from "..";
-import { SidebarOptions } from "~/options/sidebar.options";
+import { Component } from "./base.component";
 
 export class NavigationComponent extends SidebarComponent implements Component {
 
@@ -19,10 +17,8 @@ export class NavigationComponent extends SidebarComponent implements Component {
         return sidebar;
     }
 
-    bind() {
-
+    async bind() {
         this.on('navigation-toggle', () => this.toggle());
-
     }
 
 }

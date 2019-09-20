@@ -1,7 +1,6 @@
-import { Component, BaseComponent } from "./component";
+import { Component, BaseComponent } from "./base.component";
 import { TopbarComponent } from "./topbar.component";
 import { NavigationComponent } from "./navigation.component";
-import { HarmonizedViewerOptions } from "~/options/options";
 import { HarmonizedViewer } from "..";
 import { ViewportComponent } from "./viewport.component";
 
@@ -14,7 +13,7 @@ export class RootComponent extends BaseComponent implements Component {
 
     create() {
 
-        const container = document.createElement('div');
+        const container = this.instance.element;
 
         const topbar = new TopbarComponent(this.instance);
         container.append(topbar.getElement());
@@ -28,7 +27,6 @@ export class RootComponent extends BaseComponent implements Component {
         const viewport = new ViewportComponent(this.instance, this.instance.options.manifest, this.instance.options.viewport);
         container.append(viewport.getElement());
 
-        return container;
+        return container.firstElementChild as HTMLElement;
     }
-
 }

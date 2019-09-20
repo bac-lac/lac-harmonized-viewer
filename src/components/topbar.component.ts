@@ -1,9 +1,12 @@
-import { Component, BaseComponent } from "./component";
-import { NavigationToggle } from "../common/events";
+import { Component, BaseComponent } from "./base.component";
+import { ManifestLoad } from "../events/manifest-load.event";
 
 export class TopbarComponent extends BaseComponent implements Component {
 
+    title: string;
+
     private buttonNavigation: HTMLElement;
+    private titleElement: HTMLElement;
 
     create() {
 
@@ -23,19 +26,29 @@ export class TopbarComponent extends BaseComponent implements Component {
         this.buttonNavigation.textContent = 'menu';
         start.append(this.buttonNavigation);
 
-        const title = document.createElement('span');
-        title.className = 'hv-manifest__title mdc-top-app-bar__title';
-        start.append(title);
+        this.titleElement = document.createElement('span');
+        this.titleElement.className = 'hv-manifest__title mdc-top-app-bar__title';
+        this.titleElement.textContent = this.title;
+        start.append(this.titleElement);
 
         return header;
     }
 
-    bind() {
+    async bind() {
 
         if (this.buttonNavigation) {
             this.buttonNavigation.addEventListener('click', () => this.publish('navigation-toggle'));
         }
 
+        this.on('manifest-load', (event: ManifestLoad) => this.manifestLoaded(event));
+
+    }
+
+    private manifestLoaded(event: ManifestLoad) {
+        if(!event) {
+            return undefined;
+        }
+        this.titleElement.textContent = event.manifest.getDefaultLabel();
     }
 
 }

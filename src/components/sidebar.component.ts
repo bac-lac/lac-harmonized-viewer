@@ -1,8 +1,6 @@
-import { Component, BaseComponent } from "./component";
+import { Component, BaseComponent } from "./base.component";
 import { MDCDrawer } from "@material/drawer";
-import { SidebarOpen } from "~/events/sidebar-open.event";
-import { SidebarClose } from "~/events/sidebar-close.event";
-import { SidebarOptions } from "~/options/sidebar.options";
+import { SidebarOptions } from "../options/sidebar.options";
 import { HarmonizedViewer } from "..";
 
 export class SidebarComponent extends BaseComponent implements Component {
@@ -10,8 +8,6 @@ export class SidebarComponent extends BaseComponent implements Component {
     options: SidebarOptions;
 
     protected drawer: MDCDrawer;
-
-    private _element: HTMLElement;
 
     constructor(instance: HarmonizedViewer, options: SidebarOptions) {
         super(instance);
@@ -22,8 +18,6 @@ export class SidebarComponent extends BaseComponent implements Component {
 
         const aside = document.createElement('aside');
         aside.className = 'mdc-drawer mdc-drawer--dismissible';
-
-        console.log('b', this.options);
 
         if (this.options && this.options.enable && this.options.open) {
             aside.classList.add('mdc-drawer--open');
@@ -36,13 +30,13 @@ export class SidebarComponent extends BaseComponent implements Component {
         return aside;
     }
 
-    init() {
+    async init() {
         if (this.getElement()) {
             this.drawer = new MDCDrawer(this.getElement());
         }
     }
 
-    bind() {
+    async bind() {
         if (this.drawer) {
             this.drawer.listen('MDCDrawer:opened', () => this.publish('sidebar-open'));
             this.drawer.listen('MDCDrawer:closed', () => this.publish('sidebar-close'));
@@ -64,6 +58,7 @@ export class SidebarComponent extends BaseComponent implements Component {
     }
 
     toggle() {
+        console.log(this);
         if (this.drawer) {
             const foundation = this.drawer.getDefaultFoundation();
             if (foundation.isOpen() || foundation.isOpening()) {

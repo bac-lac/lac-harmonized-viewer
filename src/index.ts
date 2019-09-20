@@ -1,9 +1,12 @@
 import { EventEmitter } from "events";
 import { ComponentService } from "./services/component.service";
 import { RootComponent } from "./components/root.component";
-import { HarmonizedViewerOptions } from "./options/options";
+import { HarmonizedViewerOptions, DisplayMode } from "./options/options";
+
+import tippy from 'tippy.js';
 
 const deepmerge = require('deepmerge');
+const overlayscrollbars = require('overlayscrollbars');
 
 export class HarmonizedViewer {
 
@@ -16,6 +19,7 @@ export class HarmonizedViewer {
 
     private defaults: HarmonizedViewerOptions = {
         manifest: undefined,
+        displayMode: DisplayMode.OnePage,
         navigation: {
             enable: true,
             open: false
@@ -42,8 +46,27 @@ export class HarmonizedViewer {
 
     init() {
         const root = new RootComponent(this);
-        this.element.append(root.getElement());        
-        this.components.execute();
+        this.element.append(root.getElement());
+
+        const promise = new Promise((resolve, reject) => {
+            this.components.execute();
+            this.tooltips();
+            resolve();
+        }).catch((reason) => {
+            console.error('error', reason);
+        });
+    }
+
+    private tooltips() {
+        return tippy('[data-tippy-content]', {
+            animation: 'shift-away',
+            appendTo: 'parent',
+            boundary: this.element,
+            delay: [500, 100],
+            duration: 200,
+            placement: 'bottom',
+            theme: 'hv'
+        });
     }
 }
 

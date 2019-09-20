@@ -1,5 +1,5 @@
 import "manifesto.js";
-import { Component, BaseComponent } from "./component";
+import { Component, BaseComponent } from "./base.component";
 import { MDCRipple } from "@material/ripple";
 import { HarmonizedViewer } from "..";
 import { ViewportOptions } from "../options/viewport.options";
@@ -7,6 +7,10 @@ import { ManifestLoad } from "../events/manifest-load.event";
 import { PageLoad } from "../events/page-load.event";
 import { PageRequest } from "../events/page-request.event";
 import { ZoomChange } from "../events/zoom-change.event";
+import { ManifestError } from "../events/manifest-error.event";
+import { PagePrevious } from "~/events/page-previous.event";
+import { PageNext } from "~/events/page-next.event";
+import { ToolbarComponent } from "./toolbar.component";
 
 const openseadragon = require('openseadragon');
 
@@ -35,6 +39,9 @@ export class ViewportComponent extends BaseComponent implements Component {
         const container = document.createElement('div');
         container.className = 'mdc-drawer-app-content mdc-top-app-bar--fixed-adjust';
 
+        const toolbar = new ToolbarComponent(this.instance);
+        container.append(toolbar.getElement());
+
         const main = document.createElement('main');
         main.className = 'hv-content main-content';
         container.append(main);
@@ -47,30 +54,29 @@ export class ViewportComponent extends BaseComponent implements Component {
         return container;
     }
 
-    init() {
+    async init() {
         this.showSpinner();
     }
 
-    bind() {
+    async bind() {
         this.on('manifest-load', (event: ManifestLoad) => this.createViewport(event.manifest));
-        //this.on('manifest-error', (event: ManifestError) => this.createError(event.error));
-        //this.on('page-load', (event: PageLoad) => this.hideSpinner());
-        //this.on('page-page', (event: GoToPage) => this.goToHandler(event));
-        //this.on('goto-prev', (event: GoToPrevious) => this.previous());
-        //this.on('goto-next', (event: GoToNext) => this.next());
+        this.on('manifest-error', (event: ManifestError) => this.createAlert(event.error));
+        this.on('page-load', (event: PageLoad) => this.onPageLoad(event));
+        this.on('page-request', (event: PageRequest) => this.onPageRequest(event));
+        this.on('page-prev', (event: PagePrevious) => this.previous());
+        this.on('page-next', (event: PageNext) => this.next());
     }
 
     async load() {
 
         try {
-
             const manifest = manifesto.create(
                 await manifesto.loadManifest(this.manifest)) as Manifesto.Manifest;
 
             this.publish('manifest-load', new ManifestLoad(manifest));
         }
         catch (err) {
-            //this.publish(new ManifestError(err));
+            this.publish('manifest-error', new ManifestError(err));
         }
         this.initNavButtons();
         //this.createViewport();
@@ -102,10 +108,12 @@ export class ViewportComponent extends BaseComponent implements Component {
     }
 
     goto(page: number) {
-        this.publish('page-request', page);
+        this.publish('page-request', new PageRequest(page));
     }
 
     protected createViewport(manifest: Manifesto.Manifest) {
+
+        console.log(manifest);
 
         if (!manifest) {
             return undefined;
@@ -156,7 +164,7 @@ export class ViewportComponent extends BaseComponent implements Component {
                 //const imageZoom = event.eventSource.viewport.viewportToImageZoom(zoom);
                 const percentage = Math.round((zoom - minZoom) * 100 / (maxZoom - minZoom));
 
-                this.publish('zoom-change', zoom, percentage);
+                this.publish('zoom-change', new ZoomChange(zoom, percentage));
             }
         });
     }
@@ -194,12 +202,19 @@ export class ViewportComponent extends BaseComponent implements Component {
         spinner.classList.add('hv-spinner--hidden');
     }
 
-    private onPageLoad(event: PageLoad) {
-        if (!event || !this.openseadragon) {
+    private onPageRequest(event: PageRequest) {
+        if (!event) {
             return undefined;
         }
         this.showSpinner();
         this.openseadragon.goToPage(event.page);
+    }
+
+    private onPageLoad(event: PageLoad) {
+        if (!event) {
+            return undefined;
+        }
+        this.hideSpinner();
     }
 
     previous() {
@@ -210,29 +225,24 @@ export class ViewportComponent extends BaseComponent implements Component {
         return this.goto((this.page < this.totalPages) ? this.page + 1 : this.totalPages - 1);
     }
 
-    private showError(err: Error) {
+    protected createAlert(error: Error) {
 
-        if (!err) {
+        if (!error) {
             return undefined;
         }
 
         const alert = document.createElement('div');
         alert.className = 'hv-error';
 
-        const icon = document.createElement('span');
-        icon.className = 'hv-error-icon material-icons';
-        icon.textContent = 'error_outline';
-        alert.append(icon);
+        const elementIcon = document.createElement('span');
+        elementIcon.className = 'hv-error-icon material-icons';
+        elementIcon.textContent = 'error_outline';
+        alert.append(elementIcon);
 
-        const text = document.createElement('span');
-        text.innerHTML = 'An unexpected error happened.<br>Please try again later.';
-        alert.append(text);
+        const elementText = document.createElement('span');
+        elementText.innerHTML = 'An unexpected error happened.<br>Please try again later.';
+        alert.append(elementText);
 
         this.getElement().append(alert);
     }
-}
-
-export interface IViewportOptions {
-    element: HTMLElement;
-    manifest: Manifesto.Manifest;
 }
