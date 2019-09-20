@@ -44,6 +44,7 @@
     "@babel/preset-env": "^7.6.0",
     "@fortawesome/fontawesome-free": "^5.10.2",
     "@types/node": "^12.7.4",
+    "@types/nouislider": "^9.0.5",
     "autoprefixer": "^9.6.1",
     "babel-loader": "^8.0.6",
     "circular-dependency-plugin": "^5.2.0",

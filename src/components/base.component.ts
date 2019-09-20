@@ -18,7 +18,7 @@ export class BaseComponent implements Component {
     }
 
     getElement() {
-        if(!this.element) {
+        if (!this.element) {
             this.element = this.create();
         }
         return this.element;
@@ -72,7 +72,7 @@ export class BaseComponent implements Component {
         const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
         while (true) {
 
-            let id = 'hvid-';
+            let id = 'hv-';
             for (var i = 0; i < 4; i++) {
                 id += chars.charAt(Math.floor(Math.random() * chars.length));
             }

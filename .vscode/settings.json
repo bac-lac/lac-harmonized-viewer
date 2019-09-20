@@ -1,0 +1,4 @@
+{
+    "http.proxySupport": "on",
+    "http.proxyStrictSSL": false
+}

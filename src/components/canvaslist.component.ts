@@ -5,10 +5,17 @@ import { PageLoad } from "../events/page-load.event";
 import { AspectRatio } from "../common/aspect-ratio";
 import { MathHelpers } from "../helpers/math.helper";
 import { PageRequest } from "../events/page-request.event";
+import { HarmonizedViewer } from "..";
 
 export class CanvasListComponent extends BaseComponent implements Component {
 
     private list: HTMLElement;
+    private lazyLoadObserver: IntersectionObserver;
+
+    constructor(instance: HarmonizedViewer) {
+        super(instance);
+        this.lazyLoadObserver = new IntersectionObserver(this.observeLazyLoading);
+    }
 
     create() {
         this.list = document.createElement('ul');
@@ -19,8 +26,9 @@ export class CanvasListComponent extends BaseComponent implements Component {
     async bind() {
         this.on('manifest-load', (event: ManifestLoad) => this.manifestLoad(event));
 
-        this.addListener('click', '.hv-canvas-thumbnail', (eventTarget: HTMLElement) => {
-            const page = parseInt(eventTarget.getAttribute('data-page'));
+        this.addListener('click', '.hv-thumbnail', (target: HTMLElement) => {
+            const page = parseInt(target.getAttribute('data-page'));
+            this.setActive(page);
             this.publish('page-request', new PageRequest(page));
         });
     }
@@ -49,6 +57,12 @@ export class CanvasListComponent extends BaseComponent implements Component {
 
         this.setActive(0);
 
+        const lazyImages = Array
+            .from(this.element.querySelectorAll('.hv-lazyload img'))
+            .map(x => x as HTMLImageElement);
+
+        this.enableLazyLoading(lazyImages);
+
         this.on('page-load', (event: PageLoad) => {
             this.setActive(event.page);
         });
@@ -57,17 +71,17 @@ export class CanvasListComponent extends BaseComponent implements Component {
     setActive(page: number) {
 
         const items = Array
-            .from(this.element.children)
+            .from(this.element.querySelectorAll('li > .hv-thumbnail'))
             .map(child => child as HTMLElement);
 
         const active = (page < items.length) ? items[page] : undefined;
 
         // Apply active CSS class
 
-        items.forEach((item) => item.classList.remove('active'));
+        items.forEach((item) => item.classList.remove('hv-thumbnail--active'));
 
         if (active) {
-            active.classList.add('active');
+            active.classList.add('hv-thumbnail--active');
         }
 
         // Make sure the canvas thumbnail is visible
@@ -92,15 +106,16 @@ export class CanvasListComponent extends BaseComponent implements Component {
 
         let a = document.createElement('a');
         a.href = 'javascript:;';
-        a.className = 'hv-canvas-thumbnail mdc-image-list__image-aspect-container hv-lazy--loading';
+        a.className = 'hv-thumbnail hv-lazyload hv-lazyload--loading mdc-image-list__image-aspect-container';
         a.setAttribute('data-page', page.toString());
         //a.setAttribute('data-tippy-content', canvas.getDefaultLabel());
         li.append(a);
 
         let img = document.createElement('img');
-        img.src = thumbnailUrl;
+        //img.src = thumbnailUrl;
         img.className = 'mdc-image-list__image';
-        img.setAttribute('loading', 'lazy');
+        img.setAttribute('data-src', thumbnailUrl);
+        //img.setAttribute('loading', 'lazy');
         // img.onload = () => {
         //     img.parentElement.classList.remove('hv-lazy--loading');
         //     img.parentElement.classList.add('hv-lazy--loaded');
@@ -121,7 +136,30 @@ export class CanvasListComponent extends BaseComponent implements Component {
         supporting.append(label);
 
         return li;
+    }
 
+    private observeLazyLoading(entries, observer) {
+        if (!entries) {
+            return undefined;
+        }
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                let lazyImage = entry.target as HTMLImageElement;
+                lazyImage.src = lazyImage.dataset.src;
+                //lazyImage.srcset = lazyImage.dataset.srcset;
+                lazyImage.classList.remove('hv-lazyload--loading');
+                lazyImage.classList.add('hv-lazyload--loaded');
+                observer.unobserve(lazyImage);
+            }
+        });
+    }
+
+    private enableLazyLoading(images: HTMLImageElement[]) {
+        if (!images) {
+            return undefined;
+        }
+        Array.from(images)
+            .forEach(image => this.lazyLoadObserver.observe(image));
     }
 
 }

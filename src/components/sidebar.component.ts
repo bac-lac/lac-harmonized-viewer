@@ -3,6 +3,8 @@ import { MDCDrawer } from "@material/drawer";
 import { SidebarOptions } from "../options/sidebar.options";
 import { HarmonizedViewer } from "..";
 
+const OverlayScrollbars = require('overlayscrollbars');
+
 export class SidebarComponent extends BaseComponent implements Component {
 
     options: SidebarOptions;
@@ -41,6 +43,10 @@ export class SidebarComponent extends BaseComponent implements Component {
             this.drawer.listen('MDCDrawer:opened', () => this.publish('sidebar-open'));
             this.drawer.listen('MDCDrawer:closed', () => this.publish('sidebar-close'));
         }
+    }
+
+    async load () {
+        OverlayScrollbars(this.element.querySelector('.mdc-drawer__content'), {});
     }
 
     open() {

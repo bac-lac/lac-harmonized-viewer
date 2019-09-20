@@ -4,9 +4,9 @@ import { RootComponent } from "./components/root.component";
 import { HarmonizedViewerOptions, DisplayMode } from "./options/options";
 
 import tippy from 'tippy.js';
+import { MDCRipple } from "@material/ripple";
 
 const deepmerge = require('deepmerge');
-const overlayscrollbars = require('overlayscrollbars');
 
 export class HarmonizedViewer {
 
@@ -50,11 +50,16 @@ export class HarmonizedViewer {
 
         const promise = new Promise((resolve, reject) => {
             this.components.execute();
+            this.ripple();
             this.tooltips();
             resolve();
         }).catch((reason) => {
             console.error('error', reason);
         });
+    }
+
+    private ripple() {
+        Array.from(this.element.querySelectorAll('.mdc-button')).forEach(x => MDCRipple.attachTo(x));
     }
 
     private tooltips() {
