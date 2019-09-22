@@ -1,6 +1,6 @@
 import { Component, BaseComponent } from "./base.component";
 import { ManifestLoad } from "../events/manifest-load.event";
-import { LanguageChange } from "~/events/language-change.event";
+import { LanguageChange } from "../events/language-change.event";
 
 export class TopbarComponent extends BaseComponent implements Component {
 
@@ -36,9 +36,16 @@ export class TopbarComponent extends BaseComponent implements Component {
         this.titleElement.textContent = this.title;
         start.append(this.titleElement);
 
+
         const end = document.createElement('div');
         end.className = 'mdc-top-app-bar__section mdc-top-app-bar__section--align-end';
         row.append(end);
+
+        const buttonContentType = document.createElement('button');
+        buttonContentType.type = 'button';
+        buttonContentType.className = 'hv-manifest__content-type mdc-button';
+        buttonContentType.textContent = 'JPG';
+        end.append(buttonContentType);
 
         this.buttonSettings = document.createElement('button');
         this.buttonSettings.className = 'hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button';

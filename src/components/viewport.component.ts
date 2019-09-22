@@ -1,15 +1,15 @@
 import "manifesto.js";
+import { HarmonizedViewer } from "../index";
 import { Component, BaseComponent } from "./base.component";
 import { MDCRipple } from "@material/ripple";
-import { HarmonizedViewer } from "..";
 import { ViewportOptions } from "../options/viewport.options";
 import { ManifestLoad } from "../events/manifest-load.event";
 import { PageLoad } from "../events/page-load.event";
 import { PageRequest } from "../events/page-request.event";
 import { ZoomChange } from "../events/zoom-change.event";
 import { ManifestError } from "../events/manifest-error.event";
-import { PagePrevious } from "~/events/page-previous.event";
-import { PageNext } from "~/events/page-next.event";
+import { PagePrevious } from "../events/page-previous.event";
+import { PageNext } from "../events/page-next.event";
 import { ToolbarComponent } from "./toolbar.component";
 import { PageSliderComponent } from "./pageslider.component";
 
@@ -54,17 +54,11 @@ export class ViewportComponent extends BaseComponent implements Component {
         viewport.className = 'hv-viewport';
         this.mainElement.append(viewport);
 
-        const buttonPrev = document.createElement('button');
-        buttonPrev.type = 'button';
-        buttonPrev.className = 'hv-button__prev mdc-button';
-        buttonPrev.setAttribute('data-tippy-content', 'Previous');
+        const buttonPrev = this.createPrevButton();
         viewport.append(buttonPrev);
 
-        const icon = document.createElement('i');
-        icon.className = 'mdc-button__icon material-icons';
-        icon.setAttribute('aria-hidden', 'true');
-        icon.textContent = 'chevron_left';
-        buttonPrev.append(icon);
+        const buttonNext = this.createNextButton();
+        viewport.append(buttonNext);
 
         const pageSlider = new PageSliderComponent(this.instance);
         container.append(pageSlider.getElement());
@@ -127,6 +121,38 @@ export class ViewportComponent extends BaseComponent implements Component {
 
     goto(page: number) {
         this.instance.publish('page-request', new PageRequest(page));
+    }
+
+    private createPrevButton() {
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'hv-button__prev mdc-button';
+        button.setAttribute('data-tippy-content', 'Previous');
+
+        const icon = document.createElement('i');
+        icon.className = 'mdc-button__icon material-icons';
+        icon.setAttribute('aria-hidden', 'true');
+        icon.textContent = 'chevron_left';
+        button.append(icon);
+
+        return button;
+    }
+
+    private createNextButton() {
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'hv-button__next mdc-button';
+        button.setAttribute('data-tippy-content', 'Next');
+
+        const icon = document.createElement('i');
+        icon.className = 'mdc-button__icon material-icons';
+        icon.setAttribute('aria-hidden', 'true');
+        icon.textContent = 'chevron_right';
+        button.append(icon);
+
+        return button;
     }
 
     protected createViewport(manifest: Manifesto.Manifest) {

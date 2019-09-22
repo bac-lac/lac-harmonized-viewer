@@ -1,11 +1,11 @@
 @import "_variables";
 @import "_animations";
 
-$mdc-theme-primary: #3d70b2;
-$mdc-theme-background: #f5f7fa;
-$mdc-theme-topbar-background: #5a6872;
-$mdc-theme-toolbar-background: #dfe3e6;
-$mdc-theme-navigation-background: #dfe3e6;
+$mdc-theme-primary: hsl(243.8, 49%, 46.9%);
+$mdc-theme-background: hsl(246, 33.3%, 97.1%);
+$mdc-theme-topbar-background: hsl(235, 11.8%, 40%);
+$mdc-theme-toolbar-background: hsl(246, 33.3%, 97.1%);
+$mdc-theme-navigation-background: hsl(235.7, 12.3%, 88.8%);
 $mdc-theme-navigation-button-background: #fff;
 $mdc-theme-tooltip-text: #fff;
 $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
@@ -54,33 +54,33 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
     //@include mdc-dialog-background(#f0f1f5);
 
     .mdc-dialog__title {
-      font-size: 1.0rem;
+      font-size: 1rem;
       text-transform: uppercase;
     }
 
     .mdc-dialog__button {
-      @include mdc-button-horizontal-padding(1.0rem);
+      @include mdc-button-horizontal-padding(1rem);
       @include mdc-button-shape-radius(3px);
     }
 
     footer {
-      padding: 1.0rem 1.5rem;
+      padding: 1rem 1.5rem;
       background-color: #f0f1f5;
     }
 
     .#{$ns}settings {
-      @include mdc-layout-grid('desktop', 0);
+      @include mdc-layout-grid("desktop", 0);
 
       &__inner {
-        @include mdc-layout-grid-inner('desktop', 0, 12px);
+        @include mdc-layout-grid-inner("desktop", 0, 12px);
       }
 
       &__cell-label {
-        @include mdc-layout-grid-cell('desktop', 4, 12px);
+        @include mdc-layout-grid-cell("desktop", 4, 12px);
       }
 
       &__cell-control {
-        @include mdc-layout-grid-cell('desktop', 8, 12px);
+        @include mdc-layout-grid-cell("desktop", 8, 12px);
 
         .full-width {
           width: 100%;
@@ -103,25 +103,29 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
     .mdc-top-app-bar__navigation-icon {
       color: #fff;
     }
+
+    .hv-manifest__content-type {
+      @extend .mdc-button;
+      @include mdc-button-ink-color(#fff);
+    }
   }
 
   .#{$ns}toolbar {
-
-    @include mdc-layout-grid('desktop', 15px);
+    @include mdc-layout-grid("desktop", 15px);
 
     width: 100%;
     //height: 60px;
     padding: 0.2rem;
     margin-top: 0.2rem;
     border-bottom: #fff 1px solid;
-    background-color: #dfe3e6;//$mdc-theme-toolbar-background;
+    background-color: $mdc-theme-toolbar-background;
 
     .#{$ns}toolbar__inner {
-      @include mdc-layout-grid-inner('desktop', 0, 12px);
+      @include mdc-layout-grid-inner("desktop", 0, 12px);
     }
 
     .#{$ns}toolbar__cell {
-      @include mdc-layout-grid-cell('desktop', 0, 12px);
+      @include mdc-layout-grid-cell("desktop", 0, 12px);
 
       &--right {
         text-align: right;
@@ -130,7 +134,6 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
 
     .mdc-button,
     .mdc-icon-button {
-
       //@include mdc-button-filled-accessible(#fff);
       @include mdc-button-horizontal-padding(1.2rem);
       @include mdc-button-icon-color(#8897a2);
@@ -329,7 +332,7 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
             border-radius: 1px;
             border: #fff 2px solid;
             transition: all 250ms ease;
-            box-shadow: 1px 1px 5px 1px #acb1bf;
+            box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.1);
 
             .mdc-image-list__image {
               filter: grayscale(50%);
@@ -405,16 +408,19 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
       //@extend .mdc-elevation--z4;
 
       opacity: 0;
-      min-width: auto;
+      width: auto;
+      min-width: 48px;
       height: auto;
-      padding: 0.8rem 0.4rem;
+      padding: 1.5rem 0.5rem;
       position: absolute;
       z-index: 99999;
       transition: opacity 200ms ease;
-      border: #dfe3e6 1px solid;
 
       .mdc-button__icon {
-        margin-right: 0;
+        width: auto;
+        height: auto;
+        font-size: 26px;
+        margin: 0;
       }
 
       //@include mdc-button-horizontal-padding(2.0rem);
@@ -427,11 +433,13 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
     }
 
     .#{$ns}button__prev {
-      left: 1rem;
+      left: 0;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
     }
 
     .#{$ns}button__next {
-      right: 1rem;
+      right: 0;
     }
   }
 
@@ -466,7 +474,7 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
     opacity: 0.9;
     color: $mdc-theme-tooltip-text;
     background-color: $mdc-theme-tooltip-background;
-    font-size: 1.0rem;
+    font-size: 1rem;
     padding: 0.3rem 0.6rem;
   }
 
