@@ -24,12 +24,12 @@ export class CanvasListComponent extends BaseComponent implements Component {
     }
 
     async bind() {
-        this.on('manifest-load', (event: ManifestLoad) => this.manifestLoad(event));
+        this.instance.on('manifest-load', (event: ManifestLoad) => this.manifestLoad(event));
 
         this.addListener('click', '.hv-thumbnail', (target: HTMLElement) => {
             const page = parseInt(target.getAttribute('data-page'));
             this.setActive(page);
-            this.publish('page-request', new PageRequest(page));
+            this.instance.publish('page-request', new PageRequest(page));
         });
     }
 
@@ -63,7 +63,7 @@ export class CanvasListComponent extends BaseComponent implements Component {
 
         this.enableLazyLoading(lazyImages);
 
-        this.on('page-load', (event: PageLoad) => {
+        this.instance.on('page-load', (event: PageLoad) => {
             this.setActive(event.page);
         });
     }
@@ -101,15 +101,15 @@ export class CanvasListComponent extends BaseComponent implements Component {
         let baseUrl = canvas.getImages()[0].getResource().getServices()[0].id;
         let thumbnailUrl = baseUrl + '/full/90,/0/default.jpg';
 
-        let li = document.createElement("li");
-        li.className = 'mdc-image-list__item';
+        let listitem = document.createElement("li");
+        listitem.className = 'mdc-image-list__item';
 
         let a = document.createElement('a');
         a.href = 'javascript:;';
         a.className = 'hv-thumbnail hv-lazyload hv-lazyload--loading mdc-image-list__image-aspect-container';
         a.setAttribute('data-page', page.toString());
         //a.setAttribute('data-tippy-content', canvas.getDefaultLabel());
-        li.append(a);
+        listitem.append(a);
 
         let img = document.createElement('img');
         //img.src = thumbnailUrl;
@@ -128,14 +128,14 @@ export class CanvasListComponent extends BaseComponent implements Component {
 
         let supporting = document.createElement('div');
         supporting.className = 'mdc-image-list__supporting';
-        li.append(supporting);
+        listitem.append(supporting);
 
         let label = document.createElement('span');
         label.className = 'mdc-image-list__label';
         label.textContent = canvas.getDefaultLabel();
         supporting.append(label);
 
-        return li;
+        return listitem;
     }
 
     private observeLazyLoading(entries, observer) {

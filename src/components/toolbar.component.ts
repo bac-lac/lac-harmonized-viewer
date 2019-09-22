@@ -9,18 +9,33 @@ export class ToolbarComponent extends BaseComponent implements Component {
         const element = document.createElement('div');
         element.className = 'hv-toolbar';
 
+        const inner = document.createElement('div');
+        inner.className = 'hv-toolbar__inner';
+        element.append(inner);
+
+        const left = document.createElement('div');
+        left.className = 'hv-toolbar__cell mdc-layout-grid__cell--span-10';
+        inner.append(left);
+
+        const right = document.createElement('div');
+        right.className = 'hv-toolbar__cell hv-toolbar__cell--right mdc-layout-grid__cell--span-2';
+        inner.append(right);
+
         const buttonHome = this.createButtonHome();
-        element.append(buttonHome);
+        left.append(buttonHome);
 
         const buttonDisplayMode = this.createButtonDisplayMode();
-        element.append(buttonDisplayMode);
+        left.append(buttonDisplayMode);
+
+        const buttonFullscreen = this.createButtonFullscreen();
+        right.append(buttonFullscreen);
 
         return element;
     }
 
     async bind() {
 
-        this.on('zoom-change', (event: ZoomChange) => {
+        this.instance.on('zoom-change', (event: ZoomChange) => {
 
             const buttonZoom = this.element.querySelector('.hv-zoom-button');
             if (buttonZoom) {
@@ -68,6 +83,22 @@ export class ToolbarComponent extends BaseComponent implements Component {
         label.className = 'mdc-button__label';
         label.textContent = 'Display mode';
         button.append(label);
+
+        return button;
+    }
+
+    private createButtonFullscreen() {
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'mdc-button';
+        button.setAttribute('data-tippy-content', 'Fullscreen');
+
+        const icon = document.createElement('i');
+        icon.className = 'mdc-button__icon material-icons';
+        icon.setAttribute('aria-hidden', 'true');
+        icon.textContent = 'fullscreen';
+        button.append(icon);
 
         return button;
     }

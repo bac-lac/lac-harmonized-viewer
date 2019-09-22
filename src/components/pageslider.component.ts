@@ -37,9 +37,9 @@ export class PageSliderComponent extends BaseComponent implements Component {
     }
 
     async bind() {
-        this.on('manifest-load', (event: ManifestLoad) => this.manifestLoad(event));
-        this.on('page-request', (event: PageRequest) => this.updateStatus(event.page));
-        this.on('page-load', (event: PageLoad) => this.updateStatus(event.page));
+        this.instance.on('manifest-load', (event: ManifestLoad) => this.manifestLoad(event));
+        this.instance.on('page-request', (event: PageRequest) => this.updateStatus(event.page));
+        this.instance.on('page-load', (event: PageLoad) => this.updateStatus(event.page));
     }
 
     protected manifestLoad(event: ManifestLoad) {

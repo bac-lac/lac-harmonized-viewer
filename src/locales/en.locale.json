@@ -1,0 +1,9 @@
+{
+    "code": "en",
+    "name": "English",
+    "default": true,
+    "content": {
+        "language": "Language",
+        "settings": "Settings"
+    }
+}

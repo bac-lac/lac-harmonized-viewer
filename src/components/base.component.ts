@@ -24,17 +24,6 @@ export class BaseComponent implements Component {
         return this.element;
     }
 
-    on(event: string, listener: (event: IEvent) => void) {
-        return this.instance.events.on(event, (event: any) => listener(event));
-    }
-
-    publish(event: string, eventArgs?: IEvent): boolean {
-        if (!event) {
-            return false;
-        }
-        return this.instance.events.emit(event, eventArgs);
-    }
-
     addListener(event: string, selector?: string, listener?: (eventTarget: HTMLElement) => any): void {
 
         if (!event) {
@@ -66,6 +55,12 @@ export class BaseComponent implements Component {
 
             }
         });
+    }
+
+    t(key: string): string {
+        if (key && this.instance && this.instance.locale) {
+            return this.instance.locale.t(key);
+        }
     }
 
     protected uniqueid(): string {

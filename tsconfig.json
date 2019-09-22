@@ -15,6 +15,7 @@
         "outDir": "dist",
         "allowJs": true,
         "sourceMap": true,
+        "resolveJsonModule": true,
         "jsx": "preserve",
         "lib": [
             "es5",

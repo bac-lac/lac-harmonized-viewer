@@ -18,7 +18,7 @@ export class NavigationComponent extends SidebarComponent implements Component {
     }
 
     async bind() {
-        this.on('navigation-toggle', () => this.toggle());
+        this.instance.on('navigation-toggle', () => this.toggle());
     }
 
 }

@@ -26,16 +26,25 @@ export class TopbarComponent extends Component {
         start.className = 'mdc-top-app-bar__section mdc-top-app-bar__section--align-start';
         row.append(start);
 
-        const menu = document.createElement('button');
-        menu.className = 'hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button';
-        menu.textContent = 'menu';
-        start.append(menu);
-
-        menu.addEventListener('click', () => this.publish(new NavigationToggle()));
+        const toggle = document.createElement('button');
+        toggle.className = 'hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button';
+        toggle.textContent = 'menu';
+        start.append(toggle);
 
         const title = document.createElement('span');
         title.className = 'hv-manifest__title mdc-top-app-bar__title';
         start.append(title);
+
+        const end = document.createElement('div');
+        end.className = 'mdc-top-app-bar__section mdc-top-app-bar__section--align-end';
+        row.append(end);
+
+        const more = document.createElement('button');
+        more.className = 'hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button';
+        more.textContent = 'more_vert';
+        end.append(more);
+
+        toggle.addEventListener('click', () => this.publish(new NavigationToggle()));
 
         //this.addListener('click', '.hv-button-icon[data-target=navigation]', () => new NavigationToggle());
         //this.addListener('click', '.hv-button-icon[data-target=annotations]', () => new AnnotationsToggle());        

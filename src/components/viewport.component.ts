@@ -54,6 +54,18 @@ export class ViewportComponent extends BaseComponent implements Component {
         viewport.className = 'hv-viewport';
         this.mainElement.append(viewport);
 
+        const buttonPrev = document.createElement('button');
+        buttonPrev.type = 'button';
+        buttonPrev.className = 'hv-button__prev mdc-button';
+        buttonPrev.setAttribute('data-tippy-content', 'Previous');
+        viewport.append(buttonPrev);
+
+        const icon = document.createElement('i');
+        icon.className = 'mdc-button__icon material-icons';
+        icon.setAttribute('aria-hidden', 'true');
+        icon.textContent = 'chevron_left';
+        buttonPrev.append(icon);
+
         const pageSlider = new PageSliderComponent(this.instance);
         container.append(pageSlider.getElement());
 
@@ -65,12 +77,12 @@ export class ViewportComponent extends BaseComponent implements Component {
     }
 
     async bind() {
-        this.on('manifest-load', (event: ManifestLoad) => this.createViewport(event.manifest));
-        this.on('manifest-error', (event: ManifestError) => this.createAlert(event.error));
-        this.on('page-load', (event: PageLoad) => this.pageLoad(event));
-        this.on('page-request', (event: PageRequest) => this.pageRequest(event));
-        this.on('page-prev', (event: PagePrevious) => this.previous());
-        this.on('page-next', (event: PageNext) => this.next());
+        this.instance.on('manifest-load', (event: ManifestLoad) => this.createViewport(event.manifest));
+        this.instance.on('manifest-error', (event: ManifestError) => this.createAlert(event.error));
+        this.instance.on('page-load', (event: PageLoad) => this.pageLoad(event));
+        this.instance.on('page-request', (event: PageRequest) => this.pageRequest(event));
+        this.instance.on('page-prev', (event: PagePrevious) => this.previous());
+        this.instance.on('page-next', (event: PageNext) => this.next());
     }
 
     async load() {
@@ -79,10 +91,10 @@ export class ViewportComponent extends BaseComponent implements Component {
             const manifest = manifesto.create(
                 await manifesto.loadManifest(this.manifest)) as Manifesto.Manifest;
 
-            this.publish('manifest-load', new ManifestLoad(manifest));
+            this.instance.publish('manifest-load', new ManifestLoad(manifest));
         }
         catch (err) {
-            this.publish('manifest-error', new ManifestError(err));
+            this.instance.publish('manifest-error', new ManifestError(err));
         }
         this.initNavButtons();
         //this.createViewport();
@@ -93,13 +105,13 @@ export class ViewportComponent extends BaseComponent implements Component {
         const back = this.element.querySelector('.hv-button__prev');
         if (back) {
             MDCRipple.attachTo(back);
-            back.addEventListener('click', () => this.publish('page-previous'));
+            back.addEventListener('click', () => this.instance.publish('page-previous'));
         }
 
         const next = this.element.querySelector('.hv-button__next');
         if (next) {
             MDCRipple.attachTo(next);
-            next.addEventListener('click', () => this.publish('page-next'));
+            next.addEventListener('click', () => this.instance.publish('page-next'));
         }
 
     }
@@ -114,7 +126,7 @@ export class ViewportComponent extends BaseComponent implements Component {
     }
 
     goto(page: number) {
-        this.publish('page-request', new PageRequest(page));
+        this.instance.publish('page-request', new PageRequest(page));
     }
 
     protected createViewport(manifest: Manifesto.Manifest) {
@@ -154,7 +166,7 @@ export class ViewportComponent extends BaseComponent implements Component {
             const canvas = sequence.getCanvasByIndex(page);
 
             this.whenFullyLoaded(this.openseadragon.world.getItemAt(0), () => {
-                this.publish('page-load', new PageLoad(page));
+                this.instance.publish('page-load', new PageLoad(page));
             });
         });
 
@@ -170,7 +182,7 @@ export class ViewportComponent extends BaseComponent implements Component {
                 //const imageZoom = event.eventSource.viewport.viewportToImageZoom(zoom);
                 const percentage = Math.round((zoom - minZoom) * 100 / (maxZoom - minZoom));
 
-                this.publish('zoom-change', new ZoomChange(zoom, percentage));
+                this.instance.publish('zoom-change', new ZoomChange(zoom, percentage));
             }
         });
     }

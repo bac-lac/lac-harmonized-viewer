@@ -1,0 +1,9 @@
+{
+    "code": "fr",
+    "name": "Français",
+    "default": false,
+    "content": {
+        "language": "Langue",
+        "settings": "Paramètres"
+    }
+}

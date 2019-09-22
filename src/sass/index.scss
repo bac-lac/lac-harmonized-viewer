@@ -1,9 +1,11 @@
 @import "_variables";
 @import "_animations";
 
-$mdc-theme-primary: #5e81ac;
-$mdc-theme-background: #f5f6f7;
-$mdc-theme-navigation-background: #e6e9ed;
+$mdc-theme-primary: #3d70b2;
+$mdc-theme-background: #f5f7fa;
+$mdc-theme-topbar-background: #5a6872;
+$mdc-theme-toolbar-background: #dfe3e6;
+$mdc-theme-navigation-background: #dfe3e6;
 $mdc-theme-navigation-button-background: #fff;
 $mdc-theme-tooltip-text: #fff;
 $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
@@ -15,6 +17,8 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
   @import "@material/icon-button/mdc-icon-button";
   @import "@material/drawer/mdc-drawer";
   @import "@material/list/mdc-list";
+  @import "@material/dialog/mdc-dialog";
+  @import "@material/select/mdc-select";
   @import "@material/linear-progress/mdc-linear-progress";
   @import "@material/menu-surface/mdc-menu-surface";
   @import "@material/menu/mdc-menu";
@@ -43,30 +47,94 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
   //   @include mdc-button-without-ripple;
   // }
 
+  .#{$ns}settings {
+    @include mdc-dialog-min-width(600px);
+    @include mdc-dialog-shape-radius(2px);
+    //@include mdc-dialog-scrim-color(#000000, 0.2);
+    //@include mdc-dialog-background(#f0f1f5);
+
+    .mdc-dialog__title {
+      font-size: 1.0rem;
+      text-transform: uppercase;
+    }
+
+    .mdc-dialog__button {
+      @include mdc-button-horizontal-padding(1.0rem);
+      @include mdc-button-shape-radius(3px);
+    }
+
+    footer {
+      padding: 1.0rem 1.5rem;
+      background-color: #f0f1f5;
+    }
+
+    .#{$ns}settings {
+      @include mdc-layout-grid('desktop', 0);
+
+      &__inner {
+        @include mdc-layout-grid-inner('desktop', 0, 12px);
+      }
+
+      &__cell-label {
+        @include mdc-layout-grid-cell('desktop', 4, 12px);
+      }
+
+      &__cell-control {
+        @include mdc-layout-grid-cell('desktop', 8, 12px);
+
+        .full-width {
+          width: 100%;
+        }
+      }
+    }
+  }
+
   .#{$ns}topbar {
     @extend .mdc-top-app-bar;
     @include mdc-top-app-bar-ink-color(#ffffff);
-    @include mdc-top-app-bar-fill-color(#434a54);
+    @include mdc-top-app-bar-fill-color($mdc-theme-topbar-background);
 
     z-index: 99999;
 
     .mdc-top-app-bar__row {
       box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
     }
+
+    .mdc-top-app-bar__navigation-icon {
+      color: #fff;
+    }
   }
 
   .#{$ns}toolbar {
-    @extend .mdc-layout-grid;
+
+    @include mdc-layout-grid('desktop', 15px);
+
     width: 100%;
-    //height: 54px;
-    padding: 0.4rem;
-    display: flex;
-    box-shadow: 0 0 3px 1px #eee;
-    background-color: #ffffff;
+    //height: 60px;
+    padding: 0.2rem;
+    margin-top: 0.2rem;
+    border-bottom: #fff 1px solid;
+    background-color: #dfe3e6;//$mdc-theme-toolbar-background;
+
+    .#{$ns}toolbar__inner {
+      @include mdc-layout-grid-inner('desktop', 0, 12px);
+    }
+
+    .#{$ns}toolbar__cell {
+      @include mdc-layout-grid-cell('desktop', 0, 12px);
+
+      &--right {
+        text-align: right;
+      }
+    }
 
     .mdc-button,
     .mdc-icon-button {
-      @include mdc-button-horizontal-padding(0.8rem);
+
+      //@include mdc-button-filled-accessible(#fff);
+      @include mdc-button-horizontal-padding(1.2rem);
+      @include mdc-button-icon-color(#8897a2);
+      @include mdc-button-ink-color(#152934);
       @include mdc-button-shape-radius(2px);
 
       height: 40px;
@@ -75,15 +143,17 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
         width: 22px;
         height: 22px;
         font-size: 22px;
+
         margin-right: 0;
       }
 
       .mdc-button__label {
         font-size: 15px;
         font-weight: normal;
+
+        margin-left: 8px;
         letter-spacing: 0;
         text-transform: none;
-        margin-left: 8px;
       }
     }
 
@@ -124,7 +194,6 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
   // }
 
   .#{$ns}paging {
-
     display: flex;
     padding: 0.8rem 1.4rem;
     margin-top: 0.1rem;
@@ -132,7 +201,6 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
     background-color: #fff;
 
     .#{$ns}paging__status {
-
       color: #aab2bd;
       width: 100px;
       font-size: 0.9rem;
@@ -142,16 +210,14 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
       &-total {
         padding: 0 0.3rem;
       }
-
     }
 
     .#{$ns}paging__slider {
-
       flex: 1;
       margin-left: 50px;
       border: none;
       box-shadow: none;
-      border-radius: 2px;      
+      border-radius: 2px;
 
       .noUi-origin {
         .noUi-handle {
@@ -176,9 +242,11 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
   }
 
   .mdc-drawer {
-    @include mdc-drawer-width(250px);
+    @include mdc-drawer-width(220px);
     @include mdc-drawer-z-index(9999);
-    border: none !important;
+
+    border: none;
+    border-right: #fff 2px solid;
 
     &.#{$ns}navigation {
       background-color: $mdc-theme-navigation-background;
@@ -208,10 +276,10 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
     }
 
     &.#{$ns}navigation.mdc-drawer--open:not(.mdc-drawer--closing) ~ .mdc-drawer-app-content {
-      margin-left: 250px !important;
+      margin-left: 220px !important;
     }
     &.#{$ns}annotations.mdc-drawer--open:not(.mdc-drawer--closing) ~ .mdc-drawer-app-content {
-      margin-right: 250px !important;
+      margin-right: 220px !important;
     }
 
     &.#{$ns}annotations {
@@ -229,10 +297,10 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
     }
 
     &__content {
-      padding: 1.25rem;
+      padding: 1.6rem calc(1.6rem - 15px) 1.6rem 1.6rem;
 
       .#{$ns}image-list {
-        @include mdc-image-list-standard-columns(2, 9px);
+        @include mdc-image-list-standard-columns(2, 10px);
 
         &.#{$ns}aspect-ratio--1-1 {
           @include mdc-image-list-aspect(1/1);
@@ -259,9 +327,9 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
           .#{$ns}thumbnail {
             display: block;
             border-radius: 1px;
-            border: #fff 3px solid;
+            border: #fff 2px solid;
             transition: all 250ms ease;
-            box-shadow: 0px 0px 3px 1px #ccd1d9;
+            box-shadow: 1px 1px 5px 1px #acb1bf;
 
             .mdc-image-list__image {
               filter: grayscale(50%);
@@ -276,7 +344,6 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
                 background: linear-gradient(90deg, #f2f2f2 25%, #e6e6e6 37%, #f2f2f2 63%);
                 background-size: 400% 100%;
                 background-size: 1200px 100%;
-                background-color: #eeeff1;
               }
             }
 
@@ -284,23 +351,23 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
               .mdc-image-list__image {
                 filter: grayscale(0%);
               }
-              box-shadow: 0 0 0 2px #aab2bd;
+
+              box-shadow: 0 0 0 3px #ccc;
             }
 
             &--active,
             &--active:hover {
-              box-shadow: 0 0 0 3px #5d9cec;
+              box-shadow: 0 0 0 3px $mdc-theme-primary;
             }
           }
 
           .mdc-image-list__supporting {
             height: 20px;
+            border-radius: 2px;
+            justify-content: center;
             padding: 0.3rem 0.6rem;
             margin: 0.2rem 0 0.3rem 0;
-            justify-content: center;
             transition: all 200ms ease;
-            border-radius: 2px;
-            background-color: rgba(255, 255, 255, 0.3);
 
             .mdc-image-list__label {
               color: #4c566a;
@@ -335,7 +402,7 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
 
     .#{$ns}button__prev,
     .#{$ns}button__next {
-      @extend .mdc-elevation--z4;
+      //@extend .mdc-elevation--z4;
 
       opacity: 0;
       min-width: auto;
@@ -344,8 +411,11 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
       position: absolute;
       z-index: 99999;
       transition: opacity 200ms ease;
-      border: #e5e9f0 1px solid;
-      box-shadow: 1px 1px 3px 1px #e5e9f0;
+      border: #dfe3e6 1px solid;
+
+      .mdc-button__icon {
+        margin-right: 0;
+      }
 
       //@include mdc-button-horizontal-padding(2.0rem);
       @include mdc-button-container-fill-color($mdc-theme-navigation-button-background);
@@ -354,10 +424,6 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
       @include mdc-ripple-surface();
       @include mdc-ripple-radius-bounded();
       @include mdc-states();
-
-      .material-icons {
-        font-size: 30px;
-      }
     }
 
     .#{$ns}button__prev {
@@ -400,7 +466,7 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
     opacity: 0.9;
     color: $mdc-theme-tooltip-text;
     background-color: $mdc-theme-tooltip-background;
-    font-size: 0.9rem;
+    font-size: 1.0rem;
     padding: 0.3rem 0.6rem;
   }
 

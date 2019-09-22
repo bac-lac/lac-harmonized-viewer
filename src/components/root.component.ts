@@ -3,6 +3,7 @@ import { TopbarComponent } from "./topbar.component";
 import { NavigationComponent } from "./navigation.component";
 import { HarmonizedViewer } from "..";
 import { ViewportComponent } from "./viewport.component";
+import { SettingsComponent } from "./settings.component";
 
 export class RootComponent extends BaseComponent implements Component {
 
@@ -26,6 +27,9 @@ export class RootComponent extends BaseComponent implements Component {
 
         const viewport = new ViewportComponent(this.instance, this.instance.options.manifest, this.instance.options.viewport);
         container.append(viewport.getElement());
+
+        const dialogSettings = new SettingsComponent(this.instance);
+        container.append(dialogSettings.getElement());
 
         return container.firstElementChild as HTMLElement;
     }

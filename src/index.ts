@@ -3,8 +3,10 @@ import { ComponentService } from "./services/component.service";
 import { RootComponent } from "./components/root.component";
 import { HarmonizedViewerOptions, DisplayMode } from "./options/options";
 
-import tippy from 'tippy.js';
+import tippy, { Instance } from 'tippy.js';
 import { MDCRipple } from "@material/ripple";
+import { LocaleService } from "./services/locale.service";
+import { IEvent } from "./common/events";
 
 const deepmerge = require('deepmerge');
 
@@ -15,6 +17,7 @@ export class HarmonizedViewer {
     options: HarmonizedViewerOptions;
 
     components: ComponentService;
+    locale: LocaleService;
     events: EventEmitter;
 
     private defaults: HarmonizedViewerOptions = {
@@ -40,16 +43,23 @@ export class HarmonizedViewer {
         this.element = document.getElementById(id);
         this.options = deepmerge(this.defaults, options);
 
-        this.components = new ComponentService();
         this.events = new EventEmitter();
+
+        this.components = new ComponentService();
+        this.locale = new LocaleService(this);
     }
 
     init() {
+
         const root = new RootComponent(this);
         this.element.append(root.getElement());
 
+        this.locale.configure();
+
         const promise = new Promise((resolve, reject) => {
+
             this.components.execute();
+
             this.ripple();
             this.tooltips();
             resolve();
@@ -58,12 +68,28 @@ export class HarmonizedViewer {
         });
     }
 
+    on(event: string, listener: (event: IEvent) => void) {
+        return this.events.on(event, (event: any) => listener(event));
+    }
+
+    publish(event: string, eventArgs?: IEvent): boolean {
+        if (!event) {
+            return false;
+        }
+        return this.events.emit(event, eventArgs);
+    }
+
     private ripple() {
         Array.from(this.element.querySelectorAll('.mdc-button')).forEach(x => MDCRipple.attachTo(x));
     }
 
-    private tooltips() {
-        return tippy('[data-tippy-content]', {
+    tooltips() {
+        const selector = '[data-tippy-content]';
+
+        const instances = tippy(selector) as Instance[];
+        instances.forEach(x => x.destroy());
+
+        return tippy(selector, {
             animation: 'shift-away',
             appendTo: 'parent',
             boundary: this.element,

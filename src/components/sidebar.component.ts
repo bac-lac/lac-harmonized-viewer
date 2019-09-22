@@ -40,8 +40,8 @@ export class SidebarComponent extends BaseComponent implements Component {
 
     async bind() {
         if (this.drawer) {
-            this.drawer.listen('MDCDrawer:opened', () => this.publish('sidebar-open'));
-            this.drawer.listen('MDCDrawer:closed', () => this.publish('sidebar-close'));
+            this.drawer.listen('MDCDrawer:opened', () => this.instance.publish('sidebar-open'));
+            this.drawer.listen('MDCDrawer:closed', () => this.instance.publish('sidebar-close'));
         }
     }
 
