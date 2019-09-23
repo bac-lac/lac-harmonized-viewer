@@ -13,12 +13,13 @@ const deepmerge = require('deepmerge');
 export class HarmonizedViewer {
 
     element: HTMLElement;
-
     options: HarmonizedViewerOptions;
 
     components: ComponentService;
     locale: LocaleService;
     events: EventEmitter;
+
+    root: RootComponent;
 
     private defaults: HarmonizedViewerOptions = {
         manifest: undefined,
@@ -51,12 +52,12 @@ export class HarmonizedViewer {
 
     init() {
 
-        const root = new RootComponent(this);
-        this.element.append(root.getElement());
+        this.root = new RootComponent(this);
+        this.element.append(this.root.getElement());
 
         this.locale.configure();
 
-        const promise = new Promise((resolve, reject) => {
+        new Promise((resolve, reject) => {
 
             this.components.execute();
 
@@ -93,7 +94,7 @@ export class HarmonizedViewer {
             animation: 'shift-away',
             appendTo: 'parent',
             boundary: this.element,
-            delay: [500, 100],
+            delay: [0, 100],
             duration: 200,
             placement: 'bottom',
             theme: 'hv'

@@ -25,12 +25,19 @@ export class CanvasListComponent extends BaseComponent implements Component {
 
     async bind() {
         this.instance.on('manifest-load', (event: ManifestLoad) => this.manifestLoad(event));
+        this.instance.on('page-request', (event: PageRequest) => this.pageRequest(event));
 
         this.addListener('click', '.hv-thumbnail', (target: HTMLElement) => {
             const page = parseInt(target.getAttribute('data-page'));
-            this.setActive(page);
             this.instance.publish('page-request', new PageRequest(page));
         });
+    }
+
+    protected pageRequest(event: PageRequest) {
+        if (!event) {
+            return undefined;
+        }
+        this.setActive(event.page);
     }
 
     protected manifestLoad(event: ManifestLoad) {

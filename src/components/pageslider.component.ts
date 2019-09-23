@@ -1,8 +1,8 @@
 import { BaseComponent, Component } from "./base.component";
 import * as noUiSlider from 'nouislider';
-import { PageRequest } from "~/events/page-request.event";
-import { PageLoad } from "~/events/page-load.event";
-import { ManifestLoad } from "~/events/manifest-load.event";
+import { PageRequest } from "../events/page-request.event";
+import { PageLoad } from "../events/page-load.event";
+import { ManifestLoad } from "../events/manifest-load.event";
 
 export class PageSliderComponent extends BaseComponent implements Component {
 
@@ -39,15 +39,23 @@ export class PageSliderComponent extends BaseComponent implements Component {
     async bind() {
         this.instance.on('manifest-load', (event: ManifestLoad) => this.manifestLoad(event));
         this.instance.on('page-request', (event: PageRequest) => this.updateStatus(event.page));
-        this.instance.on('page-load', (event: PageLoad) => this.updateStatus(event.page));
+        this.instance.on('page-load', (event: PageLoad) => this.pageLoad(event));
     }
 
     protected manifestLoad(event: ManifestLoad) {
-        if(!event) {
+        if (!event) {
             return undefined;
         }
         const pageCount = event.manifest.getSequenceByIndex(0).getTotalCanvases();
         this.updatePageCount(pageCount);
+    }
+
+    protected pageLoad(event: PageLoad) {
+        if (!event) {
+            return undefined;
+        }
+        this.updateStatus(event.page);
+        this.updateSlider(event.page);
     }
 
     private initPageSlider(pageCount: number) {
@@ -65,6 +73,7 @@ export class PageSliderComponent extends BaseComponent implements Component {
             this.slider = noUiSlider.create(
                 document.getElementById(nouiSlider.id), {
                 start: 1,
+                step: 1,
                 connect: true,
                 range: {
                     'min': 1,
@@ -73,8 +82,14 @@ export class PageSliderComponent extends BaseComponent implements Component {
                 orientation: 'horizontal'
             });
 
-            this.slider.on('update', function (values, handle) {
-                console.log(values[handle]);
+            this.slider.on('update', (values, handle) => {
+                const page = values[handle] - 1;
+                this.updateStatus(page);
+            });
+
+            this.slider.on('end', (values, handle) => {
+                const page = values[handle] - 1;
+                this.instance.publish('page-request', new PageRequest(page));
             });
         }
 
@@ -84,6 +99,12 @@ export class PageSliderComponent extends BaseComponent implements Component {
         const status = this.element.querySelector('.hv-paging__status-page');
         if (status) {
             status.textContent = (page + 1).toString();
+        }
+    }
+
+    private updateSlider(page: number) {
+        if (this.slider) {
+            this.slider.set(page + 1);
         }
     }
 

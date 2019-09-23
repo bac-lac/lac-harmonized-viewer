@@ -99,7 +99,7 @@ export class ViewportComponent extends BaseComponent implements Component {
         const back = this.element.querySelector('.hv-button__prev');
         if (back) {
             MDCRipple.attachTo(back);
-            back.addEventListener('click', () => this.instance.publish('page-previous'));
+            back.addEventListener('click', () => this.instance.publish('page-prev'));
         }
 
         const next = this.element.querySelector('.hv-button__next');
@@ -157,8 +157,6 @@ export class ViewportComponent extends BaseComponent implements Component {
 
     protected createViewport(manifest: Manifesto.Manifest) {
 
-        console.log(manifest);
-
         if (!manifest) {
             return undefined;
         }
@@ -173,6 +171,8 @@ export class ViewportComponent extends BaseComponent implements Component {
             var images = canvas.getImages();
             return images[0].getResource().getServices()[0].id + "/info.json";
         });
+
+        this.totalPages = sequence.getTotalCanvases();
 
         this.openseadragon = openseadragon({
             id: this.openseadragonId,
@@ -285,6 +285,7 @@ export class ViewportComponent extends BaseComponent implements Component {
         if (!event) {
             return undefined;
         }
+        this.page = event.page;
         this.hideProgressBar();
     }
 

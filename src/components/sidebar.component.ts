@@ -45,10 +45,6 @@ export class SidebarComponent extends BaseComponent implements Component {
         }
     }
 
-    async load () {
-        OverlayScrollbars(this.element.querySelector('.mdc-drawer__content'), {});
-    }
-
     open() {
         if (this.drawer) {
             const foundation = this.drawer.getDefaultFoundation();
@@ -64,7 +60,6 @@ export class SidebarComponent extends BaseComponent implements Component {
     }
 
     toggle() {
-        console.log(this);
         if (this.drawer) {
             const foundation = this.drawer.getDefaultFoundation();
             if (foundation.isOpen() || foundation.isOpening()) {

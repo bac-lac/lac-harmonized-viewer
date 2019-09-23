@@ -1,17 +1,21 @@
 import { Component, BaseComponent } from "./base.component";
 import { ManifestLoad } from "../events/manifest-load.event";
 import { LanguageChange } from "../events/language-change.event";
+import { FormatChange } from "../events/format-change.event";
 
 export class TopbarComponent extends BaseComponent implements Component {
 
     title: string;
 
     private buttonNavigation: HTMLElement;
-    //private buttonMore: HTMLElement;
+    private buttonContentType: HTMLElement;
+
     private titleElement: HTMLElement;
 
     private buttonSettings: HTMLElement;
     //private menuSettings: HTMLElement;
+
+    private pdf: string;
 
     create() {
 
@@ -36,19 +40,67 @@ export class TopbarComponent extends BaseComponent implements Component {
         this.titleElement.textContent = this.title;
         start.append(this.titleElement);
 
-
         const end = document.createElement('div');
         end.className = 'mdc-top-app-bar__section mdc-top-app-bar__section--align-end';
         row.append(end);
 
-        const buttonContentType = document.createElement('button');
-        buttonContentType.type = 'button';
-        buttonContentType.className = 'hv-manifest__content-type mdc-button';
-        buttonContentType.textContent = 'JPG';
-        end.append(buttonContentType);
+        // const tabs = document.createElement('div');
+        // tabs.className = 'mdc-tab-bar';
+        // tabs.setAttribute('role', 'tablist');
+        // end.append(tabs);
+
+        // const tabScroller = document.createElement('div');
+        // tabScroller.className = 'mdc-tab-scroller';
+        // tabs.append(tabScroller);
+
+        // const tabScrollerArea = document.createElement('div');
+        // tabScrollerArea.className = 'mdc-tab-scroller__scroll-area';
+        // tabScroller.append(tabScrollerArea);
+
+        // const tabsScrollerContent = document.createElement('div');
+        // tabsScrollerContent.className = 'mdc-tab-scroller__scroll-content';
+        // tabScrollerArea.append(tabsScrollerContent);
+
+        // const tabImage = document.createElement('button');
+        // tabImage.type = 'button';
+        // tabImage.className = 'mdc-tab mdc-tab--active';
+        // tabImage.setAttribute('role', 'tab');
+        // tabImage.setAttribute('aria-selected', 'true');
+        // tabImage.setAttribute('tabindex', '0');
+        // tabsScrollerContent.append(tabImage);
+
+        // const tabImageContent = document.createElement('span');
+        // tabImageContent.className = 'mdc-tab__content';
+        // tabImage.append(tabImageContent);
+
+        // const tabImageLabel = document.createElement('span');
+        // tabImageLabel.className = 'mdc-tab__text-label';
+        // tabImageLabel.textContent = 'PDF';
+        // tabImageContent.append(tabImageLabel);
+
+        // const tabImageIndicator = document.createElement('span');
+        // tabImageIndicator.className = 'mdc-tab-indicator mdc-tab-indicator--active';
+        // tabImage.append(tabImageIndicator);
+
+        // const tabImageIndicatorContent = document.createElement('span');
+        // tabImageIndicatorContent.className = 'mdc-tab-indicator__content mdc-tab-indicator__content--underline';
+        // tabImageIndicator.append(tabImageIndicatorContent);
+
+        // const tabImageRipple = document.createElement('span');
+        // tabImageRipple.className = 'mdc-tab__ripple';
+        // tabImage.append(tabImageRipple);
+
+        this.buttonContentType = document.createElement('button');
+        this.buttonContentType.className = 'mdc-icon-button';
+        this.buttonContentType.addEventListener('click', () => this.instance.publish('format-change', new FormatChange('pdf')));
+        end.append(this.buttonContentType);
+
+        const buttonContentTypeIcon = document.createElement('i');
+        buttonContentTypeIcon.className = 'fas fa-file-pdf';
+        this.buttonContentType.append(buttonContentTypeIcon);
 
         this.buttonSettings = document.createElement('button');
-        this.buttonSettings.className = 'hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button';
+        this.buttonSettings.className = 'material-icons mdc-icon-button';
         this.buttonSettings.textContent = 'settings';
         end.append(this.buttonSettings);
 
@@ -84,7 +136,9 @@ export class TopbarComponent extends BaseComponent implements Component {
 
     async bind() {
 
-        //const menu = new MDCMenu(this.buttonSettings);
+        this.instance.on('manifest-load', (event: ManifestLoad) => this.manifestLoad(event));
+        this.instance.on('format-change', (event: FormatChange) => this.formatChange(event));
+        this.instance.on('language-change', (event: LanguageChange) => this.languageChange());
 
         if (this.buttonNavigation) {
 
@@ -97,16 +151,27 @@ export class TopbarComponent extends BaseComponent implements Component {
             this.buttonSettings.addEventListener('click', () =>
                 this.instance.publish('settings-open'));
         }
-
-        this.instance.on('manifest-load', (event: ManifestLoad) => this.manifestLoad(event));
-        this.instance.on('language-change', (event: LanguageChange) => this.languageChange());
     }
 
     private manifestLoad(event: ManifestLoad) {
+
         if (!event) {
             return undefined;
         }
+
         this.titleElement.textContent = event.manifest.getDefaultLabel();
+
+        const renderingPDF = event.manifest.getRendering('application/pdf');
+        if(renderingPDF) {
+            this.pdf = renderingPDF.id;
+        }
+    }
+
+    private formatChange(event: FormatChange) {
+        if (!event) {
+            return undefined;
+        }
+        this.instance.root.switch(event.contentType, this.pdf);
     }
 
     private languageChange() {
