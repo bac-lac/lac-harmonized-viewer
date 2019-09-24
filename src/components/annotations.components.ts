@@ -13,7 +13,7 @@ export class AnnotationsComponent extends SidebarComponent implements Component 
         const sidebar = super.create();
 
         sidebar.classList.add('hv-annotations');
-        sidebar.classList.add('mdc-top-app-bar--fixed-adjust');
+        sidebar.classList.add('mdc-top-app-bar--dense-prominent-fixed-adjust');
 
         if (this.options.enable && this.options.open) {
             sidebar.classList.add('mdc-drawer--open');

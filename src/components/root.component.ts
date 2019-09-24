@@ -1,11 +1,12 @@
-import { Component, BaseComponent } from "./base.component";
-import { TopbarComponent } from "./topbar.component";
-import { NavigationComponent } from "./navigation.component";
 import { HarmonizedViewer } from "..";
-import { ViewportComponent } from "./viewport.component";
-import { SettingsComponent } from "./settings.component";
 import { AnnotationsComponent } from "./annotations.components";
+import { BaseComponent, Component } from "./base.component";
+import { NavigationComponent } from "./navigation.component";
 import { PDFComponent } from "./pdf.component";
+import { SettingsComponent } from "./settings.component";
+import { TopbarComponent } from "./topbar.component";
+import { ViewportComponent } from "./viewport.component";
+import { ToolbarComponent } from "./toolbar.component";
 
 export class RootComponent extends BaseComponent implements Component {
 
@@ -24,18 +25,16 @@ export class RootComponent extends BaseComponent implements Component {
         const topbar = new TopbarComponent(this.instance);
         container.append(topbar.getElement());
 
-        this.imageViewer = document.createElement('div');
-
         const navigation = new NavigationComponent(this.instance, this.instance.options.navigation);
-        this.imageViewer.append(navigation.getElement());
+        container.append(navigation.getElement());
 
         const annotations = new AnnotationsComponent(this.instance, this.instance.options.annotations);
-        this.imageViewer.append(annotations.getElement());
+        container.append(annotations.getElement());
 
         const viewport = new ViewportComponent(this.instance, this.instance.options.manifest, this.instance.options.viewport);
-        this.imageViewer.append(viewport.getElement());
+        container.append(viewport.getElement());
 
-        container.append(this.imageViewer);
+        //container.append(this.imageViewer);
 
         this.pdfViewer = new PDFComponent(this.instance);
         container.append(this.pdfViewer.getElement());

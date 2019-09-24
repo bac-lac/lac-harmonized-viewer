@@ -10,7 +10,7 @@ export class NavigationComponent extends SidebarComponent implements Component {
         const sidebar = super.create();
 
         sidebar.classList.add('hv-navigation');
-        sidebar.classList.add('mdc-top-app-bar--fixed-adjust');
+        sidebar.classList.add('mdc-top-app-bar--dense-prominent-fixed-adjust');
 
         const canvasList = new CanvasListComponent(this.instance);
         sidebar.firstElementChild.append(canvasList.getElement());

@@ -10,7 +10,6 @@ import { ZoomChange } from "../events/zoom-change.event";
 import { ManifestError } from "../events/manifest-error.event";
 import { PagePrevious } from "../events/page-previous.event";
 import { PageNext } from "../events/page-next.event";
-import { ToolbarComponent } from "./toolbar.component";
 import { PageSliderComponent } from "./pageslider.component";
 
 const openseadragon = require('openseadragon');
@@ -40,14 +39,11 @@ export class ViewportComponent extends BaseComponent implements Component {
     create() {
 
         const container = document.createElement('div');
-        container.className = 'mdc-drawer-app-content mdc-top-app-bar--fixed-adjust';
-
-        const toolbar = new ToolbarComponent(this.instance);
-        container.append(toolbar.getElement());
+        container.className = 'mdc-drawer-app-content mdc-top-app-bar--dense-prominent-fixed-adjust';
 
         this.mainElement = document.createElement('main');
-        this.mainElement .className = 'hv-content main-content';
-        container.append(this.mainElement );
+        this.mainElement.className = 'hv-content main-content';
+        container.append(this.mainElement);
 
         const viewport = document.createElement('div');
         viewport.id = this.openseadragonId;
@@ -67,12 +63,12 @@ export class ViewportComponent extends BaseComponent implements Component {
     }
 
     async init() {
-        this.showProgressBar();
+        this.showSpinner();
     }
 
     async bind() {
         this.instance.on('manifest-load', (event: ManifestLoad) => this.createViewport(event.manifest));
-        this.instance.on('manifest-error', (event: ManifestError) => this.createAlert(event.error));
+        this.instance.on('manifest-error', (event: ManifestError) => this.manifestError(event));
         this.instance.on('page-load', (event: PageLoad) => this.pageLoad(event));
         this.instance.on('page-request', (event: PageRequest) => this.pageRequest(event));
         this.instance.on('page-prev', (event: PagePrevious) => this.previous());
@@ -223,53 +219,68 @@ export class ViewportComponent extends BaseComponent implements Component {
         }
     }
 
-    private getProgressBar(): HTMLElement {
+    private getSpinner(): HTMLElement {
 
-        let progressBar = this.element.querySelector('.hv-progress-bar') as HTMLElement;
+        let spinner = this.element.querySelector('.hv-spinner') as HTMLElement;
 
-        if (!progressBar) {
+        if (!spinner) {
 
-            progressBar = document.createElement('div');
-            progressBar.setAttribute('role', 'progressbar');
-            progressBar.className = 'hv-progress-bar mdc-linear-progress mdc-linear-progress--indeterminate';
+            spinner = document.createElement('div');
+            spinner.className = 'hv-spinner';
 
-            const bufferDots = document.createElement('div');
-            bufferDots.className = 'mdc-linear-progress__buffering-dots';
-            progressBar.append(bufferDots);
+            const dots = document.createElement('div');
+            dots.className = 'sk-chasing-dots';
+            spinner.append(dots);
 
-            const buffer = document.createElement('div');
-            buffer.className = 'mdc-linear-progress__buffer';
-            progressBar.append(buffer);
+            const dot1 = document.createElement('div');
+            dot1.className = 'sk-child sk-dot1';
+            dots.append(dot1);
 
-            const primaryBar = document.createElement('div');
-            primaryBar.className = 'mdc-linear-progress__bar mdc-linear-progress__primary-bar';
-            progressBar.append(primaryBar);
+            const dot2 = document.createElement('div');
+            dot2.className = 'sk-child sk-dot2';
+            dots.append(dot2);
 
-            const primaryBarInner = document.createElement('span');
-            primaryBarInner.className = 'mdc-linear-progress__bar-inner';
-            primaryBar.append(primaryBarInner);
+            // progressBar = document.createElement('div');
+            // progressBar.setAttribute('role', 'progressbar');
+            // progressBar.className = 'hv-progress-bar mdc-linear-progress mdc-linear-progress--indeterminate';
 
-            const secondaryBar = document.createElement('div');
-            secondaryBar.className = 'mdc-linear-progress__bar mdc-linear-progress__secondary-bar';
-            progressBar.append(secondaryBar);
+            // const bufferDots = document.createElement('div');
+            // bufferDots.className = 'mdc-linear-progress__buffering-dots';
+            // progressBar.append(bufferDots);
 
-            const secondaryBarInner = document.createElement('span');
-            secondaryBarInner.className = 'mdc-linear-progress__bar-inner';
-            secondaryBar.append(secondaryBarInner);
+            // const buffer = document.createElement('div');
+            // buffer.className = 'mdc-linear-progress__buffer';
+            // progressBar.append(buffer);
 
-            this.mainElement.prepend(progressBar);
+            // const primaryBar = document.createElement('div');
+            // primaryBar.className = 'mdc-linear-progress__bar mdc-linear-progress__primary-bar';
+            // progressBar.append(primaryBar);
+
+            // const primaryBarInner = document.createElement('span');
+            // primaryBarInner.className = 'mdc-linear-progress__bar-inner';
+            // primaryBar.append(primaryBarInner);
+
+            // const secondaryBar = document.createElement('div');
+            // secondaryBar.className = 'mdc-linear-progress__bar mdc-linear-progress__secondary-bar';
+            // progressBar.append(secondaryBar);
+
+            // const secondaryBarInner = document.createElement('span');
+            // secondaryBarInner.className = 'mdc-linear-progress__bar-inner';
+            // secondaryBar.append(secondaryBarInner);
+
+            this.mainElement.prepend(spinner);
         }
 
-        return progressBar;
+        return spinner;
     }
 
-    private showProgressBar() {
-        let spinner = this.getProgressBar();
+    private showSpinner() {
+        let spinner = this.getSpinner();
         spinner.classList.remove('mdc-linear-progress--closed');
     }
 
-    private hideProgressBar() {
-        let spinner = this.getProgressBar();
+    private hideSpinner() {
+        let spinner = this.getSpinner();
         spinner.classList.add('mdc-linear-progress--closed');
     }
 
@@ -277,7 +288,7 @@ export class ViewportComponent extends BaseComponent implements Component {
         if (!event) {
             return undefined;
         }
-        this.showProgressBar();
+        this.showSpinner();
         this.openseadragon.goToPage(event.page);
     }
 
@@ -286,7 +297,7 @@ export class ViewportComponent extends BaseComponent implements Component {
             return undefined;
         }
         this.page = event.page;
-        this.hideProgressBar();
+        this.hideSpinner();
     }
 
     previous() {
@@ -297,11 +308,15 @@ export class ViewportComponent extends BaseComponent implements Component {
         return this.goto((this.page < this.totalPages) ? this.page + 1 : this.totalPages - 1);
     }
 
-    protected createAlert(error: Error) {
+    protected manifestError(event: ManifestError) {
 
-        if (!error) {
+        if (!event) {
             return undefined;
         }
+
+        console.error(event.error);
+
+        this.hideSpinner();
 
         const alert = document.createElement('div');
         alert.className = 'hv-error';

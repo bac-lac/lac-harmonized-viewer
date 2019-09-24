@@ -60,8 +60,7 @@ export class HarmonizedViewer {
         new Promise((resolve, reject) => {
 
             this.components.execute();
-
-            this.ripple();
+            
             this.tooltips();
             resolve();
         }).catch((reason) => {
@@ -78,10 +77,6 @@ export class HarmonizedViewer {
             return false;
         }
         return this.events.emit(event, eventArgs);
-    }
-
-    private ripple() {
-        Array.from(this.element.querySelectorAll('.mdc-button')).forEach(x => MDCRipple.attachTo(x));
     }
 
     tooltips() {

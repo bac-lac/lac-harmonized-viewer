@@ -1,5 +1,4 @@
 import { HarmonizedViewer } from "..";
-import { IEvent } from "../common/events";
 
 export class BaseComponent implements Component {
 

@@ -2,6 +2,7 @@ import { Component, BaseComponent } from "./base.component";
 import { ManifestLoad } from "../events/manifest-load.event";
 import { LanguageChange } from "../events/language-change.event";
 import { FormatChange } from "../events/format-change.event";
+import { ToolbarComponent } from "./toolbar.component";
 
 export class TopbarComponent extends BaseComponent implements Component {
 
@@ -19,16 +20,16 @@ export class TopbarComponent extends BaseComponent implements Component {
 
     create() {
 
-        const header = document.createElement('header');
-        header.className = 'hv-topbar mdc-top-app-bar';
+        const topbar = document.createElement('header');
+        topbar.className = 'hv-topbar mdc-top-app-bar mdc-top-app-bar--prominent mdc-top-app-bar--dense';
 
-        const row = document.createElement('div');
-        row.className = 'hv-topbar__header mdc-top-app-bar__row';
-        header.append(row);
+        const top = document.createElement('div');
+        top.className = 'mdc-top-app-bar__row hv-topbar__header';
+        topbar.append(top);
 
         const start = document.createElement('div');
         start.className = 'mdc-top-app-bar__section mdc-top-app-bar__section--align-start';
-        row.append(start);
+        top.append(start);
 
         this.buttonNavigation = document.createElement('button');
         this.buttonNavigation.className = 'hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button';
@@ -42,7 +43,8 @@ export class TopbarComponent extends BaseComponent implements Component {
 
         const end = document.createElement('div');
         end.className = 'mdc-top-app-bar__section mdc-top-app-bar__section--align-end';
-        row.append(end);
+        end.setAttribute('role', 'toolbar');
+        top.append(end);
 
         // const tabs = document.createElement('div');
         // tabs.className = 'mdc-tab-bar';
@@ -91,16 +93,13 @@ export class TopbarComponent extends BaseComponent implements Component {
         // tabImage.append(tabImageRipple);
 
         this.buttonContentType = document.createElement('button');
-        this.buttonContentType.className = 'mdc-icon-button';
+        //this.buttonContentType.type = 'button';
+        this.buttonContentType.className = 'mdc-icon-button mdc-top-app-bar__action-item';
         this.buttonContentType.addEventListener('click', () => this.instance.publish('format-change', new FormatChange('pdf')));
         end.append(this.buttonContentType);
 
-        const buttonContentTypeIcon = document.createElement('i');
-        buttonContentTypeIcon.className = 'fas fa-file-pdf';
-        this.buttonContentType.append(buttonContentTypeIcon);
-
         this.buttonSettings = document.createElement('button');
-        this.buttonSettings.className = 'material-icons mdc-icon-button';
+        this.buttonSettings.className = 'mdc-icon-button mdc-top-app-bar__action-item material-icons';
         this.buttonSettings.textContent = 'settings';
         end.append(this.buttonSettings);
 
@@ -131,7 +130,14 @@ export class TopbarComponent extends BaseComponent implements Component {
         // label.textContent = 'Settings';
         // this.menuSettings.append(label);
 
-        return header;
+        const bottom = document.createElement('div');
+        bottom.className = 'mdc-top-app-bar__row hv-topbar__bottom';
+        topbar.append(bottom);
+
+        const toolbar = new ToolbarComponent(this.instance);
+        bottom.append(toolbar.getElement());
+
+        return topbar;
     }
 
     async bind() {

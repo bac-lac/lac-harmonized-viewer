@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/bac-lac/lac-harmonized-viewer#readme",
   "dependencies": {
+    "@mdi/svg": "^4.4.95",
     "@types/pdfjs-dist": "^2.1.1",
     "deepmerge": "^4.0.0",
     "get-user-locale": "^1.2.0",
@@ -37,6 +38,7 @@
     "openseadragon": "^2.4.1",
     "overlayscrollbars": "^1.9.1",
     "pdfjs-dist": "^2.1.266",
+    "spinkit": "^1.2.5",
     "tippy.js": "^4.3.5"
   },
   "devDependencies": {

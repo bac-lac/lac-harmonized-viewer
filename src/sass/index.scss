@@ -1,11 +1,11 @@
 @import "_variables";
 @import "_animations";
 
-$mdc-theme-primary: hsl(243.8, 49%, 46.9%);
-$mdc-theme-background: hsl(246, 33.3%, 97.1%);
-$mdc-theme-topbar-background: hsl(235, 11.8%, 40%);
-$mdc-theme-toolbar-background: #fff;
-$mdc-theme-navigation-background: hsl(235.7, 12.3%, 88.8%);
+$mdc-theme-primary: hsl(233.8, 49%, 46.9%);
+$mdc-theme-background: hsl(225, 33.3%, 97.1%);
+$mdc-theme-topbar-background: #4c566a;
+$mdc-theme-toolbar-background: hsl(225, 5%, 98%);
+$mdc-theme-navigation-background: hsl(225, 33.3%, 97.1%);
 $mdc-theme-navigation-button-background: #fff;
 $mdc-theme-tooltip-text: #fff;
 $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
@@ -96,21 +96,24 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
 
   .#{$ns}topbar {
     @extend .mdc-top-app-bar;
-    @include mdc-top-app-bar-ink-color(#ffffff);
     @include mdc-top-app-bar-fill-color($mdc-theme-topbar-background);
+    z-index: 1000;
 
-    z-index: 99999;
+    &.mdc-top-app-bar--dense.mdc-top-app-bar--prominent .mdc-top-app-bar__row.#{$ns}topbar__header {
+      height: 54px;
+    }
 
-    .mdc-top-app-bar__row {
-      box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
+    &.mdc-top-app-bar--dense.mdc-top-app-bar--prominent .mdc-top-app-bar__row.#{$ns}topbar__bottom {
+      height: 42px;
     }
 
     .mdc-top-app-bar__navigation-icon {
       color: #fff;
     }
 
-    .hv-button__content-type {
-      color: #fff;
+    .mdc-icon-button::before,
+    .mdc-icon-button::after {
+      border-radius: 2px;
     }
 
     // .mdc-tab-bar .mdc-tab .mdc-tab-indicator .mdc-tab-indicator__content.mdc-tab-indicator__content--underline {
@@ -120,7 +123,10 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
     // .mdc-tab-bar .mdc-tab .mdc-tab__text-label {
     //   color: #fff;
     // }
-    
+  }
+
+  .#{$ns}toolbar__container {
+    //z-index: 10000;
   }
 
   .#{$ns}toolbar {
@@ -130,8 +136,7 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
     //height: 60px;
     padding: 0;
     margin: 0;
-    border-top: #fff 2px solid;
-    border-bottom: #fff 2px solid;
+    background-color: $mdc-theme-toolbar-background;
 
     .#{$ns}toolbar__inner {
       @include mdc-layout-grid-inner("desktop", 0, 12px);
@@ -157,12 +162,14 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
       line-height: 1.5rem;
 
       .mdc-button__icon {
+        font-size: 32px;
       }
 
       .mdc-button__label {
         color: hsl(235, 12%, 58%);
         letter-spacing: 0;
-        font-weight: 500;
+        font-weight: normal;
+        text-transform: none;
       }
 
       &.#{$ns}button--icon {
@@ -257,7 +264,7 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
   }
 
   .mdc-drawer {
-    @include mdc-drawer-z-index(9999);
+    //@include mdc-drawer-z-index(200);
 
     &.#{$ns}navigation {
       @include mdc-drawer-width(220px);
@@ -519,5 +526,15 @@ $mdc-theme-tooltip-background: rgba(0, 0, 0, 0.7);
     @include mdc-linear-progress-bar-color(#5d9cec);
     position: absolute;
     z-index: 9999;
+  }
+
+  .#{$ns}spinner {
+    @import "../../node_modules/spinkit/scss/spinners/6-chasing-dots";
+
+    .sk-chasing-dots {
+      .sk-child {
+        background-color: #88c0d0;
+      }
+    }
   }
 }
