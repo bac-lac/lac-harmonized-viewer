@@ -11,8 +11,11 @@
 
 		document.addEventListener('DOMContentLoaded', function () {
 
+			//var url = 'https://api.bl.uk/metadata/iiif/ark:/81055/vdc_00000004216E/manifest.json';
+			var url = '//localhost:8080/demo/IIF/CabCon/1/manifest.json';
+
 			var viewer = HV.harmonizedViewer('harmonized-viewer', {
-				manifest: 'https://api.bl.uk/metadata/iiif/ark:/81055/vdc_00000004216E/manifest.json',
+				manifest: url,
 				navigation: {
 					enable: true,
 					open: true
@@ -26,9 +29,6 @@
 		});
 
 	</script>
-
-	<script type="text/javascript"
-		src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/js/all.min.js"></script>
 
 	<script src="/harmonized-viewer.bundle.js"></script>
 
@@ -52,98 +52,8 @@
 </head>
 
 <body>
-
+	
 	<div id="harmonized-viewer" class="harmonized-viewer">
-
-		<!-- <header class="hv-topbar mdc-top-app-bar" id="app-bar">
-			<div class="mdc-top-app-bar__row hv-topbar__header">
-				<section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-					<button class="hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button"
-						data-target="navigation">menu</button>
-					<span class="mdc-top-app-bar__title"></span>
-				</section>
-				<section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
-					<button class="hv-button-icon material-icons mdc-top-app-bar__navigation-icon mdc-icon-button"
-						data-target="annotations">menu</button>
-					<span class="mdc-top-app-bar__title"></span>
-				</section>
-			</div>
-		</header>
-
-		<aside class="hv-navigation mdc-drawer mdc-drawer--dismissible mdc-top-app-bar--fixed-adjust">
-			<div class="mdc-drawer__content hv-scrollbar">
-
-				<ul class="mdc-image-list hv-image-list"></ul>
-
-			</div>
-		</aside>
-
-		<aside class="hv-annotations mdc-drawer mdc-drawer--dismissible mdc-top-app-bar--fixed-adjust" dir="rtl">
-			<div class="mdc-drawer__content" dir="ltr">
-			</div>
-		</aside>
-
-		<div class="mdc-drawer-app-content mdc-top-app-bar--fixed-adjust">
-
-			<div class="hv-toolbar">
-
-				<button type="button" class="mdc-button" data-tippy-content="Display mode">
-					<i class="material-icons mdc-button__icon" aria-hidden="true">desktop_windows</i>
-					<span class="mdc-button__label">
-						Display mode
-					</span>
-				</button>
-
-
-				<button type="button" class="mdc-button" data-tippy-content="Download">
-					<i class="material-icons mdc-button__icon" aria-hidden="true">cloud_download</i>
-					<span class="mdc-button__label">
-						Download
-					</span>
-				</button>
-
-
-				<div class="mdc-menu-surface--anchor">
-					<button type="button" class="mdc-button hv-zoom-button" data-tippy-content="Zoom">
-						<i class="material-icons mdc-button__icon" aria-hidden="true">search</i>
-						<span class="mdc-button__label">
-							Auto
-						</span>
-						<i class="material-icons mdc-button__icon hv-button__icon-dropdown"
-							aria-hidden="true">expand_more</i>
-					</button>
-					<div class="mdc-menu mdc-menu-surface">
-						<ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
-							<li class="mdc-list-item" role="menuitem">
-								<span class="mdc-list-item__text">
-									Auto
-								</span>
-							</li>
-							<li class="mdc-list-item" role="menuitem">
-								<span class="mdc-list-item__text">Another Menu Item</span>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div>
-
-			<main class="hv-content main-content" id="main-content">
-				<div id="osd" class="hv-viewport" style="height:100%">
-
-					<button type="button" class="mdc-button mdc-button--unelevated hv-button__prev"
-						data-tippy-content="Previous">
-						<i class="material-icons" aria-hidden="true">chevron_left</i>
-					</button>
-
-					<button type="button" class="mdc-button mdc-button--unelevated hv-button__next"
-						data-tippy-content="Next">
-						<i class="material-icons" aria-hidden="true">chevron_right</i>
-					</button>
-
-				</div>
-			</main>
-		</div> -->
-
 
 
 	</div>
