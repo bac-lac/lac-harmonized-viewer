@@ -94,8 +94,9 @@ export class TopbarComponent extends BaseComponent implements Component {
 
         this.buttonContentType = document.createElement('button');
         //this.buttonContentType.type = 'button';
-        this.buttonContentType.className = 'mdc-icon-button mdc-top-app-bar__action-item';
+        this.buttonContentType.className = 'mdc-icon-button mdc-top-app-bar__action-item material-icons';
         this.buttonContentType.addEventListener('click', () => this.instance.publish('format-change', new FormatChange('pdf')));
+        this.buttonContentType.textContent = 'image';
         end.append(this.buttonContentType);
 
         this.buttonSettings = document.createElement('button');
@@ -161,7 +162,7 @@ export class TopbarComponent extends BaseComponent implements Component {
 
     private manifestLoad(event: ManifestLoad) {
 
-        if (!event) {
+        if (!event || !event.manifest) {
             return undefined;
         }
 

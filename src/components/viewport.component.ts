@@ -56,8 +56,8 @@ export class ViewportComponent extends BaseComponent implements Component {
         const buttonNext = this.createNextButton();
         viewport.append(buttonNext);
 
-        const pageSlider = new PageSliderComponent(this.instance);
-        container.append(pageSlider.getElement());
+        //const pageSlider = new PageSliderComponent(this.instance);
+        //container.append(pageSlider.getElement());
 
         return container;
     }
@@ -78,10 +78,16 @@ export class ViewportComponent extends BaseComponent implements Component {
     async load() {
 
         try {
-            const manifest = manifesto.create(
-                await manifesto.loadManifest(this.manifest)) as Manifesto.Manifest;
-
-            this.instance.publish('manifest-load', new ManifestLoad(manifest));
+            const test = await manifesto.loadManifest(this.manifest);
+            console.log(test);
+            const manifest = manifesto.create(test);
+            console.log("MAN", manifest);
+            if (manifest) {
+                this.instance.publish('manifest-load', new ManifestLoad(manifest as Manifesto.Manifest));
+            }
+            else {
+                throw 'Failed to read manifest.';
+            }
         }
         catch (err) {
             this.instance.publish('manifest-error', new ManifestError(err));

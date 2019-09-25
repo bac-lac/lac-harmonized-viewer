@@ -25,16 +25,14 @@ export class RootComponent extends BaseComponent implements Component {
         const topbar = new TopbarComponent(this.instance);
         container.append(topbar.getElement());
 
-        const navigation = new NavigationComponent(this.instance, this.instance.options.navigation);
-        container.append(navigation.getElement());
+        //const navigation = new NavigationComponent(this.instance, this.instance.options.navigation);
+        //container.append(navigation.getElement());
 
-        const annotations = new AnnotationsComponent(this.instance, this.instance.options.annotations);
-        container.append(annotations.getElement());
+        //const annotations = new AnnotationsComponent(this.instance, this.instance.options.annotations);
+        //container.append(annotations.getElement());
 
         const viewport = new ViewportComponent(this.instance, this.instance.options.manifest, this.instance.options.viewport);
         container.append(viewport.getElement());
-
-        //container.append(this.imageViewer);
 
         this.pdfViewer = new PDFComponent(this.instance);
         container.append(this.pdfViewer.getElement());

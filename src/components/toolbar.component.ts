@@ -65,7 +65,7 @@ export class ToolbarComponent extends BaseComponent implements Component {
     }
 
     protected manifestLoad(event: ManifestLoad) {
-        if (!event) {
+        if (!event || !event.manifest) {
             return undefined;
         }
         this.totalPages = event.manifest.getSequenceByIndex(0).getTotalCanvases();
