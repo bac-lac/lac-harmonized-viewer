@@ -1,4 +1,5 @@
 {
     "http.proxyStrictSSL": false,
-    "http.proxySupport": "on"
+    "http.proxySupport": "on",
+    "scss.lint.emptyRules": "ignore"
 }

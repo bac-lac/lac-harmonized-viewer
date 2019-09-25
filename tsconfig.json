@@ -1,41 +1,26 @@
 {
-    "compilerOptions": {
-        "baseUrl": "./",
-        "paths": {
-            "~/*": [
-                "src/*"
-            ],
-            "@modules/*": [
-                "node_modules/*"
-            ]
-        },
-        "target": "es5",
-        "module": "commonjs",
-        "rootDir": "src",
-        "outDir": "dist",
-        "allowJs": true,
-        "sourceMap": true,
-        "resolveJsonModule": true,
-        "jsx": "preserve",
-        "lib": [
-            "es5",
-            "es6",
-            "es2015",
-            "dom"
-        ]
-        //"isolatedModules": true,
-        // "experimentalDecorators": true,
-        // "emitDecoratorMetadata": true,
-        //"declaration": false
-        // "noImplicitAny": false,
-        // "removeComments": true,
-        // "noLib": false,
-        // "preserveConstEnums": true,
-        // "suppressImplicitAnyIndexErrors": true,
-        // "noUnusedParameters": false,
-        // "noUnusedLocals": false,
-    },
-    "include": [
-        "src"
-    ]
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "allowUnreachableCode": false,
+    "declaration": false,
+    "experimentalDecorators": true,
+    "lib": [
+      "dom",
+      "es2017"
+    ],
+    "moduleResolution": "node",
+    "module": "esnext",
+    "target": "es2017",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "jsx": "react",
+    "jsxFactory": "h"
+  },
+  "include": [
+    "src",
+    "types/jsx.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

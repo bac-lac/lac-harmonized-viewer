@@ -3,16 +3,11 @@ const gulp = { src, dest, series, parallel } = require('gulp');
 
 const sass = require('gulp-sass');
 
-const postcss = require('gulp-postcss');
-const postcssModules = require('postcss-modules');
-
 const declare = require('gulp-declare');
-const defineModule = require('gulp-define-module');
 const wrap = require('gulp-wrap');
 
 const ts = require('gulp-typescript');
 const handlebars = require('gulp-handlebars');
-//const handlebars = require('gulp-precompile-handlebars');
 
 const webpack = require('webpack-stream');
 
