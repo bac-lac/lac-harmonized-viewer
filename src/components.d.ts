@@ -29,6 +29,9 @@ export namespace Components {
     */
     'middle': string;
   }
+  interface SidebarComponent {
+    'name': string;
+  }
 }
 
 declare global {
@@ -51,10 +54,17 @@ declare global {
     prototype: HTMLMyComponentElement;
     new (): HTMLMyComponentElement;
   };
+
+  interface HTMLSidebarComponentElement extends Components.SidebarComponent, HTMLStencilElement {}
+  var HTMLSidebarComponentElement: {
+    prototype: HTMLSidebarComponentElement;
+    new (): HTMLSidebarComponentElement;
+  };
   interface HTMLElementTagNameMap {
     'harmonized-viewer': HTMLHarmonizedViewerElement;
     'hv-navigation': HTMLHvNavigationElement;
     'my-component': HTMLMyComponentElement;
+    'sidebar-component': HTMLSidebarComponentElement;
   }
 }
 
@@ -79,11 +89,15 @@ declare namespace LocalJSX {
     */
     'middle'?: string;
   }
+  interface SidebarComponent {
+    'name'?: string;
+  }
 
   interface IntrinsicElements {
     'harmonized-viewer': HarmonizedViewer;
     'hv-navigation': HvNavigation;
     'my-component': MyComponent;
+    'sidebar-component': SidebarComponent;
   }
 }
 
@@ -96,6 +110,7 @@ declare module "@stencil/core" {
       'harmonized-viewer': LocalJSX.HarmonizedViewer & JSXBase.HTMLAttributes<HTMLHarmonizedViewerElement>;
       'hv-navigation': LocalJSX.HvNavigation & JSXBase.HTMLAttributes<HTMLHvNavigationElement>;
       'my-component': LocalJSX.MyComponent & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
+      'sidebar-component': LocalJSX.SidebarComponent & JSXBase.HTMLAttributes<HTMLSidebarComponentElement>;
     }
   }
 }

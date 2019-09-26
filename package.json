@@ -41,6 +41,7 @@
     "@carbon/icon-helpers": "^10.4.0",
     "@carbon/icons": "^10.6.0",
     "carbon-components": "^10.6.2",
+    "carbon-components-react": "^7.6.2",
     "carbon-icons": "^7.0.7",
     "deepmerge": "^4.0.0",
     "get-user-locale": "^1.2.0",
@@ -52,6 +53,9 @@
     "nouislider": "^14.0.2",
     "openseadragon": "^2.4.1",
     "overlayscrollbars": "^1.9.1",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-scripts": "^3.1.2",
     "spinkit": "^1.2.5",
     "stencil": "0.0.5",
     "tippy.js": "^4.3.5"

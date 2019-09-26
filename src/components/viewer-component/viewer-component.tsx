@@ -7,7 +7,6 @@ import { Component, Prop, h } from '@stencil/core';
   tag: 'harmonized-viewer',
   styleUrls: [
     'viewer-component.scss',
-    '../../../node_modules/carbon-components/scss/components/button/_button.scss'
   ]
 })
 export class ViewerComponent {
@@ -25,7 +24,7 @@ export class ViewerComponent {
       <div class="container">
 
         
-        <button type="button" class="hv-btn hv-btn--primary">
+        <button type="button" class="hv--btn hv--btn--primary">
           aa
         </button>
         
