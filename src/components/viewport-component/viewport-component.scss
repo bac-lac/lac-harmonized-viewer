@@ -1,0 +1,11 @@
+.hv-openseadragon {
+    width: 100%;
+    height: 100%;
+    flex: auto;
+    display: flex;
+    flex-direction: column;
+
+    .openseadragon-container {
+        flex: auto;
+    }
+}

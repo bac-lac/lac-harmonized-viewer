@@ -9,29 +9,15 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 
 
 export namespace Components {
-  interface HarmonizedViewer {
-    'name': string;
+  interface HarmonizedViewer {}
+  interface HvContent {
+    'navigation': HTMLHvNavigationElement;
   }
   interface HvNavigation {
-    'name': string;
+    'open': boolean;
   }
-  interface MyComponent {
-    /**
-    * The first name
-    */
-    'first': string;
-    /**
-    * The last name
-    */
-    'last': string;
-    /**
-    * The middle name
-    */
-    'middle': string;
-  }
-  interface SidebarComponent {
-    'name': string;
-  }
+  interface HvTopbar {}
+  interface HvViewport {}
 }
 
 declare global {
@@ -43,61 +29,57 @@ declare global {
     new (): HTMLHarmonizedViewerElement;
   };
 
+  interface HTMLHvContentElement extends Components.HvContent, HTMLStencilElement {}
+  var HTMLHvContentElement: {
+    prototype: HTMLHvContentElement;
+    new (): HTMLHvContentElement;
+  };
+
   interface HTMLHvNavigationElement extends Components.HvNavigation, HTMLStencilElement {}
   var HTMLHvNavigationElement: {
     prototype: HTMLHvNavigationElement;
     new (): HTMLHvNavigationElement;
   };
 
-  interface HTMLMyComponentElement extends Components.MyComponent, HTMLStencilElement {}
-  var HTMLMyComponentElement: {
-    prototype: HTMLMyComponentElement;
-    new (): HTMLMyComponentElement;
+  interface HTMLHvTopbarElement extends Components.HvTopbar, HTMLStencilElement {}
+  var HTMLHvTopbarElement: {
+    prototype: HTMLHvTopbarElement;
+    new (): HTMLHvTopbarElement;
   };
 
-  interface HTMLSidebarComponentElement extends Components.SidebarComponent, HTMLStencilElement {}
-  var HTMLSidebarComponentElement: {
-    prototype: HTMLSidebarComponentElement;
-    new (): HTMLSidebarComponentElement;
+  interface HTMLHvViewportElement extends Components.HvViewport, HTMLStencilElement {}
+  var HTMLHvViewportElement: {
+    prototype: HTMLHvViewportElement;
+    new (): HTMLHvViewportElement;
   };
   interface HTMLElementTagNameMap {
     'harmonized-viewer': HTMLHarmonizedViewerElement;
+    'hv-content': HTMLHvContentElement;
     'hv-navigation': HTMLHvNavigationElement;
-    'my-component': HTMLMyComponentElement;
-    'sidebar-component': HTMLSidebarComponentElement;
+    'hv-topbar': HTMLHvTopbarElement;
+    'hv-viewport': HTMLHvViewportElement;
   }
 }
 
 declare namespace LocalJSX {
-  interface HarmonizedViewer {
-    'name'?: string;
+  interface HarmonizedViewer {}
+  interface HvContent {
+    'navigation'?: HTMLHvNavigationElement;
   }
   interface HvNavigation {
-    'name'?: string;
+    'open'?: boolean;
   }
-  interface MyComponent {
-    /**
-    * The first name
-    */
-    'first'?: string;
-    /**
-    * The last name
-    */
-    'last'?: string;
-    /**
-    * The middle name
-    */
-    'middle'?: string;
+  interface HvTopbar {
+    'onNavigationToggled'?: (event: CustomEvent<any>) => void;
   }
-  interface SidebarComponent {
-    'name'?: string;
-  }
+  interface HvViewport {}
 
   interface IntrinsicElements {
     'harmonized-viewer': HarmonizedViewer;
+    'hv-content': HvContent;
     'hv-navigation': HvNavigation;
-    'my-component': MyComponent;
-    'sidebar-component': SidebarComponent;
+    'hv-topbar': HvTopbar;
+    'hv-viewport': HvViewport;
   }
 }
 
@@ -108,9 +90,10 @@ declare module "@stencil/core" {
   export namespace JSX {
     interface IntrinsicElements {
       'harmonized-viewer': LocalJSX.HarmonizedViewer & JSXBase.HTMLAttributes<HTMLHarmonizedViewerElement>;
+      'hv-content': LocalJSX.HvContent & JSXBase.HTMLAttributes<HTMLHvContentElement>;
       'hv-navigation': LocalJSX.HvNavigation & JSXBase.HTMLAttributes<HTMLHvNavigationElement>;
-      'my-component': LocalJSX.MyComponent & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
-      'sidebar-component': LocalJSX.SidebarComponent & JSXBase.HTMLAttributes<HTMLSidebarComponentElement>;
+      'hv-topbar': LocalJSX.HvTopbar & JSXBase.HTMLAttributes<HTMLHvTopbarElement>;
+      'hv-viewport': LocalJSX.HvViewport & JSXBase.HTMLAttributes<HTMLHvViewportElement>;
     }
   }
 }

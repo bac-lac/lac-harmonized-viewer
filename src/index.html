@@ -10,6 +10,7 @@
   <script nomodule src="/build/stencil-starter-project-name.js"></script>
 
   <style type="text/css">
+    html,
     body {
       height: 100%;
       padding: 0;
@@ -17,14 +18,17 @@
     }
   </style>
 
-  <link type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+  <link rel="stylesheet" type="text/css" href="./assets/fontawesome/css/all.css">
 
 </head>
-
 <body>
 
-  <harmonized-viewer name="HV"></harmonized-viewer>
+  <harmonized-viewer style="height:100%; display:block;"></harmonized-viewer>
 
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/assets/semantic-ui/semantic.js"></script>
 </body>
 
 </html>

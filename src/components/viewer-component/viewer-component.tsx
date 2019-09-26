@@ -1,34 +1,29 @@
-import { Component, Prop, h } from '@stencil/core';
-//import { HeaderNavigation } from 'carbon-components';
-// import { getAttributes, toString } from '@carbon/icon-helpers';
-// import settingIcon from '@carbon/icons/es/settings/32';
+import { Component, h, Element, Listen } from '@stencil/core';
 
 @Component({
   tag: 'harmonized-viewer',
   styleUrls: [
     'viewer-component.scss',
-  ]
+    '../../assets/semantic-ui/semantic.css'
+  ],
+  shadow: true
 })
 export class ViewerComponent {
 
-  @Prop() name: string;
+  @Element() el: HTMLElement;
 
-  componentDidLoad() {
-    console.log('loaded');
-    //ContentSwitcher.create(document.getElementById('my-content-switcher'));
+  @Listen('navigationToggled')
+  toggleNavigation(event: CustomEvent) {
+    var content = this.el.shadowRoot.querySelector('.hv-content') as HTMLHvContentElement;
+    console.log('viewer toggle', content);
+    content.navigation.open = !content.navigation.open;
   }
 
   render() {
-
     return (
-      <div class="container">
-
-        
-        <button type="button" class="hv--btn hv--btn--primary">
-          aa
-        </button>
-        
-
+      <div class="harmonized-viewer">
+        <hv-topbar class="hv-topbar" onNavigationToggled={ev => this.toggleNavigation(ev)}></hv-topbar>
+        <hv-content class="hv-content"></hv-content>
       </div>
     );
   }

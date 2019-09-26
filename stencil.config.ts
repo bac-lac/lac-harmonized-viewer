@@ -1,5 +1,6 @@
 import { Config } from '@stencil/core';
 import { sass } from '@stencil/sass';
+import nodePolyfills from 'rollup-plugin-node-polyfills';
 
 export const config: Config = {
   namespace: 'stencil-starter-project-name',
@@ -16,11 +17,20 @@ export const config: Config = {
       serviceWorker: null // disable service workers
     }
   ],
+  commonjs: {
+    namedExports: {
+      'node_modules/openseadragon/openseadragon.js': [ 'openseadragon' ]
+    }
+  },
+  nodeResolve: {
+    browser: true
+  },
   plugins: [
     sass({
       injectGlobalPaths: [
         'src/globals/variables.scss'
       ]
-    })
+    }),
+    nodePolyfills()
   ]
 };

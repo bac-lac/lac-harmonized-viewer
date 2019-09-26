@@ -1,0 +1,12 @@
+.hv-topbar {
+
+    &.ui.menu {
+        margin-top   : 0;
+        border-radius: 0;
+    }
+
+    &.ui.inverted {
+        background-color: $theme-color-topbar-background;
+    }
+
+}
