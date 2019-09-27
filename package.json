@@ -66,6 +66,7 @@
   "devDependencies": {
     "@babel/core": "^7.6.0",
     "@babel/preset-env": "^7.6.0",
+    "@fortawesome/fontawesome-free": "^5.11.2",
     "@stencil/core": "1.5.1",
     "@stencil/sass": "^1.0.1",
     "@types/node": "^12.7.4",

@@ -19,7 +19,7 @@ export const config: Config = {
   ],
   commonjs: {
     namedExports: {
-      'node_modules/openseadragon/openseadragon.js': [ 'openseadragon' ]
+      'node_modules/openseadragon/openseadragon.js': ['openseadragon']
     }
   },
   nodeResolve: {

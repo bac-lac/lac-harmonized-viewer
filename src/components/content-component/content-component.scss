@@ -1,21 +1,20 @@
 .hv-main {
-    display       : flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-    &.pusher {
-        transition: margin 500ms ease;
-        background-color: #ECEFF4;
-    }
+  &.pusher {
+    transition: margin 500ms ease;
+  }
 }
 
-.ui.visible.left.sidebar~.fixed,
-.ui.visible.left.sidebar~.pusher {
-    margin-left: 260px;
-    transform  : translate3d(0, 0, 0);
+.ui.visible.left.sidebar ~ .fixed,
+.ui.visible.left.sidebar ~ .pusher {
+  margin-left: 260px;
+  transform: translate3d(0, 0, 0);
 }
 
 .hv-viewport {
-    flex          : auto;
-    display       : flex;
-    flex-direction: column;
+  flex: auto;
+  display: flex;
+  flex-direction: column;
 }

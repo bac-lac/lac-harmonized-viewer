@@ -23,7 +23,9 @@ export class NavigationComponent {
     this.el.classList.add('ui', 'sidebar', 'left', 'vertical', 'inverted', 'menu', 'visible');
 
     this.sidebar = $(this.el).sidebar({
-      context: $(this.el.parentElement) as JQuery<HTMLElement>
+      context: $(this.el.parentElement) as JQuery<HTMLElement>,
+      dimPage: false,
+      closable: false
     });
   }
 

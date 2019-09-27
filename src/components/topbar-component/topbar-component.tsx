@@ -1,4 +1,4 @@
-import { Component, h, Event, EventEmitter, Listen } from '@stencil/core';
+import { Component, h, Event, EventEmitter, Listen, Prop } from '@stencil/core';
 
 @Component({
   tag: 'hv-topbar',
@@ -7,6 +7,10 @@ import { Component, h, Event, EventEmitter, Listen } from '@stencil/core';
   ]
 })
 export class TopbarComponent {
+
+  @Prop() title: string;
+  @Prop() publisher: string;
+  @Prop() thumbnail: string;
 
   @Event({
     eventName: 'navigationToggled',
@@ -22,19 +26,22 @@ export class TopbarComponent {
   }
 
   render() {
-    return <div class="hv-topbar ui inverted menu">
-      <div class="header item">
-        Our Company
-    </div>
-      <a id="menu-toggle-navigation" class="item">
-        About Us
-    </a>
-      <a class="item">
-        Jobs
-    </a>
-      <a class="item">
-        Locations
-    </a>
+    return <div class="ui container fluid">
+      <div class="ui middle aligned three column padded grid">
+        <div class="row">
+          <div>
+            <img src={this.thumbnail} class="ui tiny image" alt={this.publisher} />
+          </div>
+          <div class="six wide column">
+            <div class={this.title ? "" : "ui placeholder"}>
+              <div class="image header">
+                <h1 class={this.title ? "" : "line"} innerHTML={this.title}></h1>
+                <a class={this.publisher ? "" : "line"} innerHTML={this.publisher}></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>;
   }
 }

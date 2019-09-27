@@ -9,15 +9,25 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 
 
 export namespace Components {
-  interface HarmonizedViewer {}
+  interface HarmonizedViewer {
+    'topbar': HTMLHvTopbarElement;
+  }
   interface HvContent {
     'navigation': HTMLHvNavigationElement;
   }
   interface HvNavigation {
     'open': boolean;
   }
-  interface HvTopbar {}
-  interface HvViewport {}
+  interface HvToolbar {}
+  interface HvTopbar {
+    'publisher': string;
+    'thumbnail': string;
+    'title': string;
+  }
+  interface HvViewport {
+    'manifest': string;
+    'openseadragon': any;
+  }
 }
 
 declare global {
@@ -41,6 +51,12 @@ declare global {
     new (): HTMLHvNavigationElement;
   };
 
+  interface HTMLHvToolbarElement extends Components.HvToolbar, HTMLStencilElement {}
+  var HTMLHvToolbarElement: {
+    prototype: HTMLHvToolbarElement;
+    new (): HTMLHvToolbarElement;
+  };
+
   interface HTMLHvTopbarElement extends Components.HvTopbar, HTMLStencilElement {}
   var HTMLHvTopbarElement: {
     prototype: HTMLHvTopbarElement;
@@ -56,28 +72,39 @@ declare global {
     'harmonized-viewer': HTMLHarmonizedViewerElement;
     'hv-content': HTMLHvContentElement;
     'hv-navigation': HTMLHvNavigationElement;
+    'hv-toolbar': HTMLHvToolbarElement;
     'hv-topbar': HTMLHvTopbarElement;
     'hv-viewport': HTMLHvViewportElement;
   }
 }
 
 declare namespace LocalJSX {
-  interface HarmonizedViewer {}
+  interface HarmonizedViewer {
+    'topbar'?: HTMLHvTopbarElement;
+  }
   interface HvContent {
     'navigation'?: HTMLHvNavigationElement;
   }
   interface HvNavigation {
     'open'?: boolean;
   }
+  interface HvToolbar {}
   interface HvTopbar {
     'onNavigationToggled'?: (event: CustomEvent<any>) => void;
+    'publisher'?: string;
+    'thumbnail'?: string;
+    'title'?: string;
   }
-  interface HvViewport {}
+  interface HvViewport {
+    'manifest'?: string;
+    'openseadragon'?: any;
+  }
 
   interface IntrinsicElements {
     'harmonized-viewer': HarmonizedViewer;
     'hv-content': HvContent;
     'hv-navigation': HvNavigation;
+    'hv-toolbar': HvToolbar;
     'hv-topbar': HvTopbar;
     'hv-viewport': HvViewport;
   }
@@ -92,6 +119,7 @@ declare module "@stencil/core" {
       'harmonized-viewer': LocalJSX.HarmonizedViewer & JSXBase.HTMLAttributes<HTMLHarmonizedViewerElement>;
       'hv-content': LocalJSX.HvContent & JSXBase.HTMLAttributes<HTMLHvContentElement>;
       'hv-navigation': LocalJSX.HvNavigation & JSXBase.HTMLAttributes<HTMLHvNavigationElement>;
+      'hv-toolbar': LocalJSX.HvToolbar & JSXBase.HTMLAttributes<HTMLHvToolbarElement>;
       'hv-topbar': LocalJSX.HvTopbar & JSXBase.HTMLAttributes<HTMLHvTopbarElement>;
       'hv-viewport': LocalJSX.HvViewport & JSXBase.HTMLAttributes<HTMLHvViewportElement>;
     }

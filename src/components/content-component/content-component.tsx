@@ -16,7 +16,7 @@ export class ContentComponent {
         <hv-navigation class="hv-navigation" ref={ elem => this.navigation = elem as HTMLHvNavigationElement }></hv-navigation>
 
         <main class="hv-main pusher">
-          <hv-viewport class="hv-viewport"></hv-viewport>
+          <hv-viewport class="hv-viewport" manifest="https://d.lib.ncsu.edu/collections/catalog/nubian-message-1992-11-30/manifest"></hv-viewport>
         </main>
 
       </div>

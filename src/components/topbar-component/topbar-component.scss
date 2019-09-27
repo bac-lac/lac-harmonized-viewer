@@ -1,12 +1,45 @@
 .hv-topbar {
+  color: #f3f3f3;
+  width: 100%;
+  padding: 0 1.0rem;
+  border: none;
+  z-index: 100;
+  box-shadow: 0 0 3px 2px #dcdcdc;
+  background-color: $theme-color-topbar-background;
 
-    &.ui.menu {
-        margin-top   : 0;
-        border-radius: 0;
-    }
+  .ui.grid {
+    margin-top: 0;
+    border-radius: 0;
 
-    &.ui.inverted {
+    .item {
+      .ui.placeholder {
+        width: 500px;
+      }
+
+      .ui.placeholder,
+      .ui.placeholder > :before,
+      .ui.placeholder .image.header:after,
+      .ui.placeholder .line,
+      .ui.placeholder .line:after {
         background-color: $theme-color-topbar-background;
+      }
     }
 
+    h1 {
+      color: #868d95;
+      font-size: 1.3rem;
+      font-family: "Barlow", sans-serif;
+      font-weight: 200;
+      margin: 0;
+      padding: 0;
+    }
+
+    a {
+      color: #6f6f6f;
+      font-size: 0.9rem;
+      font-weight: normal;
+      margin: 0.1rem 0 0 0;
+      padding: 0;
+    }
+  }
 }
