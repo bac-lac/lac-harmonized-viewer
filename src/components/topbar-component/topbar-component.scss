@@ -1,15 +1,20 @@
 .hv-topbar {
   color: #f3f3f3;
   width: 100%;
-  padding: 0 1.0rem;
+  padding: 0;
   border: none;
   z-index: 100;
   box-shadow: 0 0 3px 2px #dcdcdc;
   background-color: $theme-color-topbar-background;
 
   .ui.grid {
-    margin-top: 0;
+    margin: 0;
     border-radius: 0;
+
+    .row {
+      padding-left: 1.0rem;
+      padding-right: 1.0rem;
+    }
 
     .item {
       .ui.placeholder {
@@ -26,7 +31,7 @@
     }
 
     h1 {
-      color: #868d95;
+      color: #403c3c;
       font-size: 1.3rem;
       font-family: "Barlow", sans-serif;
       font-weight: 200;

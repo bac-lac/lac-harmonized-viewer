@@ -18,6 +18,7 @@ export namespace Components {
   interface HvNavigation {
     'open': boolean;
   }
+  interface HvStatusbar {}
   interface HvToolbar {}
   interface HvTopbar {
     'publisher': string;
@@ -51,6 +52,12 @@ declare global {
     new (): HTMLHvNavigationElement;
   };
 
+  interface HTMLHvStatusbarElement extends Components.HvStatusbar, HTMLStencilElement {}
+  var HTMLHvStatusbarElement: {
+    prototype: HTMLHvStatusbarElement;
+    new (): HTMLHvStatusbarElement;
+  };
+
   interface HTMLHvToolbarElement extends Components.HvToolbar, HTMLStencilElement {}
   var HTMLHvToolbarElement: {
     prototype: HTMLHvToolbarElement;
@@ -72,6 +79,7 @@ declare global {
     'harmonized-viewer': HTMLHarmonizedViewerElement;
     'hv-content': HTMLHvContentElement;
     'hv-navigation': HTMLHvNavigationElement;
+    'hv-statusbar': HTMLHvStatusbarElement;
     'hv-toolbar': HTMLHvToolbarElement;
     'hv-topbar': HTMLHvTopbarElement;
     'hv-viewport': HTMLHvViewportElement;
@@ -88,6 +96,7 @@ declare namespace LocalJSX {
   interface HvNavigation {
     'open'?: boolean;
   }
+  interface HvStatusbar {}
   interface HvToolbar {}
   interface HvTopbar {
     'onNavigationToggled'?: (event: CustomEvent<any>) => void;
@@ -104,6 +113,7 @@ declare namespace LocalJSX {
     'harmonized-viewer': HarmonizedViewer;
     'hv-content': HvContent;
     'hv-navigation': HvNavigation;
+    'hv-statusbar': HvStatusbar;
     'hv-toolbar': HvToolbar;
     'hv-topbar': HvTopbar;
     'hv-viewport': HvViewport;
@@ -119,6 +129,7 @@ declare module "@stencil/core" {
       'harmonized-viewer': LocalJSX.HarmonizedViewer & JSXBase.HTMLAttributes<HTMLHarmonizedViewerElement>;
       'hv-content': LocalJSX.HvContent & JSXBase.HTMLAttributes<HTMLHvContentElement>;
       'hv-navigation': LocalJSX.HvNavigation & JSXBase.HTMLAttributes<HTMLHvNavigationElement>;
+      'hv-statusbar': LocalJSX.HvStatusbar & JSXBase.HTMLAttributes<HTMLHvStatusbarElement>;
       'hv-toolbar': LocalJSX.HvToolbar & JSXBase.HTMLAttributes<HTMLHvToolbarElement>;
       'hv-topbar': LocalJSX.HvTopbar & JSXBase.HTMLAttributes<HTMLHvTopbarElement>;
       'hv-viewport': LocalJSX.HvViewport & JSXBase.HTMLAttributes<HTMLHvViewportElement>;

@@ -26,6 +26,7 @@ export class ViewerComponent {
         <hv-topbar class="hv-topbar" ref={elem => this.topbar = elem as HTMLHvTopbarElement} onNavigationToggled={ev => this.toggleNavigation(ev)}></hv-topbar>
         {/* <hv-toolbar class="hv-toolbar"></hv-toolbar> */}
         <hv-content class="hv-content"></hv-content>
+        <hv-statusbar class="hv-statusbar"></hv-statusbar>
       </div>
     );
   }
