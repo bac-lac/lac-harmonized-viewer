@@ -1,4 +1,4 @@
-import { Component, h, Element, Listen, Prop } from '@stencil/core';
+import { Component, h, Element, Listen, Prop, Event, EventEmitter } from '@stencil/core';
 
 @Component({
   tag: 'harmonized-viewer',
@@ -12,12 +12,29 @@ import { Component, h, Element, Listen, Prop } from '@stencil/core';
 export class ViewerComponent {
 
   @Element() el: HTMLElement;
+
   @Prop() topbar: HTMLHvTopbarElement;
+  @Prop() navigation: HTMLHvNavigationElement;
+
+  //@Event() manifestLoaded: EventEmitter;
 
   @Listen('navigationToggled')
   toggleNavigation(event: CustomEvent) {
     var content = this.el.shadowRoot.querySelector('.hv-content') as HTMLHvContentElement;
     content.navigation.open = !content.navigation.open;
+  }
+
+  @Listen('manifestLoaded')
+  manifestLoadedHandler(event: CustomEvent) {
+    var navigation = this.el.shadowRoot.querySelector('.hv-navigation') as HTMLHvNavigationElement;
+    navigation.manifest = event.detail as Manifesto.IManifest;
+  }
+
+  @Listen('pageLoaded')
+  pageLoadedHandler(event: CustomEvent) {
+    console.log('pageLoaded');
+    var navigation = this.el.shadowRoot.querySelector('.hv-navigation') as HTMLHvNavigationElement;
+    navigation.current = event.detail as number;
   }
 
   render() {
@@ -26,7 +43,6 @@ export class ViewerComponent {
         <hv-topbar class="hv-topbar" ref={elem => this.topbar = elem as HTMLHvTopbarElement} onNavigationToggled={ev => this.toggleNavigation(ev)}></hv-topbar>
         {/* <hv-toolbar class="hv-toolbar"></hv-toolbar> */}
         <hv-content class="hv-content"></hv-content>
-        <hv-statusbar class="hv-statusbar"></hv-statusbar>
       </div>
     );
   }

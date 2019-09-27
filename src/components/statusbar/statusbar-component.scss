@@ -1,9 +1,15 @@
 .hv-statusbar {
+
+    .hv-statusbar__inner {
+        padding: 0 1.0rem;
+    }
+
     .ui.attached.menu:not(.tabular) {
         border: none;
 
         .item {
-            font-size: 0.85rem;
+            color: #565656;
+            font-size: 0.7rem;
             font-weight: bold;
             text-transform: uppercase;
         }

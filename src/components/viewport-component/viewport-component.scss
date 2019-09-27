@@ -1,11 +1,33 @@
-.hv-openseadragon {
-    width: 100%;
-    height: 100%;
-    flex: auto;
-    display: flex;
-    flex-direction: column;
+.hv-viewport {
 
-    .openseadragon-container {
-        flex: auto;
+    &:hover .hv-viewport__inner .hv-navigation__prev {
+        opacity: 1.0;
     }
+
+    .hv-viewport__inner {
+        flex           : auto;
+        display        : flex;
+        flex-direction : column;
+        justify-content: center;
+
+        .hv-navigation__prev {
+            opacity   : 0;
+            position  : absolute;
+            left      : 1.0rem;
+            z-index   : 1100;
+            transition: opacity 200ms ease;
+        }
+
+        .hv-openseadragon {
+            width         : 100%;
+            flex          : auto;
+            display       : flex;
+            flex-direction: column;
+
+            .openseadragon-container {
+                flex: auto;
+            }
+        }
+    }
+
 }

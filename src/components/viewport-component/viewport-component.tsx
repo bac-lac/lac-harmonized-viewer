@@ -1,4 +1,4 @@
-import { Component, Element, h, Prop } from '@stencil/core';
+import { Component, Element, h, Prop, Event, EventEmitter, State } from '@stencil/core';
 import openseadragon from 'openseadragon';
 import 'manifesto.js';
 
@@ -13,19 +13,10 @@ export class ViewportComponent {
     @Prop() manifest: string;
     @Prop() openseadragon: any;
 
-    private root(element?: HTMLElement) {
+    @State() current: number = 0;
 
-        if (!element) {
-            element = this.el;
-        }
-
-        if (element.parentElement) {
-            return this.root(element.parentElement);
-        }
-        else {
-            return element;
-        }
-    }
+    @Event() manifestLoaded: EventEmitter;
+    @Event() pageLoaded: EventEmitter;
 
     componentDidLoad() {
 
@@ -41,13 +32,12 @@ export class ViewportComponent {
         manifesto.loadManifest(this.manifest)
             .then((manifestJson: string) => {
 
-                const manifest = manifesto.create(manifestJson) as Manifesto.Manifest;
+                const manifest = manifesto.create(manifestJson) as Manifesto.IManifest;
+
+                this.manifestLoaded.emit(manifest);
 
                 topbar.title = manifest.getDefaultLabel();
                 topbar.publisher = manifest.getMetadata().find(x => x.getLabel() == 'Creator').getValue();
-
-console.log(manifest);
-
                 topbar.thumbnail = manifest.getLogo();
 
             })
@@ -85,7 +75,7 @@ console.log(manifest);
 
                     var shadow = document.createElement('div');
                     shadow.style.backgroundColor = 'transparent';
-    
+
                     // context.rect(188, 40, 200, 100);
                     // context.shadowColor = '#999';
                     // context.shadowBlur = 20;
@@ -93,22 +83,43 @@ console.log(manifest);
                     // context.shadowOffsetY = 15;
                     // context.fill();
                     // context.clearRect(188, 40, 200, 100);
-    
+
                     var bounds = this.openseadragon.world.getItemAt(0).getBounds();
 
                     shadow.style.width = bounds.width.toString() + 'px';
                     shadow.style.height = bounds.height.toString() + 'px';
                     shadow.style.boxShadow = '5px 5px 12px 3px rgba(76, 86, 106, 0.3)';
-    
+
                     this.openseadragon.addOverlay(shadow, bounds, 'CENTER');
+
+                    this.pageLoaded.emit(this.openseadragon.currentPage());
 
                 });
             });
     }
 
+    private root(element?: HTMLElement) {
+
+        if (!element) {
+            element = this.el;
+        }
+
+        if (element.parentElement) {
+            return this.root(element.parentElement);
+        }
+        else {
+            return element;
+        }
+    }
+
     render() {
         return (
-            <div class="hv-openseadragon">
+            <div class="hv-viewport__inner">
+                <button type="button" class="hv-navigation__prev ui button">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="hv-openseadragon">
+                </div>
             </div>
         );
     }

@@ -10,12 +10,15 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 
 export namespace Components {
   interface HarmonizedViewer {
+    'navigation': HTMLHvNavigationElement;
     'topbar': HTMLHvTopbarElement;
   }
   interface HvContent {
     'navigation': HTMLHvNavigationElement;
   }
   interface HvNavigation {
+    'current': number;
+    'manifest': Manifesto.IManifest;
     'open': boolean;
   }
   interface HvStatusbar {}
@@ -88,12 +91,15 @@ declare global {
 
 declare namespace LocalJSX {
   interface HarmonizedViewer {
+    'navigation'?: HTMLHvNavigationElement;
     'topbar'?: HTMLHvTopbarElement;
   }
   interface HvContent {
     'navigation'?: HTMLHvNavigationElement;
   }
   interface HvNavigation {
+    'current'?: number;
+    'manifest'?: Manifesto.IManifest;
     'open'?: boolean;
   }
   interface HvStatusbar {}
@@ -106,6 +112,8 @@ declare namespace LocalJSX {
   }
   interface HvViewport {
     'manifest'?: string;
+    'onManifestLoaded'?: (event: CustomEvent<any>) => void;
+    'onPageLoaded'?: (event: CustomEvent<any>) => void;
     'openseadragon'?: any;
   }
 

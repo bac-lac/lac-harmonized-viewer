@@ -2,7 +2,45 @@
   border-right: #fff 1px solid;
 
   &.ui.inverted.menu {
+    box-shadow      : none;
     background-color: $theme-color-navigation-background;
   }
-  
+
+  .hv-navigation_list {
+    margin         : 0;
+    padding        : 1.0rem;
+    list-style-type: none;
+
+    li {
+      margin-bottom: 1.0rem;
+
+      .ui.label {
+        color: #bebebe;
+        font-size: 0.75rem;
+        font-weight: normal;
+        margin-top: 0;
+        background-color: transparent;
+      }
+    }
+
+    li a {
+      display: block;
+      border-radius: 1px;
+      transition: box-shadow 200ms ease;
+    }
+
+    li a:hover {
+      box-shadow: 0 0 0 3px #97c1ff;
+    }
+
+    li.active a {
+      box-shadow: 0 0 0 3px $theme-color-primary;
+    }
+
+    img {
+      box-shadow   : 1px 1px 3px 1px rgba(76, 86, 106, 0.3);
+      border       : #fff 1px solid;
+    }
+  }
+
 }

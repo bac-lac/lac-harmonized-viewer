@@ -17,6 +17,7 @@ export class ContentComponent {
 
         <main class="hv-main pusher">
           <hv-viewport class="hv-viewport" manifest="https://d.lib.ncsu.edu/collections/catalog/nubian-message-1992-11-30/manifest"></hv-viewport>
+          <hv-statusbar class="hv-statusbar"></hv-statusbar>
         </main>
 
       </div>
