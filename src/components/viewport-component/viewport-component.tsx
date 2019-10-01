@@ -1,4 +1,4 @@
-import { Component, Element, h, Prop, Event, EventEmitter, State, Listen } from '@stencil/core';
+import { Component, Element, h, Prop, Event, EventEmitter, State } from '@stencil/core';
 import openseadragon from 'openseadragon';
 import 'manifesto.js';
 import { root } from '../../utils/utils';
@@ -60,14 +60,14 @@ export class ViewportComponent {
                     tileSources: tileSources
                 });
 
-                this.openseadragon.addHandler('open', (eventSource: any) => {
+                this.openseadragon.addHandler('open', () => {
                     this.drawShadow();
                     this.handleCanvasLoad(this.openseadragon.world.getItemAt(0), () => {
                         this.canvasLoaded.emit(this.openseadragon.currentPage());
                     });
                 });
 
-                this.openseadragon.addHandler('close', (eventSource: any) => {
+                this.openseadragon.addHandler('close', () => {
                     //console.log('ev');
                     //this.clearOverlays();
                 });
@@ -100,18 +100,14 @@ export class ViewportComponent {
 
     }
 
-    private clearOverlays() {
-        this.openseadragon.clearOverlays();
-    }
-
-    previous(event: MouseEvent) {
+    previous() {
         var page = this.openseadragon.currentPage();
         if (page > 0) {
             this.openseadragon.goToPage(page - 1);
         }
     }
 
-    next(event: MouseEvent) {
+    next() {
         var page = this.openseadragon.currentPage();
         var totalPages = this.openseadragon.tileSources.length;
         if (page < (totalPages - 1)) {
@@ -122,12 +118,12 @@ export class ViewportComponent {
     render() {
         return (
             <div class="hv-viewport__inner">
-                <button type="button" class="hv-navigation__prev ui button" onClick={(e) => this.previous(e)}>
+                <button type="button" class="hv-navigation__prev ui button" onClick={(e) => this.previous()}>
                     <i class="fas fa-chevron-left"></i>
                 </button>
                 <div class="hv-openseadragon">
                 </div>
-                <button type="button" class="hv-navigation__next ui button" onClick={(e) => this.next(e)}>
+                <button type="button" class="hv-navigation__next ui button" onClick={(e) => this.next()}>
                     <i class="fas fa-chevron-right"></i>
                 </button>
             </div>

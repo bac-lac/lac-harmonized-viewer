@@ -1,4 +1,4 @@
-import { Component, h, Element, Event, EventEmitter, Listen, Prop } from '@stencil/core';
+import { Component, h, Element, Event, EventEmitter, Prop } from '@stencil/core';
 
 @Component({
   tag: 'hv-topbar',
@@ -22,7 +22,7 @@ export class TopbarComponent {
   })
   navigationToggled: EventEmitter;
 
-  settingsHandler(event: MouseEvent) {
+  settingsHandler() {
     //var settings = document.querySelector('.hv-settings');
     //console.log($('.hv-settings .ui.modal'));
 
