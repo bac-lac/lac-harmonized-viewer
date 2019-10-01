@@ -1,6 +1,6 @@
-import { Component, Prop, h, Element, Watch, State, Listen } from '@stencil/core';
-import 'manifesto.js';
+import { Component, Prop, h, Element, Watch, State, Event, EventEmitter } from '@stencil/core';
 import { NavigationItem } from '../../models/navigation-item';
+import 'manifesto.js';
 
 @Component({
   tag: 'hv-navigation',
@@ -19,6 +19,8 @@ export class NavigationComponent {
   @State() items: NavigationItem[] = [];
 
   private sidebar: JQuery<HTMLElement>;
+
+  @Event() goTo: EventEmitter;
 
   @Watch('open')
   watchHandler(newValue: boolean, oldValue: boolean) {
@@ -71,13 +73,17 @@ export class NavigationComponent {
     }
   }
 
+  canvasClick(event: MouseEvent, page: number) {
+    this.goTo.emit(page);
+  }
+
   render() {
     return (
       <div>
         <ul class="hv-navigation_list ui two column compact centered grid">
           {this.items.map((item, index) =>
             <li class={(this.current == index) ? "active" : ""}>
-              <a href="javascript:;">
+              <a href="javascript:;" onClick={(e) => this.canvasClick(e, index)}>
                 <img src={item.thumbnailUrl} class="ui image tiny" alt={item.title} />
               </a>
               {/* <span class="ui bottom attached label">

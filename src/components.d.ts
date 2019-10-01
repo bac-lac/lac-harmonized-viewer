@@ -21,6 +21,7 @@ export namespace Components {
     'manifest': Manifesto.IManifest;
     'open': boolean;
   }
+  interface HvSettings {}
   interface HvStatusbar {}
   interface HvToolbar {}
   interface HvTopbar {
@@ -55,6 +56,12 @@ declare global {
     new (): HTMLHvNavigationElement;
   };
 
+  interface HTMLHvSettingsElement extends Components.HvSettings, HTMLStencilElement {}
+  var HTMLHvSettingsElement: {
+    prototype: HTMLHvSettingsElement;
+    new (): HTMLHvSettingsElement;
+  };
+
   interface HTMLHvStatusbarElement extends Components.HvStatusbar, HTMLStencilElement {}
   var HTMLHvStatusbarElement: {
     prototype: HTMLHvStatusbarElement;
@@ -82,6 +89,7 @@ declare global {
     'harmonized-viewer': HTMLHarmonizedViewerElement;
     'hv-content': HTMLHvContentElement;
     'hv-navigation': HTMLHvNavigationElement;
+    'hv-settings': HTMLHvSettingsElement;
     'hv-statusbar': HTMLHvStatusbarElement;
     'hv-toolbar': HTMLHvToolbarElement;
     'hv-topbar': HTMLHvTopbarElement;
@@ -100,8 +108,10 @@ declare namespace LocalJSX {
   interface HvNavigation {
     'current'?: number;
     'manifest'?: Manifesto.IManifest;
+    'onGoTo'?: (event: CustomEvent<any>) => void;
     'open'?: boolean;
   }
+  interface HvSettings {}
   interface HvStatusbar {}
   interface HvToolbar {}
   interface HvTopbar {
@@ -112,8 +122,8 @@ declare namespace LocalJSX {
   }
   interface HvViewport {
     'manifest'?: string;
+    'onCanvasLoaded'?: (event: CustomEvent<any>) => void;
     'onManifestLoaded'?: (event: CustomEvent<any>) => void;
-    'onPageLoaded'?: (event: CustomEvent<any>) => void;
     'openseadragon'?: any;
   }
 
@@ -121,6 +131,7 @@ declare namespace LocalJSX {
     'harmonized-viewer': HarmonizedViewer;
     'hv-content': HvContent;
     'hv-navigation': HvNavigation;
+    'hv-settings': HvSettings;
     'hv-statusbar': HvStatusbar;
     'hv-toolbar': HvToolbar;
     'hv-topbar': HvTopbar;
@@ -137,6 +148,7 @@ declare module "@stencil/core" {
       'harmonized-viewer': LocalJSX.HarmonizedViewer & JSXBase.HTMLAttributes<HTMLHarmonizedViewerElement>;
       'hv-content': LocalJSX.HvContent & JSXBase.HTMLAttributes<HTMLHvContentElement>;
       'hv-navigation': LocalJSX.HvNavigation & JSXBase.HTMLAttributes<HTMLHvNavigationElement>;
+      'hv-settings': LocalJSX.HvSettings & JSXBase.HTMLAttributes<HTMLHvSettingsElement>;
       'hv-statusbar': LocalJSX.HvStatusbar & JSXBase.HTMLAttributes<HTMLHvStatusbarElement>;
       'hv-toolbar': LocalJSX.HvToolbar & JSXBase.HTMLAttributes<HTMLHvToolbarElement>;
       'hv-topbar': LocalJSX.HvTopbar & JSXBase.HTMLAttributes<HTMLHvTopbarElement>;

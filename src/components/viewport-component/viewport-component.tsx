@@ -1,6 +1,7 @@
-import { Component, Element, h, Prop, Event, EventEmitter, State } from '@stencil/core';
+import { Component, Element, h, Prop, Event, EventEmitter, State, Listen } from '@stencil/core';
 import openseadragon from 'openseadragon';
 import 'manifesto.js';
+import { root } from '../../utils/utils';
 
 @Component({
     tag: 'hv-viewport',
@@ -16,16 +17,16 @@ export class ViewportComponent {
     @State() current: number = 0;
 
     @Event() manifestLoaded: EventEmitter;
-    @Event() pageLoaded: EventEmitter;
+    @Event() canvasLoaded: EventEmitter;
 
     componentDidLoad() {
-
+        
         if (this.openseadragon) {
             this.openseadragon.destroy();
             this.openseadragon = null;
         }
 
-        var topbar = this.root().querySelector('.hv-topbar') as HTMLHvTopbarElement;
+        var topbar = root(this.el).querySelector('.hv-topbar') as HTMLHvTopbarElement;
 
         var instance = this.el.querySelector('.hv-openseadragon');
 
@@ -40,8 +41,11 @@ export class ViewportComponent {
                 topbar.publisher = manifest.getMetadata().find(x => x.getLabel() == 'Creator').getValue();
                 topbar.thumbnail = manifest.getLogo();
 
-            })
-            .finally(() => {
+
+                const tileSources = manifest.getSequences()[0].getCanvases().map(function (canvas) {
+                    var images = canvas.getImages();
+                    return images[0].getResource().getServices()[0].id + "/info.json";
+                });
 
                 this.openseadragon = openseadragon({
                     element: instance,
@@ -53,73 +57,79 @@ export class ViewportComponent {
                     showNavigationControl: false,
                     showSequenceControl: false,
                     sequenceMode: true,
-                    tileSources: {
-                        type: 'legacy-image-pyramid',
-                        levels: [{
-                            url: 'https://openseadragon.github.io/example-images/rbc/rbc0001/2003/2003rosen1799/0001q.jpg',
-                            height: 889,
-                            width: 600
-                        }, {
-                            url: 'https://openseadragon.github.io/example-images/rbc/rbc0001/2003/2003rosen1799/0001r.jpg',
-                            height: 2201,
-                            width: 1485
-                        }, {
-                            url: 'https://openseadragon.github.io/example-images/rbc/rbc0001/2003/2003rosen1799/0001v.jpg',
-                            height: 4402,
-                            width: 2970
-                        }]
-                    }
+                    tileSources: tileSources
                 });
 
                 this.openseadragon.addHandler('open', (eventSource: any) => {
-
-                    var shadow = document.createElement('div');
-                    shadow.style.backgroundColor = 'transparent';
-
-                    // context.rect(188, 40, 200, 100);
-                    // context.shadowColor = '#999';
-                    // context.shadowBlur = 20;
-                    // context.shadowOffsetX = 15;
-                    // context.shadowOffsetY = 15;
-                    // context.fill();
-                    // context.clearRect(188, 40, 200, 100);
-
-                    var bounds = this.openseadragon.world.getItemAt(0).getBounds();
-
-                    shadow.style.width = bounds.width.toString() + 'px';
-                    shadow.style.height = bounds.height.toString() + 'px';
-                    shadow.style.boxShadow = '5px 5px 12px 3px rgba(76, 86, 106, 0.3)';
-
-                    this.openseadragon.addOverlay(shadow, bounds, 'CENTER');
-
-                    this.pageLoaded.emit(this.openseadragon.currentPage());
-
+                    this.drawShadow();
+                    this.handleCanvasLoad(this.openseadragon.world.getItemAt(0), () => {
+                        this.canvasLoaded.emit(this.openseadragon.currentPage());
+                    });
                 });
+
+                this.openseadragon.addHandler('close', (eventSource: any) => {
+                    //console.log('ev');
+                    //this.clearOverlays();
+                });
+
             });
     }
 
-    private root(element?: HTMLElement) {
-
-        if (!element) {
-            element = this.el;
+    private handleCanvasLoad(tiledImage: any, callback: () => any) {
+        if (tiledImage.getFullyLoaded()) {
+            setTimeout(callback, 1); // So both paths are asynchronous
+        } else {
+            tiledImage.addOnceHandler('fully-loaded-change', function () {
+                callback(); // Calling it this way keeps the arguments consistent (if we passed callback into addOnceHandler it would get an event on this path but not on the setTimeout path above)
+            });
         }
+    }
 
-        if (element.parentElement) {
-            return this.root(element.parentElement);
+    private drawShadow() {
+
+        var shadow = document.createElement('div');
+        shadow.style.backgroundColor = 'transparent';
+
+        var bounds = this.openseadragon.world.getItemAt(0).getBounds();
+
+        shadow.style.width = bounds.width.toString() + 'px';
+        shadow.style.height = bounds.height.toString() + 'px';
+        shadow.style.boxShadow = '5px 5px 12px 3px rgba(76, 86, 106, 0.3)';
+
+        this.openseadragon.addOverlay(shadow, bounds, 'CENTER');
+
+    }
+
+    private clearOverlays() {
+        this.openseadragon.clearOverlays();
+    }
+
+    previous(event: MouseEvent) {
+        var page = this.openseadragon.currentPage();
+        if (page > 0) {
+            this.openseadragon.goToPage(page - 1);
         }
-        else {
-            return element;
+    }
+
+    next(event: MouseEvent) {
+        var page = this.openseadragon.currentPage();
+        var totalPages = this.openseadragon.tileSources.length;
+        if (page < (totalPages - 1)) {
+            this.openseadragon.goToPage(page + 1);
         }
     }
 
     render() {
         return (
             <div class="hv-viewport__inner">
-                <button type="button" class="hv-navigation__prev ui button">
+                <button type="button" class="hv-navigation__prev ui button" onClick={(e) => this.previous(e)}>
                     <i class="fas fa-chevron-left"></i>
                 </button>
                 <div class="hv-openseadragon">
                 </div>
+                <button type="button" class="hv-navigation__next ui button" onClick={(e) => this.next(e)}>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
             </div>
         );
     }

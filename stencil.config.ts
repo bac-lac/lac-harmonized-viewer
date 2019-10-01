@@ -27,9 +27,7 @@ export const config: Config = {
   },
   plugins: [
     sass({
-      injectGlobalPaths: [
-        'src/globals/variables.scss'
-      ]
+      injectGlobalPaths: ['src/globals/variables.scss']
     }),
     nodePolyfills()
   ]

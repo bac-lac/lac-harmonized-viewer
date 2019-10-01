@@ -30,16 +30,16 @@
     }
 
     li a:hover {
-      box-shadow: 0 0 0 4px #97c1ff;
+      box-shadow: 0 0 0 3px #97c1ff;
     }
 
     li.active a {
-      box-shadow: 0 0 0 4px $theme-color-primary;
+      box-shadow: 0 0 0 3px $theme-color-primary;
     }
 
     img {
       box-shadow   : 1px 1px 3px 1px rgba(76, 86, 106, 0.3);
-      border       : #333 3px solid;
+      border       : #444 2px solid;
     }
   }
 

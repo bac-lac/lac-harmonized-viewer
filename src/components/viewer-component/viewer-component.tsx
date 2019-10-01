@@ -30,11 +30,18 @@ export class ViewerComponent {
     navigation.manifest = event.detail as Manifesto.IManifest;
   }
 
-  @Listen('pageLoaded')
+  @Listen('canvasLoaded')
   pageLoadedHandler(event: CustomEvent) {
-    console.log('pageLoaded');
     var navigation = this.el.shadowRoot.querySelector('.hv-navigation') as HTMLHvNavigationElement;
     navigation.current = event.detail as number;
+  }
+
+  @Listen('goTo')
+  goToHandler(event: CustomEvent) {
+    var viewport = this.el.shadowRoot.querySelector('.hv-viewport') as HTMLHvViewportElement;
+    if (viewport) {
+      viewport.openseadragon.goToPage(event.detail as number);
+    }
   }
 
   render() {
@@ -43,6 +50,7 @@ export class ViewerComponent {
         <hv-topbar class="hv-topbar" ref={elem => this.topbar = elem as HTMLHvTopbarElement} onNavigationToggled={ev => this.toggleNavigation(ev)}></hv-topbar>
         {/* <hv-toolbar class="hv-toolbar"></hv-toolbar> */}
         <hv-content class="hv-content"></hv-content>
+        {/* <hv-settings class="hv-settings"></hv-settings> */}
       </div>
     );
   }

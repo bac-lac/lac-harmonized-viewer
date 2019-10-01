@@ -1,6 +1,7 @@
 .hv-viewport {
 
-    &:hover .hv-viewport__inner .hv-navigation__prev {
+    &:hover .hv-viewport__inner .hv-navigation__prev,
+    &:hover .hv-viewport__inner .hv-navigation__next {
         opacity: 1.0;
     }
 
@@ -10,12 +11,20 @@
         flex-direction : column;
         justify-content: center;
 
-        .hv-navigation__prev {
+        .hv-navigation__prev,
+        .hv-navigation__next {
             opacity   : 0;
             position  : absolute;
-            left      : 1.0rem;
             z-index   : 1100;
             transition: opacity 200ms ease;
+        }
+
+        .hv-navigation__prev {
+            left: 1.0rem;
+        }
+
+        .hv-navigation__next {
+            right: 1.0rem;
         }
 
         .hv-openseadragon {
