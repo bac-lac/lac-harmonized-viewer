@@ -20,7 +20,7 @@ export class ViewportComponent {
     @Event() canvasLoaded: EventEmitter;
 
     componentDidLoad() {
-        
+
         if (this.openseadragon) {
             this.openseadragon.destroy();
             this.openseadragon = null;
@@ -117,13 +117,13 @@ export class ViewportComponent {
 
     render() {
         return (
-            <div class="hv-viewport__inner">
-                <button type="button" class="hv-navigation__prev ui button" onClick={(e) => this.previous()}>
+            <div class="hv-viewport">
+                <button type="button" class="hv-navigation__prev" onClick={(e) => this.previous()}>
                     <i class="fas fa-chevron-left"></i>
                 </button>
                 <div class="hv-openseadragon">
                 </div>
-                <button type="button" class="hv-navigation__next ui button" onClick={(e) => this.next()}>
+                <button type="button" class="hv-navigation__next" onClick={(e) => this.next()}>
                     <i class="fas fa-chevron-right"></i>
                 </button>
             </div>

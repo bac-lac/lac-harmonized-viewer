@@ -1,50 +1,29 @@
 .hv-topbar {
-  color: #f3f3f3;
-  width: 100%;
-  padding: 0;
-  border: none;
-  z-index: 100;
-  box-shadow: 0 0 3px 2px #dcdcdc;
-  background-color: $theme-color-topbar-background;
+    color: #f3f3f3;
+    width: 100%;
+    padding: 0;
+    border: none;
+    z-index: 100;
+    box-shadow: 0 0 3px 2px #dcdcdc;
+    background-color: $theme-color-topbar-background;
 
-  .ui.grid {
-    margin: 0;
-    border-radius: 0;
-
-    .row {
-      padding-left: 1.0rem;
-      padding-right: 1.0rem;
-    }
-
-    .item {
-      .ui.placeholder {
-        width: 500px;
-      }
-
-      .ui.placeholder,
-      .ui.placeholder > :before,
-      .ui.placeholder .image.header:after,
-      .ui.placeholder .line,
-      .ui.placeholder .line:after {
-        background-color: $theme-color-topbar-background;
-      }
+    .hv--logo {
+        max-height: 60px;
     }
 
     h1 {
-      color: #50565b;
-      font-size: 1.3rem;
-      font-family: "Barlow", sans-serif;
-      font-weight: 200;
-      margin: 0;
-      padding: 0;
+        color: #50565b;
+        font-size: 1.3rem;
+        font-weight: 200;
+        margin: 0;
+        padding: 0;
     }
 
     a {
-      color: #6f6f6f;
-      font-size: 0.9rem;
-      font-weight: normal;
-      margin: 0.1rem 0 0 0;
-      padding: 0;
+        color: #6f6f6f;
+        font-size: 0.9rem;
+        font-weight: normal;
+        margin: 0.1rem 0 0 0;
+        padding: 0;
     }
-  }
 }

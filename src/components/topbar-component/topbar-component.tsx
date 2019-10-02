@@ -1,10 +1,9 @@
 import { Component, h, Element, Event, EventEmitter, Prop } from '@stencil/core';
+import { Modal } from 'carbon-components';
 
 @Component({
   tag: 'hv-topbar',
-  styleUrls: [
-    'topbar-component.scss'
-  ]
+  styleUrl: 'topbar-component.scss'
 })
 export class TopbarComponent {
 
@@ -22,45 +21,33 @@ export class TopbarComponent {
   })
   navigationToggled: EventEmitter;
 
-  settingsHandler() {
-    //var settings = document.querySelector('.hv-settings');
-    //console.log($('.hv-settings .ui.modal'));
-
-  }
-
-  componentDidLoad() {
-    console.log('did load');
-    $('.hv-settings .ui.modal').modal({
-      detachable: false
-    }).modal('show');
+  settingsToggle(event: MouseEvent) {
+    var modalInstance = Modal.create(this.el.querySelector('#modal-settings'));
+    modalInstance.show();
   }
 
   render() {
-    return <div class="ui container fluid">
-      <div class="ui grid">
-        <div class="row">
-          <div>
-            <img src={this.thumbnail} class="ui tiny image" alt={this.publisher} />
+    return (
+      <div class="bx--grid">
+        <div class="bx--row">
+          <div class="bx--col">
+            <img src={this.thumbnail} class="hv--logo" alt={this.publisher} />
           </div>
-          <div class="ten wide column">
-
-            <div class={this.title ? "" : "ui placeholder"}>
-              <div class="image header">
-                <h1 class={this.title ? "" : "line"} innerHTML={this.title}></h1>
-                <a class={this.publisher ? "" : "line"} innerHTML={this.publisher}></a>
-              </div>
-            </div>
-
+          <div class="bx--col">
+            <h1 innerHTML={this.title}></h1>
+            <a innerHTML={this.publisher}></a>
           </div>
-          <div class="right aligned two wide column">
+          <div class="bx--col">
 
-            {/* <button type="button" class="ui icon button" onClick={(e) => this.settingsHandler(e)}>
+            <button type="button" class="bx--btn bx--btn--secondary bx--btn--icon-only" onClick={e => this.settingsToggle(e)}>
               <i class="fas fa-cog"></i>
-            </button> */}
+            </button>
+            
+            <hv-settings></hv-settings>
 
           </div>
         </div>
       </div>
-    </div>;
+    );
   }
 }

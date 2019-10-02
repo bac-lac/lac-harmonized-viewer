@@ -10,11 +10,10 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 
 export namespace Components {
   interface HarmonizedViewer {
+    'current': number;
+    'manifest': Manifesto.IManifest;
     'navigation': HTMLHvNavigationElement;
     'topbar': HTMLHvTopbarElement;
-  }
-  interface HvContent {
-    'navigation': HTMLHvNavigationElement;
   }
   interface HvNavigation {
     'current': number;
@@ -42,12 +41,6 @@ declare global {
   var HTMLHarmonizedViewerElement: {
     prototype: HTMLHarmonizedViewerElement;
     new (): HTMLHarmonizedViewerElement;
-  };
-
-  interface HTMLHvContentElement extends Components.HvContent, HTMLStencilElement {}
-  var HTMLHvContentElement: {
-    prototype: HTMLHvContentElement;
-    new (): HTMLHvContentElement;
   };
 
   interface HTMLHvNavigationElement extends Components.HvNavigation, HTMLStencilElement {}
@@ -87,7 +80,6 @@ declare global {
   };
   interface HTMLElementTagNameMap {
     'harmonized-viewer': HTMLHarmonizedViewerElement;
-    'hv-content': HTMLHvContentElement;
     'hv-navigation': HTMLHvNavigationElement;
     'hv-settings': HTMLHvSettingsElement;
     'hv-statusbar': HTMLHvStatusbarElement;
@@ -99,11 +91,11 @@ declare global {
 
 declare namespace LocalJSX {
   interface HarmonizedViewer {
+    'current'?: number;
+    'manifest'?: Manifesto.IManifest;
     'navigation'?: HTMLHvNavigationElement;
+    'onGoto'?: (event: CustomEvent<any>) => void;
     'topbar'?: HTMLHvTopbarElement;
-  }
-  interface HvContent {
-    'navigation'?: HTMLHvNavigationElement;
   }
   interface HvNavigation {
     'current'?: number;
@@ -129,7 +121,6 @@ declare namespace LocalJSX {
 
   interface IntrinsicElements {
     'harmonized-viewer': HarmonizedViewer;
-    'hv-content': HvContent;
     'hv-navigation': HvNavigation;
     'hv-settings': HvSettings;
     'hv-statusbar': HvStatusbar;
@@ -146,7 +137,6 @@ declare module "@stencil/core" {
   export namespace JSX {
     interface IntrinsicElements {
       'harmonized-viewer': LocalJSX.HarmonizedViewer & JSXBase.HTMLAttributes<HTMLHarmonizedViewerElement>;
-      'hv-content': LocalJSX.HvContent & JSXBase.HTMLAttributes<HTMLHvContentElement>;
       'hv-navigation': LocalJSX.HvNavigation & JSXBase.HTMLAttributes<HTMLHvNavigationElement>;
       'hv-settings': LocalJSX.HvSettings & JSXBase.HTMLAttributes<HTMLHvSettingsElement>;
       'hv-statusbar': LocalJSX.HvStatusbar & JSXBase.HTMLAttributes<HTMLHvStatusbarElement>;
