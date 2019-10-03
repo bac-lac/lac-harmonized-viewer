@@ -1,17 +1,12 @@
 .hv-statusbar {
+    margin: 0;
 
-    .hv-statusbar__inner {
-        padding: 0 1.0rem;
-    }
+    .bx--content-switcher {
+        justify-content: start;
 
-    .ui.attached.menu:not(.tabular) {
-        border: none;
-
-        .item {
-            color: #565656;
-            font-size: 0.7rem;
-            font-weight: bold;
-            text-transform: uppercase;
+        .bx--content-switcher-btn {
+            width: auto;
+            font-size: 0.8rem;
         }
     }
 }

@@ -6,19 +6,20 @@
 
 
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
-
+import {
+  NavigationItem,
+} from './models/navigation-item';
 
 export namespace Components {
   interface HarmonizedViewer {
-    'current': number;
     'manifest': Manifesto.IManifest;
     'navigation': HTMLHvNavigationElement;
     'topbar': HTMLHvTopbarElement;
+    'viewport': HTMLHvViewportElement;
   }
   interface HvNavigation {
-    'current': number;
-    'manifest': Manifesto.IManifest;
-    'open': boolean;
+    'items': NavigationItem[];
+    'page': number;
   }
   interface HvSettings {}
   interface HvStatusbar {}
@@ -31,6 +32,8 @@ export namespace Components {
   interface HvViewport {
     'manifest': string;
     'openseadragon': any;
+    'page': number;
+    'totalPages': number;
   }
 }
 
@@ -91,17 +94,17 @@ declare global {
 
 declare namespace LocalJSX {
   interface HarmonizedViewer {
-    'current'?: number;
     'manifest'?: Manifesto.IManifest;
     'navigation'?: HTMLHvNavigationElement;
     'onGoto'?: (event: CustomEvent<any>) => void;
+    'onManifestLoaded'?: (event: CustomEvent<any>) => void;
     'topbar'?: HTMLHvTopbarElement;
+    'viewport'?: HTMLHvViewportElement;
   }
   interface HvNavigation {
-    'current'?: number;
-    'manifest'?: Manifesto.IManifest;
-    'onGoTo'?: (event: CustomEvent<any>) => void;
-    'open'?: boolean;
+    'items'?: NavigationItem[];
+    'onGoto'?: (event: CustomEvent<any>) => void;
+    'page'?: number;
   }
   interface HvSettings {}
   interface HvStatusbar {}
@@ -116,7 +119,10 @@ declare namespace LocalJSX {
     'manifest'?: string;
     'onCanvasLoaded'?: (event: CustomEvent<any>) => void;
     'onManifestLoaded'?: (event: CustomEvent<any>) => void;
+    'onPageLoaded'?: (event: CustomEvent<any>) => void;
     'openseadragon'?: any;
+    'page'?: number;
+    'totalPages'?: number;
   }
 
   interface IntrinsicElements {

@@ -28,9 +28,9 @@ export class TopbarComponent {
 
   render() {
     return (
-      <div class="bx--grid">
+      <div class="">
         <div class="bx--row">
-          <div class="bx--col">
+          <div class="">
             <img src={this.thumbnail} class="hv--logo" alt={this.publisher} />
           </div>
           <div class="bx--col">

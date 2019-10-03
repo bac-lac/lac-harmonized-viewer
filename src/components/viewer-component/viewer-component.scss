@@ -15,21 +15,22 @@
     }
 
     .hv-navigation {
-        width: 300px;
+        width: 260px;
         height: 100%;
         overflow-x: hidden;
         overflow-y: auto;
         border-right: #fff 1px solid;
 
         .hv-navigation__list {
-            width: 100%;
-            display: block;
+            display: flex;
             margin: 0;
             padding: 1rem;
+            flex-flow: wrap;
             list-style-type: none;
+            justify-content: space-around;
 
             li {
-                display: inline-flex;
+                display: flex;
                 margin: 0 0.5rem 0.5rem 0;
             }
 

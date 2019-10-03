@@ -1,3 +1,9 @@
 {
-    "test": "labeleng"
+    "id": "en",
+    "displayName": "English",
+    "labels": [
+        {
+            "test": "labeleng"
+        }
+    ]
 }

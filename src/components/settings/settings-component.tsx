@@ -1,5 +1,5 @@
 import { Component, h, Element, State } from '@stencil/core';
-import { fetchLocaleStringsForComponent } from '../../utils/utils.locale';
+import { Localization } from '../../services/locale.service';
 
 @Component({
     tag: 'hv-settings',
@@ -10,11 +10,11 @@ export class SettingsComponent {
     @Element() el: HTMLElement;
 
     componentDidLoad() {
-        var xx = fetchLocaleStringsForComponent('en')
-            .then(() => {
-                console.log('ok');
-            });
-            
+        var localization = new Localization();
+        localization.init('en')
+            .then((result) => {
+                console.log(result);
+            })
     }
 
     render() {
@@ -22,8 +22,13 @@ export class SettingsComponent {
             <div class="bx--modal-container">
 
                 <div class="bx--modal-header">
-                    <p class="bx--modal-header__label bx--type-delta" id="modal-t8w9vdmwn6e-label">Optional label</p>
-                    <p class="bx--modal-header__heading bx--type-beta" id="modal-t8w9vdmwn6e-heading">Modal heading</p>
+                    <p class="bx--modal-header__label bx--type-delta" id="modal-t8w9vdmwn6e-label">
+                        Harmonized Viewer
+                    </p>
+                    <p class="bx--modal-header__heading bx--type-beta" id="modal-t8w9vdmwn6e-heading">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </p>
                     <button class="bx--modal-close" type="button" data-modal-close aria-label="close modal" >
                         <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" class="bx--modal-close__icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M12 4.7l-.7-.7L8 7.3 4.7 4l-.7.7L7.3 8 4 11.3l.7.7L8 8.7l3.3 3.3.7-.7L8.7 8z"></path></svg>
                     </button>
@@ -34,7 +39,7 @@ export class SettingsComponent {
 
                         <div class="bx--select">
                             <label class="bx--label">
-                                test
+                                Language
                             </label>
 
                             <div class="bx--select-input__wrapper">

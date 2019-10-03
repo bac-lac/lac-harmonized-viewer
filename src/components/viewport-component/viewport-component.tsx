@@ -1,6 +1,5 @@
-import { Component, Element, h, Prop, Event, EventEmitter, State } from '@stencil/core';
+import { Component, Element, h, Prop, Event, EventEmitter, Watch } from '@stencil/core';
 import openseadragon from 'openseadragon';
-import 'manifesto.js';
 import { root } from '../../utils/utils';
 
 @Component({
@@ -11,13 +10,18 @@ export class ViewportComponent {
 
     @Element() el: HTMLElement;
 
+    @Prop() page: number = 0;
+    @Prop() totalPages: number = 0;
+
     @Prop() manifest: string;
     @Prop() openseadragon: any;
 
-    @State() current: number = 0;
-
     @Event() manifestLoaded: EventEmitter;
     @Event() canvasLoaded: EventEmitter;
+    @Event() pageLoaded: EventEmitter;
+
+    private buttonPrevious: HTMLButtonElement;
+    private buttonNext: HTMLButtonElement;
 
     componentDidLoad() {
 
@@ -40,11 +44,11 @@ export class ViewportComponent {
                 topbar.publisher = manifest.getMetadata().find(x => x.getLabel() == 'Creator').getValue();
                 topbar.thumbnail = manifest.getLogo();
 
-
                 const tileSources = manifest.getSequences()[0].getCanvases().map(function (canvas) {
                     var images = canvas.getImages();
                     return images[0].getResource().getServices()[0].id + "/info.json";
                 });
+                this.totalPages = tileSources.length;
 
                 this.openseadragon = openseadragon({
                     element: instance,
@@ -60,10 +64,17 @@ export class ViewportComponent {
                 });
 
                 this.openseadragon.addHandler('open', () => {
+
+                    this.page = this.openseadragon.currentPage();
+
                     this.drawShadow();
+
                     this.handleCanvasLoad(this.openseadragon.world.getItemAt(0), () => {
-                        this.canvasLoaded.emit(this.openseadragon.currentPage());
+                        this.canvasLoaded.emit(this.page);
                     });
+
+                    //this.pageHandler();
+                    this.pageLoaded.emit(this.page);
                 });
 
                 this.openseadragon.addHandler('close', () => {
@@ -72,6 +83,12 @@ export class ViewportComponent {
                 });
 
             });
+    }
+
+    @Watch('page')
+    pageHandler() {
+        this.buttonPrevious.disabled = (this.page === 0);
+        this.buttonNext.disabled = (this.page === this.totalPages - 1);
     }
 
     private handleCanvasLoad(tiledImage: any, callback: () => any) {
@@ -117,12 +134,12 @@ export class ViewportComponent {
     render() {
         return (
             <div class="hv-viewport">
-                <button type="button" class="hv-navigation__prev" onClick={(e) => this.previous()}>
+                <button type="button" class="bx--btn bx--btn--secondary bx--btn--icon-only hv-navigation__prev" onClick={(e) => this.previous()} ref={elem => this.buttonPrevious = elem}>
                     <i class="fas fa-chevron-left"></i>
                 </button>
                 <div class="hv-openseadragon">
                 </div>
-                <button type="button" class="hv-navigation__next" onClick={(e) => this.next()}>
+                <button type="button" class="bx--btn bx--btn--secondary bx--btn--icon-only hv-navigation__next" onClick={(e) => this.next()} ref={elem => this.buttonNext = elem}>
                     <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
