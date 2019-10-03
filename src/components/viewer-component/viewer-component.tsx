@@ -1,5 +1,7 @@
 import { Component, h, Element, Listen, Prop, State, Event, EventEmitter } from '@stencil/core';
 import { NavigationItem } from '../../models/navigation-item';
+import { getLocaleComponentStrings } from '../../utils/utils.locale';
+import { Locale } from '../../services/locale.service';
 
 @Component({
   tag: 'harmonized-viewer',
@@ -19,11 +21,20 @@ export class ViewerComponent {
   @Prop() navigation: HTMLHvNavigationElement;
   @Prop() manifest: Manifesto.IManifest;
 
+  @State() locale: Locale;
   @State() items: NavigationItem[] = [];
 
   @Event() goto: EventEmitter;
 
   //@Event() manifestLoaded: EventEmitter;
+
+
+  private strings: string[];
+
+  async componentWillLoad(): Promise<void> {
+    this.strings = await getLocaleComponentStrings(this.el);
+    console.log(this.strings);
+  }
 
   @Listen('navigationToggled')
   toggleNavigation() {

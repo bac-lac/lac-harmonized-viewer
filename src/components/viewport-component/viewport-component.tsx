@@ -27,7 +27,6 @@ export class ViewportComponent {
         }
 
         var topbar = root(this.el).querySelector('.hv-topbar') as HTMLHvTopbarElement;
-
         var instance = this.el.querySelector('.hv-openseadragon');
 
         manifesto.loadManifest(this.manifest)

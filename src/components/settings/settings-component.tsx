@@ -1,14 +1,21 @@
-import { Component, h, Element } from '@stencil/core';
+import { Component, h, Element, State } from '@stencil/core';
+import { fetchLocaleStringsForComponent } from '../../utils/utils.locale';
 
 @Component({
     tag: 'hv-settings',
-    styleUrls: [
-        'settings-component.scss'
-    ]
+    styleUrl: 'settings-component.scss'
 })
 export class SettingsComponent {
 
     @Element() el: HTMLElement;
+
+    componentDidLoad() {
+        var xx = fetchLocaleStringsForComponent('en')
+            .then(() => {
+                console.log('ok');
+            });
+            
+    }
 
     render() {
         return <div data-modal id="modal-settings" class="bx--modal " role="dialog" aria-modal="true" aria-labelledby="modal-d0m1qhtmngb-label" aria-describedby="modal-d0m1qhtmngb-heading" tabindex="-1">
@@ -26,7 +33,7 @@ export class SettingsComponent {
                     <div class="bx--form-item">
 
                         <div class="bx--select">
-                            <label for="select-language" class="bx--label">
+                            <label class="bx--label">
                                 test
                             </label>
 
@@ -43,8 +50,9 @@ export class SettingsComponent {
 
                 <div class="bx--modal-footer">
                     <button class="bx--btn bx--btn--secondary" type="button" data-modal-close>Secondary button</button>
-                    <button class="bx--btn bx--btn--primary" type="button" aria-label="Danger" data-modal-primary-focus>Primary button</button>
+                    <button class="bx--btn bx--btn--primary" type="button" data-modal-primary-focus>Primary button</button>
                 </div>
+
             </div>
         </div>;
     }

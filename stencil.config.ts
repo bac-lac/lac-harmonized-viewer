@@ -14,6 +14,12 @@ export const config: Config = {
     },
     {
       type: 'www',
+      copy: [
+        {
+          src: 'locales/**.json',
+          dest: 'locales'
+        }
+      ],
       serviceWorker: null // disable service workers
     }
   ],
