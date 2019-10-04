@@ -1,6 +1,7 @@
 import { Component, Element, h, Prop, Event, EventEmitter, Watch } from '@stencil/core';
 import openseadragon from 'openseadragon';
 import { root } from '../../utils/utils';
+import { LocaleService } from '../../services/locale.service';
 
 @Component({
     tag: 'hv-viewport',
@@ -23,6 +24,8 @@ export class ViewportComponent {
     private buttonPrevious: HTMLButtonElement;
     private buttonNext: HTMLButtonElement;
 
+    private locale: LocaleService = new LocaleService();
+
     componentDidLoad() {
 
         if (this.openseadragon) {
@@ -40,7 +43,12 @@ export class ViewportComponent {
 
                 this.manifestLoaded.emit(manifest);
 
-                topbar.title = manifest.getDefaultLabel();
+                var lang = LocaleService.resolve(manifest.options.locale, this.locale.all());
+                manifest.options.locale = lang;
+
+                alert(manifest.options.locale);
+
+                //topbar.title = manifest.getLabel().find(x => x.locale == 'en-GB');
                 topbar.publisher = manifest.getMetadata().find(x => x.getLabel() == 'Creator').getValue();
                 topbar.thumbnail = manifest.getLogo();
 
