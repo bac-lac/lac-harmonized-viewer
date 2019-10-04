@@ -1,5 +1,4 @@
-import { Component, Prop, h, Element, Event, EventEmitter, Listen, Watch, State } from '@stencil/core';
-import { NavigationItem } from '../../models/navigation-item';
+import { Component, Prop, h, Element, Event, Listen, EventEmitter } from '@stencil/core';
 import 'manifesto.js';
 
 @Component({
@@ -11,9 +10,43 @@ export class NavigationComponent {
   @Element() el: HTMLElement;
 
   @Prop() page: number = 0;
-  @Prop() items: NavigationItem[] = [];
+  @Prop() manifest: Manifesto.IManifest;
 
   @Event() goto: EventEmitter;
+
+  getItems() {
+    if (!this.manifest) {
+      return [];
+    }
+    return this.manifest
+      .getSequenceByIndex(0)
+      .getCanvases()
+      .map(canvas => {
+
+        let imageUrl: string;
+
+        if (canvas.getThumbnail()) {
+          imageUrl = canvas.getThumbnail().id;
+        }
+        else if (!imageUrl) {
+          let baseUrl = canvas.getImages()[0].getResource().getServices()[0].id;
+          imageUrl = baseUrl + '/full/90,/0/default.jpg';
+        }
+
+        return {
+          title: canvas.getDefaultLabel(),
+          thumbnailUrl: imageUrl
+        };
+      });
+  }
+
+  // @Watch('items')
+  // watchItemsHandler() {
+  //   console.log('watch');
+
+  //   var lazyImages = this.el.querySelectorAll('img.hv-lazy');
+  //   lazyload(lazyImages);
+  // }
 
   @Listen('goto')
   gotoHandler(event: CustomEvent) {
@@ -39,10 +72,10 @@ export class NavigationComponent {
   render() {
     return (
       <ul class="hv-navigation__list">
-        {this.items.map((item, index) =>
+        {this.getItems().map((item, index) =>
           <li class={(this.page == index) ? "active" : ""}>
             <a href="javascript:;" onClick={(e) => this.onClick(e, index)}>
-              <img src={item.thumbnailUrl} alt={item.title} />
+              <img data-src={item.thumbnailUrl} class="hv-lazy" alt={item.title} />
             </a>
           </li>)}
       </ul>

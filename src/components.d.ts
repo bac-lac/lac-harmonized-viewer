@@ -6,9 +6,7 @@
 
 
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
-import {
-  NavigationItem,
-} from './models/navigation-item';
+
 
 export namespace Components {
   interface HarmonizedViewer {
@@ -18,7 +16,7 @@ export namespace Components {
     'viewport': HTMLHvViewportElement;
   }
   interface HvNavigation {
-    'items': NavigationItem[];
+    'manifest': Manifesto.IManifest;
     'page': number;
   }
   interface HvSettings {}
@@ -102,7 +100,7 @@ declare namespace LocalJSX {
     'viewport'?: HTMLHvViewportElement;
   }
   interface HvNavigation {
-    'items'?: NavigationItem[];
+    'manifest'?: Manifesto.IManifest;
     'onGoto'?: (event: CustomEvent<any>) => void;
     'page'?: number;
   }

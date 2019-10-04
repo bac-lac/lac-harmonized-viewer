@@ -36,16 +36,16 @@
 
             li a {
                 display: flex;
-                border-radius: 1px;
+                border-radius: 0px;
                 transition: box-shadow 200ms ease;
             }
 
             li a:hover {
-                box-shadow: 0 0 0 4px #aaa;
+                box-shadow: 0 0 2px 2px #9F9F9D;
             }
 
             li.active a {
-                box-shadow: 0 0 0 4px #97c1ff;
+                box-shadow: 0 0 1px 4px #D97854;
             }
 
             img {

@@ -1,7 +1,9 @@
 import { Component, Element, h, Prop, Event, EventEmitter, Watch } from '@stencil/core';
 import openseadragon from 'openseadragon';
 import { root } from '../../utils/utils';
-import { LocaleService } from '../../services/locale.service';
+import '../../utils/utils.manifest';
+import { Locale } from '../../utils/utils.locale';
+import { ManifestExtensions } from '../../utils/utils.manifest';
 
 @Component({
     tag: 'hv-viewport',
@@ -24,7 +26,7 @@ export class ViewportComponent {
     private buttonPrevious: HTMLButtonElement;
     private buttonNext: HTMLButtonElement;
 
-    private locale: LocaleService = new LocaleService();
+    private locale: Locale = new Locale();
 
     componentDidLoad() {
 
@@ -43,11 +45,15 @@ export class ViewportComponent {
 
                 this.manifestLoaded.emit(manifest);
 
-                var lang = LocaleService.resolve(manifest.options.locale, this.locale.all());
-                manifest.options.locale = lang;
+                console.log(manifest);
 
-                //topbar.title = manifest.getLabel().find(x => x.locale == 'en-GB');
-                topbar.publisher = manifest.getMetadata().find(x => x.getLabel() == 'Creator').getValue();
+                // var manifestLanguage = Locale.resolve(manifest.options.locale, this.locale.all());
+                // manifest.options.locale = manifestLanguage;
+
+                const document = new ManifestExtensions(manifest);
+
+                topbar.title = document.label();
+                topbar.publisher = document.creator();
                 topbar.thumbnail = manifest.getLogo();
 
                 const tileSources = manifest.getSequences()[0].getCanvases().map(function (canvas) {
@@ -141,7 +147,7 @@ export class ViewportComponent {
         return (
             <div class="hv-viewport">
                 <button type="button" class="bx--btn bx--btn--secondary bx--btn--icon-only hv-navigation__prev" onClick={(e) => this.previous()} ref={elem => this.buttonPrevious = elem}>
-                    <i class="fas fa-chevron-left"></i>
+                <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 16L20 6l1.4 1.4-8.6 8.6 8.6 8.6L20 26z"></path><title>Chevron left</title></svg>
                 </button>
                 <div class="hv-openseadragon">
                 </div>

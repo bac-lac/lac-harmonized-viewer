@@ -1,5 +1,5 @@
 import { Component, h, Element, State } from '@stencil/core';
-import { LocaleService } from '../../services/locale.service';
+import { Locale } from '../../utils/utils.locale';
 
 @Component({
     tag: 'hv-settings',
@@ -10,7 +10,7 @@ export class SettingsComponent {
     @Element() el: HTMLElement;
     @State() language: string;
 
-    private locale: LocaleService = new LocaleService();
+    private locale: Locale = new Locale();
 
     componentWillLoad() {
         return this.locale.init();

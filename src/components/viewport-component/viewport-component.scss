@@ -13,11 +13,13 @@
 
     .hv-navigation__prev,
     .hv-navigation__next {
-        padding: 1.5rem 1.0rem;
+        fill: #fff;
+        padding: 1.25rem 0.75rem;
         opacity: 0;
         position: absolute;
         z-index: 1000;
         transition: opacity 200ms ease;
+        background-color: #566369;
     }
 
     .hv-navigation__prev {

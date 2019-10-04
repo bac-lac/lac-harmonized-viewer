@@ -1,12 +1,11 @@
-import { Component, h, Element, Listen, Prop, State, Event, EventEmitter } from '@stencil/core';
+import { Component, h, Element, Listen, Prop, Event, EventEmitter } from '@stencil/core';
 import 'manifesto.js';
 
 @Component({
   tag: 'harmonized-viewer',
   styleUrls: [
     'viewer-component.scss',
-    '../../../node_modules/carbon-components/css/carbon-components.css',
-    '../../../node_modules/@fortawesome/fontawesome-free/css/all.css'
+    '../../../node_modules/carbon-components/css/carbon-components.css'
   ],
   shadow: true
 })
@@ -23,33 +22,38 @@ export class ViewerComponent {
   @Event() manifestLoaded: EventEmitter;
   @Event() goto: EventEmitter;
 
+  private observer: IntersectionObserver;
+
+  componentDidLoad() {
+    const img: HTMLImageElement =
+      this.el.shadowRoot.querySelector('img.hv-lazy');
+
+    if (img) {
+      this.observer = new IntersectionObserver(this.onIntersection);
+      this.observer.observe(img);
+    }
+  }
+
+  private onIntersection = async (entries) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) {
+        if (this.observer) {
+          this.observer.disconnect();
+        }
+
+        if (entry.target.getAttribute('data-src')) {
+          entry.target.setAttribute('src',
+            entry.target.getAttribute('data-src'));
+          entry.target.removeAttribute('data-src');
+        }
+      }
+    }
+  };
+
   @Listen('manifestLoaded')
   manifestLoadedHandler(event: CustomEvent) {
     if (this.navigation) {
-      //this.navigation.manifest = event.detail as Manifesto.Manifest;
-
-      var manifest = event.detail as Manifesto.Manifest;
-
-      this.navigation.items = manifest
-        .getSequenceByIndex(0)
-        .getCanvases()
-        .map(canvas => {
-
-          let imageUrl: string;
-
-          if (canvas.getThumbnail()) {
-            imageUrl = canvas.getThumbnail().id;
-          }
-          else if (!imageUrl) {
-            let baseUrl = canvas.getImages()[0].getResource().getServices()[0].id;
-            imageUrl = baseUrl + '/full/90,/0/default.jpg';
-          }
-
-          return {
-            title: canvas.getDefaultLabel(),
-            thumbnailUrl: imageUrl
-          };
-        });
+      this.navigation.manifest = event.detail as Manifesto.IManifest;
     }
   }
 
@@ -78,7 +82,7 @@ export class ViewerComponent {
           <hv-navigation class="hv-navigation" ref={elem => this.navigation = elem as HTMLHvNavigationElement}></hv-navigation>
 
           <main class="hv-main">
-            <hv-viewport manifest="https://d.lib.ncsu.edu/collections/catalog/nubian-message-1992-11-30/manifest" ref={elem => this.viewport = elem as HTMLHvViewportElement}></hv-viewport>
+            <hv-viewport manifest="https://digital.library.villanova.edu/Item/vudl:92879/Manifest" ref={elem => this.viewport = elem as HTMLHvViewportElement}></hv-viewport>
             <hv-statusbar class="hv-statusbar"></hv-statusbar>
           </main>
         </div>
