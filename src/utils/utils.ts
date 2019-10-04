@@ -18,3 +18,17 @@ export function root(element: HTMLElement) {
     return element;
   }
 }
+
+export function load(key: string): any {
+  var value = window.localStorage.getItem(key);
+  if(value) {
+    return value;
+  }
+  else {
+    return undefined;
+  }
+}
+
+export function save(key: string, value: string): void {
+  window.localStorage.setItem(key, value);
+}

@@ -1,5 +1,5 @@
 import { Component, h, Element, Listen, Prop, State, Event, EventEmitter } from '@stencil/core';
-import { ViewerState } from '../../models/viewer-state';
+import 'manifesto.js';
 
 @Component({
   tag: 'harmonized-viewer',

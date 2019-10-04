@@ -46,8 +46,6 @@ export class ViewportComponent {
                 var lang = LocaleService.resolve(manifest.options.locale, this.locale.all());
                 manifest.options.locale = lang;
 
-                alert(manifest.options.locale);
-
                 //topbar.title = manifest.getLabel().find(x => x.locale == 'en-GB');
                 topbar.publisher = manifest.getMetadata().find(x => x.getLabel() == 'Creator').getValue();
                 topbar.thumbnail = manifest.getLogo();

@@ -21,8 +21,11 @@ export class TopbarComponent {
   })
   navigationToggled: EventEmitter;
 
-  settingsToggle(event: MouseEvent) {
-    var modalInstance = Modal.create(this.el.querySelector('#modal-settings'));
+  showSettings() {
+    var modal = this.el.querySelector('#modal-settings');
+    console.log(modal);
+    
+    var modalInstance = Modal.create(modal);
     modalInstance.show();
   }
 
@@ -39,7 +42,7 @@ export class TopbarComponent {
           </div>
           <div class="bx--col">
 
-            <button type="button" class="bx--btn bx--btn--secondary bx--btn--icon-only" onClick={e => this.settingsToggle(e)}>
+            <button type="button" class="bx--btn bx--btn--secondary bx--btn--icon-only" onClick={e => this.showSettings()}>
               <i class="fas fa-cog"></i>
             </button>
             

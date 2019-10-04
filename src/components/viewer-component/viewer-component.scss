@@ -36,21 +36,21 @@
 
             li a {
                 display: flex;
-                border-radius: 2px;
+                border-radius: 1px;
                 transition: box-shadow 200ms ease;
             }
 
             li a:hover {
-                box-shadow: 0 0 0 3px #97c1ff;
+                box-shadow: 0 0 0 4px #aaa;
             }
 
             li.active a {
-                box-shadow: 0 0 0 3px $theme-color-primary;
+                box-shadow: 0 0 0 4px #97c1ff;
             }
 
             img {
                 box-shadow: 1px 1px 3px 1px rgba(76, 86, 106, 0.3);
-                border: #444 2px solid;
+                border: #fff 1px solid;
             }
         }
     }

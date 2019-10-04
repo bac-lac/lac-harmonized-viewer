@@ -1,9 +1,5 @@
 {
-    "id": "en",
-    "displayName": "English",
-    "labels": [
-        {
-            "test": "labeleng"
-        }
-    ]
+    "name": "English",
+    "settings": "Settings",
+    "apply": "Apply"
 }
