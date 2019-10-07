@@ -9,12 +9,12 @@
 
 ### Used by
 
- - [hv-content](../content-component)
+ - [harmonized-viewer](../viewer-component)
 
 ### Graph
 ```mermaid
 graph TD;
-  hv-content --> hv-statusbar
+  harmonized-viewer --> hv-statusbar
   style hv-statusbar fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

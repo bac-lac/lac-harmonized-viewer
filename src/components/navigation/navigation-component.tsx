@@ -75,7 +75,7 @@ export class NavigationComponent {
         {this.getItems().map((item, index) =>
           <li class={(this.page == index) ? "active" : ""}>
             <a href="javascript:;" onClick={(e) => this.onClick(e, index)}>
-              <img data-src={item.thumbnailUrl} class="hv-lazy" alt={item.title} />
+              <img src={item.thumbnailUrl} class="hv-lazy" alt={item.title} />
             </a>
           </li>)}
       </ul>

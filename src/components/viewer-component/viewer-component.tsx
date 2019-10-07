@@ -22,33 +22,33 @@ export class ViewerComponent {
   @Event() manifestLoaded: EventEmitter;
   @Event() goto: EventEmitter;
 
-  private observer: IntersectionObserver;
+  // private observer: IntersectionObserver;
 
-  componentDidLoad() {
-    const img: HTMLImageElement =
-      this.el.shadowRoot.querySelector('img.hv-lazy');
+  // componentDidLoad() {
+  //   const img: HTMLImageElement =
+  //     this.el.shadowRoot.querySelector('img.hv-lazy');
 
-    if (img) {
-      this.observer = new IntersectionObserver(this.onIntersection);
-      this.observer.observe(img);
-    }
-  }
+  //   if (img) {
+  //     this.observer = new IntersectionObserver(this.onIntersection);
+  //     this.observer.observe(img);
+  //   }
+  // }
 
-  private onIntersection = async (entries) => {
-    for (const entry of entries) {
-      if (entry.isIntersecting) {
-        if (this.observer) {
-          this.observer.disconnect();
-        }
+  // private onIntersection = async (entries) => {
+  //   for (const entry of entries) {
+  //     if (entry.isIntersecting) {
+  //       if (this.observer) {
+  //         this.observer.disconnect();
+  //       }
 
-        if (entry.target.getAttribute('data-src')) {
-          entry.target.setAttribute('src',
-            entry.target.getAttribute('data-src'));
-          entry.target.removeAttribute('data-src');
-        }
-      }
-    }
-  };
+  //       if (entry.target.getAttribute('data-src')) {
+  //         entry.target.setAttribute('src',
+  //           entry.target.getAttribute('data-src'));
+  //         entry.target.removeAttribute('data-src');
+  //       }
+  //     }
+  //   }
+  // };
 
   @Listen('manifestLoaded')
   manifestLoadedHandler(event: CustomEvent) {

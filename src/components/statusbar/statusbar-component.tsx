@@ -20,7 +20,7 @@ export class HvStatusbar {
                     </div>
                 </div>
                 <div class="bx--pagination__left">
-                    <label id="select-id-pagination-count-label" class="bx--pagination__text" for="select-id-pagination-count">
+                    <label id="select-id-pagination-count-label" class="bx--pagination__text">
                         Items per page:
     </label>
                     <div class="bx--select bx--select--inline bx--select__item-count">
@@ -71,7 +71,7 @@ export class HvStatusbar {
                         </select>
                         <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" class="bx--select__arrow" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 11L3 6l.7-.7L8 9.6l4.3-4.3.7.7z"></path></svg>
                     </div>
-                    <label id="select-id-pagination-page-label" class="bx--pagination__text" for="select-id-pagination-page">
+                    <label id="select-id-pagination-page-label" class="bx--pagination__text">
                         of 5 pages
     </label>
                     <button class="bx--pagination__button bx--pagination__button--backward " tabindex="0" data-page-backward aria-label="previous page">

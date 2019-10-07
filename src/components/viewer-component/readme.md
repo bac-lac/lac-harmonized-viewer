@@ -9,8 +9,18 @@
 
 | Property     | Attribute | Description | Type                      | Default     |
 | ------------ | --------- | ----------- | ------------------------- | ----------- |
+| `manifest`   | --        |             | `IManifest`               | `undefined` |
 | `navigation` | --        |             | `HTMLHvNavigationElement` | `undefined` |
 | `topbar`     | --        |             | `HTMLHvTopbarElement`     | `undefined` |
+| `viewport`   | --        |             | `HTMLHvViewportElement`   | `undefined` |
+
+
+## Events
+
+| Event            | Description | Type               |
+| ---------------- | ----------- | ------------------ |
+| `goto`           |             | `CustomEvent<any>` |
+| `manifestLoaded` |             | `CustomEvent<any>` |
 
 
 ## Dependencies
@@ -18,16 +28,18 @@
 ### Depends on
 
 - [hv-topbar](../topbar-component)
-- [hv-content](../content-component)
+- [hv-navigation](../navigation)
+- [hv-viewport](../viewport-component)
+- [hv-statusbar](../statusbar)
 
 ### Graph
 ```mermaid
 graph TD;
   harmonized-viewer --> hv-topbar
-  harmonized-viewer --> hv-content
-  hv-content --> hv-navigation
-  hv-content --> hv-viewport
-  hv-content --> hv-statusbar
+  harmonized-viewer --> hv-navigation
+  harmonized-viewer --> hv-viewport
+  harmonized-viewer --> hv-statusbar
+  hv-topbar --> hv-settings
   style harmonized-viewer fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

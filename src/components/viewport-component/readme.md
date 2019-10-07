@@ -11,6 +11,8 @@
 | --------------- | --------------- | ----------- | -------- | ----------- |
 | `manifest`      | `manifest`      |             | `string` | `undefined` |
 | `openseadragon` | `openseadragon` |             | `any`    | `undefined` |
+| `page`          | `page`          |             | `number` | `0`         |
+| `totalPages`    | `total-pages`   |             | `number` | `0`         |
 
 
 ## Events
@@ -19,18 +21,19 @@
 | ---------------- | ----------- | ------------------ |
 | `canvasLoaded`   |             | `CustomEvent<any>` |
 | `manifestLoaded` |             | `CustomEvent<any>` |
+| `pageLoaded`     |             | `CustomEvent<any>` |
 
 
 ## Dependencies
 
 ### Used by
 
- - [hv-content](../content-component)
+ - [harmonized-viewer](../viewer-component)
 
 ### Graph
 ```mermaid
 graph TD;
-  hv-content --> hv-viewport
+  harmonized-viewer --> hv-viewport
   style hv-viewport fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

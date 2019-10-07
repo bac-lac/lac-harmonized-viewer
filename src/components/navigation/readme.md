@@ -9,28 +9,27 @@
 
 | Property   | Attribute | Description | Type        | Default     |
 | ---------- | --------- | ----------- | ----------- | ----------- |
-| `current`  | `current` |             | `number`    | `0`         |
 | `manifest` | --        |             | `IManifest` | `undefined` |
-| `open`     | `open`    |             | `boolean`   | `true`      |
+| `page`     | `page`    |             | `number`    | `0`         |
 
 
 ## Events
 
 | Event  | Description | Type               |
 | ------ | ----------- | ------------------ |
-| `goTo` |             | `CustomEvent<any>` |
+| `goto` |             | `CustomEvent<any>` |
 
 
 ## Dependencies
 
 ### Used by
 
- - [hv-content](../content-component)
+ - [harmonized-viewer](../viewer-component)
 
 ### Graph
 ```mermaid
 graph TD;
-  hv-content --> hv-navigation
+  harmonized-viewer --> hv-navigation
   style hv-navigation fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

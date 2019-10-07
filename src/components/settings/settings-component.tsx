@@ -51,7 +51,7 @@ export class SettingsComponent {
                     <div class="bx--modal-content">
                         <div class="bx--form-item">
 
-                            <label for="settings-language" class="bx--label">
+                            <label class="bx--label">
                                 Language
                             </label>
                             <div class="bx--form__helper-text">
