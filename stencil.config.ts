@@ -6,13 +6,7 @@ export const config: Config = {
   namespace: 'stencil-starter-project-name',
   outputTargets: [
     {
-      type: 'dist',
-      copy: [
-        {
-          src: 'locales/**.json',
-          dest: 'locales'
-        }
-      ]
+      type: 'dist'
     },
     {
       type: 'docs-readme'
@@ -37,7 +31,8 @@ export const config: Config = {
     }
   },
   nodeResolve: {
-    browser: true
+    browser: true,
+    preferBuiltins: true
   },
   plugins: [
     sass({

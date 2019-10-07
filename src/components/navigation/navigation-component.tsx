@@ -15,9 +15,35 @@ export class NavigationComponent {
 
   @Event() goto: EventEmitter;
 
+  componentDidRender() {
+
+    var lazyImages = [].slice.call(this.el.querySelectorAll(".hv-lazyload"));
+
+    if ("IntersectionObserver" in window) {
+      let lazyImageObserver = new IntersectionObserver(function (entries, observer) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            let lazyImage = entry.target.querySelector('img') as HTMLImageElement;
+            lazyImage.src = lazyImage.dataset.src;
+            //lazyImage.srcset = lazyImage.dataset.srcset;
+            lazyImage.classList.remove("hv-lazyload--loading");
+            lazyImage.classList.add("hv-lazyload--complete");
+            lazyImageObserver.unobserve(lazyImage);
+          }
+        });
+      });
+
+      lazyImages.forEach(function (lazyImage) {
+        lazyImageObserver.observe(lazyImage);
+      });
+    } else {
+      // Possibly fall back to a more compatible method here
+    }
+  }
+
   getItems() {
     if (!this.manifest) {
-      return [];
+      return undefined;
     }
     return this.manifest
       .getSequenceByIndex(0)
@@ -70,16 +96,34 @@ export class NavigationComponent {
     this.goto.emit(page);
   }
 
+  onImageLoad(event: Event) {
+    var target = event.target as HTMLElement;
+    var li = target.parentElement.parentElement;
+    li.classList.remove('hv-lazyload--loading');
+    li.classList.add('hv-lazyload--complete');
+  }
+
   render() {
+
+    const items = this.getItems();
+    const loading = (items ? false : true);
+    const skeleton = Array.apply(null, Array(10)).map(function () { });
+    const source = (loading ? skeleton : items);
+
     return (
-      <ul class="hv-navigation__list">
-        {this.getItems().map((item, index) =>
-          <li class={(this.page == index) ? "active" : ""}>
-            <a href="javascript:;" onClick={(e) => this.onClick(e, index)}>
-              <img src={item.thumbnailUrl} class="hv-lazy" alt={item.title} />
-            </a>
-          </li>)}
-      </ul>
+      <div class="bx--grid bx--grid--condensed">
+        <ul class={(loading ? "bx--row hv-navigation__list" : "bx--row hv-navigation__list")}>
+          {source.map((item, index) =>
+            <li class={(this.page == index) ? "bx--col-lg-6 hv-lazyload hv-lazyload--loading active" : "bx--col-lg-6 hv-lazyload hv-lazyload--loading"}>
+              <span class="hv-skeleton" aria-hidden="true"></span>
+              {(loading ? <span></span> :
+                <a href="javascript:;" onClick={(e) => this.onClick(e, index)}>
+                  <img data-src={item.thumbnailUrl} onLoad={this.onImageLoad} alt={item.title} />
+                </a>
+              )}
+            </li>)}
+        </ul>
+      </div>
     );
   }
 }

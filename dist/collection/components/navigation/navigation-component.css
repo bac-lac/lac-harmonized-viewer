@@ -1,0 +1,41 @@
+.hv-navigation__list {
+  margin-top: 1rem;
+}
+.hv-navigation__list li[class*=col] {
+  padding-left: 0.3rem;
+  padding-right: 0.3rem;
+  padding-bottom: 0.6rem;
+}
+.hv-navigation__list li.hv-lazyload.hv-lazyload--loading .hv-skeleton {
+  display: inline-block;
+  width: 90px;
+  height: 120px;
+  background: red;
+}
+.hv-navigation__list li.hv-lazyload.hv-lazyload--loading a {
+  display: none;
+}
+.hv-navigation__list li.hv-lazyload.hv-lazyload--complete .hv-skeleton {
+  display: none;
+}
+.hv-navigation__list li.hv-lazyload.hv-lazyload--complete a {
+  display: inline-block;
+}
+.hv-navigation__list li a {
+  border-radius: 0px;
+  transition: box-shadow 200ms ease;
+}
+.hv-navigation__list li a:hover {
+  box-shadow: 0 0 1px 3px #c9c9c9;
+}
+.hv-navigation__list li.active a {
+  box-shadow: 0 0 1px 4px #d97854;
+}
+.hv-navigation__list img {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: block;
+  box-shadow: 1px 1px 3px 1px rgba(76, 86, 106, 0.3);
+  border: #fff 1px solid;
+}
