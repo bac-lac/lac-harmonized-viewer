@@ -7,7 +7,7 @@ import { ManifestExtensions } from '../../utils/utils.manifest';
 
 @Component({
     tag: 'hv-viewport',
-    styleUrl: 'viewport-component.scss'
+    styleUrls: ['viewport-component.scss', '../../../node_modules/animate.css/animate.min.css']
 })
 export class ViewportComponent {
 
@@ -83,6 +83,7 @@ export class ViewportComponent {
 
                     this.handleCanvasLoad(this.openseadragon.world.getItemAt(0), () => {
                         this.canvasLoaded.emit(this.page);
+                        this.el.querySelector('.hv-openseadragon').classList.add('animated', 'fadeIn', 'fast');
                     });
 
                     //this.pageHandler();
@@ -93,7 +94,6 @@ export class ViewportComponent {
                     //console.log('ev');
                     //this.clearOverlays();
                 });
-
             });
     }
 
@@ -147,7 +147,7 @@ export class ViewportComponent {
         return (
             <div class="hv-viewport">
                 <button type="button" class="bx--btn bx--btn--secondary bx--btn--icon-only hv-navigation__prev" onClick={(e) => this.previous()} ref={elem => this.buttonPrevious = elem}>
-                <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 16L20 6l1.4 1.4-8.6 8.6 8.6 8.6L20 26z"></path><title>Chevron left</title></svg>
+                    <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 16L20 6l1.4 1.4-8.6 8.6 8.6 8.6L20 26z"></path><title>Chevron left</title></svg>
                 </button>
                 <div class="hv-openseadragon">
                 </div>

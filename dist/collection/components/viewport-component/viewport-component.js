@@ -50,6 +50,7 @@ export class ViewportComponent {
                 this.drawShadow();
                 this.handleCanvasLoad(this.openseadragon.world.getItemAt(0), () => {
                     this.canvasLoaded.emit(this.page);
+                    this.el.querySelector('.hv-openseadragon').classList.add('animated', 'fadeIn', 'fast');
                 });
                 //this.pageHandler();
                 this.pageLoaded.emit(this.page);
@@ -108,10 +109,10 @@ export class ViewportComponent {
     }
     static get is() { return "hv-viewport"; }
     static get originalStyleUrls() { return {
-        "$": ["viewport-component.scss"]
+        "$": ["viewport-component.scss", "../../../node_modules/animate.css/animate.min.css"]
     }; }
     static get styleUrls() { return {
-        "$": ["viewport-component.css"]
+        "$": ["viewport-component.css", "../../../node_modules/animate.css/animate.min.css"]
     }; }
     static get properties() { return {
         "page": {

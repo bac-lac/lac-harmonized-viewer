@@ -89,10 +89,10 @@ export class NavigationComponent {
     }
     static get is() { return "hv-navigation"; }
     static get originalStyleUrls() { return {
-        "$": ["navigation-component.scss"]
+        "$": ["navigation-component.scss", "../../node_modules/animate.css/animate.min.css"]
     }; }
     static get styleUrls() { return {
-        "$": ["navigation-component.css"]
+        "$": ["navigation-component.css", "../../node_modules/animate.css/animate.min.css"]
     }; }
     static get properties() { return {
         "page": {

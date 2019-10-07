@@ -26,6 +26,7 @@
   right: 0;
 }
 .hv-viewport .hv-openseadragon {
+  opacity: 0;
   width: 100%;
   flex: auto;
   display: flex;
