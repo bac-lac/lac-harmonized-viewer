@@ -7,7 +7,12 @@ export const config: Config = {
   outputTargets: [
     {
       type: 'dist',
-      esmLoaderPath: '../loader'
+      copy: [
+        {
+          src: 'locales/**.json',
+          dest: 'locales'
+        }
+      ]
     },
     {
       type: 'docs-readme'

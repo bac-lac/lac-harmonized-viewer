@@ -1,0 +1,64 @@
+.harmonized-viewer {
+  font: 12px "Nunito Sans", sans-serif;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #F5F1F0;
+}
+.harmonized-viewer a:link,
+.harmonized-viewer a:visited {
+  color: #054ada;
+}
+.harmonized-viewer:host {
+  display: inline-block;
+}
+.harmonized-viewer .hv-navigation {
+  width: 260px;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-right: #fff 1px solid;
+}
+.harmonized-viewer .hv-navigation .hv-navigation__list {
+  display: flex;
+  margin: 0;
+  padding: 1rem;
+  flex-flow: wrap;
+  list-style-type: none;
+  justify-content: space-around;
+}
+.harmonized-viewer .hv-navigation .hv-navigation__list li {
+  display: flex;
+  margin: 0 0.5rem 0.5rem 0;
+}
+.harmonized-viewer .hv-navigation .hv-navigation__list li a {
+  display: flex;
+  border-radius: 0px;
+  transition: box-shadow 200ms ease;
+}
+.harmonized-viewer .hv-navigation .hv-navigation__list li a:hover {
+  box-shadow: 0 0 2px 2px #9F9F9D;
+}
+.harmonized-viewer .hv-navigation .hv-navigation__list li.active a {
+  box-shadow: 0 0 1px 4px #D97854;
+}
+.harmonized-viewer .hv-navigation .hv-navigation__list img {
+  box-shadow: 1px 1px 3px 1px rgba(76, 86, 106, 0.3);
+  border: #fff 1px solid;
+}
+.harmonized-viewer .hv-main {
+  flex: auto;
+  display: flex;
+  flex-direction: column;
+}
+.harmonized-viewer .hv-main hv-viewport {
+  width: 100%;
+  flex: auto;
+  display: inline-block;
+}
+.harmonized-viewer .hv-content {
+  height: 100%;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: row;
+}

@@ -1,0 +1,14 @@
+.hv-statusbar {
+  margin: 0;
+}
+.hv-statusbar .bx--pagination {
+  border: none;
+  background-color: #F5F1F0;
+}
+.hv-statusbar .bx--content-switcher {
+  justify-content: start;
+}
+.hv-statusbar .bx--content-switcher .bx--content-switcher-btn {
+  width: auto;
+  font-size: 0.8rem;
+}

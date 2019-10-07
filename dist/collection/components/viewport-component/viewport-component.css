@@ -1,0 +1,36 @@
+.hv-viewport {
+  height: 100%;
+  flex: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+.hv-viewport:hover .hv-navigation__prev, .hv-viewport:hover .hv-navigation__next {
+  opacity: 1;
+}
+.hv-viewport .hv-navigation__prev,
+.hv-viewport .hv-navigation__next {
+  fill: #fff;
+  padding: 1.25rem 0.75rem;
+  opacity: 0;
+  position: absolute;
+  z-index: 1000;
+  transition: opacity 200ms ease;
+  background-color: #566369;
+}
+.hv-viewport .hv-navigation__prev {
+  left: 0;
+}
+.hv-viewport .hv-navigation__next {
+  right: 0;
+}
+.hv-viewport .hv-openseadragon {
+  width: 100%;
+  flex: auto;
+  display: flex;
+  flex-direction: column;
+}
+.hv-viewport .hv-openseadragon .openseadragon-container {
+  flex: auto;
+}

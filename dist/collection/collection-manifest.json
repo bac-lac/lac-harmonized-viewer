@@ -1,0 +1,18 @@
+{
+  "entries": [
+    "components\\settings\\settings-component.js",
+    "components\\toolbar\\toolbar-component.js",
+    "components\\statusbar\\statusbar-component.js",
+    "components\\topbar-component\\topbar-component.js",
+    "components\\viewer-component\\viewer-component.js",
+    "components\\viewport-component\\viewport-component.js",
+    "components\\navigation\\navigation-component.js"
+  ],
+  "compiler": {
+    "name": "@stencil/core",
+    "version": "1.5.1",
+    "typescriptVersion": "3.6.3"
+  },
+  "collections": [],
+  "bundles": []
+}

@@ -1,6 +1,11 @@
 .hv-statusbar {
     margin: 0;
 
+    .bx--pagination {
+        border: none;
+        background-color: $theme-color-status-background;
+    }
+
     .bx--content-switcher {
         justify-content: start;
 
