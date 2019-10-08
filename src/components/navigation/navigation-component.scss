@@ -1,12 +1,25 @@
 .hv-navigation__content {
     height: 100%;
 
+    &:hover {
+        .os-scrollbar.os-scrollbar-vertical {
+            .os-scrollbar-track {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+        }
+    }
+
     .os-scrollbar.os-scrollbar-vertical {
         width: 16px;
         margin-right: 2px;
 
-        .os-scrollbar-track .os-scrollbar-handle {
-            border-radius: 2px;
+        .os-scrollbar-track {
+            border-radius: 0;
+            transition: background 200ms ease;
+
+            .os-scrollbar-handle {
+                border-radius: 2px;
+            }
         }
     }
 }
@@ -63,7 +76,12 @@
                 color-stop(37%, rgba(60, 60, 60, 0.1)),
                 color-stop(63%, rgba(0, 0, 0, 0.1))
             );
-            background: linear-gradient(90deg, rgba(0, 0, 0, 0.1) 25%, rgba(60, 60, 60, 0.1) 37%, rgba(0, 0, 0, 0.1) 63%);
+            background: linear-gradient(
+                90deg,
+                rgba(0, 0, 0, 0.1) 25%,
+                rgba(60, 60, 60, 0.1) 37%,
+                rgba(0, 0, 0, 0.1) 63%
+            );
             background-size: 400% 100%;
             -webkit-animation: ant-skeleton-loading 1.4s ease infinite;
             animation: ant-skeleton-loading 1.4s ease infinite;

@@ -14,6 +14,7 @@ export const config: Config = {
           dest: 'locales'
         }
       ],
+      esmLoaderPath: '../loader'
     },
     // {
     //   type: 'docs-readme'
