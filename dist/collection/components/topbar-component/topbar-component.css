@@ -1,9 +1,3 @@
-.hv-topbar {
-  height: 3rem;
-  border: none;
-  box-shadow: 0 0 3px 2px #9f9f9d;
-  background-color: #566369;
-}
 .hv-topbar .bx--header__name {
   text-align: left;
   align-items: flex-start;

@@ -1,5 +1,6 @@
 import { h } from "@stencil/core";
 import 'manifesto.js';
+import "malihu-custom-scrollbar-plugin";
 export class NavigationComponent {
     constructor() {
         this.page = 0;
@@ -89,10 +90,10 @@ export class NavigationComponent {
     }
     static get is() { return "hv-navigation"; }
     static get originalStyleUrls() { return {
-        "$": ["navigation-component.scss", "../../node_modules/animate.css/animate.min.css"]
+        "$": ["navigation-component.scss"]
     }; }
     static get styleUrls() { return {
-        "$": ["navigation-component.css", "../../node_modules/animate.css/animate.min.css"]
+        "$": ["navigation-component.css"]
     }; }
     static get properties() { return {
         "page": {

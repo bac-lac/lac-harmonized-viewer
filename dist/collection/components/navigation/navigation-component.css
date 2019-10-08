@@ -10,7 +10,7 @@
   display: inline-block;
   width: 90px;
   height: 120px;
-  background: red;
+  background: #ccc;
 }
 .hv-navigation__list li.hv-lazyload.hv-lazyload--loading a {
   display: none;

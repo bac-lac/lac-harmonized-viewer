@@ -6,7 +6,13 @@ export const config: Config = {
   namespace: 'stencil-starter-project-name',
   outputTargets: [
     {
-      type: 'dist'
+      type: 'dist',
+      copy: [
+        {
+          src: 'locales/**.json',
+          dest: 'locales'
+        }
+      ],
     },
     {
       type: 'docs-readme'

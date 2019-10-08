@@ -75,7 +75,7 @@ export class ViewerComponent {
     return (
       <div class="harmonized-viewer">
 
-        <hv-topbar class="hv-topbar" ref={elem => this.topbar = elem as HTMLHvTopbarElement}>
+        <hv-topbar ref={elem => this.topbar = elem as HTMLHvTopbarElement}>
         </hv-topbar>
 
         <div class="hv-content">

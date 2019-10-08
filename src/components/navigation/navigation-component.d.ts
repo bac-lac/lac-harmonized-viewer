@@ -1,4 +1,4 @@
-import { EventEmitter } from '../../stencil.core';
+import { EventEmitter } from '../../../dist/types/stencil.core';
 import 'manifesto.js';
 import "malihu-custom-scrollbar-plugin";
 export declare class NavigationComponent {
