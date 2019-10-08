@@ -1,5 +1,4 @@
 import { Component, Prop, h, Element, Event, Listen, EventEmitter } from '@stencil/core';
-import { Tooltip } from 'carbon-components';
 import 'manifesto.js';
 import OverlayScrollbars from 'overlayscrollbars';
 

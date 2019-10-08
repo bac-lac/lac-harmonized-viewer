@@ -15,9 +15,9 @@ export const config: Config = {
         }
       ],
     },
-    {
-      type: 'docs-readme'
-    },
+    // {
+    //   type: 'docs-readme'
+    // },
     {
       type: 'www',
       copy: [
@@ -38,8 +38,7 @@ export const config: Config = {
     }
   },
   nodeResolve: {
-    browser: true,
-    preferBuiltins: true
+    browser: true
   },
   plugins: [
     sass({
