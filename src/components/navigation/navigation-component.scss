@@ -1,19 +1,30 @@
+.hv-navigation__content {
+    height: 100%;
+
+    .os-scrollbar.os-scrollbar-vertical {
+        width: 16px;
+        margin-right: 2px;
+
+        .os-scrollbar-track .os-scrollbar-handle {
+            border-radius: 2px;
+        }
+    }
+}
+
 .hv-navigation__list {
     margin-top: 1rem;
 
     li[class*='col'] {
         padding-left: 0.3rem;
         padding-right: 0.3rem;
-        padding-bottom: 0.6rem;
+        margin-bottom: 0.6rem;
     }
 
     li.hv-lazyload.hv-lazyload--loading {
         .hv-skeleton {
+            width: 100%;
+            height: 100px;
             display: inline-block;
-
-            width: 90px;
-            height: 120px;
-            background: #ccc;
         }
         a {
             display: none;
@@ -30,29 +41,59 @@
     }
 
     li a {
-        border-radius: 0px;
+        border-radius: 1px;
         transition: box-shadow 200ms ease;
     }
 
     li a:hover {
-        box-shadow: 0 0 1px 3px #c9c9c9;
+        box-shadow: 0 0 1px 3px rgba(0, 0, 0, 0.4);
     }
 
     li.active a {
-        box-shadow: 0 0 1px 4px #d97854;
+        box-shadow: 0 0 1px 4px #fff;
     }
 
     .hv-lazyload {
-        &--complete {
+        &--loading .hv-skeleton {
+            background: -webkit-gradient(
+                linear,
+                left top,
+                right top,
+                color-stop(25%, rgba(0, 0, 0, 0.1)),
+                color-stop(37%, rgba(60, 60, 60, 0.1)),
+                color-stop(63%, rgba(0, 0, 0, 0.1))
+            );
+            background: linear-gradient(90deg, rgba(0, 0, 0, 0.1) 25%, rgba(60, 60, 60, 0.1) 37%, rgba(0, 0, 0, 0.1) 63%);
+            background-size: 400% 100%;
+            -webkit-animation: ant-skeleton-loading 1.4s ease infinite;
+            animation: ant-skeleton-loading 1.4s ease infinite;
         }
     }
 
     img {
         width: 100%;
+        height: 100px;
         margin: 0;
         padding: 0;
         display: block;
-        box-shadow: 1px 1px 3px 1px rgba(76, 86, 106, 0.3);
-        border: #fff 1px solid;
+        box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.3);
+        border: #262b27 1px solid;
+    }
+}
+
+@-webkit-keyframes ant-skeleton-loading {
+    0% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0 50%;
+    }
+}
+@keyframes ant-skeleton-loading {
+    0% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0 50%;
     }
 }

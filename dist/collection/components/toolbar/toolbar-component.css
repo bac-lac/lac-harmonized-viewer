@@ -1,5 +1,8 @@
-.hv-toolbar .ui.menu {
-  border: none;
-  box-shadow: none;
-  background-color: #F0F3F9;
+.hv-toolbar {
+  margin-top: 0;
+  box-shadow: 0 1px 2px 1px #e3e3e3;
+  background-color: #F5F6F6;
+}
+.hv-toolbar .bx--btn {
+  border-radius: 2px;
 }

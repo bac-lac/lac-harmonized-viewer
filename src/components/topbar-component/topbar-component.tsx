@@ -30,7 +30,7 @@ export class TopbarComponent {
 
   render() {
     return (
-      <header class="bx--header hv-topbar" role="banner">
+      <header class="bx--header" role="banner">
         <img src={this.thumbnail} class="hv-logo" alt={this.publisher} />
         <a href="#" class="bx--header__name">
           <div class="hv-creator" innerHTML={this.publisher}></div>

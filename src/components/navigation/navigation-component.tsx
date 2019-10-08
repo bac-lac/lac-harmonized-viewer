@@ -1,11 +1,11 @@
 import { Component, Prop, h, Element, Event, Listen, EventEmitter } from '@stencil/core';
 import { Tooltip } from 'carbon-components';
 import 'manifesto.js';
-import "malihu-custom-scrollbar-plugin";
+import OverlayScrollbars from 'overlayscrollbars';
 
 @Component({
   tag: 'hv-navigation',
-  styleUrl: 'navigation-component.scss'
+  styleUrls: ['navigation-component.scss', '../../../node_modules/overlayscrollbars/css/OverlayScrollbars.min.css']
 })
 export class NavigationComponent {
 
@@ -16,7 +16,13 @@ export class NavigationComponent {
 
   @Event() goto: EventEmitter;
 
+  componentDidLoad() {
+
+  }
+
   componentDidRender() {
+
+    OverlayScrollbars(this.el.querySelector('.hv-navigation__content'), {});
 
     var lazyImages = [].slice.call(this.el.querySelectorAll(".hv-lazyload"));
 
@@ -25,11 +31,13 @@ export class NavigationComponent {
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
             let lazyImage = entry.target.querySelector('img') as HTMLImageElement;
-            lazyImage.src = lazyImage.dataset.src;
-            //lazyImage.srcset = lazyImage.dataset.srcset;
-            lazyImage.classList.remove("hv-lazyload--loading");
-            lazyImage.classList.add("hv-lazyload--complete");
-            lazyImageObserver.unobserve(lazyImage);
+            if (lazyImage) {
+              lazyImage.src = lazyImage.dataset.src;
+              //lazyImage.srcset = lazyImage.dataset.srcset;
+              lazyImage.classList.remove("hv-lazyload--loading");
+              lazyImage.classList.add("hv-lazyload--complete");
+              lazyImageObserver.unobserve(lazyImage);
+            }
           }
         });
       });
@@ -101,7 +109,8 @@ export class NavigationComponent {
     var target = event.target as HTMLElement;
     var li = target.parentElement.parentElement;
     li.classList.remove('hv-lazyload--loading');
-    li.classList.add('hv-lazyload--complete');
+    li.classList.add('hv-lazyload--complete', 'animated', 'fadeIn', 'faster');
+
   }
 
   render() {
@@ -112,18 +121,20 @@ export class NavigationComponent {
     const source = (loading ? skeleton : items);
 
     return (
-      <div class="bx--grid bx--grid--condensed">
-        <ul class={(loading ? "bx--row hv-navigation__list" : "bx--row hv-navigation__list")}>
-          {source.map((item, index) =>
-            <li class={(this.page == index) ? "bx--col-lg-6 hv-lazyload hv-lazyload--loading active" : "bx--col-lg-6 hv-lazyload hv-lazyload--loading"}>
-              <span class="hv-skeleton" aria-hidden="true"></span>
-              {(loading ? <span></span> :
-                <a href="javascript:;" onClick={(e) => this.onClick(e, index)}>
-                  <img data-src={item.thumbnailUrl} onLoad={this.onImageLoad} alt={item.title} />
-                </a>
-              )}
-            </li>)}
-        </ul>
+      <div class="hv-navigation__content">
+        <div class="bx--grid bx--grid--condensed">
+          <ul class={(loading ? "bx--row hv-navigation__list" : "bx--row hv-navigation__list")}>
+            {source.map((item, index) =>
+              <li class={(this.page == index) ? "bx--col-lg-6 hv-lazyload hv-lazyload--loading active" : "bx--col-lg-6 hv-lazyload hv-lazyload--loading"}>
+                <span class="hv-skeleton" aria-hidden="true"></span>
+                {(loading ? <span></span> :
+                  <a href="javascript:;" onClick={(e) => this.onClick(e, index)}>
+                    <img data-src={item.thumbnailUrl} onLoad={this.onImageLoad} alt={item.title} />
+                  </a>
+                )}
+              </li>)}
+          </ul>
+        </div>
       </div>
     );
   }

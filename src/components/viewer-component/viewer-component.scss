@@ -14,15 +14,27 @@
         display: inline-block;
     }
 
+    .hv-topbar {
+        z-index: 1000;
+        height: 3rem;
+        display: inline-block;
+        box-shadow: 0 1px 3px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .hv-toolbar {
+        padding: 0.3rem;
+        margin-top: 5px;
+    }
+
     .hv-navigation {
         width: 250px;
         height: 100%;
-        overflow-x: hidden;
-        overflow-y: scroll;
         border-right: #fff 1px solid;
+        background-color: #8a9294;
     }
 
     .hv-main {
+        overflow: hidden;
         flex: auto;
         display: flex;
         flex-direction: column;
@@ -32,7 +44,6 @@
             flex: auto;
             display: inline-block;
         }
-        
     }
 
     .hv-content {

@@ -41,10 +41,11 @@ export class ViewerComponent {
     }
     render() {
         return (h("div", { class: "harmonized-viewer" },
-            h("hv-topbar", { ref: elem => this.topbar = elem }),
+            h("hv-topbar", { class: "hv-topbar", ref: elem => this.topbar = elem }),
             h("div", { class: "hv-content" },
                 h("hv-navigation", { class: "hv-navigation", ref: elem => this.navigation = elem }),
                 h("main", { class: "hv-main" },
+                    h("hv-toolbar", { class: "hv-toolbar" }),
                     h("hv-viewport", { manifest: "https://digital.library.villanova.edu/Item/vudl:92879/Manifest", ref: elem => this.viewport = elem }),
                     h("hv-statusbar", { class: "hv-statusbar" })))));
     }

@@ -1,23 +1,27 @@
-.hv-topbar .bx--header__name {
+.bx--header {
+  background-color: #3c4245;
+}
+.bx--header .bx--header__name {
+  height: auto;
   text-align: left;
   align-items: flex-start;
   flex-flow: column;
 }
-.hv-topbar .hv-label {
-  color: #f9f9f9;
-  font-size: 1rem;
+.bx--header .hv-label {
+  color: #F5F6F6;
+  font-size: 1.075rem;
   font-weight: normal;
-  line-height: 1rem;
+  line-height: 1.075rem;
   margin: 0;
   padding: 0;
 }
-.hv-topbar .hv-creator {
-  color: #f9f9f9;
+.bx--header .hv-creator {
+  color: #F5F6F6;
   font-size: 0.9rem;
   font-weight: bold;
   margin: 0;
   padding: 0;
 }
-.hv-topbar .hv-logo {
+.bx--header .hv-logo {
   max-height: 100%;
 }

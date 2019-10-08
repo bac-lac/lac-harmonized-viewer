@@ -1,22 +1,27 @@
 import { h } from "@stencil/core";
 import 'manifesto.js';
-import "malihu-custom-scrollbar-plugin";
+import OverlayScrollbars from 'overlayscrollbars';
 export class NavigationComponent {
     constructor() {
         this.page = 0;
     }
+    componentDidLoad() {
+    }
     componentDidRender() {
+        OverlayScrollbars(this.el.querySelector('.hv-navigation__content'), {});
         var lazyImages = [].slice.call(this.el.querySelectorAll(".hv-lazyload"));
         if ("IntersectionObserver" in window) {
             let lazyImageObserver = new IntersectionObserver(function (entries, observer) {
                 entries.forEach(function (entry) {
                     if (entry.isIntersecting) {
                         let lazyImage = entry.target.querySelector('img');
-                        lazyImage.src = lazyImage.dataset.src;
-                        //lazyImage.srcset = lazyImage.dataset.srcset;
-                        lazyImage.classList.remove("hv-lazyload--loading");
-                        lazyImage.classList.add("hv-lazyload--complete");
-                        lazyImageObserver.unobserve(lazyImage);
+                        if (lazyImage) {
+                            lazyImage.src = lazyImage.dataset.src;
+                            //lazyImage.srcset = lazyImage.dataset.srcset;
+                            lazyImage.classList.remove("hv-lazyload--loading");
+                            lazyImage.classList.add("hv-lazyload--complete");
+                            lazyImageObserver.unobserve(lazyImage);
+                        }
                     }
                 });
             });
@@ -74,26 +79,27 @@ export class NavigationComponent {
         var target = event.target;
         var li = target.parentElement.parentElement;
         li.classList.remove('hv-lazyload--loading');
-        li.classList.add('hv-lazyload--complete');
+        li.classList.add('hv-lazyload--complete', 'animated', 'fadeIn', 'faster');
     }
     render() {
         const items = this.getItems();
         const loading = (items ? false : true);
         const skeleton = Array.apply(null, Array(10)).map(function () { });
         const source = (loading ? skeleton : items);
-        return (h("div", { class: "bx--grid bx--grid--condensed" },
-            h("ul", { class: (loading ? "bx--row hv-navigation__list" : "bx--row hv-navigation__list") }, source.map((item, index) => h("li", { class: (this.page == index) ? "bx--col-lg-6 hv-lazyload hv-lazyload--loading active" : "bx--col-lg-6 hv-lazyload hv-lazyload--loading" },
-                h("span", { class: "hv-skeleton", "aria-hidden": "true" }),
-                (loading ? h("span", null) :
-                    h("a", { href: "javascript:;", onClick: (e) => this.onClick(e, index) },
-                        h("img", { "data-src": item.thumbnailUrl, onLoad: this.onImageLoad, alt: item.title }))))))));
+        return (h("div", { class: "hv-navigation__content" },
+            h("div", { class: "bx--grid bx--grid--condensed" },
+                h("ul", { class: (loading ? "bx--row hv-navigation__list" : "bx--row hv-navigation__list") }, source.map((item, index) => h("li", { class: (this.page == index) ? "bx--col-lg-6 hv-lazyload hv-lazyload--loading active" : "bx--col-lg-6 hv-lazyload hv-lazyload--loading" },
+                    h("span", { class: "hv-skeleton", "aria-hidden": "true" }),
+                    (loading ? h("span", null) :
+                        h("a", { href: "javascript:;", onClick: (e) => this.onClick(e, index) },
+                            h("img", { "data-src": item.thumbnailUrl, onLoad: this.onImageLoad, alt: item.title })))))))));
     }
     static get is() { return "hv-navigation"; }
     static get originalStyleUrls() { return {
-        "$": ["navigation-component.scss"]
+        "$": ["navigation-component.scss", "../../../node_modules/overlayscrollbars/css/OverlayScrollbars.min.css"]
     }; }
     static get styleUrls() { return {
-        "$": ["navigation-component.css"]
+        "$": ["navigation-component.css", "../../../node_modules/overlayscrollbars/css/OverlayScrollbars.min.css"]
     }; }
     static get properties() { return {
         "page": {

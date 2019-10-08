@@ -75,13 +75,14 @@ export class ViewerComponent {
     return (
       <div class="harmonized-viewer">
 
-        <hv-topbar ref={elem => this.topbar = elem as HTMLHvTopbarElement}>
+        <hv-topbar class="hv-topbar" ref={elem => this.topbar = elem as HTMLHvTopbarElement}>
         </hv-topbar>
 
         <div class="hv-content">
           <hv-navigation class="hv-navigation" ref={elem => this.navigation = elem as HTMLHvNavigationElement}></hv-navigation>
 
           <main class="hv-main">
+            <hv-toolbar class="hv-toolbar"></hv-toolbar>
             <hv-viewport manifest="https://digital.library.villanova.edu/Item/vudl:92879/Manifest" ref={elem => this.viewport = elem as HTMLHvViewportElement}></hv-viewport>
             <hv-statusbar class="hv-statusbar"></hv-statusbar>
           </main>

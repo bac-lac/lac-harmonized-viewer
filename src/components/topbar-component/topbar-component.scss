@@ -1,22 +1,24 @@
-.hv-topbar {
+.bx--header {
+    background-color: $theme-color-topbar-background;
 
     .bx--header__name {
+        height: auto;
         text-align: left;
         align-items: flex-start;
         flex-flow: column;
     }
 
     .hv-label {
-        color: #f9f9f9;
-        font-size: 1.0rem;
+        color: #F5F6F6;
+        font-size: 1.075rem;
         font-weight: normal;
-        line-height: 1.0rem;
+        line-height: 1.075rem;
         margin: 0;
         padding: 0;
     }
 
     .hv-creator {
-        color: #f9f9f9;
+        color: #F5F6F6;
         font-size: 0.9rem;
         font-weight: bold;
         margin: 0;

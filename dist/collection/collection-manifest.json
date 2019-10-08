@@ -1,12 +1,12 @@
 {
   "entries": [
-    "components\\settings\\settings-component.js",
     "components\\toolbar\\toolbar-component.js",
-    "components\\navigation\\navigation-component.js",
-    "components\\statusbar\\statusbar-component.js",
     "components\\topbar-component\\topbar-component.js",
+    "components\\viewport-component\\viewport-component.js",
+    "components\\settings\\settings-component.js",
+    "components\\navigation\\navigation-component.js",
     "components\\viewer-component\\viewer-component.js",
-    "components\\viewport-component\\viewport-component.js"
+    "components\\statusbar\\statusbar-component.js"
   ],
   "compiler": {
     "name": "@stencil/core",

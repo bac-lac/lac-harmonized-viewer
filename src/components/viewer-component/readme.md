@@ -29,6 +29,7 @@
 
 - [hv-topbar](../topbar-component)
 - [hv-navigation](../navigation)
+- [hv-toolbar](../toolbar)
 - [hv-viewport](../viewport-component)
 - [hv-statusbar](../statusbar)
 
@@ -37,6 +38,7 @@
 graph TD;
   harmonized-viewer --> hv-topbar
   harmonized-viewer --> hv-navigation
+  harmonized-viewer --> hv-toolbar
   harmonized-viewer --> hv-viewport
   harmonized-viewer --> hv-statusbar
   hv-topbar --> hv-settings

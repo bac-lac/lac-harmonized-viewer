@@ -1,11 +1,11 @@
 import { EventEmitter } from '../../stencil.core';
 import 'manifesto.js';
-import "malihu-custom-scrollbar-plugin";
 export declare class NavigationComponent {
     el: HTMLElement;
     page: number;
     manifest: Manifesto.IManifest;
     goto: EventEmitter;
+    componentDidLoad(): void;
     componentDidRender(): void;
     getItems(): {
         title: string;

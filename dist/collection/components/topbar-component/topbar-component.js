@@ -7,7 +7,7 @@ export class TopbarComponent {
         modalInstance.show();
     }
     render() {
-        return (h("header", { class: "bx--header hv-topbar", role: "banner" },
+        return (h("header", { class: "bx--header", role: "banner" },
             h("img", { src: this.thumbnail, class: "hv-logo", alt: this.publisher }),
             h("a", { href: "#", class: "bx--header__name" },
                 h("div", { class: "hv-creator", innerHTML: this.publisher }),

@@ -1,6 +1,7 @@
 import { Config } from '@stencil/core';
 import { sass } from '@stencil/sass';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
+import { inlineSvg } from 'stencil-inline-svg';
 
 export const config: Config = {
   namespace: 'stencil-starter-project-name',
@@ -44,6 +45,7 @@ export const config: Config = {
     sass({
       injectGlobalPaths: ['src/globals/variables.scss']
     }),
-    nodePolyfills()
+    nodePolyfills(),
+    inlineSvg()
   ]
 };
