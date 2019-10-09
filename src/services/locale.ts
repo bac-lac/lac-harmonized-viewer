@@ -1,8 +1,8 @@
 import i18n from "i18next";
-import XHR from "i18next-xhr-backend";
+//import XHR from "i18next-xhr-backend";
 import i18next from "i18next";
 import { EventEmitter } from "events";
-import { load, save } from './utils';
+import { load, save } from '../utils/utils';
 
 export class Locale {
 
@@ -15,15 +15,27 @@ export class Locale {
         var setting = load('language');
 
         var service = await i18n
-            .use(XHR)
+            //.use(XHR)
             .init({
                 lng: (setting ? setting : 'en'),
                 fallbackLng: this.languages,
                 debug: false,
-                backend: {
-                    loadPath: '{{lng}}.json'
-                }
+                // backend: {
+                //     loadPath: '{{lng}}.json'
+                // }
             });
+
+        i18n.addResourceBundle('en', '', {
+            "name": "English",
+            "settings": "Settings",
+            "apply": "Apply"
+        });
+
+        i18n.addResourceBundle('fr', '', {
+            "name": "Français",
+            "settings": "Paramètres",
+            "apply": "Appliquer"
+        })
 
         i18next.on('languageChanged', (language: string) => {
             this.languageChanged.emit('languageChanged', language);

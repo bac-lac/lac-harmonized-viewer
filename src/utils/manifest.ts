@@ -1,4 +1,4 @@
-import { Locale } from "./utils.locale";
+import { Locale } from "../services/locale";
 import { StringBuilder } from "../string-builder";
 
 export class ManifestExtensions {

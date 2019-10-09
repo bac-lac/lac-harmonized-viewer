@@ -1,5 +1,5 @@
 import { Component, h, Element, State } from '@stencil/core';
-import { Locale } from '../../utils/utils.locale';
+import { Locale } from '../../services/locale';
 
 @Component({
     tag: 'hv-settings',

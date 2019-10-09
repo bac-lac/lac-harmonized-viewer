@@ -1,4 +1,4 @@
-import { Component, Prop, h, Element, Event, Listen, EventEmitter } from '@stencil/core';
+import { Component, Prop, h, Element, Event, Listen, EventEmitter, Watch } from '@stencil/core';
 import 'manifesto.js';
 import OverlayScrollbars from 'overlayscrollbars';
 
@@ -10,31 +10,41 @@ export class NavigationComponent {
 
   @Element() el: HTMLElement;
 
-  @Prop() page: number = 0;
+  @Prop() page: number;
   @Prop() manifest: Manifesto.IManifest;
 
   @Event() goto: EventEmitter;
 
+  private scrollbars: OverlayScrollbars;
+
   componentDidLoad() {
+
+
 
   }
 
   componentDidRender() {
 
-    OverlayScrollbars(this.el.querySelector('.hv-navigation__content'), {});
+    // Initialize custom scrollbars
+    if (this.scrollbars) {
+      this.scrollbars.destroy();
+    }
+    this.scrollbars = OverlayScrollbars(this.el.querySelector('.hv-navigation__content'), {});
 
+    // Initialize lazy loading for navigation items
     var lazyImages = [].slice.call(this.el.querySelectorAll(".hv-lazyload"));
 
     if ("IntersectionObserver" in window) {
       let lazyImageObserver = new IntersectionObserver(function (entries, observer) {
         entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            let lazyImage = entry.target.querySelector('img') as HTMLImageElement;
-            if (lazyImage) {
+          let lazyImage = entry.target.querySelector('img') as HTMLImageElement;
+          if (lazyImage) {
+            lazyImage.classList.remove('hv-lazyload-complete');
+            if (entry.isIntersecting) {
               lazyImage.src = lazyImage.dataset.src;
               //lazyImage.srcset = lazyImage.dataset.srcset;
-              lazyImage.classList.remove("hv-lazyload--loading");
-              lazyImage.classList.add("hv-lazyload--complete");
+              lazyImage.classList.remove('hv-lazyload--loading');
+              lazyImage.classList.add('hv-lazyload--complete');
               lazyImageObserver.unobserve(lazyImage);
             }
           }
@@ -75,13 +85,14 @@ export class NavigationComponent {
       });
   }
 
-  // @Watch('items')
-  // watchItemsHandler() {
-  //   console.log('watch');
-
-  //   var lazyImages = this.el.querySelectorAll('img.hv-lazy');
-  //   lazyload(lazyImages);
-  // }
+  @Watch('manifest')
+  manifestWatchHandler() {
+    const content = this.el.querySelector('.hv-navigation__content');
+    if (content) {
+      content.classList.remove('hv-navigation__content--loading');
+      content.classList.add('hv-navigation__content--complete');
+    }
+  }
 
   @Listen('goto')
   gotoHandler(event: CustomEvent) {
@@ -93,42 +104,54 @@ export class NavigationComponent {
       .map(child => child as HTMLElement);
 
     // Apply active CSS class
+
     items.forEach((item, index) => (this.page == index) ? item.classList.add('active') : item.classList.remove('active'));
 
     // Make sure the canvas thumbnail is visible
     // by scrolling to its corresponding element
+
     items[this.page].scrollIntoView({ block: 'end', behavior: 'smooth' });
   }
 
-  onClick(event: MouseEvent, page: number) {
+  click(event: MouseEvent, page: number) {
     this.goto.emit(page);
   }
 
-  onImageLoad(event: Event) {
-    var target = event.target as HTMLElement;
-    var li = target.parentElement.parentElement;
-    li.classList.remove('hv-lazyload--loading');
-    li.classList.add('hv-lazyload--complete', 'animated', 'fadeIn', 'faster');
+  imageLoad(event: Event) {
 
+    const item = (event.target as HTMLElement).parentElement.parentElement;
+
+    // Sync lazy loading status classes
+    if (item) {
+
+      item.classList.remove('hv-lazyload--loading');
+      item.classList.add('hv-lazyload--complete');
+
+      // Remove skeleton element
+      const skeleton = item.querySelector('.skeleton');
+      if (skeleton) {
+        skeleton.remove();
+      }
+    }
   }
 
   render() {
 
     const items = this.getItems();
     const loading = (items ? false : true);
-    const skeleton = Array.apply(null, Array(10)).map(function () { });
+    const skeleton = Array.apply(null, Array(24)).map(function () { });
     const source = (loading ? skeleton : items);
 
     return (
-      <div class="hv-navigation__content">
+      <div class="hv-navigation__content hv-navigation__content--loading">
         <div class="bx--grid bx--grid--condensed">
           <ul class={(loading ? "bx--row hv-navigation__list" : "bx--row hv-navigation__list")}>
             {source.map((item, index) =>
               <li class={(this.page == index) ? "bx--col-lg-6 hv-lazyload hv-lazyload--loading active" : "bx--col-lg-6 hv-lazyload hv-lazyload--loading"}>
-                <span class="hv-skeleton" aria-hidden="true"></span>
+                <span class="skeleton" aria-hidden="true"></span>
                 {(loading ? <span></span> :
-                  <a href="javascript:;" onClick={(e) => this.onClick(e, index)}>
-                    <img data-src={item.thumbnailUrl} onLoad={this.onImageLoad} alt={item.title} />
+                  <a href="javascript:;" onClick={(e) => this.click(e, index)}>
+                    <img data-src={item.thumbnailUrl} onLoad={this.imageLoad} alt={item.title} />
                   </a>
                 )}
               </li>)}

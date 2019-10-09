@@ -1,9 +1,9 @@
 import { Component, Element, h, Prop, Event, EventEmitter, Watch } from '@stencil/core';
+import { getInstance } from '../../utils/utils';
 import openseadragon from 'openseadragon';
-import { root } from '../../utils/utils';
-import '../../utils/utils.manifest';
-import { Locale } from '../../utils/utils.locale';
-import { ManifestExtensions } from '../../utils/utils.manifest';
+import '../../utils/manifest';
+import { Locale } from '../../services/locale';
+import { ManifestExtensions } from '../../utils/manifest';
 
 @Component({
     tag: 'hv-viewport',
@@ -35,8 +35,8 @@ export class ViewportComponent {
             this.openseadragon = null;
         }
 
-        var topbar = root(this.el).querySelector('.hv-topbar') as HTMLHvTopbarElement;
-        var instance = this.el.querySelector('.hv-openseadragon');
+        const topbar = getInstance(this.el).querySelector('.hv-topbar') as HTMLHvTopbarElement;
+        const instance = this.el.querySelector('.hv-openseadragon');
 
         manifesto.loadManifest(this.manifest)
             .then((manifestJson: string) => {
@@ -45,7 +45,7 @@ export class ViewportComponent {
 
                 this.manifestLoaded.emit(manifest);
 
-                console.log(manifest);
+                //console.log(manifest);
 
                 // var manifestLanguage = Locale.resolve(manifest.options.locale, this.locale.all());
                 // manifest.options.locale = manifestLanguage;

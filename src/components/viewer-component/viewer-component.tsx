@@ -1,4 +1,4 @@
-import { Component, h, Element, Listen, Prop, Event, EventEmitter } from '@stencil/core';
+import { Component, h, Element, Listen, Prop, Event, EventEmitter, Method } from '@stencil/core';
 import 'manifesto.js';
 
 @Component({
@@ -14,61 +14,80 @@ export class ViewerComponent {
   @Element() el: HTMLElement;
 
   @Prop() topbar: HTMLHvTopbarElement;
+  @Prop() toolbar: HTMLHvToolbarElement;
   @Prop() navigation: HTMLHvNavigationElement;
+  @Prop() annotations: HTMLHvAnnotationsElement;
   @Prop() viewport: HTMLHvViewportElement;
+
+  @Prop() page: number;
+  @Prop() totalPages: number;
 
   @Prop() manifest: Manifesto.IManifest;
 
   @Event() manifestLoaded: EventEmitter;
   @Event() goto: EventEmitter;
 
-  // private observer: IntersectionObserver;
-
-  // componentDidLoad() {
-  //   const img: HTMLImageElement =
-  //     this.el.shadowRoot.querySelector('img.hv-lazy');
-
-  //   if (img) {
-  //     this.observer = new IntersectionObserver(this.onIntersection);
-  //     this.observer.observe(img);
-  //   }
-  // }
-
-  // private onIntersection = async (entries) => {
-  //   for (const entry of entries) {
-  //     if (entry.isIntersecting) {
-  //       if (this.observer) {
-  //         this.observer.disconnect();
-  //       }
-
-  //       if (entry.target.getAttribute('data-src')) {
-  //         entry.target.setAttribute('src',
-  //           entry.target.getAttribute('data-src'));
-  //         entry.target.removeAttribute('data-src');
-  //       }
-  //     }
-  //   }
-  // };
-
   @Listen('manifestLoaded')
   manifestLoadedHandler(event: CustomEvent) {
+
+    let manifest = event.detail as Manifesto.IManifest;
+    this.totalPages = manifest.getSequenceByIndex(0).getTotalCanvases();
+
     if (this.navigation) {
-      this.navigation.manifest = event.detail as Manifesto.IManifest;
+      this.navigation.manifest = manifest;
+    }
+    if(this.annotations) {
+      this.annotations.manifest = manifest;
+    }
+    if (this.toolbar) {
+      this.toolbar.totalPages = this.totalPages;
     }
   }
 
   @Listen('pageLoaded')
   pageLoadedHandler(event: CustomEvent) {
+
+    this.page = event.detail as number;
+
     if (this.navigation) {
-      this.navigation.page = event.detail as number;
+      this.navigation.page = this.page;
+    }
+    if(this.annotations) {
+      this.annotations.page = this.page;
+    }
+    if (this.toolbar) {
+      this.toolbar.page = this.page;
     }
   }
 
   @Listen('goto')
   gotoHandler(event: CustomEvent) {
-    if (this.viewport) {
-      this.viewport.openseadragon.goToPage(event.detail as number);
+    let gotoPage = event.detail as number;
+    if (this.totalPages > gotoPage + 1) {
+      if (this.viewport) {
+        this.viewport.openseadragon.goToPage(event.detail as number);
+      }
     }
+  }
+
+  @Listen('previous')
+  previousHandler() {
+    this.goto.emit(this.page - 1);
+  }
+
+  @Listen('next')
+  nextHandler() {
+    this.goto.emit(this.page + 1);
+  }
+
+  @Method()
+  async currentPage() {
+    return this.page;
+  }
+
+  @Method()
+  async next() {
+    this.nextHandler();
   }
 
   render() {
@@ -82,10 +101,12 @@ export class ViewerComponent {
           <hv-navigation class="hv-navigation" ref={elem => this.navigation = elem as HTMLHvNavigationElement}></hv-navigation>
 
           <main class="hv-main">
-            <hv-toolbar class="hv-toolbar"></hv-toolbar>
+            <hv-toolbar class="hv-toolbar" ref={elem => this.toolbar = elem as HTMLHvToolbarElement}></hv-toolbar>
             <hv-viewport manifest="https://digital.library.villanova.edu/Item/vudl:92879/Manifest" ref={elem => this.viewport = elem as HTMLHvViewportElement}></hv-viewport>
             <hv-statusbar class="hv-statusbar"></hv-statusbar>
           </main>
+
+          <hv-annotations class="hv-annotations" ref={elem => this.annotations = elem as HTMLHvAnnotationsElement}></hv-annotations>
         </div>
 
       </div>

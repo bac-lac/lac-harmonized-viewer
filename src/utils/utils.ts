@@ -7,12 +7,12 @@ export function format(first: string, middle: string, last: string): string {
   );
 }
 
-export function root(element: HTMLElement) {
+export function getInstance(element: HTMLElement): HTMLElement {
   if (!element) {
     return undefined;
   }
   if (element.parentElement) {
-    return root(element.parentElement);
+    return getInstance(element.parentElement);
   }
   else {
     return element;
@@ -21,7 +21,7 @@ export function root(element: HTMLElement) {
 
 export function load(key: string): any {
   var value = window.localStorage.getItem(key);
-  if(value) {
+  if (value) {
     return value;
   }
   else {

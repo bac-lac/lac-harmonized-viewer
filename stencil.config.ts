@@ -1,24 +1,23 @@
 import { Config } from '@stencil/core';
 import { sass } from '@stencil/sass';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
-import { inlineSvg } from 'stencil-inline-svg';
 
 export const config: Config = {
   namespace: 'stencil-starter-project-name',
   outputTargets: [
     {
       type: 'dist',
+      esmLoaderPath: '../loader',
       copy: [
         {
           src: 'locales/**.json',
           dest: 'locales'
         }
-      ],
-      esmLoaderPath: '../loader'
+      ]
     },
-    // {
-    //   type: 'docs-readme'
-    // },
+    {
+      type: 'docs-readme'
+    },
     {
       type: 'www',
       copy: [
@@ -45,7 +44,6 @@ export const config: Config = {
     sass({
       injectGlobalPaths: ['src/globals/variables.scss']
     }),
-    nodePolyfills(),
-    inlineSvg()
+    nodePolyfills()
   ]
 };

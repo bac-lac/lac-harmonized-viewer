@@ -10,10 +10,20 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 
 export namespace Components {
   interface HarmonizedViewer {
+    'annotations': HTMLHvAnnotationsElement;
+    'currentPage': () => Promise<number>;
     'manifest': Manifesto.IManifest;
     'navigation': HTMLHvNavigationElement;
+    'next': () => Promise<void>;
+    'page': number;
+    'toolbar': HTMLHvToolbarElement;
     'topbar': HTMLHvTopbarElement;
+    'totalPages': number;
     'viewport': HTMLHvViewportElement;
+  }
+  interface HvAnnotations {
+    'manifest': Manifesto.IManifest;
+    'page': number;
   }
   interface HvNavigation {
     'manifest': Manifesto.IManifest;
@@ -21,7 +31,10 @@ export namespace Components {
   }
   interface HvSettings {}
   interface HvStatusbar {}
-  interface HvToolbar {}
+  interface HvToolbar {
+    'page': number;
+    'totalPages': number;
+  }
   interface HvTopbar {
     'publisher': string;
     'thumbnail': string;
@@ -42,6 +55,12 @@ declare global {
   var HTMLHarmonizedViewerElement: {
     prototype: HTMLHarmonizedViewerElement;
     new (): HTMLHarmonizedViewerElement;
+  };
+
+  interface HTMLHvAnnotationsElement extends Components.HvAnnotations, HTMLStencilElement {}
+  var HTMLHvAnnotationsElement: {
+    prototype: HTMLHvAnnotationsElement;
+    new (): HTMLHvAnnotationsElement;
   };
 
   interface HTMLHvNavigationElement extends Components.HvNavigation, HTMLStencilElement {}
@@ -81,6 +100,7 @@ declare global {
   };
   interface HTMLElementTagNameMap {
     'harmonized-viewer': HTMLHarmonizedViewerElement;
+    'hv-annotations': HTMLHvAnnotationsElement;
     'hv-navigation': HTMLHvNavigationElement;
     'hv-settings': HTMLHvSettingsElement;
     'hv-statusbar': HTMLHvStatusbarElement;
@@ -92,12 +112,20 @@ declare global {
 
 declare namespace LocalJSX {
   interface HarmonizedViewer {
+    'annotations'?: HTMLHvAnnotationsElement;
     'manifest'?: Manifesto.IManifest;
     'navigation'?: HTMLHvNavigationElement;
     'onGoto'?: (event: CustomEvent<any>) => void;
     'onManifestLoaded'?: (event: CustomEvent<any>) => void;
+    'page'?: number;
+    'toolbar'?: HTMLHvToolbarElement;
     'topbar'?: HTMLHvTopbarElement;
+    'totalPages'?: number;
     'viewport'?: HTMLHvViewportElement;
+  }
+  interface HvAnnotations {
+    'manifest'?: Manifesto.IManifest;
+    'page'?: number;
   }
   interface HvNavigation {
     'manifest'?: Manifesto.IManifest;
@@ -106,7 +134,12 @@ declare namespace LocalJSX {
   }
   interface HvSettings {}
   interface HvStatusbar {}
-  interface HvToolbar {}
+  interface HvToolbar {
+    'onNext'?: (event: CustomEvent<any>) => void;
+    'onPrevious'?: (event: CustomEvent<any>) => void;
+    'page'?: number;
+    'totalPages'?: number;
+  }
   interface HvTopbar {
     'onNavigationToggled'?: (event: CustomEvent<any>) => void;
     'publisher'?: string;
@@ -125,6 +158,7 @@ declare namespace LocalJSX {
 
   interface IntrinsicElements {
     'harmonized-viewer': HarmonizedViewer;
+    'hv-annotations': HvAnnotations;
     'hv-navigation': HvNavigation;
     'hv-settings': HvSettings;
     'hv-statusbar': HvStatusbar;
@@ -141,6 +175,7 @@ declare module "@stencil/core" {
   export namespace JSX {
     interface IntrinsicElements {
       'harmonized-viewer': LocalJSX.HarmonizedViewer & JSXBase.HTMLAttributes<HTMLHarmonizedViewerElement>;
+      'hv-annotations': LocalJSX.HvAnnotations & JSXBase.HTMLAttributes<HTMLHvAnnotationsElement>;
       'hv-navigation': LocalJSX.HvNavigation & JSXBase.HTMLAttributes<HTMLHvNavigationElement>;
       'hv-settings': LocalJSX.HvSettings & JSXBase.HTMLAttributes<HTMLHvSettingsElement>;
       'hv-statusbar': LocalJSX.HvStatusbar & JSXBase.HTMLAttributes<HTMLHvStatusbarElement>;
