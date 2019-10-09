@@ -1,4 +1,4 @@
-# hv-navigation
+# hv-annotations
 
 
 
@@ -13,13 +13,6 @@
 | `page`     | `page`    |             | `number`    | `undefined` |
 
 
-## Events
-
-| Event  | Description | Type               |
-| ------ | ----------- | ------------------ |
-| `goto` |             | `CustomEvent<any>` |
-
-
 ## Dependencies
 
 ### Used by
@@ -29,8 +22,8 @@
 ### Graph
 ```mermaid
 graph TD;
-  harmonized-viewer --> hv-navigation
-  style hv-navigation fill:#f9f,stroke:#333,stroke-width:4px
+  harmonized-viewer --> hv-annotations
+  style hv-annotations fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

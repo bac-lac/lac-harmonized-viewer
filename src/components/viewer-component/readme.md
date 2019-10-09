@@ -7,12 +7,16 @@
 
 ## Properties
 
-| Property     | Attribute | Description | Type                      | Default     |
-| ------------ | --------- | ----------- | ------------------------- | ----------- |
-| `manifest`   | --        |             | `IManifest`               | `undefined` |
-| `navigation` | --        |             | `HTMLHvNavigationElement` | `undefined` |
-| `topbar`     | --        |             | `HTMLHvTopbarElement`     | `undefined` |
-| `viewport`   | --        |             | `HTMLHvViewportElement`   | `undefined` |
+| Property      | Attribute     | Description | Type                       | Default     |
+| ------------- | ------------- | ----------- | -------------------------- | ----------- |
+| `annotations` | --            |             | `HTMLHvAnnotationsElement` | `undefined` |
+| `manifest`    | --            |             | `IManifest`                | `undefined` |
+| `navigation`  | --            |             | `HTMLHvNavigationElement`  | `undefined` |
+| `page`        | `page`        |             | `number`                   | `undefined` |
+| `toolbar`     | --            |             | `HTMLHvToolbarElement`     | `undefined` |
+| `topbar`      | --            |             | `HTMLHvTopbarElement`      | `undefined` |
+| `totalPages`  | `total-pages` |             | `number`                   | `undefined` |
+| `viewport`    | --            |             | `HTMLHvViewportElement`    | `undefined` |
 
 
 ## Events
@@ -21,6 +25,29 @@
 | ---------------- | ----------- | ------------------ |
 | `goto`           |             | `CustomEvent<any>` |
 | `manifestLoaded` |             | `CustomEvent<any>` |
+
+
+## Methods
+
+### `currentPage() => Promise<number>`
+
+
+
+#### Returns
+
+Type: `Promise<number>`
+
+
+
+### `next() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
 
 
 ## Dependencies
@@ -32,6 +59,7 @@
 - [hv-toolbar](../toolbar)
 - [hv-viewport](../viewport-component)
 - [hv-statusbar](../statusbar)
+- [hv-annotations](../annotations)
 
 ### Graph
 ```mermaid
@@ -41,6 +69,7 @@ graph TD;
   harmonized-viewer --> hv-toolbar
   harmonized-viewer --> hv-viewport
   harmonized-viewer --> hv-statusbar
+  harmonized-viewer --> hv-annotations
   hv-topbar --> hv-settings
   style harmonized-viewer fill:#f9f,stroke:#333,stroke-width:4px
 ```
