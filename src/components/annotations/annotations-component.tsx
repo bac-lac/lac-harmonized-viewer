@@ -32,7 +32,7 @@ export class AnnotationsComponent {
     }
 
     render() {
-        accordion.ini
+        
         return (<div class="hv-annotations__content">
             <ul data-accordion class="bx--accordion">
 
