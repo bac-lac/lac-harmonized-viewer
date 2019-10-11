@@ -5,7 +5,7 @@ import 'manifesto.js';
   tag: 'harmonized-viewer',
   styleUrls: [
     'viewer-component.scss',
-    '../../../node_modules/carbon-components/css/carbon-components.css'
+    '../../assets/nunito-sans/nunito-sans.css'
   ],
   shadow: true
 })
@@ -22,6 +22,8 @@ export class ViewerComponent {
   @Prop() page: number;
   @Prop() totalPages: number;
 
+  @Prop() url: string;
+
   @Prop() manifest: Manifesto.IManifest;
 
   @Event() manifestLoaded: EventEmitter;
@@ -30,13 +32,16 @@ export class ViewerComponent {
   @Listen('manifestLoaded')
   manifestLoadedHandler(event: CustomEvent) {
 
-    let manifest = event.detail as Manifesto.IManifest;
+    const manifest = event.detail as Manifesto.IManifest;
     this.totalPages = manifest.getSequenceByIndex(0).getTotalCanvases();
 
+    if(this.topbar) {
+      this.topbar.manifest = manifest;
+    }
     if (this.navigation) {
       this.navigation.manifest = manifest;
     }
-    if(this.annotations) {
+    if (this.annotations) {
       this.annotations.manifest = manifest;
     }
     if (this.toolbar) {
@@ -52,7 +57,7 @@ export class ViewerComponent {
     if (this.navigation) {
       this.navigation.page = this.page;
     }
-    if(this.annotations) {
+    if (this.annotations) {
       this.annotations.page = this.page;
     }
     if (this.toolbar) {
@@ -62,7 +67,7 @@ export class ViewerComponent {
 
   @Listen('goto')
   gotoHandler(event: CustomEvent) {
-    let gotoPage = event.detail as number;
+    const gotoPage = event.detail as number;
     if (this.totalPages > gotoPage + 1) {
       if (this.viewport) {
         this.viewport.openseadragon.goToPage(event.detail as number);
@@ -102,11 +107,11 @@ export class ViewerComponent {
 
           <main class="hv-main">
             <hv-toolbar class="hv-toolbar" ref={elem => this.toolbar = elem as HTMLHvToolbarElement}></hv-toolbar>
-            <hv-viewport manifest="https://digital.library.villanova.edu/Item/vudl:92879/Manifest" ref={elem => this.viewport = elem as HTMLHvViewportElement}></hv-viewport>
-            <hv-statusbar class="hv-statusbar"></hv-statusbar>
+            <div class="hv-main__content">
+            <hv-viewport url={this.url} ref={elem => this.viewport = elem as HTMLHvViewportElement}></hv-viewport>
+              <hv-annotations class="hv-annotations" ref={elem => this.annotations = elem as HTMLHvAnnotationsElement}></hv-annotations>
+            </div>
           </main>
-
-          <hv-annotations class="hv-annotations" ref={elem => this.annotations = elem as HTMLHvAnnotationsElement}></hv-annotations>
         </div>
 
       </div>

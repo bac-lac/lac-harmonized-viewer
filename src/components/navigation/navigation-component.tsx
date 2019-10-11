@@ -19,8 +19,6 @@ export class NavigationComponent {
 
   componentDidLoad() {
 
-
-
   }
 
   componentDidRender() {
@@ -32,14 +30,14 @@ export class NavigationComponent {
     this.scrollbars = OverlayScrollbars(this.el.querySelector('.hv-navigation__content'), {});
 
     // Initialize lazy loading for navigation items
-    var lazyImages = [].slice.call(this.el.querySelectorAll(".hv-lazyload"));
+    var lazyImages = [].slice.call(this.el.querySelectorAll('.hv-lazyload'));
 
     if ("IntersectionObserver" in window) {
       let lazyImageObserver = new IntersectionObserver(function (entries, observer) {
         entries.forEach(function (entry) {
           let lazyImage = entry.target.querySelector('img') as HTMLImageElement;
           if (lazyImage) {
-            lazyImage.classList.remove('hv-lazyload-complete');
+            lazyImage.classList.remove('hv-lazyload--complete');
             if (entry.isIntersecting) {
               lazyImage.src = lazyImage.dataset.src;
               //lazyImage.srcset = lazyImage.dataset.srcset;
@@ -123,15 +121,8 @@ export class NavigationComponent {
 
     // Sync lazy loading status classes
     if (item) {
-
       item.classList.remove('hv-lazyload--loading');
       item.classList.add('hv-lazyload--complete');
-
-      // Remove skeleton element
-      const skeleton = item.querySelector('.skeleton');
-      if (skeleton) {
-        skeleton.remove();
-      }
     }
   }
 
@@ -148,9 +139,9 @@ export class NavigationComponent {
           <ul class={(loading ? "bx--row hv-navigation__list" : "bx--row hv-navigation__list")}>
             {source.map((item, index) =>
               <li class={(this.page == index) ? "bx--col-lg-6 hv-lazyload hv-lazyload--loading active" : "bx--col-lg-6 hv-lazyload hv-lazyload--loading"}>
-                <span class="skeleton" aria-hidden="true"></span>
-                {(loading ? <span></span> :
-                  <a href="javascript:;" onClick={(e) => this.click(e, index)}>
+                {(
+                  loading ? <span class="navigation-item"></span> :
+                  <a href="javascript:;" class="navigation-item" onClick={(e) => this.click(e, index)}>
                     <img data-src={item.thumbnailUrl} onLoad={this.imageLoad} alt={item.title} />
                   </a>
                 )}

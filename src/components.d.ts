@@ -19,6 +19,7 @@ export namespace Components {
     'toolbar': HTMLHvToolbarElement;
     'topbar': HTMLHvTopbarElement;
     'totalPages': number;
+    'url': string;
     'viewport': HTMLHvViewportElement;
   }
   interface HvAnnotations {
@@ -36,15 +37,13 @@ export namespace Components {
     'totalPages': number;
   }
   interface HvTopbar {
-    'publisher': string;
-    'thumbnail': string;
-    'title': string;
+    'manifest': Manifesto.IManifest;
   }
   interface HvViewport {
-    'manifest': string;
     'openseadragon': any;
     'page': number;
     'totalPages': number;
+    'url': string;
   }
 }
 
@@ -121,6 +120,7 @@ declare namespace LocalJSX {
     'toolbar'?: HTMLHvToolbarElement;
     'topbar'?: HTMLHvTopbarElement;
     'totalPages'?: number;
+    'url'?: string;
     'viewport'?: HTMLHvViewportElement;
   }
   interface HvAnnotations {
@@ -141,19 +141,16 @@ declare namespace LocalJSX {
     'totalPages'?: number;
   }
   interface HvTopbar {
-    'onNavigationToggled'?: (event: CustomEvent<any>) => void;
-    'publisher'?: string;
-    'thumbnail'?: string;
-    'title'?: string;
+    'manifest'?: Manifesto.IManifest;
   }
   interface HvViewport {
-    'manifest'?: string;
     'onCanvasLoaded'?: (event: CustomEvent<any>) => void;
     'onManifestLoaded'?: (event: CustomEvent<any>) => void;
     'onPageLoaded'?: (event: CustomEvent<any>) => void;
     'openseadragon'?: any;
     'page'?: number;
     'totalPages'?: number;
+    'url'?: string;
   }
 
   interface IntrinsicElements {

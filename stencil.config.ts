@@ -40,10 +40,9 @@ export const config: Config = {
   nodeResolve: {
     browser: true
   },
+  globalStyle: 'src/globals/style.scss',
   plugins: [
-    sass({
-      injectGlobalPaths: ['src/globals/variables.scss']
-    }),
+    sass(),
     nodePolyfills()
   ]
 };

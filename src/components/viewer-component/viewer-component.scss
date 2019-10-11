@@ -1,9 +1,17 @@
+@import 'node_modules/carbon-components/scss/globals/scss/styles.scss';
+
 .harmonized-viewer {
-    font: 0.9rem 'Nunito Sans', sans-serif;
+    font-family: 'Nunito Sans', sans-serif;
+
+    // @import 'node_modules/carbon-components/scss/components/button/button';
+    // @import 'node_modules/carbon-components/scss/components/modal/modal';
+    // @import 'node_modules/carbon-components/scss/globals/grid/_grid';
+
     height: 100%;
     display: flex;
     flex-direction: column;
-    background-color: $theme-color-background;
+    overflow: hidden;
+    background-color: #F5F6F6;
 
     a:link,
     a:visited {
@@ -15,16 +23,16 @@
     }
 
     .hv-topbar {
+        flex: 0 0 auto;
         z-index: 1000;
-        height: 3rem;
         display: inline-block;
-        box-shadow: 0 1px 3px 5px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 -2px 3px 5px rgba(0, 0, 0, 0.3);
     }
 
     .hv-toolbar {
         padding: 0.3rem;
         box-shadow: 0 1px 2px 1px #e3e3e3;
-        background-color: $theme-color-toolbar-background;
+        background-color: #fff;
     }
 
     .hv-navigation {
@@ -34,9 +42,8 @@
     }
 
     .hv-annotations {
-        width: 250px;
+        width: 350px;
         height: 100%;
-        background-color: $theme-color-background;
     }
 
     .hv-main {
@@ -45,8 +52,15 @@
         display: flex;
         flex-direction: column;
 
+        .hv-main__content {
+            height: 100%;
+            display: flex;
+            flex-direction: row;
+        }
+
         hv-viewport {
             width: 100%;
+            height: 100%;
             flex: auto;
             display: inline-block;
         }
@@ -77,44 +91,5 @@
 
     .hv-flex-align-center {
         align-items: center;
-    }
-
-    @mixin skeleton {
-        display: inline-block;
-        background: linear-gradient(
-            90deg,
-            rgba(0, 0, 0, 0.1) 25%,
-            rgba(100, 100, 100, 0.1) 37%,
-            rgba(0, 0, 0, 0.1) 63%
-        );
-        background-size: 400% 100%;
-        animation: ant-skeleton-loading 1.4s ease infinite;
-    }
-
-    .skeleton {
-        @include skeleton();
-    }
-
-    .skeleton-md {
-        @include skeleton();
-        width: 60px;
-        height: 20px;
-    }
-
-    @-webkit-keyframes ant-skeleton-loading {
-        0% {
-            background-position: 100% 50%;
-        }
-        100% {
-            background-position: 0 50%;
-        }
-    }
-    @keyframes ant-skeleton-loading {
-        0% {
-            background-position: 100% 50%;
-        }
-        100% {
-            background-position: 0 50%;
-        }
     }
 }

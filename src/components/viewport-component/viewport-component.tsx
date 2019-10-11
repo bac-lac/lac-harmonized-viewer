@@ -1,9 +1,7 @@
 import { Component, Element, h, Prop, Event, EventEmitter, Watch } from '@stencil/core';
-import { getInstance } from '../../utils/utils';
 import openseadragon from 'openseadragon';
 import '../../utils/manifest';
 import { Locale } from '../../services/locale';
-import { ManifestExtensions } from '../../utils/manifest';
 
 @Component({
     tag: 'hv-viewport',
@@ -16,7 +14,8 @@ export class ViewportComponent {
     @Prop() page: number = 0;
     @Prop() totalPages: number = 0;
 
-    @Prop() manifest: string;
+    @Prop() url: string;
+    
     @Prop() openseadragon: any;
 
     @Event() manifestLoaded: EventEmitter;
@@ -35,10 +34,9 @@ export class ViewportComponent {
             this.openseadragon = null;
         }
 
-        const topbar = getInstance(this.el).querySelector('.hv-topbar') as HTMLHvTopbarElement;
         const instance = this.el.querySelector('.hv-openseadragon');
 
-        manifesto.loadManifest(this.manifest)
+        manifesto.loadManifest(this.url)
             .then((manifestJson: string) => {
 
                 const manifest = manifesto.create(manifestJson) as Manifesto.IManifest;
@@ -50,11 +48,11 @@ export class ViewportComponent {
                 // var manifestLanguage = Locale.resolve(manifest.options.locale, this.locale.all());
                 // manifest.options.locale = manifestLanguage;
 
-                const document = new ManifestExtensions(manifest);
+                // const document = new ManifestExtensions(manifest);
 
-                topbar.title = document.label();
-                topbar.publisher = document.creator();
-                topbar.thumbnail = manifest.getLogo();
+                // topbar.title = document.label();
+                // topbar.publisher = document.creator();
+                // topbar.thumbnail = manifest.getLogo();
 
                 const tileSources = manifest.getSequences()[0].getCanvases().map(function (canvas) {
                     var images = canvas.getImages();
