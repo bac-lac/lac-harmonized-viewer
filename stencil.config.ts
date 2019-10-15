@@ -3,7 +3,7 @@ import { sass } from '@stencil/sass';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 
 export const config: Config = {
-  namespace: 'stencil-starter-project-name',
+  namespace: 'harmonized-viewer',
   outputTargets: [
     {
       type: 'dist',

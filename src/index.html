@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Stencil Component Starter</title>
 
-  <script type="module" src="/build/stencil-starter-project-name.esm.js"></script>
-  <script nomodule src="/build/stencil-starter-project-name.js"></script>
+  <script type="module" src="/build/harmonized-viewer.esm.js"></script>
+  <script nomodule src="/build/harmonized-viewer.js"></script>
 
   <style type="text/css">
     html,
@@ -21,7 +21,10 @@
 </head>
 <body>
   
-  <harmonized-viewer url="http://iiif.bodleian.ox.ac.uk/iiif/manifest/60834383-7146-41ab-bfe1-48ee97bc04be.json" style="width:100%; height: 100%; display:inline-block;"></harmonized-viewer>
+  <harmonized-viewer
+    url="http://iiif.bodleian.ox.ac.uk/iiif/manifest/60834383-7146-41ab-bfe1-48ee97bc04be.json"
+    navigationLocation="bottom"
+    style="height:100%; display:block;"></harmonized-viewer>
 
 </body>
 </html>

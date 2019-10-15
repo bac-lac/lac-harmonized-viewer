@@ -7,18 +7,9 @@
 
 ## Properties
 
-| Property    | Attribute   | Description | Type     | Default     |
-| ----------- | ----------- | ----------- | -------- | ----------- |
-| `publisher` | `publisher` |             | `string` | `undefined` |
-| `thumbnail` | `thumbnail` |             | `string` | `undefined` |
-| `title`     | `title`     |             | `string` | `undefined` |
-
-
-## Events
-
-| Event               | Description | Type               |
-| ------------------- | ----------- | ------------------ |
-| `navigationToggled` |             | `CustomEvent<any>` |
+| Property   | Attribute | Description | Type        | Default     |
+| ---------- | --------- | ----------- | ----------- | ----------- |
+| `manifest` | --        |             | `IManifest` | `undefined` |
 
 
 ## Dependencies

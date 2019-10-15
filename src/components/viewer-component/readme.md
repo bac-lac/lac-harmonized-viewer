@@ -16,6 +16,7 @@
 | `toolbar`     | --            |             | `HTMLHvToolbarElement`     | `undefined` |
 | `topbar`      | --            |             | `HTMLHvTopbarElement`      | `undefined` |
 | `totalPages`  | `total-pages` |             | `number`                   | `undefined` |
+| `url`         | `url`         |             | `string`                   | `undefined` |
 | `viewport`    | --            |             | `HTMLHvViewportElement`    | `undefined` |
 
 
@@ -58,7 +59,6 @@ Type: `Promise<void>`
 - [hv-navigation](../navigation)
 - [hv-toolbar](../toolbar)
 - [hv-viewport](../viewport-component)
-- [hv-statusbar](../statusbar)
 - [hv-annotations](../annotations)
 
 ### Graph
@@ -68,7 +68,6 @@ graph TD;
   harmonized-viewer --> hv-navigation
   harmonized-viewer --> hv-toolbar
   harmonized-viewer --> hv-viewport
-  harmonized-viewer --> hv-statusbar
   harmonized-viewer --> hv-annotations
   hv-topbar --> hv-settings
   style harmonized-viewer fill:#f9f,stroke:#333,stroke-width:4px

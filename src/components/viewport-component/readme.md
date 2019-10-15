@@ -9,10 +9,10 @@
 
 | Property        | Attribute       | Description | Type     | Default     |
 | --------------- | --------------- | ----------- | -------- | ----------- |
-| `manifest`      | `manifest`      |             | `string` | `undefined` |
 | `openseadragon` | `openseadragon` |             | `any`    | `undefined` |
 | `page`          | `page`          |             | `number` | `0`         |
 | `totalPages`    | `total-pages`   |             | `number` | `0`         |
+| `url`           | `url`           |             | `string` | `undefined` |
 
 
 ## Events

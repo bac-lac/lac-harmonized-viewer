@@ -36,9 +36,13 @@
     }
 
     .hv-navigation {
-        width: 250px;
-        height: 100%;
         background-color: #8a9294;
+
+        &--left,
+        &--right {
+            width: 250px;
+            height: 100%;
+        }
     }
 
     .hv-annotations {

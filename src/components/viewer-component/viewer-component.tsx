@@ -1,5 +1,7 @@
 import { Component, h, Element, Listen, Prop, Event, EventEmitter, Method } from '@stencil/core';
 import 'manifesto.js';
+import { HarmonizedViewerOptions, LocationOption } from './viewer-options';
+import { NavigationOptions } from '../navigation/navigation-options';
 
 @Component({
   tag: 'harmonized-viewer',
@@ -12,10 +14,16 @@ import 'manifesto.js';
 export class ViewerComponent {
 
   @Element() el: HTMLElement;
+  
+  @Prop() options: HarmonizedViewerOptions;
+
+  @Prop() navigationShow: boolean = true;
+  @Prop() navigationHeight: number = 200;
+  @Prop() navigationLocation: string;
 
   @Prop() topbar: HTMLHvTopbarElement;
   @Prop() toolbar: HTMLHvToolbarElement;
-  @Prop() navigation: HTMLHvNavigationElement;
+  @Prop() navigationElement: HTMLHvNavigationElement;
   @Prop() annotations: HTMLHvAnnotationsElement;
   @Prop() viewport: HTMLHvViewportElement;
 
@@ -38,8 +46,8 @@ export class ViewerComponent {
     if(this.topbar) {
       this.topbar.manifest = manifest;
     }
-    if (this.navigation) {
-      this.navigation.manifest = manifest;
+    if (this.navigationElement) {
+      this.navigationElement.manifest = manifest;
     }
     if (this.annotations) {
       this.annotations.manifest = manifest;
@@ -54,8 +62,8 @@ export class ViewerComponent {
 
     this.page = event.detail as number;
 
-    if (this.navigation) {
-      this.navigation.page = this.page;
+    if (this.navigationElement) {
+      this.navigationElement.page = this.page;
     }
     if (this.annotations) {
       this.annotations.page = this.page;
@@ -102,8 +110,10 @@ export class ViewerComponent {
         <hv-topbar class="hv-topbar" ref={elem => this.topbar = elem as HTMLHvTopbarElement}>
         </hv-topbar>
 
+        {this.renderNavigation(LocationOption.Top)}
+
         <div class="hv-content">
-          <hv-navigation class="hv-navigation" ref={elem => this.navigation = elem as HTMLHvNavigationElement}></hv-navigation>
+          {this.renderNavigation(LocationOption.Left)}
 
           <main class="hv-main">
             <hv-toolbar class="hv-toolbar" ref={elem => this.toolbar = elem as HTMLHvToolbarElement}></hv-toolbar>
@@ -112,9 +122,30 @@ export class ViewerComponent {
               <hv-annotations class="hv-annotations" ref={elem => this.annotations = elem as HTMLHvAnnotationsElement}></hv-annotations>
             </div>
           </main>
+
+          {this.renderNavigation(LocationOption.Right)}
         </div>
+
+        {this.renderNavigation(LocationOption.Bottom)}
 
       </div>
     );
+  }
+
+  renderNavigation(location: LocationOption) {
+    console.log(this.navigationLocation);
+    if(!location || !this.navigationShow) {
+      return undefined;
+    }
+    if(location == this.navigationLocation) {
+      return (
+        <hv-navigation
+          class={"hv-navigation hv-navigation--" + this.navigationLocation}
+          style={{
+            height: this.navigationHeight + "px"
+          }}
+          ref={elem => this.navigationElement = elem as HTMLHvNavigationElement}></hv-navigation>
+      );
+    }
   }
 }

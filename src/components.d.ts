@@ -6,15 +6,24 @@
 
 
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
-
+import {
+  HarmonizedViewerOptions,
+} from './components/viewer-component/viewer-options';
+import {
+  NavigationOptions,
+} from './components/navigation/navigation-options';
 
 export namespace Components {
   interface HarmonizedViewer {
     'annotations': HTMLHvAnnotationsElement;
     'currentPage': () => Promise<number>;
     'manifest': Manifesto.IManifest;
-    'navigation': HTMLHvNavigationElement;
+    'navigationElement': HTMLHvNavigationElement;
+    'navigationHeight': number;
+    'navigationLocation': string;
+    'navigationShow': boolean;
     'next': () => Promise<void>;
+    'options': HarmonizedViewerOptions;
     'page': number;
     'toolbar': HTMLHvToolbarElement;
     'topbar': HTMLHvTopbarElement;
@@ -28,6 +37,7 @@ export namespace Components {
   }
   interface HvNavigation {
     'manifest': Manifesto.IManifest;
+    'options': NavigationOptions;
     'page': number;
   }
   interface HvSettings {}
@@ -113,9 +123,13 @@ declare namespace LocalJSX {
   interface HarmonizedViewer {
     'annotations'?: HTMLHvAnnotationsElement;
     'manifest'?: Manifesto.IManifest;
-    'navigation'?: HTMLHvNavigationElement;
+    'navigationElement'?: HTMLHvNavigationElement;
+    'navigationHeight'?: number;
+    'navigationLocation'?: string;
+    'navigationShow'?: boolean;
     'onGoto'?: (event: CustomEvent<any>) => void;
     'onManifestLoaded'?: (event: CustomEvent<any>) => void;
+    'options'?: HarmonizedViewerOptions;
     'page'?: number;
     'toolbar'?: HTMLHvToolbarElement;
     'topbar'?: HTMLHvTopbarElement;
@@ -130,6 +144,7 @@ declare namespace LocalJSX {
   interface HvNavigation {
     'manifest'?: Manifesto.IManifest;
     'onGoto'?: (event: CustomEvent<any>) => void;
+    'options'?: NavigationOptions;
     'page'?: number;
   }
   interface HvSettings {}

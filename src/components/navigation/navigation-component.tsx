@@ -1,6 +1,7 @@
 import { Component, Prop, h, Element, Event, Listen, EventEmitter, Watch } from '@stencil/core';
 import 'manifesto.js';
 import OverlayScrollbars from 'overlayscrollbars';
+import { NavigationOptions } from './navigation-options';
 
 @Component({
   tag: 'hv-navigation',
@@ -9,6 +10,8 @@ import OverlayScrollbars from 'overlayscrollbars';
 export class NavigationComponent {
 
   @Element() el: HTMLElement;
+
+  @Prop() options: NavigationOptions;
 
   @Prop() page: number;
   @Prop() manifest: Manifesto.IManifest;
@@ -138,7 +141,7 @@ export class NavigationComponent {
         <div class="bx--grid bx--grid--condensed">
           <ul class={(loading ? "bx--row hv-navigation__list" : "bx--row hv-navigation__list")}>
             {source.map((item, index) =>
-              <li class={(this.page == index) ? "bx--col-lg-6 hv-lazyload hv-lazyload--loading active" : "bx--col-lg-6 hv-lazyload hv-lazyload--loading"}>
+              <li class={(this.page == index) ? "bx--col-lg-1 hv-lazyload hv-lazyload--loading active" : "bx--col-lg-1 hv-lazyload hv-lazyload--loading"}>
                 {(
                   loading ? <span class="navigation-item"></span> :
                   <a href="javascript:;" class="navigation-item" onClick={(e) => this.click(e, index)}>
