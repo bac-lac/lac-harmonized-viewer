@@ -14,12 +14,10 @@ import { NavigationOptions } from '../navigation/navigation-options';
 export class ViewerComponent {
 
   @Element() el: HTMLElement;
-  
+
   @Prop() options: HarmonizedViewerOptions;
 
-  @Prop() navigationShow: boolean = true;
-  @Prop() navigationHeight: number = 200;
-  @Prop() navigationLocation: string;
+  @Prop() navigation: NavigationOptions;
 
   @Prop() topbar: HTMLHvTopbarElement;
   @Prop() toolbar: HTMLHvToolbarElement;
@@ -43,7 +41,7 @@ export class ViewerComponent {
     const manifest = event.detail as Manifesto.IManifest;
     this.totalPages = manifest.getSequenceByIndex(0).getTotalCanvases();
 
-    if(this.topbar) {
+    if (this.topbar) {
       this.topbar.manifest = manifest;
     }
     if (this.navigationElement) {
@@ -118,7 +116,7 @@ export class ViewerComponent {
           <main class="hv-main">
             <hv-toolbar class="hv-toolbar" ref={elem => this.toolbar = elem as HTMLHvToolbarElement}></hv-toolbar>
             <div class="hv-main__content">
-            <hv-viewport url={this.url} ref={elem => this.viewport = elem as HTMLHvViewportElement}></hv-viewport>
+              <hv-viewport url={this.url} ref={elem => this.viewport = elem as HTMLHvViewportElement}></hv-viewport>
               <hv-annotations class="hv-annotations" ref={elem => this.annotations = elem as HTMLHvAnnotationsElement}></hv-annotations>
             </div>
           </main>
@@ -133,16 +131,16 @@ export class ViewerComponent {
   }
 
   renderNavigation(location: LocationOption) {
-    console.log(this.navigationLocation);
-    if(!location || !this.navigationShow) {
+    console.log(this.navigation)
+    if (!location || !this.navigation || !this.navigation.show) {
       return undefined;
     }
-    if(location == this.navigationLocation) {
+    if (location == this.navigation.location) {
       return (
         <hv-navigation
-          class={"hv-navigation hv-navigation--" + this.navigationLocation}
+          class={"hv-navigation hv-navigation--" + this.navigation.location}
           style={{
-            height: this.navigationHeight + "px"
+            height: this.navigation.height + "px"
           }}
           ref={elem => this.navigationElement = elem as HTMLHvNavigationElement}></hv-navigation>
       );
