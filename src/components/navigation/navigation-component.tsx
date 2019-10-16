@@ -1,7 +1,6 @@
 import { Component, Prop, h, Element, Event, Listen, EventEmitter, Watch } from '@stencil/core';
-import 'manifesto.js';
 import OverlayScrollbars from 'overlayscrollbars';
-import { NavigationOptions } from './navigation-options';
+import 'manifesto.js';
 
 @Component({
   tag: 'hv-navigation',
@@ -11,8 +10,6 @@ export class NavigationComponent {
 
   @Element() el: HTMLElement;
 
-  @Prop() options: NavigationOptions;
-
   @Prop() page: number;
   @Prop() manifest: Manifesto.IManifest;
 
@@ -21,7 +18,7 @@ export class NavigationComponent {
   private scrollbars: OverlayScrollbars;
 
   componentDidLoad() {
-
+    
   }
 
   componentDidRender() {
@@ -105,12 +102,10 @@ export class NavigationComponent {
       .map(child => child as HTMLElement);
 
     // Apply active CSS class
-
     items.forEach((item, index) => (this.page == index) ? item.classList.add('active') : item.classList.remove('active'));
 
     // Make sure the canvas thumbnail is visible
     // by scrolling to its corresponding element
-
     items[this.page].scrollIntoView({ block: 'end', behavior: 'smooth' });
   }
 
@@ -138,10 +133,10 @@ export class NavigationComponent {
 
     return (
       <div class="hv-navigation__content hv-navigation__content--loading">
-        <div class="bx--grid bx--grid--condensed">
-          <ul class={(loading ? "bx--row hv-navigation__list" : "bx--row hv-navigation__list")}>
+        <div class="">
+          <ul class={(loading ? "hv-navigation__list" : "hv-navigation__list")}>
             {source.map((item, index) =>
-              <li class={(this.page == index) ? "bx--col-lg-1 hv-lazyload hv-lazyload--loading active" : "bx--col-lg-1 hv-lazyload hv-lazyload--loading"}>
+              <li class={(this.page == index) ? "hv-lazyload hv-lazyload--loading active" : "hv-lazyload hv-lazyload--loading"}>
                 {(
                   loading ? <span class="navigation-item"></span> :
                   <a href="javascript:;" class="navigation-item" onClick={(e) => this.click(e, index)}>

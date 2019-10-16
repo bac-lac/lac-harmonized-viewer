@@ -1,6 +1,5 @@
-@import 'node_modules/carbon-components/scss/globals/scss/_helper-mixins.scss';
-
 .hv-navigation__content {
+    width: 100%;
     height: 100%;
 
     &--loading {
@@ -30,24 +29,29 @@
         }
     }
     &:hover {
-        .os-scrollbar.os-scrollbar-vertical {
-            .os-scrollbar-track {
-                background-color: rgba(0, 0, 0, 0.1);
-            }
+        .os-scrollbar .os-scrollbar-track {
+            background-color: rgba(0, 0, 0, 0.1);
         }
     }
 }
 
 .hv-navigation__list {
-    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 1.5rem;
 
-    li[class*='col'] {
+    li {
+        width: 90px;
+        display: flex;
         padding-left: 0.3rem;
         padding-right: 0.3rem;
         margin-bottom: 0.4rem;
     }
 
     li.hv-lazyload {
+
         &--loading .navigation-item {
             background-color: rgba(0, 0, 0, 0.05);
             img {

@@ -16,15 +16,30 @@
       padding: 0;
       margin: 0;
     }
+
+    .harmonized-viewer .toolbar {
+      padding: 1.0rem;
+    }
   </style>
 
 </head>
 <body>
   
   <harmonized-viewer
+    class="harmonized-viewer"
+    style="height:100%; display:block;"
     url="http://iiif.bodleian.ox.ac.uk/iiif/manifest/60834383-7146-41ab-bfe1-48ee97bc04be.json"
+    topbar-show="false"
+    navigation-height="300"
     navigation-location="bottom"
-    style="height:100%; display:block;"></harmonized-viewer>
+    >
+    <div class="toolbar" slot="footer">
+      <button type="button" class="btn btn-secondary">
+        <i class="fas fa-download"></i>
+        Download
+      </button>
+    </div>
+  </harmonized-viewer>
 
 </body>
 </html>

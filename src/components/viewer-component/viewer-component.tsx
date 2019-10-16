@@ -1,7 +1,6 @@
 import { Component, h, Element, Listen, Prop, Event, EventEmitter, Method } from '@stencil/core';
 import 'manifesto.js';
-import { HarmonizedViewerOptions, LocationOption } from './viewer-options';
-import { NavigationOptions } from '../navigation/navigation-options';
+import { LocationOption } from './viewer-options';
 
 @Component({
   tag: 'harmonized-viewer',
@@ -15,9 +14,13 @@ export class ViewerComponent {
 
   @Element() el: HTMLElement;
 
-  @Prop() options: HarmonizedViewerOptions;
+  @Prop() topbarShow: boolean = true;
+  @Prop() toolbarShow: boolean = true;
 
-  @Prop() navigation: NavigationOptions;
+  @Prop() annotationsShow: boolean = true;
+
+  @Prop() navigationHeight: number = 200;
+  @Prop() navigationLocation: LocationOption = LocationOption.Left;
 
   @Prop() topbar: HTMLHvTopbarElement;
   @Prop() toolbar: HTMLHvToolbarElement;
@@ -105,8 +108,7 @@ export class ViewerComponent {
     return (
       <div class="harmonized-viewer">
 
-        <hv-topbar class="hv-topbar" ref={elem => this.topbar = elem as HTMLHvTopbarElement}>
-        </hv-topbar>
+        {this.renderTopbar()}
 
         {this.renderNavigation(LocationOption.Top)}
 
@@ -114,15 +116,17 @@ export class ViewerComponent {
           {this.renderNavigation(LocationOption.Left)}
 
           <main class="hv-main">
-            <hv-toolbar class="hv-toolbar" ref={elem => this.toolbar = elem as HTMLHvToolbarElement}></hv-toolbar>
+            {this.renderToolbar()}
             <div class="hv-main__content">
               <hv-viewport url={this.url} ref={elem => this.viewport = elem as HTMLHvViewportElement}></hv-viewport>
-              <hv-annotations class="hv-annotations" ref={elem => this.annotations = elem as HTMLHvAnnotationsElement}></hv-annotations>
+              {this.renderAnnotations()}
             </div>
           </main>
 
           {this.renderNavigation(LocationOption.Right)}
         </div>
+
+        <slot name="footer" />
 
         {this.renderNavigation(LocationOption.Bottom)}
 
@@ -130,20 +134,47 @@ export class ViewerComponent {
     );
   }
 
-  renderNavigation(location: LocationOption) {
-    console.log(this.navigation)
-    if (!location || !this.navigation || !this.navigation.show) {
+  renderTopbar() {
+    if (!this.topbarShow) {
       return undefined;
     }
-    if (location == this.navigation.location) {
+    return (
+      <hv-topbar class="hv-topbar" ref={elem => this.topbar = elem as HTMLHvTopbarElement}>
+      </hv-topbar>
+    );
+  }
+
+  renderNavigation(location: LocationOption) {
+    if (!location || !this.navigationLocation) {
+      return undefined;
+    }
+    if (location == this.navigationLocation) {
       return (
         <hv-navigation
-          class={"hv-navigation hv-navigation--" + this.navigation.location}
+          class={"hv-navigation hv-navigation--" + this.navigationLocation}
           style={{
-            height: this.navigation.height + "px"
+            height: (this.navigationHeight) + "px"
           }}
           ref={elem => this.navigationElement = elem as HTMLHvNavigationElement}></hv-navigation>
       );
     }
+  }
+
+  renderToolbar() {
+    if (!this.toolbarShow) {
+      return undefined;
+    }
+    return (
+      <hv-toolbar class="hv-toolbar" ref={elem => this.toolbar = elem as HTMLHvToolbarElement}></hv-toolbar>
+    );
+  }
+
+  renderAnnotations() {
+    if (!this.annotationsShow) {
+      return undefined;
+    }
+    return (
+      <hv-annotations class="hv-annotations" ref={elem => this.annotations = elem as HTMLHvAnnotationsElement}></hv-annotations>
+    );
   }
 }

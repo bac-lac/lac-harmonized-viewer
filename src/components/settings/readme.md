@@ -9,7 +9,7 @@
 
 ### Used by
 
- - [hv-topbar](../topbar-component)
+ - [hv-topbar](../topbar)
 
 ### Graph
 ```mermaid
