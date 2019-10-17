@@ -1,7 +1,6 @@
 import { Component, h, Element, Listen, Prop, Event, EventEmitter, Method, State } from '@stencil/core';
 import 'manifesto.js';
 import { LocationOption } from './viewer-options';
-import Tunnel from "../../state";
 
 @Component({
 	tag: 'harmonized-viewer',
@@ -15,10 +14,9 @@ export class ViewerComponent {
 
 	@Element() el: HTMLElement;
 
-	@State() message: string = "Hello!";
-	@Prop() page: number = 0;
+	@Prop() language: string = "en";
 
-	@Prop() topbarShow: boolean = true;
+	@Prop() enableTopbar: boolean = true;
 	@Prop() toolbarShow: boolean = true;
 
 	@Prop() annotationsShow: boolean = true;
@@ -26,30 +24,45 @@ export class ViewerComponent {
 	@Prop() navigationHeight?: number = null;
 	@Prop() navigationLocation: LocationOption = LocationOption.Left;
 
-	@Prop() topbar: HTMLHvTopbarElement;
 	@Prop() toolbar: HTMLHvToolbarElement;
 	@Prop() navigationElement: HTMLHvNavigationElement;
 	@Prop() annotations: HTMLHvAnnotationsElement;
 	@Prop() viewport: HTMLHvViewportElement;
 
-	//@Prop() page: number;
+	@Prop() page: number;
 	@Prop() totalPages: number;
 
 	@Prop() url: string;
 
-	@Prop() manifest: Manifesto.IManifest;
-
 	@Event() manifestLoaded: EventEmitter;
+	@Event() canvasLoaded: EventEmitter;
 	@Event() goto: EventEmitter;
+	@Event() nextLoad: EventEmitter;
+
+	@State() manifest: Manifesto.IManifest;
+
+	private topbar: HTMLHvTopbarElement;
+
+	@Method()
+	async currentPage(): Promise<number> {
+		return Promise.resolve(this.page);
+	}
+
+	@Method()
+	async next(): Promise<void> {
+		this.nextLoad.emit();
+	}
 
 	@Listen('manifestLoaded')
-	manifestLoadedHandler(event: CustomEvent) {
+	onManifestLoaded(event: CustomEvent) {
 
 		const manifest = event.detail as Manifesto.IManifest;
+
+		const title: string = manifest.getDefaultLabel();
 		this.totalPages = manifest.getSequenceByIndex(0).getTotalCanvases();
 
 		if (this.topbar) {
-			this.topbar.manifest = manifest;
+			this.topbar.text = title;
 		}
 		if (this.navigationElement) {
 			this.navigationElement.manifest = manifest;
@@ -62,10 +75,8 @@ export class ViewerComponent {
 		}
 	}
 
-	@Listen('pageLoaded')
-	pageLoadedHandler(event: CustomEvent) {
-
-		this.increment();
+	@Listen('canvasLoaded')
+	onCanvasLoaded(event: CustomEvent) {
 
 		this.page = event.detail as number;
 
@@ -101,71 +112,51 @@ export class ViewerComponent {
 	// 	this.goto.emit(this.page + 1);
 	// }
 
-	@Method()
-	async currentPage() {
-		return this.page;
-	}
-
 	// @Method()
 	// async next() {
 	// 	this.nextHandler();
 	// }
 
-	count: number = 0;
-
-	componentWillLoad() {
-		this.increment();
-	}
-
-	increment = () => {
-		this.count = this.count + 1;
-		this.message = `State: ${this.count}`;
-	}
-
 	render() {
-		const tunnelState = {
-			message: this.message,
-			page: this.page
-			//increment: this.increment
-		};
 		return (
 			<div class="harmonized-viewer">
-				<Tunnel.Provider state={tunnelState}>
 
-					{this.renderTopbar()}
+				{/* Topbar */}
+				{(this.enableTopbar ? this.renderTopbar() : undefined)}
 
-					{this.renderNavigation(LocationOption.Top)}
+				{this.renderNavigation(LocationOption.Top)}
 
-					<div class="hv-content">
-						{this.renderNavigation(LocationOption.Left)}
+				<div class="hv-content">
+					{this.renderNavigation(LocationOption.Left)}
 
-						<main class="hv-main">
-							{this.renderToolbar()}
-							<div class="hv-main__content">
-								<hv-viewport url={this.url} ref={elem => this.viewport = elem as HTMLHvViewportElement}></hv-viewport>
-								{this.renderAnnotations()}
-							</div>
-						</main>
+					<main class="hv-main">
+						{this.renderToolbar()}
+						<div class="hv-main__content">
+							<hv-viewport
+								url={this.url}
+								page={this.page}
+								ref={(elem) => this.viewport = elem as HTMLHvViewportElement}></hv-viewport>
+							{this.renderAnnotations()}
+						</div>
+					</main>
 
-						{this.renderNavigation(LocationOption.Right)}
-					</div>
+					{this.renderNavigation(LocationOption.Right)}
+				</div>
 
-					<slot name="footer" />
+				<slot name="footer" />
 
-					{this.renderNavigation(LocationOption.Bottom)}
+				{this.renderNavigation(LocationOption.Bottom)}
 
-				</Tunnel.Provider>
 			</div>
 		);
 	}
 
 	renderTopbar() {
-		if (!this.topbarShow) {
+		if (!this.enableTopbar) {
 			return undefined;
 		}
 		return (
-			<hv-topbar class="hv-topbar" ref={elem => this.topbar = elem as HTMLHvTopbarElement}>
-			</hv-topbar>
+			<hv-topbar ref={(elem) => this.topbar = elem}></hv-topbar>
 		);
 	}
 

@@ -38,7 +38,6 @@
   ],
   "homepage": "https://github.com/bac-lac/lac-harmonized-viewer#readme",
   "dependencies": {
-    "@stencil/state-tunnel": "^1.0.1",
     "animate.css": "^3.7.2",
     "carbon-components": "^10.6.4",
     "carbon-icons": "^7.0.7",

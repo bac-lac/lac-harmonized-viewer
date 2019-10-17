@@ -2,39 +2,44 @@
 <html dir="ltr" lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <title>Stencil Component Starter</title>
+    <title>Stencil Component Starter</title>
 
-  <script type="module" src="/build/harmonized-viewer.esm.js"></script>
-  <script nomodule src="/build/harmonized-viewer.js"></script>
+    <script type="module" src="/build/harmonized-viewer.esm.js"></script>
+    <script nomodule src="/build/harmonized-viewer.js"></script>
 
-  <style type="text/css">
-    html,
-    body {
-      height: 100%;
-      padding: 0;
-      margin: 0;
-    }
+    <style type="text/css">
+        html,
+        body {
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
 
-    .harmonized-viewer .toolbar {
-      padding: 1.0rem;
-    }
-  </style>
+        .harmonized-viewer .toolbar {
+            padding: 1.0rem;
+        }
+    </style>
 
 </head>
 
 <body>
 
-  <harmonized-viewer id="hv" class="harmonized-viewer" style="height:100%"
-    url="http://iiif.bodleian.ox.ac.uk/iiif/manifest/60834383-7146-41ab-bfe1-48ee97bc04be.json">
-  </harmonized-viewer>
+    <harmonized-viewer id="hv" class="harmonized-viewer" style="height:100%"
+        url="http://localhost:8067/js/harmonized-viewer-module/test/manifest.json">
+        <slot name="viewport-previous">
+            <i class="fas fa-chevron-left"></i>
+        </slot>
+    </harmonized-viewer>
 
-  <script type="text/javascript">
-    //var viewer = document.getElementById('hv');
-    //viewer.viewport.addOverlay(200, 200);
-  </script>
+    <script type="text/javascript">
+        var viewer = document.getElementById('hv');
+        viewer.addEventListener("canvasLoaded", (event) => {
+            console.log('canvas loaded external', event);
+        });
+    </script>
 
 </body>
 

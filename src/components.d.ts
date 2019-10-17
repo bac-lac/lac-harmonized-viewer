@@ -19,15 +19,15 @@ export namespace Components {
     'annotations': HTMLHvAnnotationsElement;
     'annotationsShow': boolean;
     'currentPage': () => Promise<number>;
-    'manifest': Manifesto.IManifest;
+    'enableTopbar': boolean;
+    'language': string;
     'navigationElement': HTMLHvNavigationElement;
     'navigationHeight'?: number;
     'navigationLocation': LocationOption;
+    'next': () => Promise<void>;
     'page': number;
     'toolbar': HTMLHvToolbarElement;
     'toolbarShow': boolean;
-    'topbar': HTMLHvTopbarElement;
-    'topbarShow': boolean;
     'totalPages': number;
     'url': string;
     'viewport': HTMLHvViewportElement;
@@ -47,7 +47,7 @@ export namespace Components {
     'totalPages': number;
   }
   interface HvTopbar {
-    'manifest': Manifesto.IManifest;
+    'text': string;
   }
   interface HvViewport {
     'addOverlay': (x: number, y: number) => Promise<void>;
@@ -126,17 +126,18 @@ declare namespace LocalJSX {
   interface HarmonizedViewer {
     'annotations'?: HTMLHvAnnotationsElement;
     'annotationsShow'?: boolean;
-    'manifest'?: Manifesto.IManifest;
+    'enableTopbar'?: boolean;
+    'language'?: string;
     'navigationElement'?: HTMLHvNavigationElement;
     'navigationHeight'?: number;
     'navigationLocation'?: LocationOption;
+    'onCanvasLoaded'?: (event: CustomEvent<any>) => void;
     'onGoto'?: (event: CustomEvent<any>) => void;
     'onManifestLoaded'?: (event: CustomEvent<any>) => void;
+    'onNextLoad'?: (event: CustomEvent<any>) => void;
     'page'?: number;
     'toolbar'?: HTMLHvToolbarElement;
     'toolbarShow'?: boolean;
-    'topbar'?: HTMLHvTopbarElement;
-    'topbarShow'?: boolean;
     'totalPages'?: number;
     'url'?: string;
     'viewport'?: HTMLHvViewportElement;
@@ -159,7 +160,7 @@ declare namespace LocalJSX {
     'totalPages'?: number;
   }
   interface HvTopbar {
-    'manifest'?: Manifesto.IManifest;
+    'text'?: string;
   }
   interface HvViewport {
     'onCanvasLoaded'?: (event: CustomEvent<any>) => void;

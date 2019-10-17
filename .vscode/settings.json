@@ -1,5 +1,7 @@
 {
     "http.proxyStrictSSL": false,
     "http.proxySupport": "on",
-    "scss.lint.emptyRules": "ignore"
+    "scss.lint.emptyRules": "ignore",
+    "editor.formatOnSave": true,
+    "scssFormatter.tabWidth": 4
 }
