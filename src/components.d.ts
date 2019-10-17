@@ -19,11 +19,11 @@ export namespace Components {
     'annotations': HTMLHvAnnotationsElement;
     'annotationsShow': boolean;
     'currentPage': () => Promise<number>;
+    'intro': string;
     'manifest': Manifesto.IManifest;
     'navigationElement': HTMLHvNavigationElement;
     'navigationHeight'?: number;
     'navigationLocation': LocationOption;
-    'next': () => Promise<void>;
     'page': number;
     'toolbar': HTMLHvToolbarElement;
     'toolbarShow': boolean;
@@ -127,6 +127,7 @@ declare namespace LocalJSX {
   interface HarmonizedViewer {
     'annotations'?: HTMLHvAnnotationsElement;
     'annotationsShow'?: boolean;
+    'intro'?: string;
     'manifest'?: Manifesto.IManifest;
     'navigationElement'?: HTMLHvNavigationElement;
     'navigationHeight'?: number;

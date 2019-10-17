@@ -3,6 +3,7 @@ import openseadragon from 'openseadragon';
 import '../../utils/manifest';
 import { Overlay } from '../../overlay';
 import { id } from '../../utils/utils';
+import Tunnel from "../../state";
 
 @Component({
     tag: 'hv-viewport',
@@ -199,16 +200,21 @@ export class ViewportComponent {
 
     render() {
         return (
-            <div class="hv-viewport">
-                <button type="button" class="bx--btn bx--btn--secondary bx--btn--icon-only hv-navigation__prev" onClick={(e) => this.previous()} ref={elem => this.buttonPrevious = elem}>
-                    <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 16L20 6l1.4 1.4-8.6 8.6 8.6 8.6L20 26z"></path><title>Chevron left</title></svg>
-                </button>
-                <div class="hv-openseadragon">
-                </div>
-                <button type="button" class="bx--btn bx--btn--secondary bx--btn--icon-only hv-navigation__next" onClick={(e) => this.next()} ref={elem => this.buttonNext = elem}>
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
+            <Tunnel.Consumer>
+                {({ message, increment }) => (
+                    <div class="hv-viewport">
+                        <h1 innerHTML={message}></h1>
+                        <button type="button" class="bx--btn bx--btn--secondary bx--btn--icon-only hv-navigation__prev" onClick={(e) => this.previous()} ref={elem => this.buttonPrevious = elem}>
+                            <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 16L20 6l1.4 1.4-8.6 8.6 8.6 8.6L20 26z"></path><title>Chevron left</title></svg>
+                        </button>
+                        <div class="hv-openseadragon">
+                        </div>
+                        <button type="button" class="bx--btn bx--btn--secondary bx--btn--icon-only hv-navigation__next" onClick={(e) => this.next()} ref={elem => this.buttonNext = elem}>
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                )}
+            </Tunnel.Consumer>
         );
     }
 }

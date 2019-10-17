@@ -1,7 +1,7 @@
 import { Component, h, Element, Listen, Prop, Event, EventEmitter, Method, State } from '@stencil/core';
 import 'manifesto.js';
 import { LocationOption } from './viewer-options';
-import { Overlay } from '../../overlay';
+import Tunnel from "../../state";
 
 @Component({
 	tag: 'harmonized-viewer',
@@ -14,6 +14,9 @@ import { Overlay } from '../../overlay';
 export class ViewerComponent {
 
 	@Element() el: HTMLElement;
+
+	@Prop() intro: string = 'Hello!';
+	@State() message: string = "";
 
 	@Prop() topbarShow: boolean = true;
 	@Prop() toolbarShow: boolean = true;
@@ -62,6 +65,8 @@ export class ViewerComponent {
 	@Listen('pageLoaded')
 	pageLoadedHandler(event: CustomEvent) {
 
+		this.increment();
+
 		this.page = event.detail as number;
 
 		if (this.navigationElement) {
@@ -85,52 +90,70 @@ export class ViewerComponent {
 		}
 	}
 
-	@Listen('previous')
-	previousHandler() {
-		this.goto.emit(this.page - 1);
-	}
+	// @Listen('previous')
+	// previousHandler() {
+	// 	this.goto.emit(this.page - 1);
+	// 	this.increment();
+	// }
 
-	@Listen('next')
-	nextHandler() {
-		this.goto.emit(this.page + 1);
-	}
+	// @Listen('next')
+	// nextHandler() {
+	// 	this.goto.emit(this.page + 1);
+	// }
 
 	@Method()
 	async currentPage() {
 		return this.page;
 	}
 
-	@Method()
-	async next() {
-		this.nextHandler();
+	// @Method()
+	// async next() {
+	// 	this.nextHandler();
+	// }
+
+	count: number = 0;
+
+	componentWillLoad() {
+		this.increment();
+	}
+
+	increment = () => {
+		this.count = this.count + 1;
+		this.message = `${this.intro} ${this.count}`;
 	}
 
 	render() {
+		const tunnelState = {
+			message: this.message,
+			increment: this.increment
+		};
 		return (
 			<div class="harmonized-viewer">
+				<Tunnel.Provider state={tunnelState}>
 
-				{this.renderTopbar()}
+					{this.renderTopbar()}
 
-				{this.renderNavigation(LocationOption.Top)}
+					{this.renderNavigation(LocationOption.Top)}
 
-				<div class="hv-content">
-					{this.renderNavigation(LocationOption.Left)}
+					<div class="hv-content">
+						{this.renderNavigation(LocationOption.Left)}
 
-					<main class="hv-main">
-						{this.renderToolbar()}
-						<div class="hv-main__content">
-							<hv-viewport url={this.url} ref={elem => this.viewport = elem as HTMLHvViewportElement}></hv-viewport>
-							{this.renderAnnotations()}
-						</div>
-					</main>
+						<main class="hv-main">
+							{this.renderToolbar()}
+							<div class="hv-main__content">
+								<hv-viewport url={this.url} ref={elem => this.viewport = elem as HTMLHvViewportElement}></hv-viewport>
+								{this.renderAnnotations()}
+							</div>
+						</main>
 
-					{this.renderNavigation(LocationOption.Right)}
-				</div>
+						{this.renderNavigation(LocationOption.Right)}
+					</div>
 
-				<slot name="footer" />
+					<slot name="footer" />
 
-				{this.renderNavigation(LocationOption.Bottom)}
+					{this.renderNavigation(LocationOption.Bottom)}
 
+				</Tunnel.Provider>
 			</div>
 		);
 	}
