@@ -1,11 +1,14 @@
-import { Component, Element, h, Prop, Event, EventEmitter, Watch } from '@stencil/core';
+import { Component, Element, h, Prop, Event, EventEmitter, Watch, Method, Listen } from '@stencil/core';
 import openseadragon from 'openseadragon';
 import '../../utils/manifest';
-import { Locale } from '../../services/locale';
+import { Overlay } from '../../overlay';
+import { id } from '../../utils/utils';
 
 @Component({
     tag: 'hv-viewport',
-    styleUrls: ['viewport-component.scss', '../../../node_modules/animate.css/animate.min.css']
+    styleUrls: [
+        'viewport-component.scss',
+        '../../../node_modules/animate.css/animate.min.css']
 })
 export class ViewportComponent {
 
@@ -15,17 +18,33 @@ export class ViewportComponent {
     @Prop() totalPages: number = 0;
 
     @Prop() url: string;
-    
+
     @Prop() openseadragon: any;
 
     @Event() manifestLoaded: EventEmitter;
     @Event() canvasLoaded: EventEmitter;
     @Event() pageLoaded: EventEmitter;
+    @Event() overlayClick: EventEmitter;
+
+    @Prop() overlays: Overlay[] = [];
 
     private buttonPrevious: HTMLButtonElement;
     private buttonNext: HTMLButtonElement;
 
-    private locale: Locale = new Locale();
+    @Method()
+    async addOverlay(x: number, y: number) {
+
+    }
+
+    @Method()
+    async getOverlays(): Promise<Overlay[]> {
+        return Promise.resolve(this.overlays);
+    }
+
+    @Listen('overlayClick')
+    overlayClickHandler(event: MouseEvent) {
+        console.log('overlay click');
+    }
 
     componentDidLoad() {
 
@@ -33,6 +52,14 @@ export class ViewportComponent {
             this.openseadragon.destroy();
             this.openseadragon = null;
         }
+
+        this.overlays.push({
+            x: 50,
+            y: 80,
+            width: 500,
+            height: 500,
+            text: "test overlay"
+        });
 
         const instance = this.el.querySelector('.hv-openseadragon');
 
@@ -77,7 +104,8 @@ export class ViewportComponent {
 
                     this.page = this.openseadragon.currentPage();
 
-                    this.drawShadow();
+                    this.drawOverlays();
+                    //this.drawShadow();
 
                     this.handleCanvasLoad(this.openseadragon.world.getItemAt(0), () => {
                         this.canvasLoaded.emit(this.page);
@@ -109,6 +137,34 @@ export class ViewportComponent {
                 callback(); // Calling it this way keeps the arguments consistent (if we passed callback into addOnceHandler it would get an event on this path but not on the setTimeout path above)
             });
         }
+    }
+
+    private drawOverlays() {
+
+        this.overlays.forEach((overlay) => {
+
+            const elementId = "hv-overlay-" + id();
+
+            const element = document.createElement("a");
+            element.id = elementId;
+            element.href = "javascript:;";
+            element.classList.add("hv-overlay", "bx--tooltip__trigger", "bx--tooltip--a11y", "bx--tooltip--bottom");
+
+            const tooltip = document.createElement("span");
+            tooltip.classList.add("bx--assistive-text");
+            tooltip.innerHTML = overlay.text;
+            element.appendChild(tooltip);
+
+            const bounds = this.openseadragon.viewport.imageToViewportRectangle(overlay.x, overlay.y, overlay.width, overlay.height);
+
+            this.openseadragon.addOverlay(element, bounds, "TOP_LEFT");
+
+            // Required in order to prevent click propagation to OpenSeadragon
+            overlay.mouseTracker = new openseadragon.MouseTracker({
+                element: element,
+                clickHandler: () => this.overlayClick.emit(element)
+            });
+        });
     }
 
     private drawShadow() {

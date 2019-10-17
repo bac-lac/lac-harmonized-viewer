@@ -35,6 +35,16 @@
 
 ## Methods
 
+### `addOverlay(x: number, y: number) => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `currentPage() => Promise<number>`
 
 

@@ -1,180 +1,181 @@
-import { Component, h, Element, Listen, Prop, Event, EventEmitter, Method } from '@stencil/core';
+import { Component, h, Element, Listen, Prop, Event, EventEmitter, Method, State } from '@stencil/core';
 import 'manifesto.js';
 import { LocationOption } from './viewer-options';
+import { Overlay } from '../../overlay';
 
 @Component({
-  tag: 'harmonized-viewer',
-  styleUrls: [
-    'viewer-component.scss',
-    '../../assets/nunito-sans/nunito-sans.css'
-  ],
-  shadow: true
+	tag: 'harmonized-viewer',
+	styleUrls: [
+		'viewer-component.scss',
+		'../../assets/nunito-sans/nunito-sans.css'
+	],
+	shadow: true
 })
 export class ViewerComponent {
 
-  @Element() el: HTMLElement;
+	@Element() el: HTMLElement;
 
-  @Prop() topbarShow: boolean = true;
-  @Prop() toolbarShow: boolean = true;
+	@Prop() topbarShow: boolean = true;
+	@Prop() toolbarShow: boolean = true;
 
-  @Prop() annotationsShow: boolean = true;
+	@Prop() annotationsShow: boolean = true;
 
-  @Prop() navigationHeight: number = 200;
-  @Prop() navigationLocation: LocationOption = LocationOption.Left;
+	@Prop() navigationHeight?: number = null;
+	@Prop() navigationLocation: LocationOption = LocationOption.Left;
 
-  @Prop() topbar: HTMLHvTopbarElement;
-  @Prop() toolbar: HTMLHvToolbarElement;
-  @Prop() navigationElement: HTMLHvNavigationElement;
-  @Prop() annotations: HTMLHvAnnotationsElement;
-  @Prop() viewport: HTMLHvViewportElement;
+	@Prop() topbar: HTMLHvTopbarElement;
+	@Prop() toolbar: HTMLHvToolbarElement;
+	@Prop() navigationElement: HTMLHvNavigationElement;
+	@Prop() annotations: HTMLHvAnnotationsElement;
+	@Prop() viewport: HTMLHvViewportElement;
 
-  @Prop() page: number;
-  @Prop() totalPages: number;
+	@Prop() page: number;
+	@Prop() totalPages: number;
 
-  @Prop() url: string;
+	@Prop() url: string;
 
-  @Prop() manifest: Manifesto.IManifest;
+	@Prop() manifest: Manifesto.IManifest;
 
-  @Event() manifestLoaded: EventEmitter;
-  @Event() goto: EventEmitter;
+	@Event() manifestLoaded: EventEmitter;
+	@Event() goto: EventEmitter;
 
-  @Listen('manifestLoaded')
-  manifestLoadedHandler(event: CustomEvent) {
+	@Listen('manifestLoaded')
+	manifestLoadedHandler(event: CustomEvent) {
 
-    const manifest = event.detail as Manifesto.IManifest;
-    this.totalPages = manifest.getSequenceByIndex(0).getTotalCanvases();
+		const manifest = event.detail as Manifesto.IManifest;
+		this.totalPages = manifest.getSequenceByIndex(0).getTotalCanvases();
 
-    if (this.topbar) {
-      this.topbar.manifest = manifest;
-    }
-    if (this.navigationElement) {
-      this.navigationElement.manifest = manifest;
-    }
-    if (this.annotations) {
-      this.annotations.manifest = manifest;
-    }
-    if (this.toolbar) {
-      this.toolbar.totalPages = this.totalPages;
-    }
-  }
+		if (this.topbar) {
+			this.topbar.manifest = manifest;
+		}
+		if (this.navigationElement) {
+			this.navigationElement.manifest = manifest;
+		}
+		if (this.annotations) {
+			this.annotations.manifest = manifest;
+		}
+		if (this.toolbar) {
+			this.toolbar.totalPages = this.totalPages;
+		}
+	}
 
-  @Listen('pageLoaded')
-  pageLoadedHandler(event: CustomEvent) {
+	@Listen('pageLoaded')
+	pageLoadedHandler(event: CustomEvent) {
 
-    this.page = event.detail as number;
+		this.page = event.detail as number;
 
-    if (this.navigationElement) {
-      this.navigationElement.page = this.page;
-    }
-    if (this.annotations) {
-      this.annotations.page = this.page;
-    }
-    if (this.toolbar) {
-      this.toolbar.page = this.page;
-    }
-  }
+		if (this.navigationElement) {
+			this.navigationElement.page = this.page;
+		}
+		if (this.annotations) {
+			this.annotations.page = this.page;
+		}
+		if (this.toolbar) {
+			this.toolbar.page = this.page;
+		}
+	}
 
-  @Listen('goto')
-  gotoHandler(event: CustomEvent) {
-    const gotoPage = event.detail as number;
-    if (this.totalPages > gotoPage + 1) {
-      if (this.viewport) {
-        this.viewport.openseadragon.goToPage(event.detail as number);
-      }
-    }
-  }
+	@Listen('goto')
+	gotoHandler(event: CustomEvent) {
+		const gotoPage = event.detail as number;
+		if (this.totalPages > gotoPage + 1) {
+			if (this.viewport) {
+				this.viewport.openseadragon.goToPage(event.detail as number);
+			}
+		}
+	}
 
-  @Listen('previous')
-  previousHandler() {
-    this.goto.emit(this.page - 1);
-  }
+	@Listen('previous')
+	previousHandler() {
+		this.goto.emit(this.page - 1);
+	}
 
-  @Listen('next')
-  nextHandler() {
-    this.goto.emit(this.page + 1);
-  }
+	@Listen('next')
+	nextHandler() {
+		this.goto.emit(this.page + 1);
+	}
 
-  @Method()
-  async currentPage() {
-    return this.page;
-  }
+	@Method()
+	async currentPage() {
+		return this.page;
+	}
 
-  @Method()
-  async next() {
-    this.nextHandler();
-  }
+	@Method()
+	async next() {
+		this.nextHandler();
+	}
 
-  render() {
-    return (
-      <div class="harmonized-viewer">
+	render() {
+		return (
+			<div class="harmonized-viewer">
 
-        {this.renderTopbar()}
+				{this.renderTopbar()}
 
-        {this.renderNavigation(LocationOption.Top)}
+				{this.renderNavigation(LocationOption.Top)}
 
-        <div class="hv-content">
-          {this.renderNavigation(LocationOption.Left)}
+				<div class="hv-content">
+					{this.renderNavigation(LocationOption.Left)}
 
-          <main class="hv-main">
-            {this.renderToolbar()}
-            <div class="hv-main__content">
-              <hv-viewport url={this.url} ref={elem => this.viewport = elem as HTMLHvViewportElement}></hv-viewport>
-              {this.renderAnnotations()}
-            </div>
-          </main>
+					<main class="hv-main">
+						{this.renderToolbar()}
+						<div class="hv-main__content">
+							<hv-viewport url={this.url} ref={elem => this.viewport = elem as HTMLHvViewportElement}></hv-viewport>
+							{this.renderAnnotations()}
+						</div>
+					</main>
 
-          {this.renderNavigation(LocationOption.Right)}
-        </div>
+					{this.renderNavigation(LocationOption.Right)}
+				</div>
 
-        <slot name="footer" />
+				<slot name="footer" />
 
-        {this.renderNavigation(LocationOption.Bottom)}
+				{this.renderNavigation(LocationOption.Bottom)}
 
-      </div>
-    );
-  }
+			</div>
+		);
+	}
 
-  renderTopbar() {
-    if (!this.topbarShow) {
-      return undefined;
-    }
-    return (
-      <hv-topbar class="hv-topbar" ref={elem => this.topbar = elem as HTMLHvTopbarElement}>
-      </hv-topbar>
-    );
-  }
+	renderTopbar() {
+		if (!this.topbarShow) {
+			return undefined;
+		}
+		return (
+			<hv-topbar class="hv-topbar" ref={elem => this.topbar = elem as HTMLHvTopbarElement}>
+			</hv-topbar>
+		);
+	}
 
-  renderNavigation(location: LocationOption) {
-    if (!location || !this.navigationLocation) {
-      return undefined;
-    }
-    if (location == this.navigationLocation) {
-      return (
-        <hv-navigation
-          class={"hv-navigation hv-navigation--" + this.navigationLocation}
-          style={{
-            height: (this.navigationHeight) + "px"
-          }}
-          ref={elem => this.navigationElement = elem as HTMLHvNavigationElement}></hv-navigation>
-      );
-    }
-  }
+	renderNavigation(location: LocationOption) {
+		if (!location || !this.navigationLocation) {
+			return undefined;
+		}
+		if (location == this.navigationLocation) {
+			return (
+				<hv-navigation
+					class={"hv-navigation hv-navigation--" + this.navigationLocation}
+					style={{
+						height: (this.navigationHeight ? this.navigationHeight + "px" : null)
+					}}
+					ref={elem => this.navigationElement = elem as HTMLHvNavigationElement}></hv-navigation>
+			);
+		}
+	}
 
-  renderToolbar() {
-    if (!this.toolbarShow) {
-      return undefined;
-    }
-    return (
-      <hv-toolbar class="hv-toolbar" ref={elem => this.toolbar = elem as HTMLHvToolbarElement}></hv-toolbar>
-    );
-  }
+	renderToolbar() {
+		if (!this.toolbarShow) {
+			return undefined;
+		}
+		return (
+			<hv-toolbar class="hv-toolbar" ref={elem => this.toolbar = elem as HTMLHvToolbarElement}></hv-toolbar>
+		);
+	}
 
-  renderAnnotations() {
-    if (!this.annotationsShow) {
-      return undefined;
-    }
-    return (
-      <hv-annotations class="hv-annotations" ref={elem => this.annotations = elem as HTMLHvAnnotationsElement}></hv-annotations>
-    );
-  }
+	renderAnnotations() {
+		if (!this.annotationsShow) {
+			return undefined;
+		}
+		return (
+			<hv-annotations class="hv-annotations" ref={elem => this.annotations = elem as HTMLHvAnnotationsElement}></hv-annotations>
+		);
+	}
 }

@@ -10,6 +10,9 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
   LocationOption,
 } from './components/viewer-component/viewer-options';
+import {
+  Overlay,
+} from './overlay';
 
 export namespace Components {
   interface HarmonizedViewer {
@@ -18,7 +21,7 @@ export namespace Components {
     'currentPage': () => Promise<number>;
     'manifest': Manifesto.IManifest;
     'navigationElement': HTMLHvNavigationElement;
-    'navigationHeight': number;
+    'navigationHeight'?: number;
     'navigationLocation': LocationOption;
     'next': () => Promise<void>;
     'page': number;
@@ -48,7 +51,10 @@ export namespace Components {
     'manifest': Manifesto.IManifest;
   }
   interface HvViewport {
+    'addOverlay': (x: number, y: number) => Promise<void>;
+    'getOverlays': () => Promise<Overlay[]>;
     'openseadragon': any;
+    'overlays': Overlay[];
     'page': number;
     'totalPages': number;
     'url': string;
@@ -159,8 +165,10 @@ declare namespace LocalJSX {
   interface HvViewport {
     'onCanvasLoaded'?: (event: CustomEvent<any>) => void;
     'onManifestLoaded'?: (event: CustomEvent<any>) => void;
+    'onOverlayClick'?: (event: CustomEvent<any>) => void;
     'onPageLoaded'?: (event: CustomEvent<any>) => void;
     'openseadragon'?: any;
+    'overlays'?: Overlay[];
     'page'?: number;
     'totalPages'?: number;
     'url'?: string;

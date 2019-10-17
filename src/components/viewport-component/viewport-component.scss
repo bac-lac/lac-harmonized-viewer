@@ -44,4 +44,29 @@
             flex: auto;
         }
     }
+
+    .hv-overlay {
+        opacity: 0;
+        border: #fff 6px solid;
+        border-radius: 2px;
+        box-shadow: rgba(0, 0, 0, 0.1) 0 0 2px 2px;
+        background-color: transparent;
+        transition: background, opacity 100ms ease;
+
+        &:hover {
+            background-color: rgba(60, 66, 69, 0.2);
+        }
+
+        &:active {
+            background-color: rgba(60, 66, 69, 0.5);
+        }
+    }
+
+    &:hover .hv-overlay {
+        opacity: 1;
+    }
+}
+
+.bx--assistive-text {
+    padding: 0.4rem 0.6rem !important;
 }

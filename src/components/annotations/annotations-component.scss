@@ -15,12 +15,17 @@
             }
         }
     }
+
     &:hover {
         .os-scrollbar.os-scrollbar-vertical {
             .os-scrollbar-track {
                 background-color: rgba(0, 0, 0, 0.1);
             }
         }
+    }
+
+    .bx--accordion__heading:focus:before {
+        border: none;
     }
 
     dl {

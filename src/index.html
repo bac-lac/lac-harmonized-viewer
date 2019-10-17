@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
@@ -23,23 +24,18 @@
   </style>
 
 </head>
+
 <body>
-  
-  <harmonized-viewer
-    class="harmonized-viewer"
-    style="height:100%; display:block;"
-    url="http://iiif.bodleian.ox.ac.uk/iiif/manifest/60834383-7146-41ab-bfe1-48ee97bc04be.json"
-    topbar-show="false"
-    navigation-height="300"
-    navigation-location="bottom"
-    >
-    <div class="toolbar" slot="footer">
-      <button type="button" class="btn btn-secondary">
-        <i class="fas fa-download"></i>
-        Download
-      </button>
-    </div>
+
+  <harmonized-viewer id="hv" class="harmonized-viewer" style="height:100%"
+    url="http://iiif.bodleian.ox.ac.uk/iiif/manifest/60834383-7146-41ab-bfe1-48ee97bc04be.json">
   </harmonized-viewer>
 
+  <script type="text/javascript">
+    //var viewer = document.getElementById('hv');
+    //viewer.viewport.addOverlay(200, 200);
+  </script>
+
 </body>
+
 </html>
