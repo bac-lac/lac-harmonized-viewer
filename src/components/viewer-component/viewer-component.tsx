@@ -15,8 +15,8 @@ export class ViewerComponent {
 
 	@Element() el: HTMLElement;
 
-	@Prop() intro: string = 'Hello!';
-	@State() message: string = "";
+	@State() message: string = "Hello!";
+	@Prop() page: number = 0;
 
 	@Prop() topbarShow: boolean = true;
 	@Prop() toolbarShow: boolean = true;
@@ -32,7 +32,7 @@ export class ViewerComponent {
 	@Prop() annotations: HTMLHvAnnotationsElement;
 	@Prop() viewport: HTMLHvViewportElement;
 
-	@Prop() page: number;
+	//@Prop() page: number;
 	@Prop() totalPages: number;
 
 	@Prop() url: string;
@@ -119,13 +119,14 @@ export class ViewerComponent {
 
 	increment = () => {
 		this.count = this.count + 1;
-		this.message = `${this.intro} ${this.count}`;
+		this.message = `State: ${this.count}`;
 	}
 
 	render() {
 		const tunnelState = {
 			message: this.message,
-			increment: this.increment
+			page: this.page
+			//increment: this.increment
 		};
 		return (
 			<div class="harmonized-viewer">

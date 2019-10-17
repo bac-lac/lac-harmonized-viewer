@@ -3,11 +3,13 @@ import { createProviderConsumer } from '@stencil/state-tunnel';
 
 export interface State {
     message: string,
-    increment?: () => void
+    page: number,
+    //increment?: () => void
 }
 
 export default createProviderConsumer<State>({
-    message: 'Hello!'
+    message: null,
+    page: 0
 },
     (subscribe, child) => (
         <context-consumer subscribe={subscribe} renderer={child} />

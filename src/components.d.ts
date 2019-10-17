@@ -19,7 +19,6 @@ export namespace Components {
     'annotations': HTMLHvAnnotationsElement;
     'annotationsShow': boolean;
     'currentPage': () => Promise<number>;
-    'intro': string;
     'manifest': Manifesto.IManifest;
     'navigationElement': HTMLHvNavigationElement;
     'navigationHeight'?: number;
@@ -127,7 +126,6 @@ declare namespace LocalJSX {
   interface HarmonizedViewer {
     'annotations'?: HTMLHvAnnotationsElement;
     'annotationsShow'?: boolean;
-    'intro'?: string;
     'manifest'?: Manifesto.IManifest;
     'navigationElement'?: HTMLHvNavigationElement;
     'navigationHeight'?: number;

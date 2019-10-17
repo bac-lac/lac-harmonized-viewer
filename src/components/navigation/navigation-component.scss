@@ -28,6 +28,7 @@
             }
         }
     }
+
     &:hover {
         .os-scrollbar .os-scrollbar-track {
             background-color: rgba(0, 0, 0, 0.1);
@@ -51,7 +52,6 @@
     }
 
     li.hv-lazyload {
-
         &--loading .navigation-item {
             background-color: rgba(0, 0, 0, 0.05);
             img {

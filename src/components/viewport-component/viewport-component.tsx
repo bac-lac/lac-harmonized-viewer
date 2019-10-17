@@ -183,16 +183,16 @@ export class ViewportComponent {
 
     }
 
-    previous() {
-        var page = this.openseadragon.currentPage();
+    previous(event: MouseEvent) {
+        const page = this.openseadragon.currentPage();
         if (page > 0) {
             this.openseadragon.goToPage(page - 1);
         }
     }
 
-    next() {
-        var page = this.openseadragon.currentPage();
-        var totalPages = this.openseadragon.tileSources.length;
+    next(event: MouseEvent) {
+        const page = this.openseadragon.currentPage();
+        const totalPages = this.openseadragon.tileSources.length;
         if (page < (totalPages - 1)) {
             this.openseadragon.goToPage(page + 1);
         }
@@ -201,16 +201,16 @@ export class ViewportComponent {
     render() {
         return (
             <Tunnel.Consumer>
-                {({ message, increment }) => (
+                {({ message: string, page }) => (
                     <div class="hv-viewport">
-                        <h1 innerHTML={message}></h1>
-                        <button type="button" class="bx--btn bx--btn--secondary bx--btn--icon-only hv-navigation__prev" onClick={(e) => this.previous()} ref={elem => this.buttonPrevious = elem}>
+                        <h1 innerHTML={page}></h1>
+                        <button type="button" class="bx--btn bx--btn--secondary bx--btn--icon-only hv-navigation__prev" onClick={(ev) => this.previous(ev)} ref={elem => this.buttonPrevious = elem}>
                             <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 16L20 6l1.4 1.4-8.6 8.6 8.6 8.6L20 26z"></path><title>Chevron left</title></svg>
                         </button>
                         <div class="hv-openseadragon">
                         </div>
-                        <button type="button" class="bx--btn bx--btn--secondary bx--btn--icon-only hv-navigation__next" onClick={(e) => this.next()} ref={elem => this.buttonNext = elem}>
-                            <i class="fas fa-chevron-right"></i>
+                        <button type="button" class="bx--btn bx--btn--secondary bx--btn--icon-only hv-navigation__next" onClick={(ev) => this.next(ev)} ref={elem => this.buttonNext = elem}>
+                            <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M22 16L12 26l-1.4-1.4 8.6-8.6-8.6-8.6L12 6z"></path><title>Chevron right</title></svg>
                         </button>
                     </div>
                 )}
@@ -218,3 +218,5 @@ export class ViewportComponent {
         );
     }
 }
+
+Tunnel.injectProps(ViewportComponent, ['page'])
