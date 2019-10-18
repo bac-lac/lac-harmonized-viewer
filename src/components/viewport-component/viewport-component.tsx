@@ -3,6 +3,7 @@ import openseadragon from 'openseadragon';
 import '../../utils/manifest';
 import { Overlay } from '../../overlay';
 import { id } from '../../utils/utils';
+import { FetchService, CorsMode } from '../../services/fetch-service';
 
 @Component({
     tag: 'hv-viewport',
@@ -36,6 +37,8 @@ export class ViewportComponent {
     private buttonPrevious: HTMLButtonElement;
     private buttonNext: HTMLButtonElement;
 
+    private fetchService: FetchService = new FetchService();
+
     @Method()
     async addOverlay(x: number, y: number) {
 
@@ -68,8 +71,12 @@ export class ViewportComponent {
 
         const instance = this.el.querySelector('.hv-openseadragon');
 
-        manifesto.loadManifest(this.url)
+
+
+        this.fetchService.get(this.url, CorsMode.Disable)
             .then((manifestJson: string) => {
+
+                console.log(manifestJson);
 
                 const manifest = manifesto.create(manifestJson) as Manifesto.IManifest;
 
