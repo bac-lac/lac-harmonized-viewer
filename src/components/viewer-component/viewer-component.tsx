@@ -1,12 +1,15 @@
 import { Component, h, Element, Listen, Prop, Event, EventEmitter, Method, State } from '@stencil/core';
+import "@stencil/redux";
 import 'manifesto.js';
 import { LocationOption } from './viewer-options';
+import { Store, Unsubscribe } from "@stencil/redux";
+import { configureStore } from "../../store";
+import { setDocumentUrl } from '../../store/actions/document';
 
 @Component({
 	tag: 'harmonized-viewer',
 	styleUrls: [
-		'viewer-component.scss',
-		'../../assets/nunito-sans/nunito-sans.css'
+		'viewer-component.scss'
 	],
 	shadow: true
 })
@@ -24,10 +27,10 @@ export class ViewerComponent {
 	@Prop() navigationHeight?: number = null;
 	@Prop() navigationLocation: LocationOption = LocationOption.Left;
 
-	@Prop() toolbar: HTMLHvToolbarElement;
-	@Prop() navigationElement: HTMLHvNavigationElement;
-	@Prop() annotations: HTMLHvAnnotationsElement;
-	@Prop() viewport: HTMLHvViewportElement;
+	// @Prop() toolbar: HTMLHvToolbarElement;
+	// @Prop() navigationElement: HTMLHvNavigationElement;
+	// @Prop() annotations: HTMLHvAnnotationsElement;
+	// @Prop() viewport: HTMLHvViewportElement;
 
 	@Prop() page: number;
 	@Prop() totalPages: number;
@@ -39,9 +42,49 @@ export class ViewerComponent {
 	@Event() goto: EventEmitter;
 	@Event() nextLoad: EventEmitter;
 
-	@State() manifest: Manifesto.IManifest;
+	//@State() manifest: Manifesto.IManifest;
 
-	private topbar: HTMLHvTopbarElement;
+	//private topbar: HTMLHarmonizedViewerTopbarElement;
+
+	setDocumentUrl: typeof setDocumentUrl;
+	storeUnsubscribe: Unsubscribe;
+
+
+
+
+	@State() stateUrl: MyAppState["document"]["stateUrl"];
+
+	@Prop({ context: "store" }) store: Store;
+
+	async componentWillLoad() {
+
+		this.store.setStore(configureStore({}));
+		this.store.mapDispatchToProps(this, { setDocumentUrl });
+		this.store.mapStateToProps(this, (state: MyAppState) => {
+			const {
+				document: { stateUrl }
+			} = state;
+			return {
+				stateUrl
+			};
+		});
+	}
+
+	componentDidLoad() {
+
+		this.setDocumentUrl(this.url);
+
+		setTimeout(() => {
+			console.log("timeout");
+			this.setDocumentUrl("https://d.lib.ncsu.edu/collections/catalog/nubian-message-1992-11-30/manifest");
+		}, 3000);
+	}
+
+	componentDidUnload() {
+		this.storeUnsubscribe();
+	}
+
+
 
 	@Method()
 	async currentPage(): Promise<number> {
@@ -61,18 +104,18 @@ export class ViewerComponent {
 		const title: string = manifest.getDefaultLabel();
 		this.totalPages = manifest.getSequenceByIndex(0).getTotalCanvases();
 
-		if (this.topbar) {
-			this.topbar.text = title;
-		}
-		if (this.navigationElement) {
-			this.navigationElement.manifest = manifest;
-		}
-		if (this.annotations) {
-			this.annotations.manifest = manifest;
-		}
-		if (this.toolbar) {
-			this.toolbar.totalPages = this.totalPages;
-		}
+		// if (this.topbar) {
+		// 	this.topbar.text = title;
+		// }
+		// if (this.navigationElement) {
+		// 	this.navigationElement.manifest = manifest;
+		// }
+		// if (this.annotations) {
+		// 	this.annotations.manifest = manifest;
+		// }
+		// if (this.toolbar) {
+		// 	this.toolbar.totalPages = this.totalPages;
+		// }
 	}
 
 	@Listen('canvasLoaded')
@@ -80,25 +123,25 @@ export class ViewerComponent {
 
 		this.page = event.detail as number;
 
-		if (this.navigationElement) {
-			this.navigationElement.page = this.page;
-		}
-		if (this.annotations) {
-			this.annotations.page = this.page;
-		}
-		if (this.toolbar) {
-			this.toolbar.page = this.page;
-		}
+		// if (this.navigationElement) {
+		// 	this.navigationElement.page = this.page;
+		// }
+		// if (this.annotations) {
+		// 	this.annotations.page = this.page;
+		// }
+		// if (this.toolbar) {
+		// 	this.toolbar.page = this.page;
+		// }
 	}
 
 	@Listen('goto')
 	gotoHandler(event: CustomEvent) {
 		const gotoPage = event.detail as number;
-		if (this.totalPages > gotoPage + 1) {
-			if (this.viewport) {
-				this.viewport.openseadragon.goToPage(event.detail as number);
-			}
-		}
+		// if (this.totalPages > gotoPage + 1) {
+		// 	if (this.viewport) {
+		// 		this.viewport.openseadragon.goToPage(event.detail as number);
+		// 	}
+		// }
 	}
 
 	// @Listen('previous')
@@ -118,37 +161,34 @@ export class ViewerComponent {
 	// }
 
 	render() {
-		return (
-			<div class="harmonized-viewer">
+		return <div class="harmonized-viewer">
 
-				{/* Topbar */}
-				{(this.enableTopbar ? this.renderTopbar() : undefined)}
+			<h1>Hello, my name is {this.url}</h1>
 
-				{this.renderNavigation(LocationOption.Top)}
+			{/* Topbar */}
+			{(this.enableTopbar ? this.renderTopbar() : undefined)}
 
-				<div class="hv-content">
-					{this.renderNavigation(LocationOption.Left)}
+			{this.renderNavigation(LocationOption.Top)}
 
-					<main class="hv-main">
-						{this.renderToolbar()}
-						<div class="hv-main__content">
-							<hv-viewport
-								url={this.url}
-								page={this.page}
-								ref={(elem) => this.viewport = elem as HTMLHvViewportElement}></hv-viewport>
-							{this.renderAnnotations()}
-						</div>
-					</main>
+			<div class="hv-content">
+				{this.renderNavigation(LocationOption.Left)}
 
-					{this.renderNavigation(LocationOption.Right)}
-				</div>
+				<main class="hv-main">
+					{this.renderToolbar()}
+					<div class="hv-main__content">
+						<hv-viewport></hv-viewport>
+						{this.renderAnnotations()}
+					</div>
+				</main>
 
-				<slot name="footer" />
-
-				{this.renderNavigation(LocationOption.Bottom)}
-
+				{this.renderNavigation(LocationOption.Right)}
 			</div>
-		);
+
+			<slot name="footer" />
+
+			{this.renderNavigation(LocationOption.Bottom)}
+
+		</div>;
 	}
 
 	renderTopbar() {
@@ -156,7 +196,7 @@ export class ViewerComponent {
 			return undefined;
 		}
 		return (
-			<hv-topbar ref={(elem) => this.topbar = elem}></hv-topbar>
+			<harmonized-viewer-topbar></harmonized-viewer-topbar>
 		);
 	}
 
@@ -170,8 +210,7 @@ export class ViewerComponent {
 					class={"hv-navigation hv-navigation--" + this.navigationLocation}
 					style={{
 						height: (this.navigationHeight ? this.navigationHeight + "px" : null)
-					}}
-					ref={elem => this.navigationElement = elem as HTMLHvNavigationElement}></hv-navigation>
+					}}></hv-navigation>
 			);
 		}
 	}
@@ -181,7 +220,7 @@ export class ViewerComponent {
 			return undefined;
 		}
 		return (
-			<hv-toolbar class="hv-toolbar" ref={elem => this.toolbar = elem as HTMLHvToolbarElement}></hv-toolbar>
+			<hv-toolbar class="hv-toolbar"></hv-toolbar>
 		);
 	}
 
@@ -190,7 +229,7 @@ export class ViewerComponent {
 			return undefined;
 		}
 		return (
-			<hv-annotations class="hv-annotations" ref={elem => this.annotations = elem as HTMLHvAnnotationsElement}></hv-annotations>
+			<hv-annotations class="hv-annotations"></hv-annotations>
 		);
 	}
 }

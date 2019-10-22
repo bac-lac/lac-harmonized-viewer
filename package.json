@@ -38,15 +38,20 @@
   ],
   "homepage": "https://github.com/bac-lac/lac-harmonized-viewer#readme",
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.25",
+    "@fortawesome/free-solid-svg-icons": "^5.11.2",
+    "@stencil/redux": "^0.1.1",
     "animate.css": "^3.7.2",
-    "carbon-components": "^10.6.4",
-    "carbon-icons": "^7.0.7",
+    "bulma": "^0.8.0",
     "i18next": "^17.0.16",
     "i18next-browser-languagedetector": "^3.0.3",
     "i18next-xhr-backend": "^3.2.0",
     "manifesto.js": "^3.0.12",
     "openseadragon": "^2.4.1",
-    "overlayscrollbars": "^1.9.1"
+    "overlayscrollbars": "^1.9.1",
+    "redux": "^4.0.4",
+    "redux-devtools-extension": "^2.13.8",
+    "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
     "@stencil/core": "1.7.2",

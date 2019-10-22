@@ -16,21 +16,28 @@ import {
 
 export namespace Components {
   interface HarmonizedViewer {
-    'annotations': HTMLHvAnnotationsElement;
     'annotationsShow': boolean;
     'currentPage': () => Promise<number>;
     'enableTopbar': boolean;
     'language': string;
-    'navigationElement': HTMLHvNavigationElement;
     'navigationHeight'?: number;
     'navigationLocation': LocationOption;
     'next': () => Promise<void>;
     'page': number;
-    'toolbar': HTMLHvToolbarElement;
     'toolbarShow': boolean;
     'totalPages': number;
     'url': string;
-    'viewport': HTMLHvViewportElement;
+  }
+  interface HarmonizedViewerMessage {
+    'class': string;
+    'text': string;
+    'type': string;
+  }
+  interface HarmonizedViewerOpenseadragon {
+    'getOverlays': () => Promise<Overlay[]>;
+  }
+  interface HarmonizedViewerTopbar {
+    'text': string;
   }
   interface HvAnnotations {
     'manifest': Manifesto.IManifest;
@@ -46,17 +53,8 @@ export namespace Components {
     'page': number;
     'totalPages': number;
   }
-  interface HvTopbar {
-    'text': string;
-  }
   interface HvViewport {
     'addOverlay': (x: number, y: number) => Promise<void>;
-    'getOverlays': () => Promise<Overlay[]>;
-    'openseadragon': any;
-    'overlays': Overlay[];
-    'page': number;
-    'totalPages': number;
-    'url': string;
   }
 }
 
@@ -67,6 +65,24 @@ declare global {
   const HTMLHarmonizedViewerElement: {
     prototype: HTMLHarmonizedViewerElement;
     new (): HTMLHarmonizedViewerElement;
+  };
+
+  interface HTMLHarmonizedViewerMessageElement extends Components.HarmonizedViewerMessage, HTMLStencilElement {}
+  const HTMLHarmonizedViewerMessageElement: {
+    prototype: HTMLHarmonizedViewerMessageElement;
+    new (): HTMLHarmonizedViewerMessageElement;
+  };
+
+  interface HTMLHarmonizedViewerOpenseadragonElement extends Components.HarmonizedViewerOpenseadragon, HTMLStencilElement {}
+  const HTMLHarmonizedViewerOpenseadragonElement: {
+    prototype: HTMLHarmonizedViewerOpenseadragonElement;
+    new (): HTMLHarmonizedViewerOpenseadragonElement;
+  };
+
+  interface HTMLHarmonizedViewerTopbarElement extends Components.HarmonizedViewerTopbar, HTMLStencilElement {}
+  const HTMLHarmonizedViewerTopbarElement: {
+    prototype: HTMLHarmonizedViewerTopbarElement;
+    new (): HTMLHarmonizedViewerTopbarElement;
   };
 
   interface HTMLHvAnnotationsElement extends Components.HvAnnotations, HTMLStencilElement {}
@@ -99,12 +115,6 @@ declare global {
     new (): HTMLHvToolbarElement;
   };
 
-  interface HTMLHvTopbarElement extends Components.HvTopbar, HTMLStencilElement {}
-  const HTMLHvTopbarElement: {
-    prototype: HTMLHvTopbarElement;
-    new (): HTMLHvTopbarElement;
-  };
-
   interface HTMLHvViewportElement extends Components.HvViewport, HTMLStencilElement {}
   const HTMLHvViewportElement: {
     prototype: HTMLHvViewportElement;
@@ -112,23 +122,23 @@ declare global {
   };
   interface HTMLElementTagNameMap {
     'harmonized-viewer': HTMLHarmonizedViewerElement;
+    'harmonized-viewer-message': HTMLHarmonizedViewerMessageElement;
+    'harmonized-viewer-openseadragon': HTMLHarmonizedViewerOpenseadragonElement;
+    'harmonized-viewer-topbar': HTMLHarmonizedViewerTopbarElement;
     'hv-annotations': HTMLHvAnnotationsElement;
     'hv-navigation': HTMLHvNavigationElement;
     'hv-settings': HTMLHvSettingsElement;
     'hv-statusbar': HTMLHvStatusbarElement;
     'hv-toolbar': HTMLHvToolbarElement;
-    'hv-topbar': HTMLHvTopbarElement;
     'hv-viewport': HTMLHvViewportElement;
   }
 }
 
 declare namespace LocalJSX {
   interface HarmonizedViewer {
-    'annotations'?: HTMLHvAnnotationsElement;
     'annotationsShow'?: boolean;
     'enableTopbar'?: boolean;
     'language'?: string;
-    'navigationElement'?: HTMLHvNavigationElement;
     'navigationHeight'?: number;
     'navigationLocation'?: LocationOption;
     'onCanvasLoaded'?: (event: CustomEvent<any>) => void;
@@ -136,11 +146,20 @@ declare namespace LocalJSX {
     'onManifestLoaded'?: (event: CustomEvent<any>) => void;
     'onNextLoad'?: (event: CustomEvent<any>) => void;
     'page'?: number;
-    'toolbar'?: HTMLHvToolbarElement;
     'toolbarShow'?: boolean;
     'totalPages'?: number;
     'url'?: string;
-    'viewport'?: HTMLHvViewportElement;
+  }
+  interface HarmonizedViewerMessage {
+    'class'?: string;
+    'text'?: string;
+    'type'?: string;
+  }
+  interface HarmonizedViewerOpenseadragon {
+    'onOverlayClick'?: (event: CustomEvent<any>) => void;
+  }
+  interface HarmonizedViewerTopbar {
+    'text'?: string;
   }
   interface HvAnnotations {
     'manifest'?: Manifesto.IManifest;
@@ -159,29 +178,22 @@ declare namespace LocalJSX {
     'page'?: number;
     'totalPages'?: number;
   }
-  interface HvTopbar {
-    'text'?: string;
-  }
   interface HvViewport {
     'onCanvasLoaded'?: (event: CustomEvent<any>) => void;
     'onManifestLoaded'?: (event: CustomEvent<any>) => void;
-    'onOverlayClick'?: (event: CustomEvent<any>) => void;
     'onPageLoaded'?: (event: CustomEvent<any>) => void;
-    'openseadragon'?: any;
-    'overlays'?: Overlay[];
-    'page'?: number;
-    'totalPages'?: number;
-    'url'?: string;
   }
 
   interface IntrinsicElements {
     'harmonized-viewer': HarmonizedViewer;
+    'harmonized-viewer-message': HarmonizedViewerMessage;
+    'harmonized-viewer-openseadragon': HarmonizedViewerOpenseadragon;
+    'harmonized-viewer-topbar': HarmonizedViewerTopbar;
     'hv-annotations': HvAnnotations;
     'hv-navigation': HvNavigation;
     'hv-settings': HvSettings;
     'hv-statusbar': HvStatusbar;
     'hv-toolbar': HvToolbar;
-    'hv-topbar': HvTopbar;
     'hv-viewport': HvViewport;
   }
 }
@@ -193,12 +205,14 @@ declare module "@stencil/core" {
   export namespace JSX {
     interface IntrinsicElements {
       'harmonized-viewer': LocalJSX.HarmonizedViewer & JSXBase.HTMLAttributes<HTMLHarmonizedViewerElement>;
+      'harmonized-viewer-message': LocalJSX.HarmonizedViewerMessage & JSXBase.HTMLAttributes<HTMLHarmonizedViewerMessageElement>;
+      'harmonized-viewer-openseadragon': LocalJSX.HarmonizedViewerOpenseadragon & JSXBase.HTMLAttributes<HTMLHarmonizedViewerOpenseadragonElement>;
+      'harmonized-viewer-topbar': LocalJSX.HarmonizedViewerTopbar & JSXBase.HTMLAttributes<HTMLHarmonizedViewerTopbarElement>;
       'hv-annotations': LocalJSX.HvAnnotations & JSXBase.HTMLAttributes<HTMLHvAnnotationsElement>;
       'hv-navigation': LocalJSX.HvNavigation & JSXBase.HTMLAttributes<HTMLHvNavigationElement>;
       'hv-settings': LocalJSX.HvSettings & JSXBase.HTMLAttributes<HTMLHvSettingsElement>;
       'hv-statusbar': LocalJSX.HvStatusbar & JSXBase.HTMLAttributes<HTMLHvStatusbarElement>;
       'hv-toolbar': LocalJSX.HvToolbar & JSXBase.HTMLAttributes<HTMLHvToolbarElement>;
-      'hv-topbar': LocalJSX.HvTopbar & JSXBase.HTMLAttributes<HTMLHvTopbarElement>;
       'hv-viewport': LocalJSX.HvViewport & JSXBase.HTMLAttributes<HTMLHvViewportElement>;
     }
   }

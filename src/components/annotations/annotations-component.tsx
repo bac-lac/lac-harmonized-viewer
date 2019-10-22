@@ -1,5 +1,4 @@
 import { Component, Prop, h, Element, Watch, State } from '@stencil/core';
-import { Accordion } from 'carbon-components';
 import OverlayScrollbars from 'overlayscrollbars';
 
 @Component({
@@ -27,7 +26,7 @@ export class AnnotationsComponent {
 
         const annotationList = this.el.querySelector('[data-accordion]');
         if (annotationList) {
-            Accordion.create(annotationList);
+            //Accordion.create(annotationList);
         }
     }
 

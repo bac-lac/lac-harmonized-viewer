@@ -33,16 +33,11 @@
         right: 0;
     }
 
-    .hv-openseadragon {
-        opacity: 0;
+    .viewport-document {
         width: 100%;
         flex: auto;
         display: flex;
         flex-direction: column;
-
-        .openseadragon-container {
-            flex: auto;
-        }
     }
 
     .hv-overlay {

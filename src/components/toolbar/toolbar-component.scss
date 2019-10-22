@@ -1,10 +1,11 @@
 .hv-toolbar__content {
     padding-top: 3px; // extra padding because of topbar shadow
 
-    .bx--btn {
-        padding: 0.3rem 0.7rem;
+    .button {
         border-radius: 2px;
+    }
 
+    .bx--btn {
         svg {
             fill: #8a9294;
             transition: fill 200ms ease;

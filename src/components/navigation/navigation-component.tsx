@@ -68,8 +68,6 @@ export class NavigationComponent {
 
                 let imageUrl: string;
 
-                console.log(canvas);
-
                 if (canvas.getThumbnail()) {
                     imageUrl = canvas.getThumbnail().id;
                 }
