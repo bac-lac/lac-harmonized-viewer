@@ -74,10 +74,10 @@ export class ViewerComponent {
 
 		this.setDocumentUrl(this.url);
 
-		setTimeout(() => {
-			console.log("timeout");
-			this.setDocumentUrl("https://d.lib.ncsu.edu/collections/catalog/nubian-message-1992-11-30/manifest");
-		}, 3000);
+		// setTimeout(() => {
+		// 	console.log("timeout");
+		// 	this.setDocumentUrl("https://d.lib.ncsu.edu/collections/catalog/nubian-message-1992-11-30/manifest");
+		// }, 3000);
 	}
 
 	componentDidUnload() {

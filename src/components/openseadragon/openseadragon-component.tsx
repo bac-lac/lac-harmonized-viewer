@@ -38,7 +38,6 @@ export class OpenSeadragonComponent {
     }
 
     componentWillRender() {
-        console.log(this.stateUrl);
         if (this.stateUrl) {
             this.load(this.stateUrl);
         }
@@ -47,8 +46,6 @@ export class OpenSeadragonComponent {
     componentDidUnload() {
         this.storeUnsubscribe();
     }
-
-
 
     @Method()
     async getOverlays(): Promise<Overlay[]> {
@@ -84,8 +81,11 @@ export class OpenSeadragonComponent {
 
                     const manifest = manifesto.create(manifestJson) as Manifesto.IManifest;
 
+                    console.log(manifest);
+
                     const tileSources = manifest.getSequences()[0].getCanvases().map(function (canvas) {
                         var images = canvas.getImages();
+                        console.log(images);
                         return images[0].getResource().getServices()[0].id + "/info.json";
                     });
                     //this.totalPages = tileSources.length;
