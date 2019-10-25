@@ -4,6 +4,7 @@ import { id } from '../../utils/utils';
 import { Overlay } from '../../overlay';
 import { Store, Unsubscribe } from "@stencil/redux";
 import { setDocumentUrl } from "../../store/actions/document";
+import { FetchService, CorsMode } from '../../services/fetch-service';
 
 @Component({
     tag: 'harmonized-viewer-openseadragon',
@@ -21,25 +22,27 @@ export class OpenSeadragonComponent {
     setDocumentUrl: typeof setDocumentUrl;
     storeUnsubscribe: Unsubscribe;
 
-    @State() stateUrl: MyAppState["document"]["stateUrl"];
+    @State() url: MyAppState["document"]["url"];
 
     @Prop({ context: "store" }) store: Store;
+
+    private fetch: FetchService = new FetchService();
 
     componentWillLoad() {
         this.store.mapDispatchToProps(this, { setDocumentUrl });
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { stateUrl }
+                document: { url: url }
             } = state;
             return {
-                stateUrl
+                url: url
             };
         });
     }
 
     componentWillRender() {
-        if (this.stateUrl) {
-            this.load(this.stateUrl);
+        if (this.url) {
+            this.load(this.url);
         }
     }
 
@@ -81,12 +84,12 @@ export class OpenSeadragonComponent {
 
                     const manifest = manifesto.create(manifestJson) as Manifesto.IManifest;
 
-                    console.log(manifest);
-
                     const tileSources = manifest.getSequences()[0].getCanvases().map(function (canvas) {
                         var images = canvas.getImages();
-                        console.log(images);
-                        return images[0].getResource().getServices()[0].id + "/info.json";
+                        var resource = images[0].getResource();
+                        var json = '{"@context":"http://iiif.io/api/image/2/context.json","@id":"https://libimages1.princeton.edu/loris/pudl0001%2F4609321%2Fs42%2F00000004.jp2","height":7200,"width":5434,"profile":["http://iiif.io/api/image/2/level2.json"],"protocol":"http://iiif.io/api/image","tiles":[{"scaleFactors":[1,2,4,8,16,32],"width":1024}]}';
+                        return JSON.parse(json);
+                        //return resource.getServices()[0].id + "/info.json";
                     });
                     //this.totalPages = tileSources.length;
 

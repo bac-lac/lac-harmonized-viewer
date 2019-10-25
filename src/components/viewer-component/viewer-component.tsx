@@ -52,7 +52,7 @@ export class ViewerComponent {
 
 
 
-	@State() stateUrl: MyAppState["document"]["stateUrl"];
+	@State() documentUrl: MyAppState["document"]["url"];
 
 	@Prop({ context: "store" }) store: Store;
 
@@ -62,17 +62,17 @@ export class ViewerComponent {
 		this.store.mapDispatchToProps(this, { setDocumentUrl });
 		this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
-				document: { stateUrl }
+				document: { url: url }
 			} = state;
 			return {
-				stateUrl
+				documentUrl: url
 			};
 		});
 	}
 
 	componentDidLoad() {
 
-		this.setDocumentUrl(this.url);
+		this.setDocumentUrl(this.url, 'IIIF');
 
 		// setTimeout(() => {
 		// 	console.log("timeout");

@@ -2,13 +2,15 @@ import { TypeKeys } from "./index";
 
 export interface SetDocumentUrl {
     type: TypeKeys.SET_DOCUMENT_URL;
-    stateUrl: string;
+    contentType: DocumentContentType;
+    url: string;
 }
 
-export const setDocumentUrl = (url: string) => (dispatch, _getState) => {
+export const setDocumentUrl = (url: string, contentType: DocumentContentType) => (dispatch, _getState) => {
     const action: SetDocumentUrl = {
         type: TypeKeys.SET_DOCUMENT_URL,
-        stateUrl: url
+        contentType: contentType,
+        url: url
     };
     dispatch(action);
 };

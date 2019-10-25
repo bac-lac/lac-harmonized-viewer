@@ -1,0 +1,83 @@
+{
+    "@context": "http://iiif.io/api/presentation/2/context.json",
+    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/1",
+    "@type": "sc:Manifest",
+    "label": [
+        {
+            "@value": "Recommendation for parole - **",
+            "@language": "en"
+        },
+        {
+            "@value": "Recommandation de libération conditionelle - **",
+            "@language": "fr"
+        }
+    ],
+    "thumbnail": "http://central.bac-lac.gc.ca/.item?id=e000002068&amp;app=cabcon&amp;op=thumb&amp;height=150",
+    "@viewingHint": "sc:paged",
+    "metadata": [
+        {
+            "label": "foundIn",
+            "value": [
+                {
+                    "@value": "Archives / Cabinet Conclusions",
+                    "@language": "en"
+                },
+                {
+                    "@value": "Archives / Conclusions du Cabinet",
+                    "@language": "fr"
+                }
+            ]
+        },
+        {
+            "label": "reference",
+            "value": [
+                {
+                    "@value": "RG2, Privy Council Office, Series A-5-a, Volume 6359 Access Code: 90",
+                    "@language": "en"
+                },
+                {
+                    "@value": "RG2, Bureau du conseil privé, Series A-5-a, Volume 6359 Code d'accès : 90",
+                    "@language": "fr"
+                }
+            ]
+        }
+    ],
+    "sequences": [
+        {
+            "canvases": [
+                {
+                    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/1",
+                    "@type": "sc:Canvas",
+                    "label": null,
+                    "height": 1321,
+                    "width": 820,
+                    "images": [
+                        {
+                            "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/1/e000002068/image.json",
+                            "@type": "oa:Annotation",
+                            "motivation": "sc:painting",
+                            "resource": {
+                                "@id": "http://central.bac-lac.gc.ca/.item?id=e000002068&amp;app=cabcon&amp;op=img",
+                                "@type": "dctypes:Image",
+                                "format": null,
+                                "height": 1321,
+                                "width": 820,
+                                "service": null,
+                                "thumbnail": {
+                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e000002068&amp;app=cabcon&amp;op=thumb&amp;height=150",
+                                    "width": 0,
+                                    "height": 150
+                                }
+                            },
+                            "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/1"
+                        }
+                    ],
+                    "otherContent": {
+                        "captionEn": "",
+                        "captionFr": ""
+                    }
+                }
+            ]
+        }
+    ]
+}

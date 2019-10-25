@@ -1,4 +1,4 @@
-import { Component, Element, h, Prop, Event, EventEmitter, Watch, Method, Listen, State } from '@stencil/core';
+import { Component, Element, h, Prop, Event, EventEmitter, Watch, Method, Listen } from '@stencil/core';
 import '../../utils/manifest';
 
 @Component({

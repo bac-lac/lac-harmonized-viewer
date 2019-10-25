@@ -5,15 +5,16 @@ export class FetchService {
             method: 'GET',
             mode: cors,
             cache: 'no-cache',
-            credentials: 'same-origin',
+            //credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json'
                 // 'Content-Type': 'application/x-www-form-urlencoded',
             },
             redirect: 'follow', // manual, *follow, error
-            referrer: 'no-referrer' // no-referrer, *client
+            //referrer: 'no-referrer' // no-referrer, *client
             //body: JSON.stringify(data) // body data type must match "Content-Type" header
         });
+        console.log(response.statusText);
         return await response.json(); // parses JSON response into native JavaScript objects
     }
 }
