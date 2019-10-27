@@ -1,18 +1,57 @@
-.hv-toolbar__content {
-    padding-top: 3px; // extra padding because of topbar shadow
+@import "../../globals/variables.scss";
 
-    .button {
-        border-radius: 2px;
+.hv-toolbar {
+    padding: 0;
+    border-bottom: #d3d3d3 1px solid;
+    background-color: $light;
+
+    .navbar-center {
+        flex-grow: 1;
+        justify-content: center;
     }
 
-    .bx--btn {
-        svg {
-            fill: #8a9294;
-            transition: fill 200ms ease;
+    // .navbar-separator:after {
+    //     content: "";
+    //     width: 1px;
+    //     height: 100%;
+    //     display: flex;
+    //     margin-right: 0.75rem;
+    //     background-color: #d3d3d3;
+    // }
+
+    .navbar-item {
+        &.has-dropdown {
+            .navbar-link {
+                padding-right: 2rem;
+
+                &:after {
+                    font-size: 10px;
+                }
+            }
         }
 
-        &:hover svg {
-            fill: #333;
+        .tag {
+            font-size: 1rem;
+            padding: 0 0.5rem;
+
+            &:hover {
+                text-decoration: none;
+                background-color: #e8e8e8;
+            }
         }
+
+        svg {
+            height: 16px;
+        }
+    }
+
+    .toolbar-page {
+        padding: 0 0.75rem;
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .hv-toolbar .navbar {
+        min-height: 3rem;
     }
 }

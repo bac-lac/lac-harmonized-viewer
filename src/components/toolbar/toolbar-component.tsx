@@ -1,7 +1,10 @@
-import { Component, Prop, h, Element, Event, EventEmitter } from '@stencil/core';
+import { Component, h, Element, Prop, State } from '@stencil/core';
 import { getInstance } from '../../utils/utils';
 import { icon } from '@fortawesome/fontawesome-svg-core';
 import "../../utils/icon-library";
+import { Unsubscribe, Store } from '@stencil/redux';
+import { MyAppState } from '../../interfaces';
+import { setPage } from '../../store/actions/document';
 
 @Component({
     tag: 'hv-toolbar',
@@ -11,60 +14,138 @@ import "../../utils/icon-library";
 })
 export class HVToolbar {
 
-    @Element() el: HTMLElement;
+    @Element() el: HTMLElement
 
-    @Prop() page: number;
-    @Prop() totalPages: number;
+    setPage: typeof setPage
 
-    @Event() previous: EventEmitter;
-    @Event() next: EventEmitter;
+    storeUnsubscribe: Unsubscribe
 
-    nextHandler() {
-        this.next.emit();
+    @State() loading: MyAppState["document"]["loading"]
+    @State() page: MyAppState["document"]["page"]
+    @State() pageCount: MyAppState["document"]["pageCount"]
+    @State() alternateFormats: MyAppState["document"]["alternateFormats"]
+
+    @Prop({ context: "store" }) store: Store
+
+    componentWillLoad() {
+
+        this.store.mapDispatchToProps(this, { setPage })
+        this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
+            const {
+                document: { alternateFormats: alternateFormats, loading: loading, page: page, pageCount: pageCount }
+            } = state
+            return {
+                alternateFormats: alternateFormats,
+                loading: loading,
+                page: page,
+                pageCount: pageCount
+            }
+        })
     }
 
-    previousHandler() {
-        this.previous.emit();
+    componentDidUnload() {
+        this.storeUnsubscribe()
     }
 
-    fullscreenClick() {
-        const root = getInstance(this.el);
-        if (root) {
-            root.requestFullscreen();
+    isFirst() {
+        return (this.page <= 0)
+    }
+
+    isLast() {
+        return (this.page >= (this.pageCount - 1))
+    }
+
+    handleHomeClick() {
+        this.setPage(0)
+    }
+
+    handlePreviousClick() {
+        this.setPage(this.page - 1)
+    }
+
+    handleNextClick() {
+        this.setPage(this.page + 1)
+    }
+
+    handleFullscreenClick() {
+
+        const instance = this.el.closest('.harmonized-viewer')
+        if (instance) {
+            instance.requestFullscreen()
+            instance.classList.add('is-fullscreen')
         }
     }
 
+    handleAlternateFormatClick() {
+
+    }
+
     render() {
-        const loading = !Number.isInteger(this.page) || !Number.isInteger(this.totalPages);
 
-        return (loading ? <div></div> :
-            <div class="hv-toolbar__content">
-                <div class="hv-flex hv-full-width">
-                    <div class="hv-flex-align-left">
+        return (
+            <nav class="navbar is-light" role="toolbar" aria-label="Toolbar navigation">
 
-                        <button class="button" type="button" title="Fullscreen" onClick={this.fullscreenClick.bind(this)}>
-                            <span class="icon"></span>
-                        </button>
+                <div class="navbar-menu">
+
+                    <div class="navbar-start">
+
+                        <a class="navbar-item" title="Home" onClick={this.handleHomeClick.bind(this)}>
+                            <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'home' }).html[0]}></span>
+                        </a>
+
+                        <a class="navbar-item" title="Fullscreen" onClick={this.handleFullscreenClick.bind(this)}>
+                            <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'expand' }).html[0]}></span>
+                        </a>
+
+                        <div class="navbar-item">
+                            <harmonized-zoom-slider />
+                        </div>
+
+                        <div class="navbar-item has-dropdown is-hoverable">
+                            <a class="navbar-link">
+                                100%
+                            </a>
+                            <div class="navbar-dropdown">
+                                <a class="navbar-item">100%</a>
+                            </div>
+                        </div>
 
                     </div>
-                    <div class="hv-flex-align-right hv-flex">
 
-                        <button class="button" type="button" title="Previous" onClick={this.previousHandler.bind(this)}>
+                    <div class="navbar-start navbar-center">
+
+                        <a class="navbar-item" title="Previous" onClick={this.handlePreviousClick.bind(this)}>
                             <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'chevron-left' }).html[0]}></span>
-                        </button>
+                        </a>
 
-                        <div class="hv-flex hv-flex-align-center">
-                            <span>{(this.page + 1)} of {this.totalPages} pages</span>
+                        <div class="navbar-item toolbar-page">
+                            <a class="tag">{(this.page + 1)}</a>
+                            &nbsp;
+                            <span>of {this.pageCount} pages</span>
                         </div>
 
-                        <div class="">
-                            <button class="button" type="button" title="Next" onClick={this.nextHandler.bind(this)}>
-                                <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'chevron-right' }).html[0]}></span>
-                            </button>
-                        </div>
+                        <a class="navbar-item" title="Next" onClick={this.handleNextClick.bind(this)}>
+                            <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'chevron-right' }).html[0]}></span>
+                        </a>
+
+                    </div>
+
+                    <div class="navbar-end">
+
+                        {
+                            this.alternateFormats.map((alternateFormat) =>
+
+                                <a class="navbar-item" title="Home" onClick={this.handleAlternateFormatClick.bind(this)}>
+                                    <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'download' }).html[0]}></span>
+                                    <span>{alternateFormat.label}</span>
+                                </a>
+                            )
+                        }
 
                     </div>
                 </div>
-            </div>);
+
+            </nav>
+        )
     }
 }

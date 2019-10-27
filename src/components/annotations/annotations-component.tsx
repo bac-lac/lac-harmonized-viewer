@@ -1,5 +1,9 @@
-import { Component, Prop, h, Element, Watch, State } from '@stencil/core';
+import { Component, h, Element, State, Prop } from '@stencil/core';
 import OverlayScrollbars from 'overlayscrollbars';
+import { Unsubscribe, Store } from '@stencil/redux';
+import { MyAppState } from '../../interfaces';
+import { icon } from '@fortawesome/fontawesome-svg-core';
+import { LocalStorage } from '../../services/storage-service';
 
 @Component({
     tag: 'hv-annotations',
@@ -7,52 +11,97 @@ import OverlayScrollbars from 'overlayscrollbars';
 })
 export class AnnotationsComponent {
 
-    @Element() el: HTMLElement;
+    @Element() el: HTMLElement
 
-    @Prop() manifest: Manifesto.IManifest;
-    @Prop() page: number;
+    storeUnsubscribe: Unsubscribe
 
-    @State() manifestAnnotations: Manifesto.LabelValuePair[] = [];
+    @State() annotations: MyAppState["document"]["annotations"]
 
-    private scrollbars: OverlayScrollbars;
+    @Prop({ context: "store" }) store: Store
+
+    private scrollbars: OverlayScrollbars
+    private storage: LocalStorage
+
+    constructor() {
+        this.storage = new LocalStorage()
+    }
+
+    componentWillLoad() {
+
+        this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
+            const {
+                document: { annotations: annotations }
+            } = state
+            return {
+                annotations: annotations
+            }
+        })
+    }
+
+    componentDidUnload() {
+        this.storeUnsubscribe()
+    }
 
     componentDidRender() {
 
         // Initialize custom scrollbars
         if (this.scrollbars) {
-            this.scrollbars.destroy();
+            this.scrollbars.destroy()
         }
-        this.scrollbars = OverlayScrollbars(this.el.querySelector('.hv-annotations__content'), {});
+        this.scrollbars = OverlayScrollbars(this.el.querySelector('.hv-annotations__content'), {})
 
-        const annotationList = this.el.querySelector('[data-accordion]');
+        const annotationList = this.el.querySelector('[data-accordion]')
         if (annotationList) {
             //Accordion.create(annotationList);
         }
     }
 
-    @Watch('manifest')
-    manifestWatchHandler() {
-        this.manifestAnnotations = this.manifest.getMetadata();
+    handleClick(ev: MouseEvent) {
+
+        const target = ev.currentTarget as HTMLElement
+        if (target) {
+
+            const dt = target.closest('dt')
+            const panel = dt.nextElementSibling
+            const id = dt.getAttribute('data-id')
+
+            // Toggle annotation panel
+            Array.from(target.querySelectorAll('.icon')).forEach((icon) => {
+                icon.classList.toggle('is-hidden')
+            })
+            panel.classList.toggle('is-hidden')
+
+            // Persist state
+            const collapsed = panel.classList.contains('is-hidden')
+            this.storage.set('annotation-' + id, JSON.stringify(collapsed))
+        }
     }
 
     render() {
-        return (<div class="hv-annotations__content">
-            {this.manifestAnnotations.length == 0 ?
-                <span></span> :
-                <ul data-accordion class="bx--accordion">
+        return (
+            <div class="annotations-content">
+                {
+                    this.annotations &&
+                    <dl>
+                        {
+                            this.annotations.map((annotation) => [
+                                <dt data-id={annotation.id}>
+                                    <a onClick={this.handleClick.bind(this)}>
+                                        {annotation.label ? annotation.label : 'Other'}
+                                        <span class={!annotation.collapsed ? "icon is-hidden" : "icon"} innerHTML={icon({ prefix: 'fas', iconName: 'chevron-left' }).html[0]}>
 
-                    {this.manifestAnnotations.map((annotation, index) =>
-                        <li data-accordion-item class="bx--accordion__item">
-                            <button class="bx--accordion__heading" aria-expanded="false" aria-controls={"panel" + index}>
-                                <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" class="bx--accordion__arrow" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M11 8l-5 5-.7-.7L9.6 8 5.3 3.7 6 3z"></path></svg>
-                                <div class="bx--accordion__title" innerHTML={annotation.getLabel()}></div>
-                            </button>
-                            <div id={"panel" + index} class="bx--accordion__content" innerHTML={annotation.getValue()}>
-                            </div>
-                        </li>
-                    )}
+                                        </span>
+                                        <span class={annotation.collapsed ? "icon is-hidden" : "icon"} innerHTML={icon({ prefix: 'fas', iconName: 'chevron-down' }).html[0]}>
 
-                </ul>}
-        </div>);
+                                        </span>
+                                    </a>
+                                </dt>,
+                                <dd class={annotation.collapsed && "is-hidden"} innerHTML={annotation.content}></dd>
+                            ])
+                        }
+                    </dl>
+                }
+            </div>
+        )
     }
 }

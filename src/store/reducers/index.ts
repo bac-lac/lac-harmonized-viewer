@@ -3,6 +3,6 @@ import { combineReducers } from "redux";
 
 export const rootReducer = combineReducers({
     document: document
-});
+})
 
-export default rootReducer;
+export default rootReducer

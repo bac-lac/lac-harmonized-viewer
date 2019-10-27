@@ -4,7 +4,9 @@ import 'manifesto.js';
 import { LocationOption } from './viewer-options';
 import { Store, Unsubscribe } from "@stencil/redux";
 import { configureStore } from "../../store";
-import { setDocumentUrl } from '../../store/actions/document';
+import { setDocumentUrl, setDocumentContentType } from '../../store/actions/document';
+import { MyAppState } from '../../interfaces';
+import { FetchService, CorsMode } from '../../services/fetch-service';
 
 @Component({
 	tag: 'harmonized-viewer',
@@ -20,59 +22,64 @@ export class ViewerComponent {
 	@Prop() language: string = "en";
 
 	@Prop() enableTopbar: boolean = true;
-	@Prop() toolbarShow: boolean = true;
+	@Prop() enableToolbar: boolean = true;
 
 	@Prop() annotationsShow: boolean = true;
 
 	@Prop() navigationHeight?: number = null;
 	@Prop() navigationLocation: LocationOption = LocationOption.Left;
 
-	// @Prop() toolbar: HTMLHvToolbarElement;
-	// @Prop() navigationElement: HTMLHvNavigationElement;
-	// @Prop() annotations: HTMLHvAnnotationsElement;
-	// @Prop() viewport: HTMLHvViewportElement;
-
 	@Prop() page: number;
 	@Prop() totalPages: number;
 
-	@Prop() url: string;
+	@Prop({ attribute: 'url' }) parameterUrl: string;
 
 	@Event() manifestLoaded: EventEmitter;
 	@Event() canvasLoaded: EventEmitter;
 	@Event() goto: EventEmitter;
 	@Event() nextLoad: EventEmitter;
 
-	//@State() manifest: Manifesto.IManifest;
-
-	//private topbar: HTMLHarmonizedViewerTopbarElement;
-
-	setDocumentUrl: typeof setDocumentUrl;
-	storeUnsubscribe: Unsubscribe;
+	setDocumentContentType: typeof setDocumentContentType
+	setDocumentUrl: typeof setDocumentUrl
+	storeUnsubscribe: Unsubscribe
 
 
 
 
-	@State() documentUrl: MyAppState["document"]["url"];
+	@State() url: MyAppState["document"]["url"];
 
 	@Prop({ context: "store" }) store: Store;
 
-	async componentWillLoad() {
+	componentWillLoad() {
 
-		this.store.setStore(configureStore({}));
-		this.store.mapDispatchToProps(this, { setDocumentUrl });
+		this.store.setStore(configureStore({}))
+		this.store.mapDispatchToProps(this, { setDocumentContentType, setDocumentUrl })
 		this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
 				document: { url: url }
-			} = state;
+			} = state
 			return {
-				documentUrl: url
+				url: url
 			};
-		});
+		})
 	}
 
 	componentDidLoad() {
 
-		this.setDocumentUrl(this.url, 'IIIF');
+		this.setDocumentUrl(this.parameterUrl)
+		this.setDocumentContentType('application/json')
+
+		// FetchService.execute(
+		// 	this.parameterUrl,
+		// 	'HEAD',
+		// 	CorsMode.Enable
+		// )
+		// 	.then((value) => {
+		// 		//console.log(value)
+		// 		this.setDocumentContentType(value.type)
+		// 	}, (reason) => {
+		// 		console.error(reason)
+		// 	})
 
 		// setTimeout(() => {
 		// 	console.log("timeout");
@@ -81,92 +88,16 @@ export class ViewerComponent {
 	}
 
 	componentDidUnload() {
-		this.storeUnsubscribe();
+		this.storeUnsubscribe()
 	}
-
-
-
-	@Method()
-	async currentPage(): Promise<number> {
-		return Promise.resolve(this.page);
-	}
-
-	@Method()
-	async next(): Promise<void> {
-		this.nextLoad.emit();
-	}
-
-	@Listen('manifestLoaded')
-	onManifestLoaded(event: CustomEvent) {
-
-		const manifest = event.detail as Manifesto.IManifest;
-
-		const title: string = manifest.getDefaultLabel();
-		this.totalPages = manifest.getSequenceByIndex(0).getTotalCanvases();
-
-		// if (this.topbar) {
-		// 	this.topbar.text = title;
-		// }
-		// if (this.navigationElement) {
-		// 	this.navigationElement.manifest = manifest;
-		// }
-		// if (this.annotations) {
-		// 	this.annotations.manifest = manifest;
-		// }
-		// if (this.toolbar) {
-		// 	this.toolbar.totalPages = this.totalPages;
-		// }
-	}
-
-	@Listen('canvasLoaded')
-	onCanvasLoaded(event: CustomEvent) {
-
-		this.page = event.detail as number;
-
-		// if (this.navigationElement) {
-		// 	this.navigationElement.page = this.page;
-		// }
-		// if (this.annotations) {
-		// 	this.annotations.page = this.page;
-		// }
-		// if (this.toolbar) {
-		// 	this.toolbar.page = this.page;
-		// }
-	}
-
-	@Listen('goto')
-	gotoHandler(event: CustomEvent) {
-		const gotoPage = event.detail as number;
-		// if (this.totalPages > gotoPage + 1) {
-		// 	if (this.viewport) {
-		// 		this.viewport.openseadragon.goToPage(event.detail as number);
-		// 	}
-		// }
-	}
-
-	// @Listen('previous')
-	// previousHandler() {
-	// 	this.goto.emit(this.page - 1);
-	// 	this.increment();
-	// }
-
-	// @Listen('next')
-	// nextHandler() {
-	// 	this.goto.emit(this.page + 1);
-	// }
-
-	// @Method()
-	// async next() {
-	// 	this.nextHandler();
-	// }
 
 	render() {
 		return <div class="harmonized-viewer">
 
-			<h1>Hello, my name is {this.url}</h1>
-
-			{/* Topbar */}
-			{(this.enableTopbar ? this.renderTopbar() : undefined)}
+			{
+				this.enableTopbar &&
+				<harmonized-viewer-topbar></harmonized-viewer-topbar>
+			}
 
 			{this.renderNavigation(LocationOption.Top)}
 
@@ -174,14 +105,22 @@ export class ViewerComponent {
 				{this.renderNavigation(LocationOption.Left)}
 
 				<main class="hv-main">
-					{this.renderToolbar()}
+
+					{
+						this.enableToolbar &&
+						<hv-toolbar class="hv-toolbar" />
+					}
+
 					<div class="hv-main__content">
 						<hv-viewport></hv-viewport>
-						{this.renderAnnotations()}
 					</div>
+
 				</main>
 
 				{this.renderNavigation(LocationOption.Right)}
+
+				<hv-annotations class="annotations annotations-right" />
+
 			</div>
 
 			<slot name="footer" />
@@ -191,45 +130,16 @@ export class ViewerComponent {
 		</div>;
 	}
 
-	renderTopbar() {
-		if (!this.enableTopbar) {
-			return undefined;
-		}
-		return (
-			<harmonized-viewer-topbar></harmonized-viewer-topbar>
-		);
-	}
-
 	renderNavigation(location: LocationOption) {
-		if (!location || !this.navigationLocation) {
-			return undefined;
-		}
+
 		if (location == this.navigationLocation) {
 			return (
 				<hv-navigation
-					class={"hv-navigation hv-navigation--" + this.navigationLocation}
+					class={"navigation navigation-" + this.navigationLocation}
 					style={{
-						height: (this.navigationHeight ? this.navigationHeight + "px" : null)
-					}}></hv-navigation>
-			);
+						height: (this.navigationHeight && this.navigationHeight + "px")
+					}} />
+			)
 		}
-	}
-
-	renderToolbar() {
-		if (!this.toolbarShow) {
-			return undefined;
-		}
-		return (
-			<hv-toolbar class="hv-toolbar"></hv-toolbar>
-		);
-	}
-
-	renderAnnotations() {
-		if (!this.annotationsShow) {
-			return undefined;
-		}
-		return (
-			<hv-annotations class="hv-annotations"></hv-annotations>
-		);
 	}
 }

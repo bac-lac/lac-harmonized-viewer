@@ -1,52 +1,77 @@
+@import "../../globals/variables.scss";
+
 .topbar {
-    .hv-topbar__content {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 1rem;
-        background-color: #3c4245;
+    flex: 0 0 auto;
+    z-index: 1000;
+    display: inline-block;
+    border-bottom: #fff 1px solid;
+    // box-shadow: 0 -2px 3px 5px rgba(0, 0, 0, 0.3);
 
-        a:link,
-        a:visited {
-            text-decoration: none;
-        }
+    .navbar-item {
+        padding: 0 1.4rem;
 
-        .hv-title {
-            width: 500px;
-            height: 1.075rem;
-
-            color: #f5f6f6;
-            font-size: 1.075rem;
-            font-weight: normal;
-            line-height: 1.075rem;
-            margin: 0;
-            padding: 0;
-            display: block;
-
-            &--loading {
-                //@include skeleton();
-                background-color: rgba(255, 255, 255, 0.025);
-                &:before {
-                    background-color: rgba(255, 255, 255, 0.3);
-                }
-            }
-        }
-
-        .hv-creator {
-            color: #f5f6f6;
-            font-size: 0.9rem;
-            font-weight: bold;
-            margin: 0;
-            padding: 0;
-        }
-
-        .hv-logo {
-            max-height: 100%;
+        .image {
+            display: flex;
+            align-items: center;
         }
     }
 
-    .hv-topbar__actions {
-        display: flex;
-        align-items: center;
-    }
+    // .hv-topbar__content {
+    //     display: flex;
+    //     align-items: center;
+    //     justify-content: space-between;
+    //     padding: 0 1rem;
+    //     background-color: #3c4245;
+
+    //     a:link,
+    //     a:visited {
+    //         text-decoration: none;
+    //     }
+
+    //     .hv-title {
+    //         width: 500px;
+    //         height: 1.075rem;
+
+    //         color: #f5f6f6;
+    //         font-size: 1.075rem;
+    //         font-weight: normal;
+    //         line-height: 1.075rem;
+    //         margin: 0;
+    //         padding: 0;
+    //         display: block;
+
+    //         &--loading {
+    //             //@include skeleton();
+    //             background-color: rgba(255, 255, 255, 0.025);
+    //             &:before {
+    //                 background-color: rgba(255, 255, 255, 0.3);
+    //             }
+    //         }
+    //     }
+
+    //     .hv-creator {
+    //         color: #f5f6f6;
+    //         font-size: 0.9rem;
+    //         font-weight: bold;
+    //         margin: 0;
+    //         padding: 0;
+    //     }
+
+    //     .hv-logo {
+    //         max-height: 100%;
+    //     }
+    // }
+
+    // .hv-topbar__actions {
+    //     display: flex;
+    //     align-items: center;
+    // }
+}
+
+.button-fullscreen-exit {
+    display: none;
+}
+
+.is-fullscreen .button-fullscreen-exit {
+    display: flex;
 }

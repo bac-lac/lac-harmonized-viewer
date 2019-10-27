@@ -1,0 +1,18 @@
+harmonized-zoom-slider {
+    width: 200px;
+    height: 100%;
+    display: flex;
+
+    .zoom-slider {
+        width: 100%;
+    }
+
+    &:not([dir="rtl"]) .noUi-horizontal .noUi-origin {
+        left: auto;
+        right: 0;
+    }
+    &:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
+        right: -17px;
+        left: auto;
+    }
+}

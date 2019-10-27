@@ -1,21 +1,20 @@
 export class FetchService {
 
-    async get(url: string, cors: CorsMode = CorsMode.Enable) {
+    static async execute(url: string, method: string, contentType: string, cors: CorsMode = CorsMode.Enable) {
         const response = await fetch(url, {
-            method: 'GET',
+            method: method,
             mode: cors,
             cache: 'no-cache',
             //credentials: 'same-origin',
             headers: {
-                'Content-Type': 'application/json'
-                // 'Content-Type': 'application/x-www-form-urlencoded',
+                //'Content-Type': 'application/json'
+                //'Content-Type': contentType
             },
             redirect: 'follow', // manual, *follow, error
             //referrer: 'no-referrer' // no-referrer, *client
             //body: JSON.stringify(data) // body data type must match "Content-Type" header
-        });
-        console.log(response.statusText);
-        return await response.json(); // parses JSON response into native JavaScript objects
+        })
+        return await response.blob() // parses JSON response into native JavaScript objects
     }
 }
 

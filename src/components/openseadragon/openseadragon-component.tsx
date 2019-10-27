@@ -1,10 +1,12 @@
 import { Component, h, Element, Event, EventEmitter, Method, Listen, State, Prop } from '@stencil/core';
-import openseadragon from 'openseadragon';
 import { id } from '../../utils/utils';
 import { Overlay } from '../../overlay';
 import { Store, Unsubscribe } from "@stencil/redux";
-import { setDocumentUrl } from "../../store/actions/document";
-import { FetchService, CorsMode } from '../../services/fetch-service';
+import { setDocumentUrl, setDocumentPages, setDocumentTitle, setLoading, setAnnotations, setZoom, setPage, setDocumentAlternateFormats } from "../../store/actions/document";
+import { MyAppState } from '../../interfaces';
+import openseadragon from 'openseadragon';
+import { Md5 } from 'ts-md5/dist/md5';
+import { LocalStorage } from '../../services/storage-service';
 
 @Component({
     tag: 'harmonized-viewer-openseadragon',
@@ -12,59 +14,106 @@ import { FetchService, CorsMode } from '../../services/fetch-service';
 })
 export class OpenSeadragonComponent {
 
-    @Element() el: HTMLElement;
+    @Element() el: HTMLElement
 
-    @Event() overlayClick: EventEmitter;
+    @Event() overlayClick: EventEmitter
 
-    private openseadragon: any;
-    private overlays: Overlay[] = [];
+    //private this.viewer: any
+    private overlays: Overlay[] = []
+    private storage: LocalStorage
+    private viewer: any
 
-    setDocumentUrl: typeof setDocumentUrl;
-    storeUnsubscribe: Unsubscribe;
+    setLoading: typeof setLoading
+    setDocumentUrl: typeof setDocumentUrl
+    setDocumentPages: typeof setDocumentPages
+    setDocumentTitle: typeof setDocumentTitle
+    setDocumentAlternateFormats: typeof setDocumentAlternateFormats
+    setAnnotations: typeof setAnnotations
+    setPage: typeof setPage
+    setZoom: typeof setZoom
 
-    @State() url: MyAppState["document"]["url"];
+    storeUnsubscribe: Unsubscribe
 
-    @Prop({ context: "store" }) store: Store;
+    @State() url: MyAppState["document"]["url"]
+    @State() page: MyAppState["document"]["page"]
+    @State() pages: MyAppState["document"]["pages"]
+    @State() zoom: MyAppState["document"]["zoom"]
 
-    private fetch: FetchService = new FetchService();
+    private pageOld: number
+    private zoomOld: number
 
-    componentWillLoad() {
-        this.store.mapDispatchToProps(this, { setDocumentUrl });
-        this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
-            const {
-                document: { url: url }
-            } = state;
-            return {
-                url: url
-            };
-        });
+    @Prop({ context: "store" }) store: Store
+
+    constructor() {
+        this.storage = new LocalStorage()
     }
 
-    componentWillRender() {
-        if (this.url) {
-            this.load(this.url);
+    componentWillLoad() {
+
+        this.store.mapDispatchToProps(this, { setLoading, setDocumentUrl, setDocumentPages, setDocumentTitle, setDocumentAlternateFormats, setAnnotations, setPage, setZoom })
+        this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
+            const {
+                document: { page: page, pages: pages, url: url, zoom: zoom }
+            } = state
+            return {
+                page: page,
+                pages: pages,
+                url: url,
+                zoom: zoom
+            }
+        })
+    }
+
+    componentDidRender() {
+
+        const pageChanged = (this.page !== this.pageOld)
+        const zoomChanged = (this.zoom && this.zoom.zoom !== this.zoomOld)
+
+        if (this.viewer) {
+
+            if (pageChanged) {
+                this.viewer.goToPage(this.page)
+            }
+
+            if (zoomChanged) {
+                this.viewer.viewport.zoomTo(this.zoom.zoom)
+            }
         }
+        else if (this.url) {
+            this.load(this.url)
+        }
+
+        // Update duplicate state properties in order
+        // to detect the next value change
+        this.pageOld = this.page
+        this.zoomOld = this.zoom && this.zoom.zoom
     }
 
     componentDidUnload() {
-        this.storeUnsubscribe();
+        this.storeUnsubscribe()
     }
 
     @Method()
     async getOverlays(): Promise<Overlay[]> {
-        return Promise.resolve(this.overlays);
+        return Promise.resolve(this.overlays)
     }
 
     @Listen('overlayClick')
     handleOverlayClick(ev: MouseEvent) {
-        console.log('overlay click');
+        console.log('overlay click')
     }
 
     load(url: string) {
 
-        if (this.openseadragon) {
-            this.openseadragon.destroy();
-            this.openseadragon = null;
+        if (!url) {
+            return undefined
+        }
+
+        this.setLoading(true)
+
+        if (this.viewer) {
+            this.viewer.destroy()
+            this.viewer = null
         }
 
         this.overlays.push({
@@ -73,65 +122,122 @@ export class OpenSeadragonComponent {
             width: 500,
             height: 500,
             text: "test overlay"
-        });
+        })
 
-        //console.log("manifest fetch", this.stateUrl);
+        manifesto.loadManifest(url)
 
-        if (url) {
+            .then((json: string) => {
 
-            manifesto.loadManifest(url)
-                .then((manifestJson: string) => {
+                const manifest = manifesto.create(json) as Manifesto.IManifest
 
-                    const manifest = manifesto.create(manifestJson) as Manifesto.IManifest;
+                this.setDocumentTitle(manifest.getDefaultLabel())
 
-                    const tileSources = manifest.getSequences()[0].getCanvases().map(function (canvas) {
-                        var images = canvas.getImages();
-                        var resource = images[0].getResource();
-                        var json = '{"@context":"http://iiif.io/api/image/2/context.json","@id":"https://libimages1.princeton.edu/loris/pudl0001%2F4609321%2Fs42%2F00000004.jp2","height":7200,"width":5434,"profile":["http://iiif.io/api/image/2/level2.json"],"protocol":"http://iiif.io/api/image","tiles":[{"scaleFactors":[1,2,4,8,16,32],"width":1024}]}';
-                        return JSON.parse(json);
-                        //return resource.getServices()[0].id + "/info.json";
-                    });
-                    //this.totalPages = tileSources.length;
+                const tileSources = manifest.getSequences()[0].getCanvases().map((canvas) => {
+                    const images = canvas.getImages()
+                    const resource = images[0].getResource()
+                    //var json = '{"@context":"http://iiif.io/api/image/2/context.json","@id":"https://libimages1.princeton.edu/loris/pudl0001%2F4609321%2Fs42%2F00000004.jp2","height":7200,"width":5434,"profile":["http://iiif.io/api/image/2/level2.json"],"protocol":"http://iiif.io/api/image","tiles":[{"scaleFactors":[1,2,4,8,16,32],"width":1024}]}';
+                    //return JSON.parse(json);
+                    return resource.getServices()[0].id + '/info.json'
+                })
 
-                    this.openseadragon = openseadragon({
-                        element: this.el.querySelector(".openseadragon"),
-                        prefixUrl: "/dist/vendors/openseadragon/images/",
-                        animationTime: 0.25,
-                        springStiffness: 10.0,
-                        showNavigator: true,
-                        navigatorPosition: "BOTTOM_RIGHT",
-                        showNavigationControl: false,
-                        showSequenceControl: false,
-                        sequenceMode: true,
-                        tileSources: tileSources
-                    });
+                const pages = manifest.getSequences()[0].getCanvases()
+                    .flatMap((canvas) => canvas.getImages().map((image) => {
+                        const resource = image.getResource()
+                        if (resource) {
+                            const services = resource.getServices()
+                            if (services) {
+                                const id = services[0].id
+                                return {
+                                    id: canvas.id,
+                                    thumbnail: id + '/full/90,/0/default.jpg'
+                                }
+                            }
+                        }
+                    }))
 
-                    this.openseadragon.addHandler('open', () => {
+                this.setDocumentPages(pages)
 
-                        //this.page = this.openseadragon.currentPage();
+                let startPageIndex = 0
+                const startCanvas = manifest.getSequenceByIndex(0).getStartCanvas()
+                if (startCanvas) {
+                    const startPage = this.pages.find((page) => page.id == startCanvas)
+                    if (startPage) {
+                        startPageIndex = this.pages.indexOf(startPage)
+                    }
+                }
 
-                        //this.drawOverlays();
-                        //this.drawShadow();
+                const annotations = manifest.getMetadata().map((annotation) => {
 
-                        // this.handleCanvasLoad(this.openseadragon.world.getItemAt(0), () => {
-                        //     //this.canvasLoaded.emit(this.page);
-                        //     this.el.querySelector('.hv-openseadragon');
-                        // });
+                    const label = annotation.getLabel()
 
-                        //this.pageLoaded.emit(this.page);
-                    });
+                    const hash = new Md5()
+                    const id = hash.appendStr(label || '').end().toString()
 
-                    // this.openseadragon.addHandler('close', () => {
+                    const state = this.storage.get('annotation-' + id)
+                    const collapsed = (state) ? JSON.parse(state) as boolean : false
 
-                    // });
-                });
-        }
+                    return {
+                        id: id,
+                        label: annotation.getLabel(),
+                        content: annotation.getValue(),
+                        collapsed: collapsed
+                    }
+                })
 
+                this.setAnnotations(annotations)
+
+                // Alternate formats
+                const alternateFormats = manifest.getSequenceByIndex(0).getRenderings().map((rendering) => ({
+                    label: rendering.getDefaultLabel(),
+                    url: rendering.id
+                }))
+
+                this.setDocumentAlternateFormats(alternateFormats)
+
+                this.viewer = openseadragon({
+                    element: this.el.querySelector(".openseadragon"),
+                    prefixUrl: "/dist/vendors/openseadragon/images/",
+                    animationTime: 0.25,
+                    springStiffness: 10.0,
+                    showNavigator: true,
+                    navigatorPosition: "BOTTOM_RIGHT",
+                    showNavigationControl: false,
+                    showSequenceControl: false,
+                    sequenceMode: true,
+                    tileSources: tileSources,
+                    initialPage: startPageIndex
+                })
+
+                this.viewer.addHandler('open', (ev: any) => {
+
+                    const page = this.viewer.currentPage()
+                    this.setPage(page)
+
+                    this.viewer.viewport.zoomTo(this.viewer.viewport.getMinZoom(), null, true)
+                    this.viewer.viewport.applyConstraints()
+
+                    this.setLoading(false)
+                })
+
+                this.viewer.addHandler('zoom', (ev: any) => {
+
+                    const minZoom = this.viewer.viewport.getMinZoom()
+                    const maxZoom = this.viewer.viewport.getMaxZoom()
+
+                    //const value = (event.zoom - minZoom) * 100 / (maxZoom - minZoom)
+
+                    // this.setZoom({
+                    //     min: minZoom,
+                    //     max: maxZoom,
+                    //     zoom: event.zoom//this.viewer.viewport.getZoom(true)
+                    // })
+                })
+            })
     }
 
 
 
-    private drawOverlays() {
+    drawOverlays() {
 
         this.overlays.forEach((overlay) => {
 
@@ -140,26 +246,26 @@ export class OpenSeadragonComponent {
             const element = document.createElement("a");
             element.id = elementId;
             element.href = "javascript:;";
-            element.classList.add("hv-overlay", "bx--tooltip__trigger", "bx--tooltip--a11y", "bx--tooltip--bottom");
+            element.classList.add("hv-overlay", "bx--tooltip__trigger", "bx--tooltip--a11y", "bx--tooltip--bottom")
 
-            const tooltip = document.createElement("span");
-            tooltip.classList.add("bx--assistive-text");
-            tooltip.innerHTML = overlay.text;
-            element.appendChild(tooltip);
+            const tooltip = document.createElement("span")
+            tooltip.classList.add("bx--assistive-text")
+            tooltip.innerHTML = overlay.text
+            element.appendChild(tooltip)
 
-            const bounds = this.openseadragon.viewport.imageToViewportRectangle(overlay.x, overlay.y, overlay.width, overlay.height);
+            const bounds = this.viewer.viewport.imageToViewportRectangle(overlay.x, overlay.y, overlay.width, overlay.height);
 
-            this.openseadragon.addOverlay(element, bounds, "TOP_LEFT");
+            this.viewer.addOverlay(element, bounds, "TOP_LEFT");
 
             // Required in order to prevent click propagation to OpenSeadragon
             overlay.mouseTracker = new openseadragon.MouseTracker({
                 element: element,
                 clickHandler: () => this.overlayClick.emit(element)
-            });
-        });
+            })
+        })
     }
 
     render() {
-        return <div class="openseadragon"></div>;
+        return <div class="openseadragon"></div>
     }
 }

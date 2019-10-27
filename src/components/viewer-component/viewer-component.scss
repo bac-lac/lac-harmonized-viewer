@@ -2,6 +2,7 @@
 
 :host {
     display: block;
+    font-family: $family-sans-serif;
 }
 
 .harmonized-viewer {
@@ -9,7 +10,8 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    background-color: #f5f6f6;
+    // background-color: #f5f6f6;
+    background-color: #fff;
 
     .icon > svg {
         width: 100%;
@@ -21,32 +23,13 @@
         color: #054ada;
     }
 
-    .hv-topbar {
-        flex: 0 0 auto;
-        z-index: 1000;
-        display: inline-block;
-        box-shadow: 0 -2px 3px 5px rgba(0, 0, 0, 0.3);
-    }
-
-    .hv-toolbar {
-        padding: 0.3rem;
-        box-shadow: 0 1px 2px 1px #e3e3e3;
-        background-color: #fff;
-    }
-
-    .hv-navigation {
-        background-color: #8a9294;
-
-        &--left,
-        &--right {
+    .navigation,
+    .annotations {
+        &-left,
+        &-right {
             width: 250px;
             height: 100%;
         }
-    }
-
-    .hv-annotations {
-        width: 350px;
-        height: 100%;
     }
 
     .hv-main {
@@ -61,11 +44,10 @@
             flex-direction: row;
         }
 
-        hv-viewport {
+        .hv-viewport {
             width: 100%;
             height: 100%;
             flex: auto;
-            display: inline-block;
         }
     }
 
@@ -76,23 +58,14 @@
         flex-direction: row;
     }
 
-    .hv-full-width {
-        width: 100%;
+    img[data-src].is-loaded {
+        opacity: 1;
     }
 
-    .hv-flex {
+    img[data-src]:not(.is-loaded) {
+        opacity: 0.4;
+        height: 100%;
         display: flex;
-    }
-
-    .hv-flex-align-left {
-        justify-items: flex-start;
-    }
-
-    .hv-flex-align-right {
-        justify-items: flex-end;
-    }
-
-    .hv-flex-align-center {
-        align-items: center;
+        background-color: $grey-lighter;
     }
 }

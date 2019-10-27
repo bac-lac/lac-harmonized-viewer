@@ -1,6 +1,10 @@
-import { Component, Prop, h, Element, Event, Listen, EventEmitter, Watch } from '@stencil/core';
+import { Component, Prop, h, Element, Event, Listen, EventEmitter, Watch, State } from '@stencil/core';
 import OverlayScrollbars from 'overlayscrollbars';
 import 'manifesto.js';
+import { Unsubscribe, Store } from '@stencil/redux';
+import { MyAppState } from '../../interfaces';
+import { LazyLoading } from '../../services/lazy-service';
+import { setPage } from '../../store/actions/document';
 
 @Component({
     tag: 'hv-navigation',
@@ -8,142 +12,104 @@ import 'manifesto.js';
 })
 export class NavigationComponent {
 
-    @Element() el: HTMLElement;
+    @Element() el: HTMLElement
 
-    @Prop() page: number;
-    @Prop() manifest: Manifesto.IManifest;
+    setPage: typeof setPage
+    storeUnsubscribe: Unsubscribe
 
-    @Event() goto: EventEmitter;
+    @State() page: MyAppState["document"]["page"]
+    @State() pages: MyAppState["document"]["pages"]
 
-    private scrollbars: OverlayScrollbars;
+    @Prop({ context: "store" }) store: Store
 
-    componentDidLoad() {
+    private scrollbars: OverlayScrollbars
 
+    componentWillLoad() {
+
+        this.store.mapDispatchToProps(this, { setPage })
+        this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
+            const {
+                document: { page: page, pages: pages }
+            } = state
+            return {
+                page: page,
+                pages: pages
+            }
+        })
+    }
+
+    componentDidUnload() {
+        this.storeUnsubscribe()
     }
 
     componentDidRender() {
 
         // Initialize custom scrollbars
         if (this.scrollbars) {
-            this.scrollbars.destroy();
+            this.scrollbars.destroy()
         }
-        this.scrollbars = OverlayScrollbars(this.el.querySelector('.hv-navigation__content'), {});
+        this.scrollbars = OverlayScrollbars(
+            this.el.querySelector('.navigation-content'), {})
 
-        // Initialize lazy loading for navigation items
-        var lazyImages = [].slice.call(this.el.querySelectorAll('.hv-lazyload'));
+        const active = this.el.querySelector('.navigation-content .active')
+        if (active) {
+            active.scrollIntoView({
+                block: 'nearest'
+            })
+        }
 
-        if ("IntersectionObserver" in window) {
-            let lazyImageObserver = new IntersectionObserver(function (entries, observer) {
-                entries.forEach(function (entry) {
-                    let lazyImage = entry.target.querySelector('img') as HTMLImageElement;
-                    if (lazyImage) {
-                        lazyImage.classList.remove('hv-lazyload--complete');
-                        if (entry.isIntersecting) {
-                            lazyImage.src = lazyImage.dataset.src;
-                            //lazyImage.srcset = lazyImage.dataset.srcset;
-                            lazyImage.classList.remove('hv-lazyload--loading');
-                            lazyImage.classList.add('hv-lazyload--complete');
-                            lazyImageObserver.unobserve(lazyImage);
-                        }
-                    }
-                });
-            });
+        LazyLoading.register(this.el)
+    }
 
-            lazyImages.forEach(function (lazyImage) {
-                lazyImageObserver.observe(lazyImage);
-            });
-        } else {
-            // Possibly fall back to a more compatible method here
+    @Listen('keydown', { target: 'window' })
+    handleKeyDown(ev: KeyboardEvent) {
+
+        // Handle keyboard previous/next navigation
+        if (ev.key === 'ArrowRight' || ev.key == 'ArrowDown') {
+            this.setPage(this.page + 1)
+        }
+        else if (ev.key === 'ArrowLeft' || ev.key == 'ArrowUp') {
+            this.setPage(this.page - 1)
         }
     }
 
-    getItems() {
-        if (!this.manifest) {
-            return undefined;
-        }
-        return this.manifest
-            .getSequenceByIndex(0)
-            .getCanvases()
-            .map((canvas) => {
-
-                let imageUrl: string;
-
-                if (canvas.getThumbnail()) {
-                    imageUrl = canvas.getThumbnail().id;
-                }
-                else if (!imageUrl) {
-                    let baseUrl = canvas.getImages()[0].getResource().getServices()[0].id;
-                    imageUrl = baseUrl + "/full/90,/0/default.jpg";
-                }
-
-                return {
-                    title: canvas.getDefaultLabel(),
-                    thumbnailUrl: imageUrl
-                };
-            });
+    handlePageClick(ev: MouseEvent, page: number) {
+        this.setPage(page)
     }
 
-    @Watch('manifest')
-    manifestWatchHandler() {
-        const content = this.el.querySelector('.hv-navigation__content');
-        if (content) {
-            content.classList.remove('hv-navigation__content--loading');
-            content.classList.add('hv-navigation__content--complete');
-        }
-    }
+    imageLoad(ev: Event) {
 
-    @Listen('goto')
-    gotoHandler(event: CustomEvent) {
-
-        this.page = event.detail as number;
-
-        const items = Array
-            .from(this.el.querySelectorAll('.hv-navigation li'))
-            .map(child => child as HTMLElement);
-
-        // Apply active CSS class
-        items.forEach((item, index) => (this.page == index) ? item.classList.add('active') : item.classList.remove('active'));
-
-        // Make sure the canvas thumbnail is visible
-        // by scrolling to its corresponding element
-        items[this.page].scrollIntoView({ block: 'end', behavior: 'smooth' });
-    }
-
-    click(event: MouseEvent, page: number) {
-        this.goto.emit(page);
-    }
-
-    imageLoad(event: Event) {
-
-        const item = (event.target as HTMLElement).parentElement.parentElement;
-
-        // Sync lazy loading status classes
-        if (item) {
-            item.classList.remove('hv-lazyload--loading');
-            item.classList.add('hv-lazyload--complete');
+        const image = ev.target as HTMLElement
+        if (image) {
+            image.classList.remove('is-loading')
+            image.classList.add('is-loaded')
         }
     }
 
     render() {
 
-        const items = this.getItems();
-        const loading = (items ? false : true);
-        const skeleton = Array.apply(null, Array(24)).map(function () { });
-        const source = (loading ? skeleton : items);
+        const skeleton = Array.apply(null, Array(12)).map(function () { })
+        const pages = (this.pages.length > 0) ? this.pages : skeleton
 
         return (
-            <div class="hv-navigation__content hv-navigation__content--loading">
+            <div class="navigation-content">
                 <div class="">
-                    <ul class={(loading ? "hv-navigation__list" : "hv-navigation__list")}>
-                        {source.map((item, index) =>
-                            <li class={(this.page == index) ? "hv-lazyload hv-lazyload--loading active" : "hv-lazyload hv-lazyload--loading"}>
-                                {(
-                                    loading ? <span class="navigation-item"></span> :
-                                        <a href="javascript:;" class="navigation-item" onClick={(e) => this.click(e, index)}>
-                                            <img data-src={item.thumbnailUrl} onLoad={this.imageLoad} alt={item.title} />
-                                        </a>
-                                )}
-                            </li>)}
+                    <ul class="hv-navigation__list">
+                        {(
+                            pages &&
+                            pages.map((page, index) =>
+
+                                <li class={(this.page == index) && "active"}>
+                                    <a class="navigation-item" onClick={(ev) => this.handlePageClick(ev, index)}>
+                                        {
+                                            page && page.thumbnail ?
+                                                <img data-src={page.thumbnail} onLoad={this.imageLoad} alt="" /> :
+                                                <img data-src />
+                                        }
+                                    </a>
+                                </li>
+                            )
+                        )}
                     </ul>
                 </div>
             </div>

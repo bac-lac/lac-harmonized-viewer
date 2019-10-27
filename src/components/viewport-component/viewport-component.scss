@@ -1,3 +1,5 @@
+@import "../../globals/variables.scss";
+
 .hv-viewport {
     height: 100%;
     flex: auto;
@@ -6,15 +8,8 @@
     justify-content: center;
     position: relative;
 
-    &:hover .hv-navigation__prev,
-    &:hover .hv-navigation__next {
-        opacity: 1;
-    }
-
     .hv-navigation__prev,
     .hv-navigation__next {
-        fill: #8a9294;
-        padding: 1.25rem 0.5rem;
         opacity: 0;
         position: absolute;
         z-index: 1000;
@@ -22,7 +17,15 @@
         border-top-right-radius: 2px;
         border-bottom-right-radius: 2px;
         box-shadow: 0 1px 2px 1px #e3e3e3;
-        background-color: #fff;
+
+        &[disabled] .icon {
+            color: #ddd;
+        }
+    }
+
+    &:hover .hv-navigation__prev,
+    &:hover .hv-navigation__next {
+        opacity: 1;
     }
 
     .hv-navigation__prev {
