@@ -1,16 +1,12 @@
-// .bx--modal-footer {
-//   height: auto;
-//   display: block;
-//   padding: 1rem;
+hv-settings {
+    box-sizing: border-box;
 
-//   button.bx--btn {
-//     flex: none;
-//     height: auto;
-//     padding-bottom: 1rem;
-//     margin-right: 0.5rem;
-
-//     &:last-child {
-//       margin-right: 0;
-//     }
-//   }
-// }
+    .modal {
+        .modal-card {
+            .modal-card-head,
+            .modal-card-foot {
+                border-radius: 2px;
+            }
+        }
+    }
+}

@@ -86,8 +86,8 @@ export class TopbarComponent {
                             </a>
                         </div>
                     </div>
-                    <hv-settings></hv-settings>
                 </nav>
+                <hv-settings></hv-settings>
             </Host>
         )
     }
