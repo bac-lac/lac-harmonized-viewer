@@ -24,6 +24,10 @@
             .navbar-link {
                 padding-right: 2rem;
 
+                .icon ~ .text {
+                    margin-left: 4px;
+                }
+
                 &:after {
                     font-size: 10px;
                 }

@@ -25,6 +25,12 @@ harmonized-spinner {
             transform: rotate(360deg) translate(0, -20px) scale(0);
         }
     }
+
+    .lds-css {
+        width: fit-content;
+        margin: 0 auto 50px auto;
+    }
+
     div.lds-interwind {
         position: relative;
     }

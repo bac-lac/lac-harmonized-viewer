@@ -19,20 +19,6 @@ export function getInstance(element: HTMLElement): HTMLElement {
     }
 }
 
-export function load(key: string): any {
-    var value = window.localStorage.getItem(key);
-    if (value) {
-        return value;
-    }
-    else {
-        return undefined;
-    }
-}
-
-export function save(key: string, value: string): void {
-    window.localStorage.setItem(key, value);
-}
-
 export function id(length: number = 8, alphabet: string = "0123456789abcdefghijklmnopqrstuvwxyz"): string {
     let id = "";
     for (var i = 0; i < length; i++) {

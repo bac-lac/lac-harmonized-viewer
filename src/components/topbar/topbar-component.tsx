@@ -82,7 +82,7 @@ export class TopbarComponent {
                             </a>
                             <a class="navbar-item button-fullscreen-exit" title="Exit fullscreen" onClick={this.openSettings.bind(this)}>
                                 <span class="icon" innerHTML={icon({ prefix: "fas", iconName: "compress" }).html[0]}></span>
-                                Exit fullscreen
+                                <span class="text">Exit fullscreen</span>
                             </a>
                         </div>
                     </div>

@@ -157,6 +157,7 @@ export class OpenSeadragonComponent {
 
                 this.setDocumentPages(pages)
 
+                // Find the start canvas 
                 let startPageIndex = 0
                 const startCanvas = manifest.getSequenceByIndex(0).getStartCanvas()
                 if (startCanvas) {
@@ -187,10 +188,16 @@ export class OpenSeadragonComponent {
                 this.setAnnotations(annotations)
 
                 // Alternate formats
-                const alternateFormats = manifest.getSequenceByIndex(0).getRenderings().map((rendering) => ({
-                    label: rendering.getDefaultLabel(),
-                    url: rendering.id
-                }))
+                const alternateFormats = manifest.getSequenceByIndex(0).getRenderings().map((rendering) => {
+
+                    const format = rendering.getFormat()
+
+                    return {
+                        contentType: format.value,
+                        label: rendering.getDefaultLabel(),
+                        url: rendering.id
+                    }
+                })
 
                 this.setDocumentAlternateFormats(alternateFormats)
 
@@ -208,7 +215,7 @@ export class OpenSeadragonComponent {
                     initialPage: startPageIndex
                 })
 
-                this.viewer.addHandler('open', (ev: any) => {
+                this.viewer.addHandler('open', () => {
 
                     const page = this.viewer.currentPage()
                     this.setPage(page)
@@ -219,7 +226,7 @@ export class OpenSeadragonComponent {
                     this.setLoading(false)
                 })
 
-                this.viewer.addHandler('zoom', (ev: any) => {
+                this.viewer.addHandler('zoom', () => {
 
                     const minZoom = this.viewer.viewport.getMinZoom()
                     const maxZoom = this.viewer.viewport.getMaxZoom()

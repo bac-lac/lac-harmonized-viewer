@@ -1,53 +1,53 @@
-import { Locale } from "../services/locale";
+import { I18nService } from "../services/i18n-service";
 import { StringBuilder } from "../string-builder";
 
 export class ManifestExtensions {
 
-    locale: Locale;
-    manifest: Manifesto.IManifest;
+    locale: I18nService
+    manifest: Manifesto.IManifest
 
     constructor(manifest: Manifesto.IManifest) {
-        this.locale = new Locale();
-        this.manifest = manifest;
+        this.locale = new I18nService()
+        this.manifest = manifest
     }
 
-    label(): string {
-        const localval = this.localize(this.manifest.getLabel());
-        return new StringBuilder(localval.value).toString();
+    label() {
+        const localval = this.localize(this.manifest.getLabel())
+        return new StringBuilder(localval.value).toString()
     }
 
-    creator(): string {
-        const val = this.manifest.getMetadata().find(x => x.getLabel() == 'Creator');
+    creator() {
+        const val = this.manifest.getMetadata().find(x => x.getLabel() == 'Creator')
         if (val) {
-            const localval = this.localize(val.value);
-            return new StringBuilder(localval).toString();
+            const localval = this.localize(val.value)
+            return new StringBuilder(localval).toString()
         }
         else {
-            return undefined;
+            return undefined
         }
     }
 
-    description(): string {
-        const localval = this.localize(this.manifest.getDescription());
-        return new StringBuilder(localval.value).toString();
+    description() {
+        const localval = this.localize(this.manifest.getDescription())
+        return new StringBuilder(localval.value).toString()
     }
 
     private localize(languageMap: Manifesto.LanguageMap): Manifesto.Language {
+
         if (!languageMap) {
-            return undefined;
+            return undefined
         }
-        return languageMap.find(x =>
-            x.locale &&
-            (x.locale === this.locale.get() ||
-                (x.locale.indexOf('-') > -1 && x.locale.substr(0, x.locale.indexOf('-')) === this.locale.get())));
+        return languageMap.find((language) =>
+            language.locale &&
+            (language.locale === this.locale.get() || (language.locale.indexOf('-') > -1 && language.locale.substr(0, language.locale.indexOf('-')) === this.locale.get())))
     }
 
-    private format(language: Manifesto.Language): string {
+    private format(language: Manifesto.Language) {
         if (language) {
-            return language.value;
+            return language.value
         }
         else {
-            return undefined;
+            return undefined
         }
     }
 

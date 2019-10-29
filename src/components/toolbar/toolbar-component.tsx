@@ -5,6 +5,7 @@ import "../../utils/icon-library";
 import { Unsubscribe, Store } from '@stencil/redux';
 import { MyAppState } from '../../interfaces';
 import { setPage } from '../../store/actions/document';
+import { fromContentType } from '../../utils/icon-library';
 
 @Component({
     tag: 'hv-toolbar',
@@ -80,6 +81,20 @@ export class HVToolbar {
 
     }
 
+    handleDropdownClick(ev: MouseEvent) {
+
+        ev.stopPropagation()
+
+        const target = ev.currentTarget as HTMLElement
+        if (target) {
+
+            const dropdown = target.closest('.has-dropdown')
+            if (dropdown) {
+                dropdown.classList.toggle('is-active')
+            }
+        }
+    }
+
     render() {
 
         return (
@@ -120,7 +135,7 @@ export class HVToolbar {
 
                         <div class="navbar-item toolbar-page">
                             <a class="tag">{(this.page + 1)}</a>
-                            &nbsp;
+                            <span>&nbsp;</span>
                             <span>of {this.pageCount} pages</span>
                         </div>
 
@@ -132,20 +147,30 @@ export class HVToolbar {
 
                     <div class="navbar-end">
 
-                        {
-                            this.alternateFormats.map((alternateFormat) =>
+                        <div class="navbar-item has-dropdown">
+                            <a class="navbar-link" onClick={this.handleDropdownClick.bind(this)}>
+                                <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'download' }).html[0]}></span>
+                                <span class="text">Download</span>
+                            </a>
+                            <div class="navbar-dropdown is-right">
+                                {
+                                    this.alternateFormats.map((alternateFormat) => {
 
-                                <a class="navbar-item" title="Home" onClick={this.handleAlternateFormatClick.bind(this)}>
-                                    <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'download' }).html[0]}></span>
-                                    <span>{alternateFormat.label}</span>
-                                </a>
-                            )
-                        }
+                                        return (
+                                            <a class="navbar-item" onClick={this.handleAlternateFormatClick.bind(this)}>
+                                                <span class="icon"></span>
+                                                <span class="text">{alternateFormat.label}</span>
+                                            </a>
+                                        )
+                                    })
+                                }
+                            </div>
+                        </div>
 
                     </div>
                 </div>
 
-            </nav>
+            </nav >
         )
     }
 }

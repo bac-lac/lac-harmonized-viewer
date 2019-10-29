@@ -1,3 +1,5 @@
+@import "../../globals/variables.scss";
+
 hv-settings {
     box-sizing: border-box;
 
@@ -6,6 +8,36 @@ hv-settings {
             .modal-card-head,
             .modal-card-foot {
                 border-radius: 2px;
+            }
+
+            .modal-card-head {
+                .modal-card-title {
+                    color: $grey;
+                    font-size: 1.2rem;
+                    font-weight: 500;
+                }
+            }
+
+            .modal-card-foot.is-right {
+                justify-content: flex-end;
+            }
+
+            .label {
+                font-weight: 500;
+                margin-bottom: 0.25rem;
+            }
+
+            .description {
+                font-size: 0.9rem;
+                margin-bottom: 1rem;
+            }
+
+            .control.control-settings {
+                width: 70%;
+            }
+
+            .control.control-settings .select {
+                width: 100%;
             }
         }
     }

@@ -88,7 +88,7 @@ export class NavigationComponent {
 
     render() {
 
-        const skeleton = Array.apply(null, Array(12)).map(function () { })
+        const skeleton = Array.apply(null, Array(16)).map(function () { })
         const pages = (this.pages.length > 0) ? this.pages : skeleton
 
         return (

@@ -1,11 +1,11 @@
 import { SetLoading, SetDocumentContentType, SetDocumentUrl, SetDocumentPages, SetDocumentTitle, SetDocumentAlternateFormats, SetPage, SetAnnotations, SetZoom } from "./document";
 
 export interface NullAction {
-    type: TypeKeys.NULL;
+    type: TypeKeys.NULL
 }
 
 // Keep this type updated with each known action
-export type ActionTypes = NullAction | SetLoading | SetDocumentContentType | SetDocumentUrl | SetDocumentPages | SetDocumentTitle | SetDocumentAlternateFormats | SetPage | SetAnnotations | SetZoom;
+export type ActionTypes = NullAction | SetLoading | SetDocumentContentType | SetDocumentUrl | SetDocumentPages | SetDocumentTitle | SetDocumentAlternateFormats | SetPage | SetAnnotations | SetZoom
 
 export enum TypeKeys {
     // Won't match anything

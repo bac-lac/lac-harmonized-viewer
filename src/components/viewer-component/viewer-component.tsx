@@ -6,7 +6,6 @@ import { Store, Unsubscribe } from "@stencil/redux";
 import { configureStore } from "../../store";
 import { setDocumentUrl, setDocumentContentType } from '../../store/actions/document';
 import { MyAppState } from '../../interfaces';
-import { FetchService, CorsMode } from '../../services/fetch-service';
 
 @Component({
 	tag: 'harmonized-viewer',
@@ -17,38 +16,48 @@ import { FetchService, CorsMode } from '../../services/fetch-service';
 })
 export class ViewerComponent {
 
-	@Element() el: HTMLElement;
+	@Element() el: HTMLElement
 
-	@Prop() language: string = "en";
+	@Prop() language: string = "en"
 
-	@Prop() enableTopbar: boolean = true;
-	@Prop() enableToolbar: boolean = true;
+	@Prop() enableTopbar: boolean = true
+	@Prop() enableToolbar: boolean = true
 
-	@Prop() annotationsShow: boolean = true;
+	@Prop() annotationsShow: boolean = true
 
-	@Prop() navigationHeight?: number = null;
-	@Prop() navigationLocation: LocationOption = LocationOption.Left;
+	@Prop() navigationHeight?: number = null
+	@Prop() navigationLocation: LocationOption = LocationOption.Left
 
-	@Prop() page: number;
-	@Prop() totalPages: number;
+	@Prop() page: number
+	@Prop() totalPages: number
 
-	@Prop({ attribute: 'url' }) parameterUrl: string;
+	@Prop({ attribute: 'url' }) parameterUrl: string
 
-	@Event() manifestLoaded: EventEmitter;
-	@Event() canvasLoaded: EventEmitter;
-	@Event() goto: EventEmitter;
-	@Event() nextLoad: EventEmitter;
+	@Event() manifestLoaded: EventEmitter
+	@Event() canvasLoaded: EventEmitter
+	@Event() goto: EventEmitter
+	@Event() nextLoad: EventEmitter
 
 	setDocumentContentType: typeof setDocumentContentType
 	setDocumentUrl: typeof setDocumentUrl
 	storeUnsubscribe: Unsubscribe
 
+	@State() url: MyAppState["document"]["url"]
+	@Prop({ context: "store" }) store: Store
 
+	@Listen('click', { target: 'document' })
+	handleDocumentClick(ev: MouseEvent) {
 
+		// On any click inside the document, close all active dropdowns
+		// Events responsible to open dropdowns must stop propagation
 
-	@State() url: MyAppState["document"]["url"];
+		const dropdowns = Array.from(this.el.shadowRoot.querySelectorAll(
+			'.dropdown.is-active, .navbar-item.has-dropdown.is-active'))
 
-	@Prop({ context: "store" }) store: Store;
+		if (dropdowns) {
+			dropdowns.forEach((dropdown) => dropdown.classList.remove('is-active'))
+		}
+	}
 
 	componentWillLoad() {
 
@@ -60,7 +69,7 @@ export class ViewerComponent {
 			} = state
 			return {
 				url: url
-			};
+			}
 		})
 	}
 
@@ -92,42 +101,44 @@ export class ViewerComponent {
 	}
 
 	render() {
-		return <div class="harmonized-viewer">
+		return (
+			<div class="harmonized-viewer">
 
-			{
-				this.enableTopbar &&
-				<harmonized-viewer-topbar></harmonized-viewer-topbar>
-			}
+				{
+					this.enableTopbar &&
+					<harmonized-viewer-topbar></harmonized-viewer-topbar>
+				}
 
-			{this.renderNavigation(LocationOption.Top)}
+				{this.renderNavigation(LocationOption.Top)}
 
-			<div class="hv-content">
-				{this.renderNavigation(LocationOption.Left)}
+				<div class="hv-content">
+					{this.renderNavigation(LocationOption.Left)}
 
-				<main class="hv-main">
+					<main class="hv-main">
 
-					{
-						this.enableToolbar &&
-						<hv-toolbar class="hv-toolbar" />
-					}
+						{
+							this.enableToolbar &&
+							<hv-toolbar class="hv-toolbar" />
+						}
 
-					<div class="hv-main__content">
-						<hv-viewport></hv-viewport>
-					</div>
+						<div class="hv-main__content">
+							<hv-viewport></hv-viewport>
+						</div>
 
-				</main>
+					</main>
 
-				{this.renderNavigation(LocationOption.Right)}
+					{this.renderNavigation(LocationOption.Right)}
 
-				<hv-annotations class="annotations annotations-right" />
+					<hv-annotations class="annotations annotations-right" />
+
+				</div>
+
+				<slot name="footer" />
+
+				{this.renderNavigation(LocationOption.Bottom)}
 
 			</div>
-
-			<slot name="footer" />
-
-			{this.renderNavigation(LocationOption.Bottom)}
-
-		</div>;
+		)
 	}
 
 	renderNavigation(location: LocationOption) {

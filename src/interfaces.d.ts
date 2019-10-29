@@ -24,6 +24,7 @@ interface DocumentAnnotation {
 }
 
 interface DocumentAlternateFormat {
+    contentType: string
     label: string
     url: string
 }

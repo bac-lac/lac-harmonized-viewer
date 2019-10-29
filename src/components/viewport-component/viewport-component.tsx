@@ -76,7 +76,6 @@ export class ViewportComponent {
     }
 
     render() {
-        console.log(this.loading)
         return (
             <Host class="hv-viewport">
                 <button type="button" class="button hv-navigation__prev" onClick={this.handlePreviousClick.bind(this)} disabled={this.loading || this.isFirst()}>
