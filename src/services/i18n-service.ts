@@ -6,6 +6,22 @@ import LocalStorageBackend from 'i18next-localstorage-backend';
 import { LocalStorage } from '../services/storage-service';
 import { EventEmitter } from 'events';
 
+i18next
+    .init({
+        lng: 'en',
+        fallbackLng: 'en',
+        ns: ['1.0'],
+        defaultNS: '1.0',
+        debug: true
+    }, (err, t) => {
+
+    })
+
+const en = import('../locales/en')
+    .then((value) => {
+        console.log(value)
+    })
+
 export class I18nService {
 
     languageChanged: EventEmitter = new EventEmitter()
@@ -25,22 +41,15 @@ export class I18nService {
         //const log = JSON.stringify({ en: { name: 'stored en' }, fr: { name: 'stored fr' } })
         //this.storage.set('i18next_res_en-10', log)
 
-        i18next
-            .init({
-                lng: selectedLanguage,
-                fallbackLng: 'en',
-                ns: ['1.0'],
-                defaultNS: '1.0',
-                debug: true
-            }, (err, t) => {
 
-            })
 
-        i18next.addResourceBundle('en', '1.0', {
-            'name': 'English',
-            'settings': 'Settings',
-            'apply': 'Apply'
-        }, true, true)
+
+
+        // i18next.addResourceBundle('en', '1.0', {
+        //     'name': 'English',
+        //     'settings': 'Settings',
+        //     'apply': 'Apply'
+        // }, true, true)
 
         i18next.addResourceBundle('fr', '1.0', {
             'name': 'Français',
