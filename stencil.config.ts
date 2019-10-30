@@ -33,14 +33,13 @@ export const config: Config = {
     namedExports: {
       'node_modules/path': ['path'],
       "node_modules/i18next": ['i18next'],
-      "node_modules/i18next-xhr-backend": ['i18next-xhr-backend'],
       'node_modules/openseadragon/openseadragon.js': ['openseadragon']
     }
   },
   nodeResolve: {
     browser: true
   },
-  globalStyle: 'src/globals/style.scss',
+  globalStyle: 'src/globals/variables.scss',
   plugins: [
     sass(),
     nodePolyfills()

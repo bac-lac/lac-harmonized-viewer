@@ -2,5 +2,6 @@
     "http.proxyStrictSSL": false,
     "http.proxySupport": "on",
     "scss.lint.emptyRules": "ignore",
-    "scssFormatter.tabWidth": 4
+    "scssFormatter.tabWidth": 4,
+    "appService.defaultWebAppToDeploy": "None"
 }

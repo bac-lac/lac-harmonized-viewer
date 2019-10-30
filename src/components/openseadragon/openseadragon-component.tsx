@@ -149,6 +149,7 @@ export class OpenSeadragonComponent {
                                 const id = services[0].id
                                 return {
                                     id: canvas.id,
+                                    label: canvas.getDefaultLabel(),
                                     thumbnail: id + '/full/90,/0/default.jpg'
                                 }
                             }

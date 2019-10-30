@@ -1,10 +1,10 @@
-import { Component, Prop, h, Element, Event, Listen, EventEmitter, Watch, State } from '@stencil/core';
-import OverlayScrollbars from 'overlayscrollbars';
+import { Component, Prop, h, Element, Event, Listen, EventEmitter, Watch, State, Host } from '@stencil/core';
 import 'manifesto.js';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { MyAppState } from '../../interfaces';
 import { LazyLoading } from '../../services/lazy-service';
 import { setPage } from '../../store/actions/document';
+import { ScrollbarService } from '../../services/scrollbar-service';
 
 @Component({
     tag: 'hv-navigation',
@@ -17,21 +17,27 @@ export class NavigationComponent {
     setPage: typeof setPage
     storeUnsubscribe: Unsubscribe
 
+    @State() loading: MyAppState["document"]["loading"]
     @State() page: MyAppState["document"]["page"]
     @State() pages: MyAppState["document"]["pages"]
 
     @Prop({ context: "store" }) store: Store
 
-    private scrollbars: OverlayScrollbars
+    scrollbars: ScrollbarService
+
+    constructor() {
+        this.scrollbars = new ScrollbarService()
+    }
 
     componentWillLoad() {
 
         this.store.mapDispatchToProps(this, { setPage })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { page: page, pages: pages }
+                document: { loading: loading, page: page, pages: pages }
             } = state
             return {
+                loading: loading,
                 page: page,
                 pages: pages
             }
@@ -44,21 +50,20 @@ export class NavigationComponent {
 
     componentDidRender() {
 
-        // Initialize custom scrollbars
-        if (this.scrollbars) {
-            this.scrollbars.destroy()
+        // Initialize scrollbars, register new elements with lazy loading
+        const inner = this.el.querySelector('.navigation-content') as HTMLElement
+        if (inner) {
+            this.scrollbars.init(inner)
+            LazyLoading.register(inner)
         }
-        this.scrollbars = OverlayScrollbars(
-            this.el.querySelector('.navigation-content'), {})
 
-        const active = this.el.querySelector('.navigation-content .active')
+        // Scroll to the active navigation item
+        const active = this.el.querySelector('.active')
         if (active) {
             active.scrollIntoView({
                 block: 'nearest'
             })
         }
-
-        LazyLoading.register(this.el)
     }
 
     @Listen('keydown', { target: 'window' })
@@ -89,30 +94,39 @@ export class NavigationComponent {
     render() {
 
         const skeleton = Array.apply(null, Array(16)).map(function () { })
-        const pages = (this.pages.length > 0) ? this.pages : skeleton
 
         return (
-            <div class="navigation-content">
-                <div class="">
-                    <ul class="hv-navigation__list">
-                        {(
-                            pages &&
-                            pages.map((page, index) =>
+            <Host class={this.loading ? "navigation" : "navigation is-loaded"}>
+                <div class="navigation-content">
+                    <div class="">
+                        <ul class="hv-navigation__list">
+                            {(
+                                this.pages && this.pages.map((page, index) =>
 
-                                <li class={(this.page == index) && "active"}>
-                                    <a class="navigation-item" onClick={(ev) => this.handlePageClick(ev, index)}>
-                                        {
-                                            page && page.thumbnail ?
-                                                <img data-src={page.thumbnail} onLoad={this.imageLoad} alt="" /> :
-                                                <img data-src />
-                                        }
-                                    </a>
-                                </li>
-                            )
-                        )}
-                    </ul>
+                                    <li class={(this.page == index) && 'active'}>
+                                        <a class="navigation-item" onClick={(ev) => this.handlePageClick(ev, index)}>
+                                            <div class="navigation-thumbnail">
+                                                <img data-src={page.thumbnail} onLoad={this.imageLoad} alt="" />
+                                            </div>
+                                            <div class="navigation-label">
+                                                {page.label}
+                                            </div>
+                                        </a>
+                                    </li>
+                                )
+                            )}
+                            {(
+                                this.loading && skeleton.map(() =>
+
+                                    <li>
+                                        <span class="skeleton"></span>
+                                    </li>
+                                )
+                            )}
+                        </ul>
+                    </div>
                 </div>
-            </div>
-        );
+            </Host >
+        )
     }
 }

@@ -1,5 +1,6 @@
 import { library, icon } from '@fortawesome/fontawesome-svg-core'
 import {
+    faShareAlt,
     faHome,
     faDownload,
     faCog,
@@ -11,6 +12,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
+    faShareAlt,
     faHome,
     faDownload,
     faCog,

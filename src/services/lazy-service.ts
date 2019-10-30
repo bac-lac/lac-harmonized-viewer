@@ -13,10 +13,13 @@ export class LazyLoading {
 
             let lazyImageObserver = new IntersectionObserver(function (entries, observer) {
                 entries.forEach(function (entry) {
+
                     let image = entry.target as HTMLImageElement
                     if (image) {
+
                         image.classList.remove('is-loaded')
                         if (entry.isIntersecting) {
+
                             image.src = image.dataset.src
                             //lazyImage.srcset = lazyImage.dataset.srcset
                             //image.classList.remove('is-loading')

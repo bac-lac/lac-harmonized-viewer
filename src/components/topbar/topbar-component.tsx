@@ -69,21 +69,20 @@ export class TopbarComponent {
 
                         </div>
                         <div class="navbar-end">
-                            {/* <div data-content-switcher class="bx--content-switcher" role="tablist">
-                        <button class="bx--content-switcher-btn bx--content-switcher--selected" data-target=".demo--panel--opt-1" role="tab" aria-selected="true">
-                            <span class="bx--content-switcher__label">JPG</span>
-                        </button>
-                        <button class="bx--content-switcher-btn" data-target=".demo--panel--opt-2" role="tab">
-                            <span class="bx--content-switcher__label">PDF</span>
-                        </button>
-                    </div> */}
+
+                            <a class="navbar-item" title="Settings" onClick={this.openSettings.bind(this)}>
+                                <span class="icon" innerHTML={icon({ prefix: "fas", iconName: "share-alt" }).html[0]}></span>
+                            </a>
+
                             <a class="navbar-item" title="Settings" onClick={this.openSettings.bind(this)}>
                                 <span class="icon" innerHTML={icon({ prefix: "fas", iconName: "cog" }).html[0]}></span>
                             </a>
+
                             <a class="navbar-item button-fullscreen-exit" title="Exit fullscreen" onClick={this.openSettings.bind(this)}>
                                 <span class="icon" innerHTML={icon({ prefix: "fas", iconName: "compress" }).html[0]}></span>
                                 <span class="text">Exit fullscreen</span>
                             </a>
+
                         </div>
                     </div>
                 </nav>

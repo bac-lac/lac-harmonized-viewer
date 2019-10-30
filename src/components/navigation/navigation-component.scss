@@ -1,7 +1,18 @@
 @import "../../globals/variables.scss";
+@import "../../../node_modules/bulma/sass/utilities/_all.sass";
 
 .navigation {
     box-sizing: border-box;
+
+    .os-scrollbar {
+        display: none;
+    }
+
+    &.is-loaded {
+        .os-scrollbar {
+            display: flex;
+        }
+    }
 }
 
 .navigation-content {
@@ -9,31 +20,6 @@
     height: 100%;
     border-right: #d3d3d3 1px solid;
     background-color: $light;
-
-    .os-scrollbar.os-scrollbar-vertical {
-        opacity: 0;
-        width: 16px;
-        margin-right: 2px;
-        transition: opacity 200ms ease;
-
-        .os-scrollbar-track {
-            border-radius: 0;
-            transition: background 200ms ease;
-
-            .os-scrollbar-handle {
-                border-radius: 2px;
-            }
-        }
-    }
-
-    &:hover {
-        .os-scrollbar.os-scrollbar-vertical {
-            opacity: 1;
-        }
-        .os-scrollbar .os-scrollbar-track {
-            background-color: rgba(0, 0, 0, 0.1);
-        }
-    }
 }
 
 .hv-navigation__list {
@@ -44,49 +30,68 @@
     margin: 1.5rem;
 
     li {
-        width: 90px;
         display: flex;
-        padding-left: 0.3rem;
-        padding-right: 0.3rem;
-        margin-bottom: 0.4rem;
+        padding: 3px;
     }
 
+    li .skeleton {
+    }
+
+    li .skeleton,
     li .navigation-item {
-        width: 100%;
-        height: 100px;
-        padding: 1px;
-        display: inline-block;
-        transition: box-shadow 200ms ease;
-        border-radius: 1px;
+        width: 85px;
+        display: flex;
+        flex-direction: column;
 
-        img {
-            transition: opacity 70ms ease;
+        .navigation-thumbnail {
+            display: flex;
+            border-radius: 1px;
+            border: #fff 2px solid;
+            transition: box-shadow 200ms ease;
 
-            &.is-loaded {
-                border: $dark 1px solid;
+            img {
+                height: 100px;
+                display: flex;
+                transition: opacity 70ms ease;
+
+                &.is-loaded {
+                    border: $dark 1px solid;
+                }
             }
+        }
+
+        .navigation-label {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: $grey;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            margin-top: 2px;
+            margin-bottom: 3px;
         }
     }
 
     li.active .navigation-item {
-        box-shadow: 0 0 0 3px $primary;
-        img {
-            opacity: 1;
-            filter: grayscale(0%);
+        .navigation-thumbnail {
+            box-shadow: 0 0 0 3px $success;
+            img {
+                opacity: 1;
+                filter: grayscale(0%);
+            }
         }
     }
 
-    li .navigation-item:hover img {
+    li .navigation-item:hover .navigation-thumbnail img {
         opacity: 1;
         filter: grayscale(0%);
     }
 
-    li .navigation-item img {
-        width: 100%;
-        height: 100%;
+    li .navigation-item .navigation-thumbnail img {
         margin: 0;
         padding: 0;
         opacity: 0.8;
+        display: block;
         filter: grayscale(20%);
     }
 }

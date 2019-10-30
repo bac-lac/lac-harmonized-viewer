@@ -13,6 +13,7 @@ export interface DocumentState {
 
 interface DocumentPage {
     id: string
+    label: string
     thumbnail: string
 }
 

@@ -4,6 +4,7 @@ import { Unsubscribe, Store } from '@stencil/redux';
 import { MyAppState } from '../../interfaces';
 import { icon } from '@fortawesome/fontawesome-svg-core';
 import { LocalStorage } from '../../services/storage-service';
+import { ScrollbarService } from '../../services/scrollbar-service';
 
 @Component({
     tag: 'hv-annotations',
@@ -19,10 +20,11 @@ export class AnnotationsComponent {
 
     @Prop({ context: "store" }) store: Store
 
-    private scrollbars: OverlayScrollbars
-    private storage: LocalStorage
+    storage: LocalStorage
+    scrollbars: ScrollbarService
 
     constructor() {
+        this.scrollbars = new ScrollbarService()
         this.storage = new LocalStorage()
     }
 
@@ -44,15 +46,10 @@ export class AnnotationsComponent {
 
     componentDidRender() {
 
-        // Initialize custom scrollbars
-        if (this.scrollbars) {
-            this.scrollbars.destroy()
-        }
-        this.scrollbars = OverlayScrollbars(this.el.querySelector('.hv-annotations__content'), {})
-
-        const annotationList = this.el.querySelector('[data-accordion]')
-        if (annotationList) {
-            //Accordion.create(annotationList);
+        // Initialize scrollbars, register new elements with lazy loading
+        const inner = this.el.querySelector('.annotations-content') as HTMLElement
+        if (inner) {
+            this.scrollbars.init(inner)
         }
     }
 
