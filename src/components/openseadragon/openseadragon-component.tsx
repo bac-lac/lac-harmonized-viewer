@@ -124,121 +124,131 @@ export class OpenSeadragonComponent {
             text: "test overlay"
         })
 
-        manifesto.loadManifest(url)
+        //manifesto.loadManifest(url)
+        fetch(url, {
+            method: 'GET',
+            mode: 'cors'
+        })
+            .then((response: Response) => {
 
-            .then((json: string) => {
+                response.json().then((json) => {
 
-                const manifest = manifesto.create(json) as Manifesto.IManifest
+                    const manifest = manifesto.create(json) as Manifesto.IManifest
 
-                this.setDocumentTitle(manifest.getDefaultLabel())
+                    this.setDocumentTitle(manifest.getDefaultLabel())
 
-                const tileSources = manifest.getSequences()[0].getCanvases().map((canvas) => {
-                    const images = canvas.getImages()
-                    const resource = images[0].getResource()
-                    //var json = '{"@context":"http://iiif.io/api/image/2/context.json","@id":"https://libimages1.princeton.edu/loris/pudl0001%2F4609321%2Fs42%2F00000004.jp2","height":7200,"width":5434,"profile":["http://iiif.io/api/image/2/level2.json"],"protocol":"http://iiif.io/api/image","tiles":[{"scaleFactors":[1,2,4,8,16,32],"width":1024}]}';
-                    //return JSON.parse(json);
-                    return resource.getServices()[0].id + '/info.json'
-                })
+                    // const tileSources = manifest.getSequences()[0].getCanvases().map((canvas) => {
+                    //     const images = canvas.getImages()
+                    //     const resource = images[0].getResource()
+                    //     //var json = '{"@context":"http://iiif.io/api/image/2/context.json","@id":"https://libimages1.princeton.edu/loris/pudl0001%2F4609321%2Fs42%2F00000004.jp2","height":7200,"width":5434,"profile":["http://iiif.io/api/image/2/level2.json"],"protocol":"http://iiif.io/api/image","tiles":[{"scaleFactors":[1,2,4,8,16,32],"width":1024}]}';
+                    //     //return JSON.parse(json);
+                    //     return resource.getServices()[0].id + '/info.json'
+                    // })
 
-                const pages = manifest.getSequences()[0].getCanvases()
-                    .flatMap((canvas) => canvas.getImages().map((image) => {
-                        const resource = image.getResource()
-                        if (resource) {
-                            const services = resource.getServices()
-                            if (services) {
-                                const id = services[0].id
-                                return {
-                                    id: canvas.id,
-                                    label: canvas.getDefaultLabel(),
-                                    thumbnail: id + '/full/90,/0/default.jpg'
+                    const pages = manifest.getSequences()[0].getCanvases()
+                        .flatMap((canvas) => canvas.getImages().map((image) => {
+                            const resource = image.getResource()
+                            if (resource) {
+                                const services = resource.getServices()
+                                if (services) {
+                                    const id = services[0].id
+                                    return {
+                                        id: canvas.id,
+                                        label: canvas.getDefaultLabel(),
+                                        image: id,
+                                        thumbnail: id + '/full/90,/0/default.jpg'
+                                    }
                                 }
                             }
+                        }))
+
+                    this.setDocumentPages(pages)
+
+                    // Find the start canvas 
+                    let startPageIndex = 0
+                    const startCanvas = manifest.getSequenceByIndex(0).getStartCanvas()
+                    if (startCanvas) {
+                        const startPage = this.pages.find((page) => page.id == startCanvas)
+                        if (startPage) {
+                            startPageIndex = this.pages.indexOf(startPage)
                         }
-                    }))
-
-                this.setDocumentPages(pages)
-
-                // Find the start canvas 
-                let startPageIndex = 0
-                const startCanvas = manifest.getSequenceByIndex(0).getStartCanvas()
-                if (startCanvas) {
-                    const startPage = this.pages.find((page) => page.id == startCanvas)
-                    if (startPage) {
-                        startPageIndex = this.pages.indexOf(startPage)
                     }
-                }
 
-                const annotations = manifest.getMetadata().map((annotation) => {
+                    const annotations = manifest.getMetadata().map((annotation) => {
 
-                    const label = annotation.getLabel()
+                        const label = annotation.getLabel()
 
-                    const hash = new Md5()
-                    const id = hash.appendStr(label || '').end().toString()
+                        const hash = new Md5()
+                        const id = hash.appendStr(label || '').end().toString()
 
-                    const state = this.storage.get('annotation-' + id)
-                    const collapsed = (state) ? JSON.parse(state) as boolean : false
+                        const state = this.storage.get('annotation-' + id)
+                        const collapsed = (state) ? JSON.parse(state) as boolean : false
 
-                    return {
-                        id: id,
-                        label: annotation.getLabel(),
-                        content: annotation.getValue(),
-                        collapsed: collapsed
-                    }
-                })
+                        return {
+                            id: id,
+                            label: annotation.getLabel(),
+                            content: annotation.getValue(),
+                            collapsed: collapsed
+                        }
+                    })
 
-                this.setAnnotations(annotations)
+                    this.setAnnotations(annotations)
 
-                // Alternate formats
-                const alternateFormats = manifest.getSequenceByIndex(0).getRenderings().map((rendering) => {
+                    // Alternate formats
+                    const alternateFormats = manifest.getSequenceByIndex(0).getRenderings().map((rendering) => {
 
-                    const format = rendering.getFormat()
+                        const format = rendering.getFormat()
 
-                    return {
-                        contentType: format.value,
-                        label: rendering.getDefaultLabel(),
-                        url: rendering.id
-                    }
-                })
+                        return {
+                            contentType: format.value,
+                            label: rendering.getDefaultLabel(),
+                            url: rendering.id
+                        }
+                    })
 
-                this.setDocumentAlternateFormats(alternateFormats)
+                    this.setDocumentAlternateFormats(alternateFormats)
 
-                this.viewer = openseadragon({
-                    element: this.el.querySelector(".openseadragon"),
-                    prefixUrl: "/dist/vendors/openseadragon/images/",
-                    animationTime: 0.25,
-                    springStiffness: 10.0,
-                    showNavigator: true,
-                    navigatorPosition: "BOTTOM_RIGHT",
-                    showNavigationControl: false,
-                    showSequenceControl: false,
-                    sequenceMode: true,
-                    tileSources: tileSources,
-                    initialPage: startPageIndex
-                })
+                    this.viewer = openseadragon({
+                        element: this.el.querySelector(".openseadragon"),
+                        prefixUrl: "/dist/vendors/openseadragon/images/",
+                        animationTime: 0.25,
+                        springStiffness: 10.0,
+                        showNavigator: true,
+                        navigatorPosition: "BOTTOM_RIGHT",
+                        showNavigationControl: false,
+                        showSequenceControl: false,
+                        sequenceMode: true,
+                        tileSources: pages.map((page) => ({
+                            type: 'image',
+                            url: page.image
+                        })),
+                        initialPage: startPageIndex
+                    })
 
-                this.viewer.addHandler('open', () => {
+                    this.viewer.addHandler('open', () => {
 
-                    const page = this.viewer.currentPage()
-                    this.setPage(page)
+                        const page = this.viewer.currentPage()
+                        this.setPage(page)
 
-                    this.viewer.viewport.zoomTo(this.viewer.viewport.getMinZoom(), null, true)
-                    this.viewer.viewport.applyConstraints()
+                        this.viewer.viewport.zoomTo(this.viewer.viewport.getMinZoom(), null, true)
+                        this.viewer.viewport.applyConstraints()
 
-                    this.setLoading(false)
-                })
+                        this.setLoading(false)
+                    })
 
-                this.viewer.addHandler('zoom', () => {
+                    this.viewer.addHandler('zoom', () => {
 
-                    const minZoom = this.viewer.viewport.getMinZoom()
-                    const maxZoom = this.viewer.viewport.getMaxZoom()
+                        const minZoom = this.viewer.viewport.getMinZoom()
+                        const maxZoom = this.viewer.viewport.getMaxZoom()
 
-                    //const value = (event.zoom - minZoom) * 100 / (maxZoom - minZoom)
+                        //const value = (event.zoom - minZoom) * 100 / (maxZoom - minZoom)
 
-                    // this.setZoom({
-                    //     min: minZoom,
-                    //     max: maxZoom,
-                    //     zoom: event.zoom//this.viewer.viewport.getZoom(true)
-                    // })
+                        // this.setZoom({
+                        //     min: minZoom,
+                        //     max: maxZoom,
+                        //     zoom: event.zoom//this.viewer.viewport.getZoom(true)
+                        // })
+                    })
                 })
             })
     }

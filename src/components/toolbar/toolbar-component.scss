@@ -1,5 +1,5 @@
-@import "../../globals/variables.scss";
-@import "../../../node_modules/bulma/sass/utilities/_all.sass";
+@import '../../globals/variables.scss';
+@import '../../../node_modules/bulma/sass/utilities/_all.sass';
 
 .hv-toolbar {
     padding: 0;
@@ -21,6 +21,9 @@
     // }
 
     .navbar-item {
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+
         &.has-dropdown {
             .navbar-link {
                 padding-right: 2rem;

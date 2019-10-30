@@ -1,4 +1,4 @@
-@import "../../globals/variables.scss";
+@import '../../globals/variables.scss';
 
 .hv-viewport {
     height: 100%;
@@ -14,13 +14,21 @@
         position: absolute;
         z-index: 1000;
         transition: opacity 200ms ease;
-        border-top-right-radius: 2px;
-        border-bottom-right-radius: 2px;
         box-shadow: 0 1px 2px 1px #e3e3e3;
 
         &[disabled] .icon {
             color: #ddd;
         }
+    }
+
+    .hv-navigation__prev {
+        border-top-left-radius: 2px;
+        border-bottom-left-radius: 2px;
+    }
+
+    .hv-navigation__next {
+        border-top-right-radius: 2px;
+        border-bottom-right-radius: 2px;
     }
 
     &:hover .hv-navigation__prev,
@@ -63,8 +71,4 @@
     &:hover .hv-overlay {
         opacity: 1;
     }
-}
-
-.bx--assistive-text {
-    padding: 0.4rem 0.6rem !important;
 }

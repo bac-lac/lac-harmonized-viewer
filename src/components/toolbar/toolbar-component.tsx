@@ -116,14 +116,14 @@ export class HVToolbar {
                             <harmonized-zoom-slider />
                         </div>
 
-                        <div class="navbar-item has-dropdown is-hoverable">
+                        {/* <div class="navbar-item has-dropdown is-hoverable">
                             <a class="navbar-link">
                                 100%
                             </a>
                             <div class="navbar-dropdown">
                                 <a class="navbar-item">100%</a>
                             </div>
-                        </div>
+                        </div> */}
 
                     </div>
 
@@ -146,31 +146,32 @@ export class HVToolbar {
                     </div>
 
                     <div class="navbar-end">
+                        {
+                            this.alternateFormats && this.alternateFormats.length > 0 &&
 
-                        <div class="navbar-item has-dropdown">
-                            <a class="navbar-link" onClick={this.handleDropdownClick.bind(this)}>
-                                <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'download' }).html[0]}></span>
-                                <span class="text">Download</span>
-                            </a>
-                            <div class="navbar-dropdown is-right">
-                                {
-                                    this.alternateFormats.map((alternateFormat) => {
+                            <div class="navbar-item has-dropdown">
+                                <a class="navbar-link" onClick={this.handleDropdownClick.bind(this)}>
+                                    <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'download' }).html[0]}></span>
+                                    <span class="text">Download</span>
+                                </a>
+                                <div class="navbar-dropdown is-right">
+                                    {
+                                        this.alternateFormats.map((alternateFormat) => {
 
-                                        return (
-                                            <a class="navbar-item" onClick={this.handleAlternateFormatClick.bind(this)}>
-                                                <span class="icon"></span>
-                                                <span class="text">{alternateFormat.label}</span>
-                                            </a>
-                                        )
-                                    })
-                                }
+                                            return (
+                                                <a class="navbar-item" onClick={this.handleAlternateFormatClick.bind(this)}>
+                                                    <span class="icon"></span>
+                                                    <span class="text">{alternateFormat.label}</span>
+                                                </a>
+                                            )
+                                        })
+                                    }
+                                </div>
                             </div>
-                        </div>
-
+                        }
                     </div>
                 </div>
-
-            </nav >
+            </nav>
         )
     }
 }

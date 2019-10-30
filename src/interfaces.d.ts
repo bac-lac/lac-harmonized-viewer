@@ -14,6 +14,7 @@ export interface DocumentState {
 interface DocumentPage {
     id: string
     label: string
+    image: string
     thumbnail: string
 }
 
