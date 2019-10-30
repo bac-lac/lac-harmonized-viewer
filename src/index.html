@@ -30,15 +30,17 @@
     <!-- http://bluemountain.princeton.edu/exist/restxq/iiif/bmtnaae_1918-12_01/manifest -->
     <!-- https://d.lib.ncsu.edu/collections/catalog/nubian-message-1992-11-30/manifest -->
     <!-- http://localhost:8888/CORS-USESEC18.slides.pdf -->
-    <harmonized-viewer id="hv" class="harmonized-viewer" navigation-location="bottom" style="height:100%"
+    <harmonized-viewer id="hv" class="harmonized-viewer" navigation-location="left" style="height:100%"
         url="https://laciiifrepositorydev.blob.core.windows.net/iiif/2/151/manifest">
     </harmonized-viewer>
 
     <script type="text/javascript">
-        var viewer = document.getElementById('hv');
-        viewer.addEventListener("canvasLoaded", (event) => {
-            console.log('canvas loaded external', event);
-        });
+
+        var viewer = document.getElementById('hv')
+
+        viewer.addEventListener('canvasLoaded', (event) => {
+            console.log('canvas loaded external', event)
+        })
     </script>
 
 </body>

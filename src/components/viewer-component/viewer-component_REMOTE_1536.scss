@@ -1,0 +1,96 @@
+@import '../../globals/variables.scss';
+@import '../../../node_modules/bulma/bulma.sass';
+
+:host {
+    display: block;
+    font-family: $family-sans-serif;
+}
+
+.harmonized-viewer {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    // background-color: #f5f6f6;
+    background-color: #f5f6f6;
+
+    .icon > svg {
+        width: 100%;
+        height: 100%;
+    }
+
+    a:link,
+    a:visited {
+        color: #054ada;
+    }
+
+    .navigation,
+    .annotations {
+        border: none;
+
+        &-left,
+        &-right {
+            width: 250px;
+            height: 100%;
+        }
+        &-top,
+        &-bottom {
+            width: 100%;
+            height: 200px;
+        }
+    }
+
+    .navigation.navigation-left .navigation-content,
+    .annotations.annotations-left .annotations-content {
+        border-right: #d3d3d3 1px solid;
+    }
+    .navigation.navigation-right .navigation-content,
+    .annotations.annotations-right .annotations-content {
+        border-left: #d3d3d3 1px solid;
+    }
+    .navigation.navigation-top .navigation-content,
+    .annotations.annotations-top .annotations-content {
+        border-bottom: #d3d3d3 1px solid;
+    }
+    .navigation.navigation-bottom .navigation-content,
+    .annotations.annotations-bottom .annotations-content {
+        border-top: #d3d3d3 1px solid;
+    }
+
+    .hv-main {
+        overflow: hidden;
+        flex: auto;
+        display: flex;
+        flex-direction: column;
+
+        .hv-main__content {
+            height: 100%;
+            display: flex;
+            flex-direction: row;
+        }
+
+        .hv-viewport {
+            width: 100%;
+            height: 100%;
+            flex: auto;
+        }
+    }
+
+    .hv-content {
+        height: 100%;
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: row;
+    }
+
+    img[data-src].is-loaded {
+        opacity: 1;
+    }
+
+    img[data-src]:not(.is-loaded) {
+        opacity: 0.4;
+        height: 100%;
+        display: flex;
+        background-color: $grey-lighter;
+    }
+}
