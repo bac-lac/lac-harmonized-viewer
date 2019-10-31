@@ -1,5 +1,5 @@
-@import '../../globals/variables.scss';
-@import '../../../node_modules/bulma/sass/utilities/_all.sass';
+@import "../../globals/variables.scss";
+@import "../../../node_modules/bulma/sass/utilities/_all.sass";
 
 .topbar {
     flex: 0 0 auto;
@@ -15,6 +15,10 @@
             display: flex;
             align-items: center;
         }
+    }
+
+    .manifest-type {
+        margin-left: 15px;
     }
 
     // .hv-topbar__content {

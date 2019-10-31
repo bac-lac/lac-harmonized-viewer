@@ -12,14 +12,14 @@ i18next
         fallbackLng: 'en',
         ns: ['1.0'],
         defaultNS: '1.0',
-        debug: true
+        debug: false
     }, (err, t) => {
 
     })
 
 const en = import('../locales/en')
     .then((value) => {
-        console.log(value)
+
     })
 
 export class I18nService {

@@ -37,12 +37,11 @@ export class OpenSeadragonComponent {
     @State() url: MyAppState["document"]["url"]
     @State() page: MyAppState["document"]["page"]
     @State() pages: MyAppState["document"]["pages"]
-    @State() zoom: MyAppState["document"]["zoom"]
-
-    private pageOld: number
-    private zoomOld: number
+    @State() zoomRequest: MyAppState["document"]["zoomRequest"]
 
     @Prop({ context: "store" }) store: Store
+
+    private previousState: any[] = []
 
     constructor() {
         this.storage = new LocalStorage()
@@ -53,21 +52,21 @@ export class OpenSeadragonComponent {
         this.store.mapDispatchToProps(this, { setLoading, setDocumentUrl, setDocumentPages, setDocumentTitle, setDocumentAlternateFormats, setAnnotations, setPage, setZoom })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { page: page, pages: pages, url: url, zoom: zoom }
+                document: { page: page, pages: pages, url: url, zoomRequest: zoomRequest }
             } = state
             return {
                 page: page,
                 pages: pages,
                 url: url,
-                zoom: zoom
+                zoomRequest: zoomRequest
             }
         })
     }
 
     componentDidRender() {
 
-        const pageChanged = (this.page !== this.pageOld)
-        const zoomChanged = (this.zoom && this.zoom.zoom !== this.zoomOld)
+        const pageChanged = (this.page !== this.previousState['page'])
+        const zoomChanged = (this.zoomRequest && this.zoomRequest.value !== this.previousState['zoom'])
 
         if (this.viewer) {
 
@@ -76,7 +75,7 @@ export class OpenSeadragonComponent {
             }
 
             if (zoomChanged) {
-                this.viewer.viewport.zoomTo(this.zoom.zoom)
+                this.viewer.viewport.zoomTo(this.zoomRequest.value)
             }
         }
         else if (this.url) {
@@ -85,8 +84,8 @@ export class OpenSeadragonComponent {
 
         // Update duplicate state properties in order
         // to detect the next value change
-        this.pageOld = this.page
-        this.zoomOld = this.zoom && this.zoom.zoom
+        this.previousState['page'] = this.page
+        this.previousState['zoom'] = this.zoomRequest && this.zoomRequest.value
     }
 
     componentDidUnload() {
@@ -164,7 +163,7 @@ export class OpenSeadragonComponent {
 
                     this.setDocumentPages(pages)
 
-                    // Find the start canvas 
+                    // Find the start canvas
                     let startPageIndex = 0
                     const startCanvas = manifest.getSequenceByIndex(0).getStartCanvas()
                     if (startCanvas) {
@@ -174,6 +173,7 @@ export class OpenSeadragonComponent {
                         }
                     }
 
+                    // Annotations
                     const annotations = manifest.getMetadata().map((annotation) => {
 
                         const label = annotation.getLabel()
@@ -236,18 +236,20 @@ export class OpenSeadragonComponent {
                         this.setLoading(false)
                     })
 
-                    this.viewer.addHandler('zoom', () => {
+                    this.viewer.addHandler('zoom', (ev: any) => {
+
+                        if (isNaN(ev.zoom)) {
+                            return undefined
+                        }
 
                         const minZoom = this.viewer.viewport.getMinZoom()
                         const maxZoom = this.viewer.viewport.getMaxZoom()
 
-                        //const value = (event.zoom - minZoom) * 100 / (maxZoom - minZoom)
-
-                        // this.setZoom({
-                        //     min: minZoom,
-                        //     max: maxZoom,
-                        //     zoom: event.zoom//this.viewer.viewport.getZoom(true)
-                        // })
+                        this.setZoom({
+                            min: minZoom,
+                            max: maxZoom,
+                            value: ev.zoom
+                        })
                     })
                 })
             })

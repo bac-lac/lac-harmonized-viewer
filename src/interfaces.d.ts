@@ -8,7 +8,8 @@ export interface DocumentState {
     pages: DocumentPage[]
     title: string
     url: string,
-    zoom: DocumentZoom
+    zoom: DocumentZoom,
+    zoomRequest: DocumentZoom
 }
 
 interface DocumentPage {
@@ -34,7 +35,7 @@ interface DocumentAlternateFormat {
 interface DocumentZoom {
     min: number
     max: number
-    zoom: number
+    value: number
 }
 
 //type DocumentContentType = 'IIIF' | 'application/pdf';

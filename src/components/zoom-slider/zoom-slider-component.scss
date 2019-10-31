@@ -1,10 +1,22 @@
 harmonized-zoom-slider {
-    width: 200px;
-    height: 100%;
     display: flex;
+    align-items: center;
+
+    .navbar-item {
+        display: flex;
+        align-items: center;
+    }
 
     .zoom-slider {
-        width: 100%;
+        width: 130px;
+
+        .noUi-handle {
+            cursor: pointer;
+        }
+    }
+
+    .zoom-value {
+        margin: 0 30px;
     }
 
     &:not([dir="rtl"]) .noUi-horizontal .noUi-origin {

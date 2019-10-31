@@ -52,9 +52,12 @@ export class TopbarComponent {
                                 <img src="https://bulma.io/images/placeholders/128x128.png" />
                             </figure>
                         </a>
-                        <a class="navbar-item">
-                            <h1 class="hv-title">{this.title}</h1>
-                        </a>
+                        <div class="navbar-item">
+                            <h1 class="manifest-title">
+                                {this.title}
+                            </h1>
+                            <span class="manifest-type tag is-info">IIIF</span>
+                        </div>
 
                         <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="topbar-menu">
                             <span aria-hidden="true"></span>
@@ -66,6 +69,8 @@ export class TopbarComponent {
                     <div id="topbar-menu" class="navbar-menu">
 
                         <div class="navbar-start">
+
+
 
                         </div>
                         <div class="navbar-end">

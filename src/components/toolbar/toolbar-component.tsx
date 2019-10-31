@@ -108,22 +108,17 @@ export class HVToolbar {
                             <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'home' }).html[0]}></span>
                         </a>
 
-                        <a class="navbar-item" title="Fullscreen" onClick={this.handleFullscreenClick.bind(this)}>
-                            <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'expand' }).html[0]}></span>
-                        </a>
+                        <harmonized-zoom-slider />
 
-                        <div class="navbar-item">
-                            <harmonized-zoom-slider />
-                        </div>
-
-                        {/* <div class="navbar-item has-dropdown is-hoverable">
+                        <div class="navbar-item has-dropdown">
                             <a class="navbar-link">
-                                100%
+                                View as
                             </a>
                             <div class="navbar-dropdown">
-                                <a class="navbar-item">100%</a>
+                                <a class="navbar-item">IIIF</a>
+                                <a class="navbar-item">PDF</a>
                             </div>
-                        </div> */}
+                        </div>
 
                     </div>
 
@@ -146,6 +141,12 @@ export class HVToolbar {
                     </div>
 
                     <div class="navbar-end">
+
+                        <a class="navbar-item" title="Fullscreen" onClick={this.handleFullscreenClick.bind(this)}>
+                            <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'expand' }).html[0]}></span>
+                            <span class="text">Fullscreen</span>
+                        </a>
+
                         {
                             this.alternateFormats && this.alternateFormats.length > 0 &&
 

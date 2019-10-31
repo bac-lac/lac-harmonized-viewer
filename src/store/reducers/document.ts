@@ -15,7 +15,12 @@ const getInitialState = (): DocumentState => {
         zoom: {
             min: 0,
             max: 0,
-            zoom: 0
+            value: 0
+        },
+        zoomRequest: {
+            min: 0,
+            max: 0,
+            value: 0
         }
     }
 }
@@ -54,6 +59,9 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
         }
         case TypeKeys.SET_ZOOM: {
             return { ...state, zoom: action.zoom }
+        }
+        case TypeKeys.SET_ZOOM_REQUEST: {
+            return { ...state, zoomRequest: action.zoom }
         }
     }
     return state

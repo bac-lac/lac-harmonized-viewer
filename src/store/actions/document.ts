@@ -108,3 +108,15 @@ export const setZoom = (zoom: DocumentZoom) => (dispatch, _getState) => {
     }
     dispatch(action)
 }
+
+export interface SetZoomRequest {
+    type: TypeKeys.SET_ZOOM_REQUEST
+    zoom: DocumentZoom
+}
+export const setZoomRequest = (zoom: DocumentZoom) => (dispatch, _getState) => {
+    const action: SetZoomRequest = {
+        type: TypeKeys.SET_ZOOM_REQUEST,
+        zoom: zoom
+    }
+    dispatch(action)
+}

@@ -2,7 +2,7 @@ import { Component, h, Element, Prop, State } from '@stencil/core';
 import "../../utils/icon-library";
 import { Unsubscribe, Store } from '@stencil/redux';
 import { MyAppState } from '../../interfaces';
-import { setZoom } from '../../store/actions/document';
+import { setZoomRequest } from '../../store/actions/document';
 import noUiSlider from 'nouislider';
 
 @Component({
@@ -12,11 +12,11 @@ import noUiSlider from 'nouislider';
         '../../../node_modules/nouislider/distribute/nouislider.css'
     ]
 })
-export class HvZoomSlider {
+export class ZoomSliderComponent {
 
     @Element() el: HTMLElement
 
-    setZoom: typeof setZoom
+    setZoomRequest: typeof setZoomRequest
 
     storeUnsubscribe: Unsubscribe
 
@@ -30,7 +30,7 @@ export class HvZoomSlider {
 
     componentWillLoad() {
 
-        this.store.mapDispatchToProps(this, { setZoom })
+        this.store.mapDispatchToProps(this, { setZoomRequest })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
                 document: { loading: loading, zoom: zoom }
@@ -42,7 +42,15 @@ export class HvZoomSlider {
         })
     }
 
+    componentDidLoad() {
+
+    }
+
     initialize() {
+
+        if (this.active) {
+            return undefined
+        }
 
         if (this.slider) {
             this.slider.destroy()
@@ -54,13 +62,12 @@ export class HvZoomSlider {
             const element = this.el.querySelector('.zoom-slider') as HTMLElement
 
             this.slider = noUiSlider.create(element, {
-                start: this.zoom.min,
+                start: this.zoom.value,
                 connect: true,
                 range: {
                     'min': this.zoom.min,
                     'max': this.zoom.max
-                },
-
+                }
             })
 
             const slider = (element as any)
@@ -73,28 +80,26 @@ export class HvZoomSlider {
             })
 
             slider.noUiSlider.on('slide', (values) => {
-
-                const value = values[0]
-                //zoom.zoom = (zoom.zoom - zoom.min) * 100 / (zoom.max - zoom.min)
-
-                this.setZoom({
+                this.setZoomRequest({
                     min: this.zoom.min,
                     max: this.zoom.max,
-                    zoom: value
+                    value: values[0]
                 })
             })
         }
     }
 
     componentWillRender() {
-        if (!this.slider) {
-            this.initialize()
-        }
+
     }
 
     componentDidRender() {
+
+        this.initialize()
+
         if (this.slider && !this.active) {
-            this.slider.set(this.zoom.zoom)
+            const slider = (this.slider as any)
+            slider.set(this.zoom.value)
         }
     }
 
@@ -102,8 +107,31 @@ export class HvZoomSlider {
         this.storeUnsubscribe()
     }
 
+    getZoomRatio() {
+
+        const min = this.zoom.min
+        const max = this.zoom.max
+        const value = this.zoom.value
+
+        let ratio = (value - min) / (max - min)
+
+        if (ratio < 0) ratio = 0
+        if (ratio > 1) ratio = 1
+
+        return ratio
+    }
+
     render() {
 
-        return <div class="zoom-slider"></div>
+        const ratio = this.getZoomRatio() * 100
+
+        return (
+            <div class="navbar-item">
+                <div class="zoom-slider"></div>
+                <div class="zoom-value">
+                    {!isNaN(ratio) && Math.round(ratio)}%
+                </div>
+            </div>
+        )
     }
 }
