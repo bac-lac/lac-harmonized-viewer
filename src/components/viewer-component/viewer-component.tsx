@@ -22,6 +22,7 @@ export class ViewerComponent {
 
 	@Prop() enableTopbar: boolean = true
 	@Prop() enableToolbar: boolean = true
+	@Prop() enableNavigation: boolean = true
 
 	@Prop() annotationsShow: boolean = true
 
@@ -43,6 +44,8 @@ export class ViewerComponent {
 	storeUnsubscribe: Unsubscribe
 
 	@State() url: MyAppState["document"]["url"]
+	@State() loading: MyAppState["document"]["loading"]
+
 	@Prop({ context: "store" }) store: Store
 
 	@Listen('click', { target: 'document' })
@@ -65,9 +68,10 @@ export class ViewerComponent {
 		this.store.mapDispatchToProps(this, { setDocumentContentType, setDocumentUrl })
 		this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
-				document: { url: url }
+				document: { loading: loading, url: url }
 			} = state
 			return {
+				loading: loading,
 				url: url
 			}
 		})
@@ -105,19 +109,27 @@ export class ViewerComponent {
 			<div class="harmonized-viewer">
 
 				{
-					this.enableTopbar &&
+					(this.enableTopbar && !this.loading) &&
 					<harmonized-viewer-topbar></harmonized-viewer-topbar>
 				}
 
-				{this.renderNavigation(LocationOption.Top)}
+
+				{
+					(this.enableNavigation && !this.loading) &&
+					this.renderNavigation(LocationOption.Top)
+				}
 
 				<div class="hv-content">
-					{this.renderNavigation(LocationOption.Left)}
+
+					{
+						(this.enableNavigation && !this.loading) &&
+						this.renderNavigation(LocationOption.Left)
+					}
 
 					<main class="hv-main">
 
 						{
-							this.enableToolbar &&
+							(this.enableToolbar && !this.loading) &&
 							<hv-toolbar class="hv-toolbar" />
 						}
 
@@ -127,15 +139,19 @@ export class ViewerComponent {
 
 					</main>
 
-					{this.renderNavigation(LocationOption.Right)}
-
-					<hv-annotations class="annotations annotations-right" />
+					{
+						(this.enableNavigation && !this.loading) &&
+						this.renderNavigation(LocationOption.Right)
+					}
 
 				</div>
 
 				<slot name="footer" />
 
-				{this.renderNavigation(LocationOption.Bottom)}
+				{
+					(this.enableNavigation && !this.loading) &&
+					this.renderNavigation(LocationOption.Bottom)
+				}
 
 			</div>
 		)

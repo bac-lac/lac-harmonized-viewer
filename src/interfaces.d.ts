@@ -1,4 +1,5 @@
 export interface DocumentState {
+    error: DocumentError
     alternateFormats: DocumentAlternateFormat[]
     annotations: DocumentAnnotation[]
     contentType: string
@@ -7,9 +8,14 @@ export interface DocumentState {
     pageCount: number
     pages: DocumentPage[]
     title: string
-    url: string,
-    zoom: DocumentZoom,
+    url: string
+    zoom: DocumentZoom
     zoomRequest: DocumentZoom
+}
+
+interface DocumentError {
+    code: string
+    message: string
 }
 
 interface DocumentPage {

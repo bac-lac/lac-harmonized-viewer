@@ -19,6 +19,7 @@ export namespace Components {
   interface HarmonizedSpinner {}
   interface HarmonizedViewer {
     'annotationsShow': boolean;
+    'enableNavigation': boolean;
     'enableToolbar': boolean;
     'enableTopbar': boolean;
     'language': string;
@@ -148,6 +149,7 @@ declare namespace LocalJSX {
   interface HarmonizedSpinner {}
   interface HarmonizedViewer {
     'annotationsShow'?: boolean;
+    'enableNavigation'?: boolean;
     'enableToolbar'?: boolean;
     'enableTopbar'?: boolean;
     'language'?: string;

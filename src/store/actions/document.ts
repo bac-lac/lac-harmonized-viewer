@@ -1,5 +1,17 @@
 import { TypeKeys } from "./index"
-import { DocumentPage, DocumentAnnotation, DocumentAlternateFormat, DocumentZoom } from "../../interfaces"
+import { DocumentPage, DocumentAnnotation, DocumentAlternateFormat, DocumentZoom, DocumentError } from "../../interfaces"
+
+export interface SetError {
+    type: TypeKeys.SET_ERROR
+    error: DocumentError
+}
+export const setError = (error: DocumentError) => (dispatch, _getState) => {
+    const action: SetError = {
+        type: TypeKeys.SET_ERROR,
+        error: error
+    }
+    dispatch(action)
+}
 
 export interface SetDocumentContentType {
     type: TypeKeys.SET_DOCUMENT_CONTENT_TYPE

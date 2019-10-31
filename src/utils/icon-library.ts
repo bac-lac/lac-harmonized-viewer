@@ -8,7 +8,10 @@ import {
     faCompress,
     faChevronLeft,
     faChevronRight,
-    faChevronDown
+    faChevronDown,
+    faChevronUp,
+    faPlus,
+    faMinus
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
@@ -20,7 +23,10 @@ library.add(
     faCompress,
     faChevronLeft,
     faChevronRight,
-    faChevronDown
+    faChevronDown,
+    faChevronUp,
+    faPlus,
+    faMinus
 )
 
 export function fromContentType(contentType: string) {

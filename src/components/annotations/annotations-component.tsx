@@ -85,10 +85,10 @@ export class AnnotationsComponent {
                                 <dt data-id={annotation.id}>
                                     <a onClick={this.handleClick.bind(this)}>
                                         {annotation.label ? annotation.label : 'Other'}
-                                        <span class={!annotation.collapsed ? "icon is-hidden" : "icon"} innerHTML={icon({ prefix: 'fas', iconName: 'chevron-left' }).html[0]}>
+                                        <span class={!annotation.collapsed ? "icon is-hidden" : "icon"} innerHTML={icon({ prefix: 'fas', iconName: 'plus' }).html[0]}>
 
                                         </span>
-                                        <span class={annotation.collapsed ? "icon is-hidden" : "icon"} innerHTML={icon({ prefix: 'fas', iconName: 'chevron-down' }).html[0]}>
+                                        <span class={annotation.collapsed ? "icon is-hidden" : "icon"} innerHTML={icon({ prefix: 'fas', iconName: 'minus' }).html[0]}>
 
                                         </span>
                                     </a>

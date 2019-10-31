@@ -3,6 +3,7 @@ import { DocumentState } from "../../interfaces";
 
 const getInitialState = (): DocumentState => {
     return {
+        error: null,
         alternateFormats: [],
         annotations: [],
         contentType: null,
@@ -28,6 +29,9 @@ const getInitialState = (): DocumentState => {
 const document = (state = getInitialState(), action: ActionTypes): DocumentState => {
 
     switch (action.type) {
+        case TypeKeys.SET_ERROR: {
+            return { ...state, error: action.error }
+        }
         case TypeKeys.SET_LOADING: {
             return { ...state, loading: action.loading }
         }

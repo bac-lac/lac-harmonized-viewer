@@ -126,7 +126,7 @@ export class NavigationComponent {
                         </ul>
                     </div>
                 </div>
-            </Host >
+            </Host>
         )
     }
 }
