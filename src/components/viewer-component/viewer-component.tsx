@@ -1,4 +1,4 @@
-import { Component, h, Element, Listen, Prop, Event, EventEmitter, Method, State } from '@stencil/core';
+import { Component, h, Element, Listen, Prop, Event, EventEmitter, Method, State, Watch } from '@stencil/core';
 import "@stencil/redux";
 import 'manifesto.js';
 import { LocationOption } from './viewer-options';
@@ -47,6 +47,12 @@ export class ViewerComponent {
 	@State() loading: MyAppState["document"]["loading"]
 
 	@Prop({ context: "store" }) store: Store
+
+	@Watch('parameterUrl')
+	handleUrlChange() {
+		console.log('HV url changed')
+		this.setDocumentUrl(this.parameterUrl)
+	}
 
 	@Listen('click', { target: 'document' })
 	handleDocumentClick(ev: MouseEvent) {

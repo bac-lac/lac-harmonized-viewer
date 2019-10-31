@@ -3,7 +3,7 @@ import { sass } from '@stencil/sass';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 
 export const config: Config = {
-  namespace: 'harmonized-viewer',
+  namespace: 'lac-harmonized-viewer',
   outputTargets: [
     {
       type: 'dist',
@@ -14,9 +14,6 @@ export const config: Config = {
           dest: 'locales'
         }
       ]
-    },
-    {
-      type: 'docs-readme'
     },
     {
       type: 'www',
