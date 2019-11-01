@@ -114,65 +114,63 @@ export class ViewerComponent {
 
 	render() {
 
-		if (this.error) {
-			return <harmonized-viewer-message>
-				{this.error.message}
-			</harmonized-viewer-message>
-		}
-		else if (this.loading) {
-			return <harmonized-spinner />
-		}
-		else {
-			return (
-				<div class="harmonized-viewer">
+
+
+		// if (this.error) {
+		// 	return <harmonized-viewer-message>
+		// 		{this.error.message}
+		// 	</harmonized-viewer-message>
+		// }
+
+		return (
+			<div class="harmonized-viewer">
+
+				{
+					(this.enableTopbar) &&
+					<harmonized-viewer-topbar></harmonized-viewer-topbar>
+				}
+
+				{
+					(this.enableNavigation) &&
+					this.renderNavigation(LocationOption.Top)
+				}
+
+				<div class="hv-content">
 
 					{
-						(this.enableTopbar && !this.loading) &&
-						<harmonized-viewer-topbar></harmonized-viewer-topbar>
+						(this.enableNavigation) &&
+						this.renderNavigation(LocationOption.Left)
 					}
 
-					{
-						(this.enableNavigation && !this.loading) &&
-						this.renderNavigation(LocationOption.Top)
-					}
-
-					<div class="hv-content">
+					<main class="hv-main">
 
 						{
-							(this.enableNavigation && !this.loading) &&
-							this.renderNavigation(LocationOption.Left)
+							(this.enableToolbar) &&
+							<hv-toolbar class="hv-toolbar" />
 						}
 
-						<main class="hv-main">
+						<div class="hv-main__content">
+							<harmonized-viewport />
+						</div>
 
-							{
-								(this.enableToolbar && !this.loading) &&
-								<hv-toolbar class="hv-toolbar" />
-							}
-
-							<div class="hv-main__content">
-								<hv-viewport></hv-viewport>
-							</div>
-
-						</main>
-
-						{
-							(this.enableNavigation && !this.loading) &&
-							this.renderNavigation(LocationOption.Right)
-						}
-
-					</div>
-
-					<slot name="footer" />
+					</main>
 
 					{
-						(this.enableNavigation && !this.loading) &&
-						this.renderNavigation(LocationOption.Bottom)
+						(this.enableNavigation) &&
+						this.renderNavigation(LocationOption.Right)
 					}
 
 				</div>
-			)
-		}
+
+				<slot name="footer" />
+
+				{
+					(this.enableNavigation) &&
+					this.renderNavigation(LocationOption.Bottom)
+				}
+
+			</div>
+		)
 	}
 
 	renderNavigation(location: LocationOption) {
@@ -182,7 +180,7 @@ export class ViewerComponent {
 				<hv-navigation
 					class={"navigation navigation-" + this.navigationLocation}
 					style={{
-						height: (this.navigationHeight && this.navigationHeight + "px")
+						flexBasis: '280px'
 					}} />
 			)
 		}

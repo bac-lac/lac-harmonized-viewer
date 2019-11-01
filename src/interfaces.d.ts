@@ -1,9 +1,9 @@
 export interface DocumentState {
     error: DocumentError
+    loading: boolean
     alternateFormats: DocumentAlternateFormat[]
     annotations: DocumentAnnotation[]
     contentType: string
-    loading: boolean
     page: number
     pageCount: number
     pages: DocumentPage[]
@@ -16,6 +16,10 @@ export interface DocumentState {
 interface DocumentError {
     code: string
     message: string
+}
+
+interface DocumentStatus {
+    code: string
 }
 
 interface DocumentPage {

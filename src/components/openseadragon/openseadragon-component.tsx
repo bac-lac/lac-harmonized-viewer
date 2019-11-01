@@ -2,7 +2,7 @@ import { Component, h, Element, Event, EventEmitter, Method, Listen, State, Prop
 import { id } from '../../utils/utils';
 import { Overlay } from '../../overlay';
 import { Store, Unsubscribe } from "@stencil/redux";
-import { setDocumentUrl, setDocumentPages, setDocumentTitle, setLoading, setAnnotations, setZoom, setPage, setDocumentAlternateFormats } from "../../store/actions/document";
+import { setDocumentUrl, setDocumentPages, setDocumentTitle, setLoading, setAnnotations, setZoom, setPage, setDocumentAlternateFormats, setError } from "../../store/actions/document";
 import { MyAppState } from '../../interfaces';
 import openseadragon from 'openseadragon';
 import { Md5 } from 'ts-md5/dist/md5';
@@ -23,6 +23,7 @@ export class OpenSeadragonComponent {
     private storage: LocalStorage
     private viewer: any
 
+    setError: typeof setError
     setLoading: typeof setLoading
     setDocumentUrl: typeof setDocumentUrl
     setDocumentPages: typeof setDocumentPages
@@ -34,6 +35,7 @@ export class OpenSeadragonComponent {
 
     storeUnsubscribe: Unsubscribe
 
+    @State() error: MyAppState["document"]["error"]
     @State() url: MyAppState["document"]["url"]
     @State() page: MyAppState["document"]["page"]
     @State() pages: MyAppState["document"]["pages"]
@@ -49,12 +51,13 @@ export class OpenSeadragonComponent {
 
     componentWillLoad() {
 
-        this.store.mapDispatchToProps(this, { setLoading, setDocumentUrl, setDocumentPages, setDocumentTitle, setDocumentAlternateFormats, setAnnotations, setPage, setZoom })
+        this.store.mapDispatchToProps(this, { setError, setLoading, setDocumentUrl, setDocumentPages, setDocumentTitle, setDocumentAlternateFormats, setAnnotations, setPage, setZoom })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { page: page, pages: pages, url: url, zoomRequest: zoomRequest }
+                document: { error: error, page: page, pages: pages, url: url, zoomRequest: zoomRequest }
             } = state
             return {
+                error: error,
                 page: page,
                 pages: pages,
                 url: url,
@@ -252,6 +255,12 @@ export class OpenSeadragonComponent {
                         max: maxZoom,
                         value: ev.zoom
                     })
+                })
+            }, (reason) => {
+
+                this.setError({
+                    code: 'test',
+                    message: 'test123'
                 })
             })
     }
