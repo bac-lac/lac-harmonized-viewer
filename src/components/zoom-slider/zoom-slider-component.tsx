@@ -42,10 +42,6 @@ export class ZoomSliderComponent {
         })
     }
 
-    componentDidLoad() {
-
-    }
-
     initialize() {
 
         if (this.active) {
@@ -87,10 +83,6 @@ export class ZoomSliderComponent {
                 })
             })
         }
-    }
-
-    componentWillRender() {
-
     }
 
     componentDidRender() {

@@ -1,7 +1,11 @@
-@import '../../globals/variables.scss';
-@import '../../../node_modules/bulma/sass/utilities/_all.sass';
+@import "../../globals/variables.scss";
+@import "../../../node_modules/bulma/sass/utilities/_all.sass";
+
+$mdc-grid-list-tile-width: 300px;
 
 .navigation {
+    width: 150px;
+    display: flex;
     box-sizing: border-box;
 
     .os-scrollbar {
@@ -22,36 +26,26 @@
 }
 
 .hv-navigation__list {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 1.5rem;
+    margin: 5px;
 
     li {
-        display: flex;
-        padding: 3px;
-    }
-
-    li .skeleton {
     }
 
     li .skeleton,
     li .navigation-item {
-        width: 90px;
-        display: flex;
-        flex-direction: column;
+        height: 100px;
 
         .navigation-thumbnail {
-            display: flex;
+            z-index: 1;
+            align-content: center;
             border-radius: 1px;
             border: #fff 2px solid;
             transition: box-shadow 200ms ease;
+            background-color: #fff;
 
             img {
-                width: 100%;
-                height: 100%;
-                display: flex;
+                display: block;
+                border: transparent 1px solid;
                 transition: opacity 70ms ease;
 
                 &.is-loaded {
@@ -61,23 +55,26 @@
         }
 
         .navigation-label {
+            color: $grey;
             overflow: hidden;
             text-overflow: ellipsis;
-            color: $grey;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 500;
             text-align: center;
-            margin-top: 2px;
-            margin-bottom: 3px;
+            margin: 3px auto;
+            padding: 2px 6px;
+            background-color: $grey-lighter;
         }
     }
 
-    li.active .navigation-item {
-        .navigation-thumbnail {
-            box-shadow: 0 0 0 3px $success;
-            img {
-                opacity: 1;
-                filter: grayscale(0%);
+    li.active {
+        .navigation-item {
+            .navigation-thumbnail {
+                box-shadow: 0 0 0 3px $success;
+                img {
+                    opacity: 1;
+                    filter: grayscale(0%);
+                }
             }
         }
     }
@@ -88,10 +85,7 @@
     }
 
     li .navigation-item .navigation-thumbnail img {
-        margin: 0;
-        padding: 0;
         opacity: 0.8;
-        display: block;
         filter: grayscale(20%);
     }
 }

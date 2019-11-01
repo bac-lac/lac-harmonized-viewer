@@ -1,9 +1,9 @@
-import { Component, h, Element, Event, EventEmitter, Method, Listen, State, Prop } from '@stencil/core';
+import { Component, h, Element, Event, EventEmitter, Method, Listen, State, Prop, Watch } from '@stencil/core';
 import { id } from '../../utils/utils';
 import { Overlay } from '../../overlay';
 import { Store, Unsubscribe } from "@stencil/redux";
 import { setDocumentUrl, setDocumentPages, setDocumentTitle, setLoading, setAnnotations, setZoom, setPage, setDocumentAlternateFormats, setError } from "../../store/actions/document";
-import { MyAppState } from '../../interfaces';
+import { MyAppState, DocumentZoom } from '../../interfaces';
 import openseadragon from 'openseadragon';
 import { Md5 } from 'ts-md5/dist/md5';
 import { LocalStorage } from '../../services/storage-service';
@@ -43,10 +43,31 @@ export class OpenSeadragonComponent {
 
     @Prop({ context: "store" }) store: Store
 
-    private previousState: any[] = []
-
     constructor() {
         this.storage = new LocalStorage()
+    }
+
+    @Watch('page')
+    handlePageChange(newValue: number, oldValue: number) {
+        console.log('page change watch', newValue)
+        if (this.viewer) {
+            this.viewer.goToPage(newValue)
+        }
+    }
+
+    @Watch('url')
+    handleUrlChange(newValue: string, oldValue: string) {
+        //console.log(newValue, ' => ', oldValue)
+        if (this.url) {
+            this.load(this.url)
+        }
+    }
+
+    @Watch('zoomRequest')
+    handleZoomRequest(newValue: DocumentZoom, oldValue: DocumentZoom) {
+        if (this.viewer) {
+            this.viewer.viewport.zoomTo(newValue.value)
+        }
     }
 
     componentWillLoad() {
@@ -67,33 +88,33 @@ export class OpenSeadragonComponent {
     }
 
     componentDidLoad() {
-        this.load(this.url)
+
     }
 
-    componentDidRender() {
+    // componentDidRender() {
 
-        const pageChanged = (this.page !== this.previousState['page'])
-        const zoomChanged = (this.zoomRequest && this.zoomRequest.value !== this.previousState['zoom'])
+    //     // const pageChanged = (this.page !== this.previousState['page'])
+    //     // const zoomChanged = (this.zoomRequest && this.zoomRequest.value !== this.previousState['zoom'])
 
-        if (this.viewer) {
+    //     if (this.viewer) {
 
-            if (pageChanged) {
-                this.viewer.goToPage(this.page)
-            }
+    //         //if (pageChanged) {
+    //         //this.viewer.goToPage(this.page)
+    //         //}
 
-            if (zoomChanged) {
-                this.viewer.viewport.zoomTo(this.zoomRequest.value)
-            }
-        }
-        else if (this.url) {
-            this.load(this.url)
-        }
+    //         //if (zoomChanged) {
+    //         //this.viewer.viewport.zoomTo(this.zoomRequest.value)
+    //         //}
+    //     }
+    //     else if (this.url) {
+    //         //this.load(this.url)
+    //     }
 
-        // Update duplicate state properties in order
-        // to detect the next value change
-        this.previousState['page'] = this.page
-        this.previousState['zoom'] = this.zoomRequest && this.zoomRequest.value
-    }
+    //     // Update duplicate state properties in order
+    //     // to detect the next value change
+    //     // this.previousState['page'] = this.page
+    //     // this.previousState['zoom'] = this.zoomRequest && this.zoomRequest.value
+    // }
 
     componentDidUnload() {
         this.storeUnsubscribe()
@@ -109,7 +130,9 @@ export class OpenSeadragonComponent {
         console.log('overlay click')
     }
 
-    load(url: string) {
+
+
+    async load(url: string) {
 
         if (!url) {
             return undefined
@@ -130,139 +153,131 @@ export class OpenSeadragonComponent {
             text: "test overlay"
         })
 
-        manifesto.loadManifest(url)
-            // fetch(url, {
-            //     method: 'GET',
-            //     mode: 'cors'
-            // })
-            .then((response) => {
+        const json = await manifesto.loadManifest(url)
+        const manifest = manifesto.create(json) as Manifesto.IManifest
 
-                const manifest = manifesto.create(response) as Manifesto.IManifest
+        this.setDocumentTitle(manifest.getDefaultLabel())
 
-                this.setDocumentTitle(manifest.getDefaultLabel())
+        // const tileSources = manifest.getSequences()[0].getCanvases().map((canvas) => {
+        //     const images = canvas.getImages()
+        //     const resource = images[0].getResource()
+        //     //var json = '{"@context":"http://iiif.io/api/image/2/context.json","@id":"https://libimages1.princeton.edu/loris/pudl0001%2F4609321%2Fs42%2F00000004.jp2","height":7200,"width":5434,"profile":["http://iiif.io/api/image/2/level2.json"],"protocol":"http://iiif.io/api/image","tiles":[{"scaleFactors":[1,2,4,8,16,32],"width":1024}]}';
+        //     //return JSON.parse(json);
+        //     return resource.getServices()[0].id + '/info.json'
+        // })
 
-                // const tileSources = manifest.getSequences()[0].getCanvases().map((canvas) => {
-                //     const images = canvas.getImages()
-                //     const resource = images[0].getResource()
-                //     //var json = '{"@context":"http://iiif.io/api/image/2/context.json","@id":"https://libimages1.princeton.edu/loris/pudl0001%2F4609321%2Fs42%2F00000004.jp2","height":7200,"width":5434,"profile":["http://iiif.io/api/image/2/level2.json"],"protocol":"http://iiif.io/api/image","tiles":[{"scaleFactors":[1,2,4,8,16,32],"width":1024}]}';
-                //     //return JSON.parse(json);
-                //     return resource.getServices()[0].id + '/info.json'
-                // })
-
-                const pages = manifest.getSequences()[0].getCanvases()
-                    .flatMap((canvas) => canvas.getImages().map((image) => {
-                        const resource = image.getResource()
-                        if (resource) {
-                            const services = resource.getServices()
-                            if (services) {
-                                const id = services[0].id
-                                return {
-                                    id: canvas.id,
-                                    label: canvas.getDefaultLabel(),
-                                    image: id + '/full/full/0/default.jpg',
-                                    thumbnail: id + '/full/90,/0/default.jpg'
-                                }
-                            }
+        const pages = manifest.getSequences()[0].getCanvases()
+            .flatMap((canvas) => canvas.getImages().map((image) => {
+                const resource = image.getResource()
+                if (resource) {
+                    const services = resource.getServices()
+                    if (services) {
+                        const id = services[0].id
+                        return {
+                            id: canvas.id,
+                            label: canvas.getDefaultLabel(),
+                            image: id + '/full/1000,/0/default.jpg',
+                            thumbnail: id + '/full/90,/0/default.jpg'
                         }
-                    }))
-
-                this.setDocumentPages(pages)
-
-                // Find the start canvas
-                let startPageIndex = 0
-                const startCanvas = manifest.getSequenceByIndex(0).getStartCanvas()
-                if (startCanvas) {
-                    const startPage = this.pages.find((page) => page.id == startCanvas)
-                    if (startPage) {
-                        startPageIndex = this.pages.indexOf(startPage)
                     }
                 }
+            }))
 
-                // Annotations
-                const annotations = manifest.getMetadata().map((annotation) => {
+        this.setDocumentPages(pages)
 
-                    const label = annotation.getLabel()
+        // Find the start canvas
+        let startPageIndex = 0
+        const startCanvas = manifest.getSequenceByIndex(0).getStartCanvas()
+        if (startCanvas) {
+            const startPage = this.pages.find((page) => page.id == startCanvas)
+            if (startPage) {
+                startPageIndex = this.pages.indexOf(startPage)
+            }
+        }
 
-                    const hash = new Md5()
-                    const id = hash.appendStr(label || '').end().toString()
+        // Annotations
+        const annotations = manifest.getMetadata().map((annotation) => {
 
-                    const state = this.storage.get('annotation-' + id)
-                    const collapsed = (state) ? JSON.parse(state) as boolean : false
+            const label = annotation.getLabel()
 
-                    return {
-                        id: id,
-                        label: annotation.getLabel(),
-                        content: annotation.getValue(),
-                        collapsed: collapsed
-                    }
-                })
+            const hash = new Md5()
+            const id = hash.appendStr(label || '').end().toString()
 
-                this.setAnnotations(annotations)
+            const state = this.storage.get('annotation-' + id)
+            const collapsed = (state) ? JSON.parse(state) as boolean : false
 
-                // Alternate formats
-                const alternateFormats = manifest.getSequenceByIndex(0).getRenderings().map((rendering) => {
+            return {
+                id: id,
+                label: annotation.getLabel(),
+                content: annotation.getValue(),
+                collapsed: collapsed
+            }
+        })
 
-                    const format = rendering.getFormat()
+        this.setAnnotations(annotations)
 
-                    return {
-                        contentType: format.value,
-                        label: rendering.getDefaultLabel(),
-                        url: rendering.id
-                    }
-                })
+        // Alternate formats
+        const alternateFormats = manifest.getSequenceByIndex(0).getRenderings().map((rendering) => {
 
-                this.setDocumentAlternateFormats(alternateFormats)
+            const format = rendering.getFormat()
 
-                this.viewer = openseadragon({
-                    element: this.el.querySelector(".openseadragon"),
-                    prefixUrl: "/dist/vendors/openseadragon/images/",
-                    animationTime: 0.25,
-                    springStiffness: 10.0,
-                    showNavigator: true,
-                    navigatorPosition: "BOTTOM_RIGHT",
-                    showNavigationControl: false,
-                    showSequenceControl: false,
-                    sequenceMode: true,
-                    tileSources: pages.map((page) => ({
-                        type: 'image',
-                        url: page.image
-                    })),
-                    initialPage: startPageIndex
-                })
+            return {
+                contentType: format.value,
+                label: rendering.getDefaultLabel(),
+                url: rendering.id
+            }
+        })
 
-                this.viewer.addHandler('open', () => {
+        this.setDocumentAlternateFormats(alternateFormats)
 
-                    const page = this.viewer.currentPage()
-                    this.setPage(page)
+        this.viewer = openseadragon({
+            element: this.el.querySelector(".openseadragon"),
+            prefixUrl: "/dist/vendors/openseadragon/images/",
+            animationTime: 0.1,
+            springStiffness: 100.0,
+            showNavigator: true,
+            navigatorPosition: "BOTTOM_RIGHT",
+            showNavigationControl: false,
+            showSequenceControl: false,
+            sequenceMode: true,
+            //tileSources: tileSources,
+            tileSources: pages.map((page) => ({
+                type: 'image',
+                url: page.image
+            })),
+            initialPage: startPageIndex
+        })
 
-                    // this.viewer.viewport.zoomTo(this.viewer.viewport.getMinZoom(), null, true)
-                    // this.viewer.viewport.applyConstraints()
+        this.viewer.addHandler('open', () => {
 
-                    this.setLoading(false)
-                })
+            const page = this.viewer.currentPage()
+            this.setPage(page)
 
-                this.viewer.addHandler('zoom', (ev: any) => {
+            this.viewer.viewport.zoomTo(this.viewer.viewport.getMinZoom(), null, true)
+            this.viewer.viewport.applyConstraints()
 
-                    if (isNaN(ev.zoom)) {
-                        return undefined
-                    }
+            this.setLoading(false)
+        })
 
-                    const minZoom = this.viewer.viewport.getMinZoom()
-                    const maxZoom = this.viewer.viewport.getMaxZoom()
+        this.viewer.addHandler('page', (page: number) => {
+            this.setLoading(true)
+        })
 
-                    this.setZoom({
-                        min: minZoom,
-                        max: maxZoom,
-                        value: ev.zoom
-                    })
-                })
-            }, (reason) => {
+        this.viewer.addHandler('zoom', (ev: any) => {
 
-                this.setError({
-                    code: 'test',
-                    message: 'test123'
-                })
+            if (isNaN(ev.zoom)) {
+                return undefined
+            }
+
+            const minZoom = this.viewer.viewport.getMinZoom()
+            const maxZoom = this.viewer.viewport.getMaxZoom()
+
+            this.setZoom({
+                min: minZoom,
+                max: maxZoom,
+                value: ev.zoom
             })
+        })
     }
 
 

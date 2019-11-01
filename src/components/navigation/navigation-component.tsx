@@ -1,4 +1,4 @@
-import { Component, Prop, h, Element, Event, Listen, EventEmitter, Watch, State, Host } from '@stencil/core';
+import { Component, Prop, h, Element, Listen, State, Host } from '@stencil/core';
 import 'manifesto.js';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { MyAppState } from '../../interfaces';
@@ -8,12 +8,15 @@ import { ScrollbarService } from '../../services/scrollbar-service';
 
 @Component({
     tag: 'hv-navigation',
-    styleUrls: ['navigation-component.scss', '../../../node_modules/overlayscrollbars/css/OverlayScrollbars.min.css']
+    styleUrls: [
+        'navigation-component.scss',
+        '../../../node_modules/overlayscrollbars/css/OverlayScrollbars.min.css',
+        '../../../node_modules/@material/image-list/mdc-image-list.scss'
+    ]
 })
 export class NavigationComponent {
 
     @Element() el: HTMLElement
-
     setPage: typeof setPage
     storeUnsubscribe: Unsubscribe
 
@@ -44,26 +47,33 @@ export class NavigationComponent {
         })
     }
 
-    componentDidUnload() {
-        this.storeUnsubscribe()
-    }
-
-    componentDidRender() {
-
-        // Initialize scrollbars, register new elements with lazy loading
+    componentDidLoad() {
+        // Initialize scrollbars
         const inner = this.el.querySelector('.navigation-content') as HTMLElement
         if (inner) {
             this.scrollbars.init(inner)
-            LazyLoading.register(inner)
         }
 
         // Scroll to the active navigation item
-        const active = this.el.querySelector('.active')
-        if (active) {
-            active.scrollIntoView({
-                block: 'nearest'
-            })
+        // const active = this.el.querySelector('.active')
+        // if (active) {
+        //     active.scrollIntoView({
+        //         block: 'nearest'
+        //     })
+        // }
+    }
+
+    componentWillRender() {
+
+        // Register new elements with lazy loading
+        const inner = this.el.querySelector('.navigation-content') as HTMLElement
+        if (inner) {
+            LazyLoading.register(inner)
         }
+    }
+
+    componentDidUnload() {
+        this.storeUnsubscribe()
     }
 
     @Listen('keydown', { target: 'window' })
@@ -93,38 +103,34 @@ export class NavigationComponent {
 
     render() {
 
+        const hasPages = this.pages && this.pages.length > 0
         const skeleton = Array.apply(null, Array(16)).map(function () { })
 
         return (
-            <Host class={this.loading ? "navigation" : "navigation is-loaded"}>
+            <Host class={hasPages ? 'navigation is-loaded' : 'navigation'}>
                 <div class="navigation-content">
-                    <div class="">
-                        <ul class="hv-navigation__list">
-                            {(
-                                this.pages && this.pages.map((page, index) =>
+                    <ul class="mdc-image-list my-image-list">
+                        {
+                            (hasPages) ?
+                                this.pages.map((page, index) => (
 
-                                    <li class={(this.page == index) && 'active'}>
-                                        <a class="navigation-item" onClick={(ev) => this.handlePageClick(ev, index)}>
-                                            <div class="navigation-thumbnail">
-                                                <img data-src={page.thumbnail} onLoad={this.imageLoad} alt="" />
-                                            </div>
-                                            <div class="navigation-label">
-                                                {page.label}
-                                            </div>
-                                        </a>
+                                    <li class="mdc-image-list__item">
+                                        <div class="mdc-image-list__image-aspect-container">
+                                            <img class="mdc-image-list__image" src={page.thumbnail} /></div>
+                                        <div class="mdc-image-list__supporting">
+                                            <span class="mdc-image-list__label">{page.label}</span>
+                                        </div>
+
                                     </li>
-                                )
-                            )}
-                            {(
-                                this.loading && skeleton.map(() =>
-
+                                )) :
+                                skeleton.map(() => (
                                     <li>
                                         <span class="skeleton"></span>
                                     </li>
-                                )
-                            )}
-                        </ul>
-                    </div>
+                                ))
+                        }
+                    </ul>
+
                 </div>
             </Host>
         )

@@ -38,13 +38,13 @@ export namespace Components {
     'getOverlays': () => Promise<Overlay[]>;
   }
   interface HarmonizedViewerTopbar {}
+  interface HarmonizedViewport {}
   interface HarmonizedZoomSlider {}
   interface HvAnnotations {}
   interface HvNavigation {}
   interface HvSettings {}
   interface HvStatusbar {}
   interface HvToolbar {}
-  interface HvViewport {}
 }
 
 declare global {
@@ -86,6 +86,12 @@ declare global {
     new (): HTMLHarmonizedViewerTopbarElement;
   };
 
+  interface HTMLHarmonizedViewportElement extends Components.HarmonizedViewport, HTMLStencilElement {}
+  var HTMLHarmonizedViewportElement: {
+    prototype: HTMLHarmonizedViewportElement;
+    new (): HTMLHarmonizedViewportElement;
+  };
+
   interface HTMLHarmonizedZoomSliderElement extends Components.HarmonizedZoomSlider, HTMLStencilElement {}
   var HTMLHarmonizedZoomSliderElement: {
     prototype: HTMLHarmonizedZoomSliderElement;
@@ -121,12 +127,6 @@ declare global {
     prototype: HTMLHvToolbarElement;
     new (): HTMLHvToolbarElement;
   };
-
-  interface HTMLHvViewportElement extends Components.HvViewport, HTMLStencilElement {}
-  var HTMLHvViewportElement: {
-    prototype: HTMLHvViewportElement;
-    new (): HTMLHvViewportElement;
-  };
   interface HTMLElementTagNameMap {
     'harmonized-pdf': HTMLHarmonizedPdfElement;
     'harmonized-spinner': HTMLHarmonizedSpinnerElement;
@@ -134,13 +134,13 @@ declare global {
     'harmonized-viewer-message': HTMLHarmonizedViewerMessageElement;
     'harmonized-viewer-openseadragon': HTMLHarmonizedViewerOpenseadragonElement;
     'harmonized-viewer-topbar': HTMLHarmonizedViewerTopbarElement;
+    'harmonized-viewport': HTMLHarmonizedViewportElement;
     'harmonized-zoom-slider': HTMLHarmonizedZoomSliderElement;
     'hv-annotations': HTMLHvAnnotationsElement;
     'hv-navigation': HTMLHvNavigationElement;
     'hv-settings': HTMLHvSettingsElement;
     'hv-statusbar': HTMLHvStatusbarElement;
     'hv-toolbar': HTMLHvToolbarElement;
-    'hv-viewport': HTMLHvViewportElement;
   }
 }
 
@@ -172,13 +172,13 @@ declare namespace LocalJSX {
     'onOverlayClick'?: (event: CustomEvent<any>) => void;
   }
   interface HarmonizedViewerTopbar {}
+  interface HarmonizedViewport {}
   interface HarmonizedZoomSlider {}
   interface HvAnnotations {}
   interface HvNavigation {}
   interface HvSettings {}
   interface HvStatusbar {}
   interface HvToolbar {}
-  interface HvViewport {}
 
   interface IntrinsicElements {
     'harmonized-pdf': HarmonizedPdf;
@@ -187,13 +187,13 @@ declare namespace LocalJSX {
     'harmonized-viewer-message': HarmonizedViewerMessage;
     'harmonized-viewer-openseadragon': HarmonizedViewerOpenseadragon;
     'harmonized-viewer-topbar': HarmonizedViewerTopbar;
+    'harmonized-viewport': HarmonizedViewport;
     'harmonized-zoom-slider': HarmonizedZoomSlider;
     'hv-annotations': HvAnnotations;
     'hv-navigation': HvNavigation;
     'hv-settings': HvSettings;
     'hv-statusbar': HvStatusbar;
     'hv-toolbar': HvToolbar;
-    'hv-viewport': HvViewport;
   }
 }
 
@@ -209,13 +209,13 @@ declare module "@stencil/core" {
       'harmonized-viewer-message': LocalJSX.HarmonizedViewerMessage & JSXBase.HTMLAttributes<HTMLHarmonizedViewerMessageElement>;
       'harmonized-viewer-openseadragon': LocalJSX.HarmonizedViewerOpenseadragon & JSXBase.HTMLAttributes<HTMLHarmonizedViewerOpenseadragonElement>;
       'harmonized-viewer-topbar': LocalJSX.HarmonizedViewerTopbar & JSXBase.HTMLAttributes<HTMLHarmonizedViewerTopbarElement>;
+      'harmonized-viewport': LocalJSX.HarmonizedViewport & JSXBase.HTMLAttributes<HTMLHarmonizedViewportElement>;
       'harmonized-zoom-slider': LocalJSX.HarmonizedZoomSlider & JSXBase.HTMLAttributes<HTMLHarmonizedZoomSliderElement>;
       'hv-annotations': LocalJSX.HvAnnotations & JSXBase.HTMLAttributes<HTMLHvAnnotationsElement>;
       'hv-navigation': LocalJSX.HvNavigation & JSXBase.HTMLAttributes<HTMLHvNavigationElement>;
       'hv-settings': LocalJSX.HvSettings & JSXBase.HTMLAttributes<HTMLHvSettingsElement>;
       'hv-statusbar': LocalJSX.HvStatusbar & JSXBase.HTMLAttributes<HTMLHvStatusbarElement>;
       'hv-toolbar': LocalJSX.HvToolbar & JSXBase.HTMLAttributes<HTMLHvToolbarElement>;
-      'hv-viewport': LocalJSX.HvViewport & JSXBase.HTMLAttributes<HTMLHvViewportElement>;
     }
   }
 }

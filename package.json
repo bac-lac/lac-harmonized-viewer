@@ -40,6 +40,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.25",
     "@fortawesome/free-solid-svg-icons": "^5.11.2",
+    "@material/image-list": "^3.1.0",
     "@stencil/redux": "^0.1.1",
     "animate.css": "^3.7.2",
     "bulma": "^0.8.0",
@@ -49,6 +50,7 @@
     "i18next-localstorage-backend": "^3.0.0",
     "manifesto.js": "^3.0.12",
     "nouislider": "^14.0.3",
+    "npm": "^6.12.1",
     "openseadragon": "^2.4.1",
     "overlayscrollbars": "^1.9.1",
     "redux": "^4.0.4",

@@ -1,13 +1,13 @@
 import { Component, Element, h, Prop, State, Host } from '@stencil/core';
 import '../../utils/manifest';
-import { icon } from '@fortawesome/fontawesome-svg-core';
 import "../../utils/icon-library";
+import { icon } from '@fortawesome/fontawesome-svg-core';
 import { setPage } from '../../store/actions/document';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { MyAppState } from '../../interfaces';
 
 @Component({
-    tag: 'hv-viewport',
+    tag: 'harmonized-viewport',
     styleUrls: [
         'viewport-component.scss',
         '../../../node_modules/animate.css/animate.min.css']
@@ -32,10 +32,9 @@ export class ViewportComponent {
         this.store.mapDispatchToProps(this, { setPage })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { contentType: contentType, loading: loading, page: page, pageCount: pageCount, url: url }
+                document: { loading: loading, page: page, pageCount: pageCount, url: url }
             } = state
             return {
-                contentType: contentType,
                 loading: loading,
                 page: page,
                 pageCount: pageCount,
@@ -77,14 +76,14 @@ export class ViewportComponent {
 
     render() {
         return (
-            <Host class="hv-viewport">
+            <Host>
 
                 <button type="button" class="button hv-navigation__prev" onClick={this.handlePreviousClick.bind(this)} disabled={this.loading || this.isFirst()}>
                     <span class="icon" innerHTML={icon({ prefix: "fas", iconName: "chevron-left" }).html[0]}></span>
                 </button>
 
-                <div class="viewport-document">
-                    {this.renderOpenSeadragon()}
+                <div class={this.loading ? 'viewport-content viewport-content--loading' : 'viewport-content'}>
+                    <harmonized-viewer-openseadragon />
                 </div>
 
                 <button type="button" class="button hv-navigation__next" onClick={this.handleNextClick.bind(this)} disabled={this.loading || this.isLast()}>

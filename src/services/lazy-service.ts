@@ -22,7 +22,7 @@ export class LazyLoading {
 
                             image.src = image.dataset.src
                             //lazyImage.srcset = lazyImage.dataset.srcset
-                            //image.classList.remove('is-loading')
+                            image.classList.remove('is-loading')
                             image.classList.add('is-loading')
 
                             lazyImageObserver.unobserve(image)
