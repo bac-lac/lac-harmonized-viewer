@@ -18,7 +18,7 @@ export class ViewerComponent {
 
 	@Element() el: HTMLElement
 
-	@Prop() language: string = "en"
+	@Prop() language: string = 'en'
 
 	@Prop() enableTopbar: boolean = true
 	@Prop() enableToolbar: boolean = true
@@ -43,6 +43,7 @@ export class ViewerComponent {
 	setDocumentUrl: typeof setDocumentUrl
 	storeUnsubscribe: Unsubscribe
 
+	@State() error: MyAppState["document"]["error"]
 	@State() url: MyAppState["document"]["url"]
 	@State() loading: MyAppState["document"]["loading"]
 
@@ -74,9 +75,10 @@ export class ViewerComponent {
 		this.store.mapDispatchToProps(this, { setDocumentContentType, setDocumentUrl })
 		this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
-				document: { loading: loading, url: url }
+				document: { error: error, loading: loading, url: url }
 			} = state
 			return {
+				error: error,
 				loading: loading,
 				url: url
 			}
@@ -86,7 +88,7 @@ export class ViewerComponent {
 	componentDidLoad() {
 
 		this.setDocumentUrl(this.parameterUrl)
-		this.setDocumentContentType('application/json')
+		//this.setDocumentContentType('application/json')
 
 		// FetchService.execute(
 		// 	this.parameterUrl,
@@ -111,56 +113,66 @@ export class ViewerComponent {
 	}
 
 	render() {
-		return (
-			<div class="harmonized-viewer">
 
-				{
-					(this.enableTopbar && !this.loading) &&
-					<harmonized-viewer-topbar></harmonized-viewer-topbar>
-				}
-
-
-				{
-					(this.enableNavigation && !this.loading) &&
-					this.renderNavigation(LocationOption.Top)
-				}
-
-				<div class="hv-content">
+		if (this.error) {
+			return <harmonized-viewer-message>
+				{this.error.message}
+			</harmonized-viewer-message>
+		}
+		else if (this.loading) {
+			return <harmonized-spinner />
+		}
+		else {
+			return (
+				<div class="harmonized-viewer">
 
 					{
-						(this.enableNavigation && !this.loading) &&
-						this.renderNavigation(LocationOption.Left)
+						(this.enableTopbar && !this.loading) &&
+						<harmonized-viewer-topbar></harmonized-viewer-topbar>
 					}
 
-					<main class="hv-main">
+					{
+						(this.enableNavigation && !this.loading) &&
+						this.renderNavigation(LocationOption.Top)
+					}
+
+					<div class="hv-content">
 
 						{
-							(this.enableToolbar && !this.loading) &&
-							<hv-toolbar class="hv-toolbar" />
+							(this.enableNavigation && !this.loading) &&
+							this.renderNavigation(LocationOption.Left)
 						}
 
-						<div class="hv-main__content">
-							<hv-viewport></hv-viewport>
-						</div>
+						<main class="hv-main">
 
-					</main>
+							{
+								(this.enableToolbar && !this.loading) &&
+								<hv-toolbar class="hv-toolbar" />
+							}
+
+							<div class="hv-main__content">
+								<hv-viewport></hv-viewport>
+							</div>
+
+						</main>
+
+						{
+							(this.enableNavigation && !this.loading) &&
+							this.renderNavigation(LocationOption.Right)
+						}
+
+					</div>
+
+					<slot name="footer" />
 
 					{
 						(this.enableNavigation && !this.loading) &&
-						this.renderNavigation(LocationOption.Right)
+						this.renderNavigation(LocationOption.Bottom)
 					}
 
 				</div>
-
-				<slot name="footer" />
-
-				{
-					(this.enableNavigation && !this.loading) &&
-					this.renderNavigation(LocationOption.Bottom)
-				}
-
-			</div>
-		)
+			)
+		}
 	}
 
 	renderNavigation(location: LocationOption) {

@@ -78,19 +78,19 @@ export class ViewportComponent {
     render() {
         return (
             <Host class="hv-viewport">
+
                 <button type="button" class="button hv-navigation__prev" onClick={this.handlePreviousClick.bind(this)} disabled={this.loading || this.isFirst()}>
                     <span class="icon" innerHTML={icon({ prefix: "fas", iconName: "chevron-left" }).html[0]}></span>
                 </button>
-                {
-                    this.loading &&
-                    <harmonized-spinner />
-                }
-                <div class="viewport-document" style={{ display: this.loading ? 'none' : 'flex' }}>
-                    {this.renderViewport()}
+
+                <div class="viewport-document">
+                    {this.renderOpenSeadragon()}
                 </div>
+
                 <button type="button" class="button hv-navigation__next" onClick={this.handleNextClick.bind(this)} disabled={this.loading || this.isLast()}>
                     <span class="icon" innerHTML={icon({ prefix: "fas", iconName: "chevron-right" }).html[0]}></span>
                 </button>
+
             </Host>
         )
     }
