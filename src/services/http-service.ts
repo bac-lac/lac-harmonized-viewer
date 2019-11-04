@@ -1,42 +1,51 @@
-export class Http {
+// export class httpClient {
 
-    async get(url: string) {
+//     static async get(url: string) {
 
-        if (!url) {
-            return undefined
-        }
+//         if (!url) {
+//             return undefined
+//         }
 
-        return await this.execute(url, 'GET')
-    }
+//         return await httpClient.execute(url, 'GET')
+//     }
 
-    async post(url: string, data?: any) {
+//     static async post(url: string, data?: any) {
 
-        if (!url) {
-            return undefined
-        }
+//         if (!url) {
+//             return undefined
+//         }
 
-        return await this.execute(url, 'POST', data)
-    }
+//         return await httpClient.execute(url, 'POST', data)
+//     }
 
-    async execute(url: string, method: string, data?: any): Promise<Response> {
+//     static async head(url: string) {
 
-        if (!url || !method) {
-            return undefined
-        }
+//         if (!url) {
+//             return undefined
+//         }
 
-        const request: RequestInit = {
-            method: method,
-            mode: 'cors',
-            cache: 'no-cache',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': (data ? 'application/json' : undefined)
-            },
-            redirect: 'follow', // manual, *follow, error
-            referrer: 'no-referrer', // no-referrer, *client
-            body: (data ? JSON.stringify(data) : undefined) // body data type must match "Content-Type" header
-        }
+//         return await httpClient.execute(url, 'HEAD')
+//     }
 
-        return await fetch(url, request)
-    }
-}
+//     static async execute(url: string, method: string, data?: any): Promise<Response> {
+
+//         if (!url || !method) {
+//             return undefined
+//         }
+
+//         const request: RequestInit = {
+//             method: method,
+//             mode: 'cors',
+//             cache: 'no-cache',
+//             credentials: 'same-origin',
+//             redirect: 'follow',
+//             referrer: 'no-referrer',
+//             headers: {
+//                 'Content-Type': (data ? 'application/json' : undefined)
+//             },
+//             body: (data ? JSON.stringify(data) : undefined)
+//         }
+
+//         return await fetch(url, request)
+//     }
+// }

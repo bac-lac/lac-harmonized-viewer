@@ -1,11 +1,11 @@
-import { SetLoading, SetDocumentContentType, SetDocumentUrl, SetDocumentPages, SetDocumentTitle, SetDocumentAlternateFormats, SetPage, SetAnnotations, SetZoom, SetZoomRequest, SetError } from "./document";
+import { SetLoading, SetDocumentContentType, SetDocumentUrl, SetDocumentPages, SetDocumentTitle, SetDocumentAlternateFormats, SetPage, SetAnnotations, SetZoom, SetZoomRequest, SetError, SetStatus } from "./document";
 
 export interface NullAction {
     type: TypeKeys.NULL
 }
 
 // Keep this type updated with each known action
-export type ActionTypes = NullAction | SetError | SetLoading | SetDocumentContentType | SetDocumentUrl | SetDocumentPages | SetDocumentTitle | SetDocumentAlternateFormats | SetPage | SetAnnotations | SetZoom | SetZoomRequest
+export type ActionTypes = NullAction | SetError | SetLoading | SetStatus | SetDocumentContentType | SetDocumentUrl | SetDocumentPages | SetDocumentTitle | SetDocumentAlternateFormats | SetPage | SetAnnotations | SetZoom | SetZoomRequest
 
 export enum TypeKeys {
     // Won't match anything
@@ -13,6 +13,7 @@ export enum TypeKeys {
     ERROR = "ERROR",
     SET_ERROR = "SET_ERROR",
     SET_LOADING = "SET_LOADING",
+    SET_STATUS = "SET_STATUS",
     SET_DOCUMENT_CONTENT_TYPE = "SET_DOCUMENT_CONTENT_TYPE",
     SET_DOCUMENT_URL = "SET_DOCUMENT_URL",
     SET_DOCUMENT_PAGES = "SET_DOCUMENT_PAGES",

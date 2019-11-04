@@ -3,16 +3,17 @@ import { icon } from '@fortawesome/fontawesome-svg-core';
 import "../../utils/icon-library";
 import { MyAppState } from '../../interfaces';
 import { Store, Unsubscribe } from '@stencil/redux';
+import { MDCTopAppBar } from '@material/top-app-bar';
 
 @Component({
-    tag: 'harmonized-viewer-topbar',
+    tag: 'harmonized-topbar',
     styleUrl: 'topbar-component.scss'
 })
 export class TopbarComponent {
 
     @Element() el: HTMLElement
 
-    @State() title: MyAppState["document"]["title"]
+    @State() title: MyAppState["document"]["document"]["title"]
 
     @Prop({ context: "store" }) store: Store
     storeUnsubscribe: Unsubscribe
@@ -21,12 +22,17 @@ export class TopbarComponent {
 
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { title: title }
+                document: { document: document }
             } = state
             return {
-                title: title
+                title: (document ? document.title : null)
             }
         })
+    }
+
+    componentDidLoad() {
+        const topAppBarElement = this.el.querySelector('.topbar')
+        const topAppBar = new MDCTopAppBar(topAppBarElement)
     }
 
     componentDidUnload() {
@@ -43,8 +49,28 @@ export class TopbarComponent {
 
     render() {
         return (
-            <Host class="topbar">
-                <nav class="navbar is-primary" role="navigation" aria-label="Dropdown navigation">
+            <Host>
+                <header class="topbar">
+                    <div class="topbar-row">
+                        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+                            <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">
+                                <span class="mdc-icon-button__icon" innerHTML={icon({ prefix: 'fas', iconName: 'bars' }).html[0]}></span>
+                            </button>
+                            <span class="mdc-top-app-bar__title">
+                                {this.title}
+                            </span>
+                        </section>
+                        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
+                            {/* <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Download">file_download</button>
+                            <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Print this page">print</button> */}
+                            <button type="button" class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Bookmark this page" onClick={this.openSettings.bind(this)}>
+                                <span class="mdc-icon-button__icon" innerHTML={icon({ prefix: 'fas', iconName: 'cog' }).html[0]}></span>
+                            </button>
+                        </section>
+                    </div>
+                </header>
+
+                {/* <nav class="navbar is-primary" role="navigation" aria-label="Dropdown navigation">
                     <div class="navbar-brand">
 
                         <a class="navbar-item">
@@ -90,7 +116,8 @@ export class TopbarComponent {
 
                         </div>
                     </div>
-                </nav>
+                </nav> */}
+
                 <hv-settings></hv-settings>
             </Host>
         )

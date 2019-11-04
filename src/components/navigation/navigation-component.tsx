@@ -2,7 +2,7 @@ import { Component, Prop, h, Element, Listen, State, Host } from '@stencil/core'
 import 'manifesto.js';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { MyAppState } from '../../interfaces';
-import { LazyLoading } from '../../services/lazy-service';
+import { Lazy } from '../../services/lazy-service';
 import { setPage } from '../../store/actions/document';
 import { ScrollbarService } from '../../services/scrollbar-service';
 
@@ -10,8 +10,7 @@ import { ScrollbarService } from '../../services/scrollbar-service';
     tag: 'hv-navigation',
     styleUrls: [
         'navigation-component.scss',
-        '../../../node_modules/overlayscrollbars/css/OverlayScrollbars.min.css',
-        '../../../node_modules/@material/image-list/mdc-image-list.scss'
+        '../../../node_modules/overlayscrollbars/css/OverlayScrollbars.min.css'
     ]
 })
 export class NavigationComponent {
@@ -63,15 +62,6 @@ export class NavigationComponent {
         // }
     }
 
-    componentWillRender() {
-
-        // Register new elements with lazy loading
-        const inner = this.el.querySelector('.navigation-content') as HTMLElement
-        if (inner) {
-            LazyLoading.register(inner)
-        }
-    }
-
     componentDidUnload() {
         this.storeUnsubscribe()
     }
@@ -88,7 +78,7 @@ export class NavigationComponent {
         }
     }
 
-    handlePageClick(ev: MouseEvent, page: number) {
+    handlePageClick(page: number) {
         this.setPage(page)
     }
 
@@ -101,6 +91,23 @@ export class NavigationComponent {
         }
     }
 
+    componentDidRender() {
+
+        // Register new elements with lazy loading
+        const navigationContent = this.el.querySelector('.navigation-content') as HTMLElement
+        if (navigationContent) {
+            Lazy.register(navigationContent)
+        }
+
+        // const thumbnail = this.el.querySelector('img.is-loaded') as HTMLImageElement
+        // if (thumbnail) {
+        //     const li = thumbnail.closest('li')
+        //     if (li) {
+        //         this.el.style.minHeight = (li.clientHeight + 30) + 'px'
+        //     }
+        // }
+    }
+
     render() {
 
         const hasPages = this.pages && this.pages.length > 0
@@ -109,18 +116,19 @@ export class NavigationComponent {
         return (
             <Host class={hasPages ? 'navigation is-loaded' : 'navigation'}>
                 <div class="navigation-content">
-                    <ul class="mdc-image-list my-image-list">
+                    <ul class="mdc-image-list navigation-list navigation-list--2col">
                         {
                             (hasPages) ?
                                 this.pages.map((page, index) => (
 
-                                    <li class="mdc-image-list__item">
-                                        <div class="mdc-image-list__image-aspect-container">
-                                            <img class="mdc-image-list__image" src={page.thumbnail} /></div>
-                                        <div class="mdc-image-list__supporting">
-                                            <span class="mdc-image-list__label">{page.label}</span>
-                                        </div>
-
+                                    <li class={(this.page === index ? "mdc-image-list__item active" : "mdc-image-list__item")}>
+                                        <a class="navigation-item" title={page.label} onClick={this.handlePageClick.bind(this, index)}>
+                                            <div class="mdc-image-list__image-aspect-container">
+                                                <img class="mdc-image-list__image" data-src={page.thumbnail} onLoad={this.imageLoad.bind(this)} /></div>
+                                            <div class="mdc-image-list__supporting">
+                                                <span class="mdc-image-list__label">{page.label}</span>
+                                            </div>
+                                        </a>
                                     </li>
                                 )) :
                                 skeleton.map(() => (

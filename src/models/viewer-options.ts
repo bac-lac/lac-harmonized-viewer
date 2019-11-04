@@ -1,0 +1,1 @@
+type LocationOption = 'top' | 'right' | 'bottom' | 'left'

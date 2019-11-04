@@ -27,3 +27,13 @@ export function id(length: number = 8, alphabet: string = "0123456789abcdefghijk
     }
     return id;
 }
+
+export function parseContentType(value: string): string {
+    const matches = value.match(/([a-z0-9]+)\/([a-z0-9]+)/g)
+    if (!matches || matches.length == 0) {
+        return null
+    }
+    else {
+        return matches[0]
+    }
+}

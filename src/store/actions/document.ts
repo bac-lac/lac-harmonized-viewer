@@ -1,14 +1,16 @@
 import { TypeKeys } from "./index"
-import { DocumentPage, DocumentAnnotation, DocumentAlternateFormat, DocumentZoom, DocumentError } from "../../interfaces"
+import { DocumentPage, DocumentAnnotation, DocumentAlternateFormat, DocumentZoom, DocumentError, StatusCode } from "../../interfaces"
 
 export interface SetError {
     type: TypeKeys.SET_ERROR
-    error: DocumentError
+    code: string
+    message: string
 }
-export const setError = (error: DocumentError) => (dispatch, _getState) => {
+export const setError = (code: string, message: string) => (dispatch, _getState) => {
     const action: SetError = {
         type: TypeKeys.SET_ERROR,
-        error: error
+        code: code,
+        message: message
     }
     dispatch(action)
 }
@@ -33,6 +35,18 @@ export const setLoading = (loading: boolean) => (dispatch, _getState) => {
     const action: SetLoading = {
         type: TypeKeys.SET_LOADING,
         loading: loading
+    }
+    dispatch(action)
+}
+
+export interface SetStatus {
+    type: TypeKeys.SET_STATUS
+    code: StatusCode
+}
+export const setStatus = (code: StatusCode) => (dispatch, _getState) => {
+    const action: SetStatus = {
+        type: TypeKeys.SET_STATUS,
+        code: code
     }
     dispatch(action)
 }

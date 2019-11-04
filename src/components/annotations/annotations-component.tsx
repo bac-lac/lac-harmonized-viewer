@@ -3,8 +3,8 @@ import OverlayScrollbars from 'overlayscrollbars';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { MyAppState } from '../../interfaces';
 import { icon } from '@fortawesome/fontawesome-svg-core';
-import { LocalStorage } from '../../services/storage-service';
 import { ScrollbarService } from '../../services/scrollbar-service';
+import { saveAnnotationVisibility } from '../../settings';
 
 @Component({
     tag: 'hv-annotations',
@@ -20,12 +20,10 @@ export class AnnotationsComponent {
 
     @Prop({ context: "store" }) store: Store
 
-    storage: LocalStorage
     scrollbars: ScrollbarService
 
     constructor() {
         this.scrollbars = new ScrollbarService()
-        this.storage = new LocalStorage()
     }
 
     componentWillLoad() {
@@ -69,35 +67,43 @@ export class AnnotationsComponent {
             panel.classList.toggle('is-hidden')
 
             // Persist state
-            const collapsed = panel.classList.contains('is-hidden')
-            this.storage.set('annotation-' + id, JSON.stringify(collapsed))
+            const visible = !panel.classList.contains('is-hidden')
+
+            saveAnnotationVisibility(id, visible)
         }
     }
 
     render() {
         return (
             <div class="annotations-content">
-                {
-                    this.annotations &&
-                    <dl>
-                        {
-                            this.annotations.map((annotation) => [
-                                <dt data-id={annotation.id}>
-                                    <a onClick={this.handleClick.bind(this)}>
+
+                <ul class="mdc-list">
+                    {
+                        this.annotations.map((annotation, index) => (
+                            <li class={!annotation.visible ? "mdc-list-item is-hidden" : "mdc-list-item"} data-id={annotation.id} tabindex={index}>
+                                <span class="mdc-list-item__text" onClick={this.handleClick.bind(this)}>
+
+                                    <span class="mdc-list-item__primary-text">
                                         {annotation.label ? annotation.label : 'Other'}
-                                        <span class={!annotation.collapsed ? "icon is-hidden" : "icon"} innerHTML={icon({ prefix: 'fas', iconName: 'plus' }).html[0]}>
-
+                                        {/* <span class={!annotation.visible ? "icon is-hidden" : "icon"} innerHTML={icon({ prefix: 'fas', iconName: 'plus' }).html[0]}>
                                         </span>
-                                        <span class={annotation.collapsed ? "icon is-hidden" : "icon"} innerHTML={icon({ prefix: 'fas', iconName: 'minus' }).html[0]}>
+                                        <span class={annotation.visible ? "icon is-hidden" : "icon"} innerHTML={icon({ prefix: 'fas', iconName: 'minus' }).html[0]}>
+                                        </span> */}
+                                    </span>
 
-                                        </span>
-                                    </a>
-                                </dt>,
-                                <dd class={annotation.collapsed && "is-hidden"} innerHTML={annotation.content}></dd>
-                            ])
-                        }
-                    </dl>
-                }
+                                    <span class="mdc-list-item__secondary-text">
+                                        {annotation.content}
+                                    </span>
+
+                                </span>
+                                <span class="mdc-list-item__meta">
+                                    <span innerHTML={icon({ prefix: 'fas', iconName: 'minus' }).html[0]}>
+                                    </span>
+                                </span>
+
+                            </li>))
+                    }
+                </ul>
             </div>
         )
     }

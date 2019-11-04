@@ -1,7 +1,8 @@
-@import '../../globals/variables.scss';
-@import '../../../node_modules/bulma/sass/utilities/_all.sass';
+@import "../../globals/variables.scss";
+@import "bulma/sass/utilities/_all.sass";
+@import "@material/list/mdc-list";
 
-.annotations {
+hv-annotations {
     box-sizing: border-box;
 
     .annotations-content {
@@ -10,8 +11,8 @@
         border-left: $grey-lighter 1px solid;
         background-color: $light;
 
-        dl {
-            dt {
+        .mdc-list {
+            .mdc-list-item {
                 a {
                     color: $dark;
                     font-size: 0.8em;
@@ -35,6 +36,8 @@
             }
 
             dd {
+                @extend .mdc-list-item;
+
                 padding: 1rem;
                 overflow: hidden;
                 font-size: 0.9rem;

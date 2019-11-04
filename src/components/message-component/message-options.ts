@@ -1,0 +1,1 @@
+export type MessageType = 'default' | 'success' | 'error'

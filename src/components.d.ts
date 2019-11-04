@@ -8,37 +8,37 @@
 
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
-  LocationOption,
-} from './components/viewer-component/viewer-options';
+  MessageType,
+} from './components/message-component/message-options';
 import {
   Overlay,
 } from './overlay';
 
 export namespace Components {
-  interface HarmonizedPdf {}
-  interface HarmonizedSpinner {}
-  interface HarmonizedViewer {
-    'annotationsShow': boolean;
-    'enableNavigation': boolean;
-    'enableToolbar': boolean;
-    'enableTopbar': boolean;
-    'language': string;
-    'navigationHeight'?: number;
-    'navigationLocation': LocationOption;
-    'page': number;
-    'parameterUrl': string;
-    'totalPages': number;
-  }
-  interface HarmonizedViewerMessage {
-    'class': string;
+  interface HarmonizedMessage {
     'text': string;
-    'type': string;
+    'type': MessageType;
   }
-  interface HarmonizedViewerOpenseadragon {
+  interface HarmonizedOpenseadragon {
     'getOverlays': () => Promise<Overlay[]>;
   }
-  interface HarmonizedViewerTopbar {}
-  interface HarmonizedViewport {}
+  interface HarmonizedPager {}
+  interface HarmonizedPdf {}
+  interface HarmonizedSpinner {}
+  interface HarmonizedTopbar {}
+  interface HarmonizedViewer {
+    'annotationsShow': boolean;
+    'documentUrl': string;
+    'language': string;
+    'navigationEnable': boolean;
+    'navigationHeight'?: number;
+    'navigationLocation': LocationOption;
+    'topbarEnable': boolean;
+  }
+  interface HarmonizedViewport {
+    'navigationEnable': boolean;
+    'navigationLocation': LocationOption;
+  }
   interface HarmonizedZoomSlider {}
   interface HvAnnotations {}
   interface HvNavigation {}
@@ -49,6 +49,24 @@ export namespace Components {
 
 declare global {
 
+
+  interface HTMLHarmonizedMessageElement extends Components.HarmonizedMessage, HTMLStencilElement {}
+  var HTMLHarmonizedMessageElement: {
+    prototype: HTMLHarmonizedMessageElement;
+    new (): HTMLHarmonizedMessageElement;
+  };
+
+  interface HTMLHarmonizedOpenseadragonElement extends Components.HarmonizedOpenseadragon, HTMLStencilElement {}
+  var HTMLHarmonizedOpenseadragonElement: {
+    prototype: HTMLHarmonizedOpenseadragonElement;
+    new (): HTMLHarmonizedOpenseadragonElement;
+  };
+
+  interface HTMLHarmonizedPagerElement extends Components.HarmonizedPager, HTMLStencilElement {}
+  var HTMLHarmonizedPagerElement: {
+    prototype: HTMLHarmonizedPagerElement;
+    new (): HTMLHarmonizedPagerElement;
+  };
 
   interface HTMLHarmonizedPdfElement extends Components.HarmonizedPdf, HTMLStencilElement {}
   var HTMLHarmonizedPdfElement: {
@@ -62,28 +80,16 @@ declare global {
     new (): HTMLHarmonizedSpinnerElement;
   };
 
+  interface HTMLHarmonizedTopbarElement extends Components.HarmonizedTopbar, HTMLStencilElement {}
+  var HTMLHarmonizedTopbarElement: {
+    prototype: HTMLHarmonizedTopbarElement;
+    new (): HTMLHarmonizedTopbarElement;
+  };
+
   interface HTMLHarmonizedViewerElement extends Components.HarmonizedViewer, HTMLStencilElement {}
   var HTMLHarmonizedViewerElement: {
     prototype: HTMLHarmonizedViewerElement;
     new (): HTMLHarmonizedViewerElement;
-  };
-
-  interface HTMLHarmonizedViewerMessageElement extends Components.HarmonizedViewerMessage, HTMLStencilElement {}
-  var HTMLHarmonizedViewerMessageElement: {
-    prototype: HTMLHarmonizedViewerMessageElement;
-    new (): HTMLHarmonizedViewerMessageElement;
-  };
-
-  interface HTMLHarmonizedViewerOpenseadragonElement extends Components.HarmonizedViewerOpenseadragon, HTMLStencilElement {}
-  var HTMLHarmonizedViewerOpenseadragonElement: {
-    prototype: HTMLHarmonizedViewerOpenseadragonElement;
-    new (): HTMLHarmonizedViewerOpenseadragonElement;
-  };
-
-  interface HTMLHarmonizedViewerTopbarElement extends Components.HarmonizedViewerTopbar, HTMLStencilElement {}
-  var HTMLHarmonizedViewerTopbarElement: {
-    prototype: HTMLHarmonizedViewerTopbarElement;
-    new (): HTMLHarmonizedViewerTopbarElement;
   };
 
   interface HTMLHarmonizedViewportElement extends Components.HarmonizedViewport, HTMLStencilElement {}
@@ -128,12 +134,13 @@ declare global {
     new (): HTMLHvToolbarElement;
   };
   interface HTMLElementTagNameMap {
+    'harmonized-message': HTMLHarmonizedMessageElement;
+    'harmonized-openseadragon': HTMLHarmonizedOpenseadragonElement;
+    'harmonized-pager': HTMLHarmonizedPagerElement;
     'harmonized-pdf': HTMLHarmonizedPdfElement;
     'harmonized-spinner': HTMLHarmonizedSpinnerElement;
+    'harmonized-topbar': HTMLHarmonizedTopbarElement;
     'harmonized-viewer': HTMLHarmonizedViewerElement;
-    'harmonized-viewer-message': HTMLHarmonizedViewerMessageElement;
-    'harmonized-viewer-openseadragon': HTMLHarmonizedViewerOpenseadragonElement;
-    'harmonized-viewer-topbar': HTMLHarmonizedViewerTopbarElement;
     'harmonized-viewport': HTMLHarmonizedViewportElement;
     'harmonized-zoom-slider': HTMLHarmonizedZoomSliderElement;
     'hv-annotations': HTMLHvAnnotationsElement;
@@ -145,34 +152,30 @@ declare global {
 }
 
 declare namespace LocalJSX {
-  interface HarmonizedPdf {}
-  interface HarmonizedSpinner {}
-  interface HarmonizedViewer {
-    'annotationsShow'?: boolean;
-    'enableNavigation'?: boolean;
-    'enableToolbar'?: boolean;
-    'enableTopbar'?: boolean;
-    'language'?: string;
-    'navigationHeight'?: number;
-    'navigationLocation'?: LocationOption;
-    'onCanvasLoaded'?: (event: CustomEvent<any>) => void;
-    'onGoto'?: (event: CustomEvent<any>) => void;
-    'onManifestLoaded'?: (event: CustomEvent<any>) => void;
-    'onNextLoad'?: (event: CustomEvent<any>) => void;
-    'page'?: number;
-    'parameterUrl'?: string;
-    'totalPages'?: number;
-  }
-  interface HarmonizedViewerMessage {
-    'class'?: string;
+  interface HarmonizedMessage {
     'text'?: string;
-    'type'?: string;
+    'type'?: MessageType;
   }
-  interface HarmonizedViewerOpenseadragon {
+  interface HarmonizedOpenseadragon {
     'onOverlayClick'?: (event: CustomEvent<any>) => void;
   }
-  interface HarmonizedViewerTopbar {}
-  interface HarmonizedViewport {}
+  interface HarmonizedPager {}
+  interface HarmonizedPdf {}
+  interface HarmonizedSpinner {}
+  interface HarmonizedTopbar {}
+  interface HarmonizedViewer {
+    'annotationsShow'?: boolean;
+    'documentUrl'?: string;
+    'language'?: string;
+    'navigationEnable'?: boolean;
+    'navigationHeight'?: number;
+    'navigationLocation'?: LocationOption;
+    'topbarEnable'?: boolean;
+  }
+  interface HarmonizedViewport {
+    'navigationEnable'?: boolean;
+    'navigationLocation'?: LocationOption;
+  }
   interface HarmonizedZoomSlider {}
   interface HvAnnotations {}
   interface HvNavigation {}
@@ -181,12 +184,13 @@ declare namespace LocalJSX {
   interface HvToolbar {}
 
   interface IntrinsicElements {
+    'harmonized-message': HarmonizedMessage;
+    'harmonized-openseadragon': HarmonizedOpenseadragon;
+    'harmonized-pager': HarmonizedPager;
     'harmonized-pdf': HarmonizedPdf;
     'harmonized-spinner': HarmonizedSpinner;
+    'harmonized-topbar': HarmonizedTopbar;
     'harmonized-viewer': HarmonizedViewer;
-    'harmonized-viewer-message': HarmonizedViewerMessage;
-    'harmonized-viewer-openseadragon': HarmonizedViewerOpenseadragon;
-    'harmonized-viewer-topbar': HarmonizedViewerTopbar;
     'harmonized-viewport': HarmonizedViewport;
     'harmonized-zoom-slider': HarmonizedZoomSlider;
     'hv-annotations': HvAnnotations;
@@ -203,12 +207,13 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
   export namespace JSX {
     interface IntrinsicElements {
+      'harmonized-message': LocalJSX.HarmonizedMessage & JSXBase.HTMLAttributes<HTMLHarmonizedMessageElement>;
+      'harmonized-openseadragon': LocalJSX.HarmonizedOpenseadragon & JSXBase.HTMLAttributes<HTMLHarmonizedOpenseadragonElement>;
+      'harmonized-pager': LocalJSX.HarmonizedPager & JSXBase.HTMLAttributes<HTMLHarmonizedPagerElement>;
       'harmonized-pdf': LocalJSX.HarmonizedPdf & JSXBase.HTMLAttributes<HTMLHarmonizedPdfElement>;
       'harmonized-spinner': LocalJSX.HarmonizedSpinner & JSXBase.HTMLAttributes<HTMLHarmonizedSpinnerElement>;
+      'harmonized-topbar': LocalJSX.HarmonizedTopbar & JSXBase.HTMLAttributes<HTMLHarmonizedTopbarElement>;
       'harmonized-viewer': LocalJSX.HarmonizedViewer & JSXBase.HTMLAttributes<HTMLHarmonizedViewerElement>;
-      'harmonized-viewer-message': LocalJSX.HarmonizedViewerMessage & JSXBase.HTMLAttributes<HTMLHarmonizedViewerMessageElement>;
-      'harmonized-viewer-openseadragon': LocalJSX.HarmonizedViewerOpenseadragon & JSXBase.HTMLAttributes<HTMLHarmonizedViewerOpenseadragonElement>;
-      'harmonized-viewer-topbar': LocalJSX.HarmonizedViewerTopbar & JSXBase.HTMLAttributes<HTMLHarmonizedViewerTopbarElement>;
       'harmonized-viewport': LocalJSX.HarmonizedViewport & JSXBase.HTMLAttributes<HTMLHarmonizedViewportElement>;
       'harmonized-zoom-slider': LocalJSX.HarmonizedZoomSlider & JSXBase.HTMLAttributes<HTMLHarmonizedZoomSliderElement>;
       'hv-annotations': LocalJSX.HvAnnotations & JSXBase.HTMLAttributes<HTMLHvAnnotationsElement>;

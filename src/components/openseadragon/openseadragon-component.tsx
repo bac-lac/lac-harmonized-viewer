@@ -2,29 +2,32 @@ import { Component, h, Element, Event, EventEmitter, Method, Listen, State, Prop
 import { id } from '../../utils/utils';
 import { Overlay } from '../../overlay';
 import { Store, Unsubscribe } from "@stencil/redux";
-import { setDocumentUrl, setDocumentPages, setDocumentTitle, setLoading, setAnnotations, setZoom, setPage, setDocumentAlternateFormats, setError } from "../../store/actions/document";
+import { setDocumentUrl, setDocumentPages, setDocumentTitle, setLoading, setAnnotations, setZoom, setPage, setDocumentAlternateFormats, setError, setStatus } from "../../store/actions/document";
 import { MyAppState, DocumentZoom } from '../../interfaces';
 import openseadragon from 'openseadragon';
-import { Md5 } from 'ts-md5/dist/md5';
-import { LocalStorage } from '../../services/storage-service';
+import { Resolver } from '../../resolvers/resolver';
+import { IIIFResolver } from '../../resolvers/iiif-resolver/iiif-resolver';
+import { IIIFDocument } from '../../resolvers/iiif-resolver/iiif-document';
+import { Locale } from '../../services/locale-service';
 
 @Component({
-    tag: 'harmonized-viewer-openseadragon',
+    tag: 'harmonized-openseadragon',
     styleUrl: 'openseadragon-component.scss'
 })
 export class OpenSeadragonComponent {
 
     @Element() el: HTMLElement
-
     @Event() overlayClick: EventEmitter
+
+    private resolver: Resolver
 
     //private this.viewer: any
     private overlays: Overlay[] = []
-    private storage: LocalStorage
-    private viewer: any
+    private openseadragon: any
+    //private context: any
 
     setError: typeof setError
-    setLoading: typeof setLoading
+    setStatus: typeof setStatus
     setDocumentUrl: typeof setDocumentUrl
     setDocumentPages: typeof setDocumentPages
     setDocumentTitle: typeof setDocumentTitle
@@ -35,6 +38,7 @@ export class OpenSeadragonComponent {
 
     storeUnsubscribe: Unsubscribe
 
+    @State() document: MyAppState["document"]["document"]
     @State() error: MyAppState["document"]["error"]
     @State() url: MyAppState["document"]["url"]
     @State() page: MyAppState["document"]["page"]
@@ -44,14 +48,14 @@ export class OpenSeadragonComponent {
     @Prop({ context: "store" }) store: Store
 
     constructor() {
-        this.storage = new LocalStorage()
+        this.resolver = new IIIFResolver()
+        this.resolver.locale = Locale.get()
     }
 
     @Watch('page')
     handlePageChange(newValue: number, oldValue: number) {
-        console.log('page change watch', newValue)
-        if (this.viewer) {
-            this.viewer.goToPage(newValue)
+        if (this.openseadragon) {
+            this.openseadragon.goToPage(newValue)
         }
     }
 
@@ -59,25 +63,31 @@ export class OpenSeadragonComponent {
     handleUrlChange(newValue: string, oldValue: string) {
         //console.log(newValue, ' => ', oldValue)
         if (this.url) {
-            this.load(this.url)
+            //this.resolve()
         }
     }
 
     @Watch('zoomRequest')
     handleZoomRequest(newValue: DocumentZoom, oldValue: DocumentZoom) {
-        if (this.viewer) {
-            this.viewer.viewport.zoomTo(newValue.value)
+        if (this.openseadragon) {
+            this.openseadragon.viewport.zoomTo(newValue.value)
         }
+    }
+
+    async resolve() {
+        await this.resolver.init(this.url)
+        this.init()
     }
 
     componentWillLoad() {
 
-        this.store.mapDispatchToProps(this, { setError, setLoading, setDocumentUrl, setDocumentPages, setDocumentTitle, setDocumentAlternateFormats, setAnnotations, setPage, setZoom })
+        this.store.mapDispatchToProps(this, { setError, setStatus, setDocumentUrl, setDocumentPages, setDocumentTitle, setDocumentAlternateFormats, setAnnotations, setPage, setZoom })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { error: error, page: page, pages: pages, url: url, zoomRequest: zoomRequest }
+                document: { document: document, error: error, page: page, pages: pages, url: url, zoomRequest: zoomRequest }
             } = state
             return {
+                document: document,
                 error: error,
                 page: page,
                 pages: pages,
@@ -87,8 +97,8 @@ export class OpenSeadragonComponent {
         })
     }
 
-    componentDidLoad() {
-
+    async componentDidLoad() {
+        await this.resolve()
     }
 
     // componentDidRender() {
@@ -132,17 +142,11 @@ export class OpenSeadragonComponent {
 
 
 
-    async load(url: string) {
+    init() {
 
-        if (!url) {
-            return undefined
-        }
-
-        this.setLoading(true)
-
-        if (this.viewer) {
-            this.viewer.destroy()
-            this.viewer = null
+        if (this.openseadragon) {
+            this.openseadragon.destroy()
+            this.openseadragon = null
         }
 
         this.overlays.push({
@@ -153,10 +157,12 @@ export class OpenSeadragonComponent {
             text: "test overlay"
         })
 
-        const json = await manifesto.loadManifest(url)
-        const manifest = manifesto.create(json) as Manifesto.IManifest
+        const document = this.document as IIIFDocument
+        const resolver = this.resolver as IIIFResolver
 
-        this.setDocumentTitle(manifest.getDefaultLabel())
+        resolver.getTableOfContents()
+
+        this.setDocumentTitle(resolver.title())
 
         // const tileSources = manifest.getSequences()[0].getCanvases().map((canvas) => {
         //     const images = canvas.getImages()
@@ -166,121 +172,94 @@ export class OpenSeadragonComponent {
         //     return resource.getServices()[0].id + '/info.json'
         // })
 
-        const pages = manifest.getSequences()[0].getCanvases()
-            .flatMap((canvas) => canvas.getImages().map((image) => {
-                const resource = image.getResource()
-                if (resource) {
-                    const services = resource.getServices()
-                    if (services) {
-                        const id = services[0].id
-                        return {
-                            id: canvas.id,
-                            label: canvas.getDefaultLabel(),
-                            image: id + '/full/1000,/0/default.jpg',
-                            thumbnail: id + '/full/90,/0/default.jpg'
-                        }
-                    }
-                }
-            }))
-
-        this.setDocumentPages(pages)
-
-        // Find the start canvas
-        let startPageIndex = 0
-        const startCanvas = manifest.getSequenceByIndex(0).getStartCanvas()
-        if (startCanvas) {
-            const startPage = this.pages.find((page) => page.id == startCanvas)
-            if (startPage) {
-                startPageIndex = this.pages.indexOf(startPage)
-            }
-        }
+        this.setDocumentPages(resolver.pages())
 
         // Annotations
-        const annotations = manifest.getMetadata().map((annotation) => {
-
-            const label = annotation.getLabel()
-
-            const hash = new Md5()
-            const id = hash.appendStr(label || '').end().toString()
-
-            const state = this.storage.get('annotation-' + id)
-            const collapsed = (state) ? JSON.parse(state) as boolean : false
-
-            return {
-                id: id,
-                label: annotation.getLabel(),
-                content: annotation.getValue(),
-                collapsed: collapsed
-            }
-        })
-
-        this.setAnnotations(annotations)
+        this.setAnnotations(resolver.annotations())
 
         // Alternate formats
-        const alternateFormats = manifest.getSequenceByIndex(0).getRenderings().map((rendering) => {
+        this.setDocumentAlternateFormats(resolver.alternateFormats())
 
-            const format = rendering.getFormat()
-
-            return {
-                contentType: format.value,
-                label: rendering.getDefaultLabel(),
-                url: rendering.id
-            }
-        })
-
-        this.setDocumentAlternateFormats(alternateFormats)
-
-        this.viewer = openseadragon({
+        this.openseadragon = openseadragon({
             element: this.el.querySelector(".openseadragon"),
             prefixUrl: "/dist/vendors/openseadragon/images/",
             animationTime: 0.1,
-            springStiffness: 100.0,
+            springStiffness: 10.0,
             showNavigator: true,
             navigatorPosition: "BOTTOM_RIGHT",
             showNavigationControl: false,
             showSequenceControl: false,
             sequenceMode: true,
-            //tileSources: tileSources,
-            tileSources: pages.map((page) => ({
-                type: 'image',
-                url: page.image
-            })),
-            initialPage: startPageIndex
+            tileSources: resolver.tileSources(),
+            initialPage: resolver.startPageIndex()
         })
 
-        this.viewer.addHandler('open', () => {
+        this.openseadragon.addHandler('open', () => {
 
-            const page = this.viewer.currentPage()
+            const page = this.openseadragon.currentPage()
             this.setPage(page)
 
-            this.viewer.viewport.zoomTo(this.viewer.viewport.getMinZoom(), null, true)
-            this.viewer.viewport.applyConstraints()
+            this.openseadragon.viewport.zoomTo(this.openseadragon.viewport.getMinZoom(), null, true)
+            this.openseadragon.viewport.applyConstraints()
 
-            this.setLoading(false)
+            this.drawShadow()
+            this.setStatus('loaded')
         })
 
-        this.viewer.addHandler('page', (page: number) => {
-            this.setLoading(true)
+        this.openseadragon.addHandler('page', (page: number) => {
+            this.setStatus('loading')
         })
 
-        this.viewer.addHandler('zoom', (ev: any) => {
+        this.openseadragon.addHandler('zoom', (ev: any) => {
 
             if (isNaN(ev.zoom)) {
                 return undefined
             }
 
-            const minZoom = this.viewer.viewport.getMinZoom()
-            const maxZoom = this.viewer.viewport.getMaxZoom()
+            const value = Number(ev.zoom)
+
+            const min = this.openseadragon.viewport.getMinZoom()
+            const max = this.openseadragon.viewport.getMaxZoom()
+
+            const range = (max - min)
+            let ratio = (range == 0) ? 0 : (value - min) / (max - min)
+            // if (this.context) {
+            //     this.context.shadowBlur = Math.round(ratio * 20 + 20)
+            // }
 
             this.setZoom({
-                min: minZoom,
-                max: maxZoom,
+                min: min,
+                max: max,
+                ratio: ratio,
                 value: ev.zoom
             })
         })
     }
 
+    drawShadow() {
 
+        // const canvas = this.el.querySelector('.openseadragon .openseadragon-canvas > canvas') as HTMLCanvasElement
+        // if (canvas) {
+
+        //     this.context = canvas.getContext('2d')
+        //     if (this.context) {
+
+        //         this.context.rect(188, 40, 200, 100)
+        //         this.context.shadowColor = '#777'
+        //         this.context.shadowBlur = 20
+        //         this.context.shadowOffsetX = 5
+        //         this.context.shadowOffsetY = 5
+        //         this.context.fill()
+        //         this.context.clearRect(188, 40, 200, 100)
+
+        //         const image = this.openseadragonInstance.world.getItemAt(0)
+
+        //         let bounds = image.getBounds(true)
+        //         bounds = this.openseadragonInstance.viewport.viewportToViewerElementRectangle(bounds)
+        //     }
+        // }
+
+    }
 
     drawOverlays() {
 
@@ -288,19 +267,20 @@ export class OpenSeadragonComponent {
 
             const elementId = "hv-overlay-" + id();
 
-            const element = document.createElement("a");
-            element.id = elementId;
-            element.href = "javascript:;";
-            element.classList.add("hv-overlay", "bx--tooltip__trigger", "bx--tooltip--a11y", "bx--tooltip--bottom")
+            const element = document.createElement("a")
+            element.id = elementId
+            //element.href = "javascript:;";
+            element.textContent = overlay.text
+            element.classList.add("hv-overlay")
 
-            const tooltip = document.createElement("span")
-            tooltip.classList.add("bx--assistive-text")
-            tooltip.innerHTML = overlay.text
-            element.appendChild(tooltip)
+            // const tooltip = document.createElement("span")
+            // tooltip.classList.add("bx--assistive-text")
+            // tooltip.innerHTML = overlay.text
+            // element.appendChild(tooltip)
 
-            const bounds = this.viewer.viewport.imageToViewportRectangle(overlay.x, overlay.y, overlay.width, overlay.height);
+            const bounds = this.openseadragon.viewport.imageToViewportRectangle(overlay.x, overlay.y, overlay.width, overlay.height);
 
-            this.viewer.addOverlay(element, bounds, "TOP_LEFT");
+            this.openseadragon.addOverlay(element, bounds, "TOP_LEFT");
 
             // Required in order to prevent click propagation to OpenSeadragon
             overlay.mouseTracker = new openseadragon.MouseTracker({

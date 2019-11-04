@@ -1,4 +1,4 @@
-export class LazyLoading {
+export class Lazy {
 
     static register(element: HTMLElement) {
 

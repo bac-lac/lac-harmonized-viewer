@@ -7,15 +7,21 @@ const getInitialState = (): DocumentState => {
         alternateFormats: [],
         annotations: [],
         contentType: null,
+        document: null,
         loading: false,
         page: 0,
         pageCount: 0,
         pages: [],
-        title: null,
+        status: {
+            code: 'initial',
+            loading: false,
+            error: null
+        },
         url: null,
         zoom: {
             min: 0,
             max: 0,
+            ratio: 0,
             value: 0
         },
         zoomRequest: {
@@ -30,10 +36,14 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
 
     switch (action.type) {
         case TypeKeys.SET_ERROR: {
-            return { ...state, error: action.error }
+            return { ...state, status: { ...state.status, code: 'failed', loading: false, error: { code: action.code, message: action.message } } }
         }
         case TypeKeys.SET_LOADING: {
-            return { ...state, loading: action.loading }
+            return { ...state, status: { ...state.status, loading: action.loading } }
+        }
+        case TypeKeys.SET_STATUS: {
+
+            return { ...state, status: { ...state.status, loading: (action.code == 'prefetching' || action.code == 'loading'), code: action.code } }
         }
         case TypeKeys.SET_DOCUMENT_CONTENT_TYPE: {
             return { ...state, contentType: action.contentType }
@@ -45,7 +55,7 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
             return { ...state, pages: action.pages, page: 0, pageCount: action.pages.length }
         }
         case TypeKeys.SET_DOCUMENT_TITLE: {
-            return { ...state, title: action.title }
+            return { ...state, document: { ...state.document, title: action.title } }
         }
         case TypeKeys.SET_DOCUMENT_ALTERNATE_FORMATS: {
             return { ...state, alternateFormats: action.alternateFormats }

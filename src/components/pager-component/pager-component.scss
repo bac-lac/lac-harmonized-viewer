@@ -1,0 +1,16 @@
+@import "@material/icon-button/mdc-icon-button";
+@import "@material/slider/mdc-slider";
+
+harmonized-pager {
+    display: flex;
+    margin: 15px 0;
+    justify-content: center;
+
+    .slider-control {
+        width: 300px;
+    }
+
+    .mdc-icon-button {
+        @include mdc-icon-button-ink-color(#fff);
+    }
+}

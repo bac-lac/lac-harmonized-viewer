@@ -9,15 +9,14 @@ export class SpinnerComponent {
     render() {
 
         return (
-            <div>
-                <div class="lds-css ng-scope">
-                    <div style={{ width: '100%', height: '100%' }} class="lds-interwind">
-                        <div></div>
-                        <div></div>
-                    </div>
+            <div role="progressbar" class="progress-bar">
+                <div class="mdc-linear-progress__buffering-dots"></div>
+                <div class="mdc-linear-progress__buffer"></div>
+                <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+                    <span class="mdc-linear-progress__bar-inner"></span>
                 </div>
-                <div class="has-text-centered">
-                    Please wait
+                <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+                    <span class="mdc-linear-progress__bar-inner"></span>
                 </div>
             </div>
         )

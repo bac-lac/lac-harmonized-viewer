@@ -1,9 +1,12 @@
-// @import "variables";
-// @import "../assets/fontawesome/scss/fontawesome.scss";
+@import "bulma/sass/utilities/_all.sass";
+@import "variables.scss";
 
-// $feature-flags: (
-//   grid-columns-16: true,
-// );
+img[data-src].is-loaded {
+    opacity: 1;
+}
 
-//@import "node_modules/carbon-components/scss/globals/scss/styles.scss";
-//@import 'node_modules/carbon-components/scss/components/accordion/_accordion.scss';
+img[data-src],
+.skeleton {
+    opacity: 0.4;
+    background-color: $grey-lighter;
+}

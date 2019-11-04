@@ -1,11 +1,11 @@
 import { Component, h, Element, Listen, Prop, Event, EventEmitter, Method, State, Watch } from '@stencil/core';
 import "@stencil/redux";
 import 'manifesto.js';
-import { LocationOption } from './viewer-options';
 import { Store, Unsubscribe } from "@stencil/redux";
 import { configureStore } from "../../store";
-import { setDocumentUrl, setDocumentContentType } from '../../store/actions/document';
-import { MyAppState } from '../../interfaces';
+import { setDocumentUrl, setDocumentContentType, setLoading, setStatus } from '../../store/actions/document';
+import { MyAppState, DocumentError } from '../../interfaces';
+import { AnnotationsComponent } from '../annotations/annotations-component';
 
 @Component({
 	tag: 'harmonized-viewer',
@@ -20,39 +20,37 @@ export class ViewerComponent {
 
 	@Prop() language: string = 'en'
 
-	@Prop() enableTopbar: boolean = true
-	@Prop() enableToolbar: boolean = true
-	@Prop() enableNavigation: boolean = true
+	@Prop() topbarEnable: boolean = true
+
+	@Prop() navigationEnable: boolean = true
+	@Prop() navigationHeight?: number = null
+	@Prop() navigationLocation: LocationOption = 'left'
 
 	@Prop() annotationsShow: boolean = true
 
-	@Prop() navigationHeight?: number = null
-	@Prop() navigationLocation: LocationOption = LocationOption.Left
+	// @Prop() page: number
+	// @Prop() totalPages: number
 
-	@Prop() page: number
-	@Prop() totalPages: number
+	@Prop({ attribute: 'url' }) documentUrl: string
 
-	@Prop({ attribute: 'url' }) parameterUrl: string
-
-	@Event() manifestLoaded: EventEmitter
-	@Event() canvasLoaded: EventEmitter
-	@Event() goto: EventEmitter
-	@Event() nextLoad: EventEmitter
+	// @Event() manifestLoaded: EventEmitter
+	// @Event() canvasLoaded: EventEmitter
+	// @Event() goto: EventEmitter
+	// @Event() nextLoad: EventEmitter
 
 	setDocumentContentType: typeof setDocumentContentType
 	setDocumentUrl: typeof setDocumentUrl
+	setStatus: typeof setStatus
 	storeUnsubscribe: Unsubscribe
 
-	@State() error: MyAppState["document"]["error"]
 	@State() url: MyAppState["document"]["url"]
-	@State() loading: MyAppState["document"]["loading"]
+	@State() status: MyAppState["document"]["status"]
 
 	@Prop({ context: "store" }) store: Store
 
-	@Watch('parameterUrl')
+	@Watch('documentUrl')
 	handleUrlChange() {
-		console.log('HV url changed')
-		this.setDocumentUrl(this.parameterUrl)
+		this.setDocumentUrl(this.documentUrl)
 	}
 
 	@Listen('click', { target: 'document' })
@@ -72,40 +70,18 @@ export class ViewerComponent {
 	componentWillLoad() {
 
 		this.store.setStore(configureStore({}))
-		this.store.mapDispatchToProps(this, { setDocumentContentType, setDocumentUrl })
+		this.store.mapDispatchToProps(this, { setDocumentContentType, setDocumentUrl, setStatus })
 		this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
-				document: { error: error, loading: loading, url: url }
+				document: { status: status, url: url }
 			} = state
 			return {
-				error: error,
-				loading: loading,
+				status: status,
 				url: url
 			}
 		})
-	}
 
-	componentDidLoad() {
-
-		this.setDocumentUrl(this.parameterUrl)
-		//this.setDocumentContentType('application/json')
-
-		// FetchService.execute(
-		// 	this.parameterUrl,
-		// 	'HEAD',
-		// 	CorsMode.Enable
-		// )
-		// 	.then((value) => {
-		// 		//console.log(value)
-		// 		this.setDocumentContentType(value.type)
-		// 	}, (reason) => {
-		// 		console.error(reason)
-		// 	})
-
-		// setTimeout(() => {
-		// 	console.log("timeout");
-		// 	this.setDocumentUrl("https://d.lib.ncsu.edu/collections/catalog/nubian-message-1992-11-30/manifest");
-		// }, 3000);
+		this.setDocumentUrl(this.documentUrl)
 	}
 
 	componentDidUnload() {
@@ -114,75 +90,31 @@ export class ViewerComponent {
 
 	render() {
 
-
-
-		// if (this.error) {
-		// 	return <harmonized-viewer-message>
-		// 		{this.error.message}
-		// 	</harmonized-viewer-message>
-		// }
-
 		return (
 			<div class="harmonized-viewer">
 
 				{
-					(this.enableTopbar) &&
-					<harmonized-viewer-topbar></harmonized-viewer-topbar>
+					this.topbarEnable &&
+					<harmonized-topbar />
 				}
 
 				{
-					(this.enableNavigation) &&
-					this.renderNavigation(LocationOption.Top)
+					this.status.error &&
+					<harmonized-message type="error">
+						<p>
+							<strong>{this.status.error.code}</strong>
+							<span>&nbsp;&ndash;&nbsp;</span>
+							<span>{this.status.error.message}</span>
+						</p>
+					</harmonized-message>
 				}
 
-				<div class="hv-content">
+				<harmonized-viewport />
 
-					{
-						(this.enableNavigation) &&
-						this.renderNavigation(LocationOption.Left)
-					}
-
-					<main class="hv-main">
-
-						{
-							(this.enableToolbar) &&
-							<hv-toolbar class="hv-toolbar" />
-						}
-
-						<div class="hv-main__content">
-							<harmonized-viewport />
-						</div>
-
-					</main>
-
-					{
-						(this.enableNavigation) &&
-						this.renderNavigation(LocationOption.Right)
-					}
-
-				</div>
 
 				<slot name="footer" />
 
-				{
-					(this.enableNavigation) &&
-					this.renderNavigation(LocationOption.Bottom)
-				}
-
 			</div>
 		)
-	}
-
-	renderNavigation(location: LocationOption) {
-
-		if (location == this.navigationLocation) {
-			return (
-				<hv-navigation
-					class={"navigation navigation-" + this.navigationLocation}
-					style={{
-						flexBasis: '280px'
-					}} />
-			)
-		}
 	}
 }

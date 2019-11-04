@@ -1,13 +1,11 @@
-import { I18nService } from "../services/i18n-service";
+import { I18nService, Locale } from "../services/locale-service";
 import { StringBuilder } from "../string-builder";
 
 export class ManifestExtensions {
 
-    locale: I18nService
     manifest: Manifesto.IManifest
 
     constructor(manifest: Manifesto.IManifest) {
-        this.locale = new I18nService()
         this.manifest = manifest
     }
 
@@ -37,9 +35,10 @@ export class ManifestExtensions {
         if (!languageMap) {
             return undefined
         }
-        return languageMap.find((language) =>
-            language.locale &&
-            (language.locale === this.locale.get() || (language.locale.indexOf('-') > -1 && language.locale.substr(0, language.locale.indexOf('-')) === this.locale.get())))
+        const language = Locale.get()
+        return languageMap.find((item) =>
+            item.locale &&
+            (item.locale === language || (item.locale.indexOf('-') > -1 && item.locale.substr(0, item.locale.indexOf('-')) === language)))
     }
 
     private format(language: Manifesto.Language) {

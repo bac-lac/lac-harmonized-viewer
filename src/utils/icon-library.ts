@@ -1,5 +1,6 @@
 import { library, icon } from '@fortawesome/fontawesome-svg-core'
 import {
+    faBars,
     faShareAlt,
     faHome,
     faDownload,
@@ -10,11 +11,16 @@ import {
     faChevronRight,
     faChevronDown,
     faChevronUp,
+    faAngleLeft,
+    faAngleRight,
+    faAngleDoubleLeft,
+    faAngleDoubleRight,
     faPlus,
     faMinus
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
+    faBars,
     faShareAlt,
     faHome,
     faDownload,
@@ -25,6 +31,10 @@ library.add(
     faChevronRight,
     faChevronDown,
     faChevronUp,
+    faAngleLeft,
+    faAngleRight,
+    faAngleDoubleLeft,
+    faAngleDoubleRight,
     faPlus,
     faMinus
 )

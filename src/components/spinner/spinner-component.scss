@@ -1,58 +1,17 @@
 @import "../../globals/variables.scss";
+@import "@material/linear-progress/mdc-linear-progress";
 
 harmonized-spinner {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    z-index: 99999;
-    background-color: #fff;
-
-    @keyframes lds-interwind {
-        0%,
-        100% {
-            animation-timing-function: cubic-bezier(0.2, 0, 0.8, 1);
-        }
-        50% {
-            animation-timing-function: cubic-bezier(0, 0.2, 1, 0.8);
-        }
-        0% {
-            transform: rotate(0deg) translate(0, -20px) scale(0);
-        }
-        50% {
-            transform: rotate(180deg) translate(0, -20px) scale(1);
-        }
-        100% {
-            transform: rotate(360deg) translate(0, -20px) scale(0);
-        }
-    }
-
-    .lds-css {
-        width: fit-content;
-        margin: 0 auto 50px auto;
-    }
-
-    div.lds-interwind {
-        position: relative;
-    }
-    div.lds-interwind div {
+    .progress-bar {
+        @extend .mdc-linear-progress__bar;
+        @extend .mdc-linear-progress--indeterminate;
+        @include mdc-linear-progress-bar-color($primary);
+        @include mdc-linear-progress-buffer-color(transparent);
+        z-index: 99999;
+        top: 0;
+        width: 100%;
+        display: block;
         position: absolute;
-        animation: lds-interwind 1s linear infinite;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        background: $danger;
-    }
-    div.lds-interwind div:last-child {
-        animation-delay: -0.5s;
-        background: $primary;
-    }
-    .lds-interwind {
-        margin: 0 auto;
-        transform: translate(-100px, -100px) scale(0.7) translate(100px, 100px);
+        border-top: #fff 1px solid;
     }
 }

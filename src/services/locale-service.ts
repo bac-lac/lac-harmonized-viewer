@@ -1,12 +1,10 @@
-//import i18n from 'i18next';
-//import XHR from 'i18next-xhr-backend';
 import i18next from 'i18next';
-import Backend from 'i18next-chained-backend';
-import LocalStorageBackend from 'i18next-localstorage-backend';
-import { LocalStorage } from '../services/storage-service';
+import LanguageDetector from 'i18next-browser-languagedetector';
 import { EventEmitter } from 'events';
+import { saveLocale, loadSettings } from '../settings';
 
 i18next
+    .use(LanguageDetector)
     .init({
         lng: 'en',
         fallbackLng: 'en',
@@ -22,21 +20,21 @@ const en = import('../locales/en')
 
     })
 
-export class I18nService {
+const languages: string[] = ['en', 'fr']
+
+export class Locale {
 
     languageChanged: EventEmitter = new EventEmitter()
 
-    storage: LocalStorage = new LocalStorage()
 
-    languages: string[] = ['en', 'fr']
 
     constructor() {
-        this.initialize()
+        this.init()
     }
 
-    initialize() {
+    init() {
 
-        const selectedLanguage = this.get()
+        const selectedLanguage = Locale.get()
 
         //const log = JSON.stringify({ en: { name: 'stored en' }, fr: { name: 'stored fr' } })
         //this.storage.set('i18next_res_en-10', log)
@@ -62,26 +60,27 @@ export class I18nService {
         })
     }
 
-    onChange(callback: (lng: string) => void) {
+    static change(callback: (lng: string) => void) {
         i18next.on('languageChanged', callback)
     }
 
-    all() {
-        return this.languages || []
+    static all() {
+        return languages || []
     }
 
-    change(language: string) {
+    static set(language: string) {
 
         if (!language) {
             return undefined
         }
 
         i18next.changeLanguage(language)
-        this.storage.set('language', language)
+
+        saveLocale(language)
     }
 
-    get() {
-        return this.storage.get('language') || 'en'
+    static get() {
+        return loadSettings().locale
     }
 
     static resolve(language: string, available: string[]) {
@@ -107,19 +106,6 @@ export class I18nService {
         return undefined
     }
 
-    map(languageMap: Manifesto.LanguageMap): Manifesto.Language {
-
-        if (!languageMap) {
-            return undefined
-        }
-
-        const language = this.get()
-
-        return languageMap.find((x) =>
-            x.locale &&
-            (x.locale === language || (x.locale.indexOf('-') > -1 && x.locale.substr(0, x.locale.indexOf('-')) === language)))
-    }
-
     load(filename: string): Promise<any> {
 
         return new Promise((resolve, reject): void => {
@@ -136,7 +122,7 @@ export class I18nService {
         })
     }
 
-    label(key: string, locale?: string) {
+    static label(key: string, locale?: string) {
 
         if (!key) {
             return undefined
@@ -149,6 +135,10 @@ export class I18nService {
             return i18next.t(key)
         }
     }
+}
+
+export function t(key: string, locale?: string) {
+    return Locale.label(key, locale)
 }
 
 export interface I18nService {

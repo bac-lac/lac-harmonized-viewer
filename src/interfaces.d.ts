@@ -4,13 +4,18 @@ export interface DocumentState {
     alternateFormats: DocumentAlternateFormat[]
     annotations: DocumentAnnotation[]
     contentType: string
+    document: Document
     page: number
     pageCount: number
     pages: DocumentPage[]
-    title: string
+    status: DocumentStatus,
     url: string
     zoom: DocumentZoom
     zoomRequest: DocumentZoom
+}
+
+interface Document {
+    title: string
 }
 
 interface DocumentError {
@@ -19,8 +24,11 @@ interface DocumentError {
 }
 
 interface DocumentStatus {
-    code: string
+    code: StatusCode
+    loading: boolean
+    error: DocumentError
 }
+type StatusCode = 'initial' | 'prefetching' | 'prefetched' | 'loading' | 'loaded' | 'failed'
 
 interface DocumentPage {
     id: string
@@ -31,9 +39,10 @@ interface DocumentPage {
 
 interface DocumentAnnotation {
     id: string
+    name: string
     label: string
     content: string
-    collapsed: boolean
+    visible: boolean
 }
 
 interface DocumentAlternateFormat {
@@ -45,6 +54,7 @@ interface DocumentAlternateFormat {
 interface DocumentZoom {
     min: number
     max: number
+    ratio?: number
     value: number
 }
 
@@ -52,4 +62,14 @@ interface DocumentZoom {
 
 interface MyAppState {
     document: DocumentState
+}
+
+interface ViewerSettings {
+    locale: string
+    annotations: AnnotationState[]
+}
+
+interface AnnotationState {
+    id: string,
+    visible: boolean
 }

@@ -1,5 +1,5 @@
 import { Component, h, Element, State, Listen } from '@stencil/core';
-import { I18nService } from '../../services/i18n-service';
+import { I18nService, t, Locale } from '../../services/locale-service';
 import i18next from 'i18next';
 
 @Component({
@@ -9,19 +9,18 @@ import i18next from 'i18next';
 export class SettingsComponent {
 
     @Element() el: HTMLElement
-    @State() language: string
 
-    locale: I18nService = new I18nService()
+    @State() language: string
 
     componentDidLoad() {
 
         const selectLanguage = this.el.querySelector('#settings-language') as HTMLSelectElement
-        selectLanguage.value = this.locale.get()
+        selectLanguage.value = Locale.get()
     }
 
     componentWillLoad() {
 
-        this.locale.onChange(() => {
+        Locale.change(() => {
             console.log('lc i18n')
         })
     }
@@ -31,7 +30,7 @@ export class SettingsComponent {
         const selectLanguage = this.el.querySelector('#settings-language') as HTMLSelectElement
         if (selectLanguage) {
             this.language = selectLanguage.value
-            this.locale.change(selectLanguage.value)
+            Locale.set(selectLanguage.value)
         }
     }
 
@@ -45,7 +44,7 @@ export class SettingsComponent {
 
     render() {
 
-        const selectedLanguage = this.locale.get()
+        const selectedLanguage = Locale.get()
 
         return (
             <div class="modal modal-settings" role="dialog" aria-modal="true" tabindex="-1">
@@ -67,8 +66,8 @@ export class SettingsComponent {
                                     <div class="control control-settings">
                                         <div class="select">
                                             <select class="select" id="settings-language">
-                                                {this.locale.all().map((locale) =>
-                                                    <option value={locale} selected={selectedLanguage === locale}>{this.locale.label('name', locale)}</option>)}
+                                                {Locale.all().map((locale) =>
+                                                    <option value={locale} selected={selectedLanguage === locale}>{t('name', locale)}</option>)}
                                             </select>
                                         </div>
                                     </div>
