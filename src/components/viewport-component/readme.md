@@ -5,6 +5,15 @@
 <!-- Auto Generated Below -->
 
 
+## Properties
+
+| Property             | Attribute             | Description | Type                                     | Default  |
+| -------------------- | --------------------- | ----------- | ---------------------------------------- | -------- |
+| `annotationsEnable`  | `annotations-enable`  |             | `boolean`                                | `false`  |
+| `navigationEnable`   | `navigation-enable`   |             | `boolean`                                | `true`   |
+| `navigationLocation` | `navigation-location` |             | `"bottom" \| "left" \| "right" \| "top"` | `'left'` |
+
+
 ## Dependencies
 
 ### Used by
@@ -14,17 +23,21 @@
 ### Depends on
 
 - [harmonized-spinner](../spinner)
-- [harmonized-viewer-openseadragon](../openseadragon)
+- [hv-annotations](../annotations)
+- [hv-navigation](../navigation)
+- [harmonized-openseadragon](../openseadragon)
 - [harmonized-pdf](../pdf)
 
 ### Graph
 ```mermaid
 graph TD;
-  hv-viewport --> harmonized-spinner
-  hv-viewport --> harmonized-viewer-openseadragon
-  hv-viewport --> harmonized-pdf
-  harmonized-viewer --> hv-viewport
-  style hv-viewport fill:#f9f,stroke:#333,stroke-width:4px
+  harmonized-viewport --> harmonized-spinner
+  harmonized-viewport --> hv-annotations
+  harmonized-viewport --> hv-navigation
+  harmonized-viewport --> harmonized-openseadragon
+  harmonized-viewport --> harmonized-pdf
+  harmonized-viewer --> harmonized-viewport
+  style harmonized-viewport fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

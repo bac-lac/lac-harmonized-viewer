@@ -28,8 +28,11 @@ export class IIIFResolver extends Resolver {
         return this
     }
 
-    contentType() {
-        return 'application/json'
+    contentTypes(): string[] {
+        return [
+            'application/json',
+            'application/ld+json'
+        ]
     }
 
     getTitle(): string {

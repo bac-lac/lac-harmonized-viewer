@@ -27,15 +27,15 @@ export namespace Components {
   interface HarmonizedSpinner {}
   interface HarmonizedTopbar {}
   interface HarmonizedViewer {
-    'annotationsShow': boolean;
+    'annotationsEnable': boolean;
     'documentUrl': string;
     'language': string;
     'navigationEnable': boolean;
     'navigationHeight'?: number;
     'navigationLocation': LocationOption;
-    'topbarEnable': boolean;
   }
   interface HarmonizedViewport {
+    'annotationsEnable': boolean;
     'navigationEnable': boolean;
     'navigationLocation': LocationOption;
   }
@@ -164,15 +164,15 @@ declare namespace LocalJSX {
   interface HarmonizedSpinner {}
   interface HarmonizedTopbar {}
   interface HarmonizedViewer {
-    'annotationsShow'?: boolean;
+    'annotationsEnable'?: boolean;
     'documentUrl'?: string;
     'language'?: string;
     'navigationEnable'?: boolean;
     'navigationHeight'?: number;
     'navigationLocation'?: LocationOption;
-    'topbarEnable'?: boolean;
   }
   interface HarmonizedViewport {
+    'annotationsEnable'?: boolean;
     'navigationEnable'?: boolean;
     'navigationLocation'?: LocationOption;
   }

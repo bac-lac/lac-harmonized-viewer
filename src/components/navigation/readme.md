@@ -9,12 +9,12 @@
 
 ### Used by
 
- - [harmonized-viewer](../viewer-component)
+ - [harmonized-viewport](../viewport-component)
 
 ### Graph
 ```mermaid
 graph TD;
-  harmonized-viewer --> hv-navigation
+  harmonized-viewport --> hv-navigation
   style hv-navigation fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

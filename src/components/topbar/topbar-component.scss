@@ -1,9 +1,9 @@
-@import "../../globals/variables.scss";
-@import "../../../node_modules/bulma/sass/utilities/_all.sass";
+@import '../../globals/variables.scss';
+@import '../../../node_modules/bulma/sass/utilities/_all.sass';
 
-@import "@material/top-app-bar/mdc-top-app-bar";
-@import "@material/button/mdc-button";
-@import "@material/icon-button/mdc-icon-button";
+@import '@material/top-app-bar/mdc-top-app-bar';
+@import '@material/button/mdc-button';
+@import '@material/icon-button/mdc-icon-button';
 
 harmonized-topbar {
     flex: 0 0 auto;
@@ -14,6 +14,8 @@ harmonized-topbar {
     .topbar {
         @extend .mdc-top-app-bar;
         @extend .mdc-top-app-bar--dense;
+        top: 0 !important;
+        position: absolute;
         box-shadow: 0 0 2px 3px rgba(80, 80, 80, 0.3);
         background-color: $dark;
 

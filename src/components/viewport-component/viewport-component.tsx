@@ -5,8 +5,8 @@ import { icon } from '@fortawesome/fontawesome-svg-core';
 import { setPage, setStatus, setDocumentContentType, setLoading, setError } from '../../store/actions/document';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { MyAppState } from '../../interfaces';
-import axios from 'axios';
 import { parseContentType } from '../../utils/utils';
+import axios from 'axios';
 
 @Component({
     tag: 'harmonized-viewport',
@@ -18,8 +18,10 @@ export class ViewportComponent {
 
     @Element() el: HTMLElement
 
-    @Prop() navigationEnable: boolean = true
-    @Prop() navigationLocation: LocationOption = 'left'
+    @Prop({ reflect: true }) navigationEnable: boolean = true
+    @Prop({ reflect: true }) navigationLocation: LocationOption = 'left'
+
+    @Prop({ reflect: true }) annotationsEnable: boolean = false
 
     setLoading: typeof setLoading
     setError: typeof setError
@@ -57,6 +59,7 @@ export class ViewportComponent {
     async componentDidLoad() {
 
         try {
+
             // Pre-fetch document
             // Use response content-type to resolve viewer
 
@@ -133,7 +136,7 @@ export class ViewportComponent {
                             </button>
 
                             <div class={this.status.loading ? 'viewport-content viewport-content--loading' : 'viewport-content'}>
-                                {this.renderViewport()}
+                                {this.renderOpenSeadragon()}
                             </div>
 
                             <button type="button" class="button hv-navigation__next" onClick={this.handleNextClick.bind(this)} disabled={this.status.loading || this.isLast()}>
@@ -144,7 +147,10 @@ export class ViewportComponent {
 
                     </main>
 
-                    <hv-annotations style={{ width: '250px' }} />
+                    {
+                        this.annotationsEnable &&
+                        <hv-annotations style={{ width: '250px' }} />
+                    }
 
                     {this.renderNavigation('right')}
 
@@ -188,7 +194,8 @@ export class ViewportComponent {
     }
 
     renderOpenSeadragon() {
-        return [<harmonized-openseadragon />, <harmonized-pager />]
+        return <harmonized-openseadragon />
+        //return [<harmonized-openseadragon />, <harmonized-pager />]
     }
 
     renderPDF() {

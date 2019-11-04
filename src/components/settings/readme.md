@@ -9,12 +9,12 @@
 
 ### Used by
 
- - [harmonized-viewer-topbar](../topbar)
+ - [harmonized-topbar](../topbar)
 
 ### Graph
 ```mermaid
 graph TD;
-  harmonized-viewer-topbar --> hv-settings
+  harmonized-topbar --> hv-settings
   style hv-settings fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

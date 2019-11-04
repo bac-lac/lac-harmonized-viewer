@@ -116,7 +116,7 @@ export class NavigationComponent {
         return (
             <Host class={hasPages ? 'navigation is-loaded' : 'navigation'}>
                 <div class="navigation-content">
-                    <ul class="mdc-image-list navigation-list navigation-list--2col">
+                    <ul class="mdc-image-list navigation-list">
                         {
                             (hasPages) ?
                                 this.pages.map((page, index) => (

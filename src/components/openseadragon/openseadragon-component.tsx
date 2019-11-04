@@ -160,7 +160,7 @@ export class OpenSeadragonComponent {
         const document = this.document as IIIFDocument
         const resolver = this.resolver as IIIFResolver
 
-        resolver.getTableOfContents()
+        //resolver.getTableOfContents()
 
         this.setDocumentTitle(resolver.title())
 

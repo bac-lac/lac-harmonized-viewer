@@ -18,9 +18,9 @@
 ### Graph
 ```mermaid
 graph TD;
-  harmonized-viewer-topbar --> hv-settings
-  harmonized-viewer --> harmonized-viewer-topbar
-  style harmonized-viewer-topbar fill:#f9f,stroke:#333,stroke-width:4px
+  harmonized-topbar --> hv-settings
+  harmonized-viewer --> harmonized-topbar
+  style harmonized-topbar fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

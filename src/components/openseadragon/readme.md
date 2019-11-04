@@ -29,13 +29,13 @@ Type: `Promise<Overlay[]>`
 
 ### Used by
 
- - [hv-viewport](../viewport-component)
+ - [harmonized-viewport](../viewport-component)
 
 ### Graph
 ```mermaid
 graph TD;
-  hv-viewport --> harmonized-viewer-openseadragon
-  style harmonized-viewer-openseadragon fill:#f9f,stroke:#333,stroke-width:4px
+  harmonized-viewport --> harmonized-openseadragon
+  style harmonized-openseadragon fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

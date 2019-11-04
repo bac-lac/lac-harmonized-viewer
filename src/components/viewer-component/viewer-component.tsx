@@ -18,15 +18,13 @@ export class ViewerComponent {
 
 	@Element() el: HTMLElement
 
-	@Prop() language: string = 'en'
+	@Prop() language: string
 
-	@Prop() topbarEnable: boolean = true
+	@Prop() navigationEnable: boolean
+	@Prop() navigationHeight?: number
+	@Prop() navigationLocation: LocationOption
 
-	@Prop() navigationEnable: boolean = true
-	@Prop() navigationHeight?: number = null
-	@Prop() navigationLocation: LocationOption = 'left'
-
-	@Prop() annotationsShow: boolean = true
+	@Prop() annotationsEnable: boolean
 
 	// @Prop() page: number
 	// @Prop() totalPages: number
@@ -93,10 +91,7 @@ export class ViewerComponent {
 		return (
 			<div class="harmonized-viewer">
 
-				{
-					this.topbarEnable &&
-					<harmonized-topbar />
-				}
+				<harmonized-topbar />
 
 				{
 					this.status.error &&
@@ -109,8 +104,7 @@ export class ViewerComponent {
 					</harmonized-message>
 				}
 
-				<harmonized-viewport />
-
+				<harmonized-viewport navigation-location={this.navigationLocation} annotations-enable={this.annotationsEnable} />
 
 				<slot name="footer" />
 

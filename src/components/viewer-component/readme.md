@@ -7,51 +7,36 @@
 
 ## Properties
 
-| Property             | Attribute             | Description | Type                                                                                         | Default               |
-| -------------------- | --------------------- | ----------- | -------------------------------------------------------------------------------------------- | --------------------- |
-| `annotationsShow`    | `annotations-show`    |             | `boolean`                                                                                    | `true`                |
-| `enableNavigation`   | `enable-navigation`   |             | `boolean`                                                                                    | `true`                |
-| `enableToolbar`      | `enable-toolbar`      |             | `boolean`                                                                                    | `true`                |
-| `enableTopbar`       | `enable-topbar`       |             | `boolean`                                                                                    | `true`                |
-| `language`           | `language`            |             | `string`                                                                                     | `"en"`                |
-| `navigationHeight`   | `navigation-height`   |             | `number`                                                                                     | `null`                |
-| `navigationLocation` | `navigation-location` |             | `LocationOption.Bottom \| LocationOption.Left \| LocationOption.Right \| LocationOption.Top` | `LocationOption.Left` |
-| `page`               | `page`                |             | `number`                                                                                     | `undefined`           |
-| `parameterUrl`       | `url`                 |             | `string`                                                                                     | `undefined`           |
-| `totalPages`         | `total-pages`         |             | `number`                                                                                     | `undefined`           |
-
-
-## Events
-
-| Event            | Description | Type               |
-| ---------------- | ----------- | ------------------ |
-| `canvasLoaded`   |             | `CustomEvent<any>` |
-| `goto`           |             | `CustomEvent<any>` |
-| `manifestLoaded` |             | `CustomEvent<any>` |
-| `nextLoad`       |             | `CustomEvent<any>` |
+| Property             | Attribute             | Description | Type                                     | Default     |
+| -------------------- | --------------------- | ----------- | ---------------------------------------- | ----------- |
+| `annotationsEnable`  | `annotations-enable`  |             | `boolean`                                | `undefined` |
+| `documentUrl`        | `url`                 |             | `string`                                 | `undefined` |
+| `language`           | `language`            |             | `string`                                 | `undefined` |
+| `navigationEnable`   | `navigation-enable`   |             | `boolean`                                | `undefined` |
+| `navigationHeight`   | `navigation-height`   |             | `number`                                 | `undefined` |
+| `navigationLocation` | `navigation-location` |             | `"bottom" \| "left" \| "right" \| "top"` | `undefined` |
 
 
 ## Dependencies
 
 ### Depends on
 
-- [harmonized-viewer-topbar](../topbar)
-- [hv-toolbar](../toolbar)
-- [hv-viewport](../viewport-component)
-- [hv-navigation](../navigation)
+- [harmonized-topbar](../topbar)
+- [harmonized-message](../message-component)
+- [harmonized-viewport](../viewport-component)
 
 ### Graph
 ```mermaid
 graph TD;
-  harmonized-viewer --> harmonized-viewer-topbar
-  harmonized-viewer --> hv-toolbar
-  harmonized-viewer --> hv-viewport
-  harmonized-viewer --> hv-navigation
-  harmonized-viewer-topbar --> hv-settings
-  hv-toolbar --> harmonized-zoom-slider
-  hv-viewport --> harmonized-spinner
-  hv-viewport --> harmonized-viewer-openseadragon
-  hv-viewport --> harmonized-pdf
+  harmonized-viewer --> harmonized-topbar
+  harmonized-viewer --> harmonized-message
+  harmonized-viewer --> harmonized-viewport
+  harmonized-topbar --> hv-settings
+  harmonized-viewport --> harmonized-spinner
+  harmonized-viewport --> hv-annotations
+  harmonized-viewport --> hv-navigation
+  harmonized-viewport --> harmonized-openseadragon
+  harmonized-viewport --> harmonized-pdf
   style harmonized-viewer fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

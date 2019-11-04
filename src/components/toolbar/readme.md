@@ -7,10 +7,6 @@
 
 ## Dependencies
 
-### Used by
-
- - [harmonized-viewer](../viewer-component)
-
 ### Depends on
 
 - [harmonized-zoom-slider](../zoom-slider)
@@ -19,7 +15,6 @@
 ```mermaid
 graph TD;
   hv-toolbar --> harmonized-zoom-slider
-  harmonized-viewer --> hv-toolbar
   style hv-toolbar fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
