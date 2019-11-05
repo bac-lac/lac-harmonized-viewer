@@ -1,21 +1,25 @@
-import { Component, Prop, h, Element, Listen, State, Host } from '@stencil/core';
+import { Component, Prop, h, Element, Listen, State, Watch } from '@stencil/core';
 import 'manifesto.js';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { MyAppState } from '../../interfaces';
-import { Lazy } from '../../services/lazy-service';
 import { setPage } from '../../store/actions/document';
-import { ScrollbarService } from '../../services/scrollbar-service';
 
 @Component({
-    tag: 'hv-navigation',
-    styleUrls: [
-        'navigation-component.scss',
-        '../../../node_modules/overlayscrollbars/css/OverlayScrollbars.min.css'
-    ]
+    tag: 'harmonized-navigation',
+    styleUrl: 'navigation-component.scss'
 })
 export class NavigationComponent {
 
     @Element() el: HTMLElement
+
+    @Prop() cols: number = 2
+    @Prop() rows: number = 1
+
+    @Watch('rows')
+    handleRowsChange() {
+        this.resize()
+    }
+
     setPage: typeof setPage
     storeUnsubscribe: Unsubscribe
 
@@ -24,12 +28,6 @@ export class NavigationComponent {
     @State() pages: MyAppState["document"]["pages"]
 
     @Prop({ context: "store" }) store: Store
-
-    scrollbars: ScrollbarService
-
-    constructor() {
-        this.scrollbars = new ScrollbarService()
-    }
 
     componentWillLoad() {
 
@@ -47,23 +45,15 @@ export class NavigationComponent {
     }
 
     componentDidLoad() {
-        // Initialize scrollbars
-        const inner = this.el.querySelector('.navigation-content') as HTMLElement
-        if (inner) {
-            this.scrollbars.init(inner)
-        }
-
-        // Scroll to the active navigation item
-        // const active = this.el.querySelector('.active')
-        // if (active) {
-        //     active.scrollIntoView({
-        //         block: 'nearest'
-        //     })
-        // }
+        this.resize()
     }
 
     componentDidUnload() {
         this.storeUnsubscribe()
+    }
+
+    componentDidRender() {
+        this.resize()
     }
 
     @Listen('keydown', { target: 'window' })
@@ -78,34 +68,83 @@ export class NavigationComponent {
         }
     }
 
-    handlePageClick(page: number) {
+    handleThumbnailClick(page: number) {
         this.setPage(page)
     }
 
-    imageLoad(ev: Event) {
+    handleThumbnailLoad(ev: Event) {
+        this.syncLazyLoadingClass(ev.currentTarget as HTMLElement)
+    }
 
-        const image = ev.target as HTMLElement
-        if (image) {
-            image.classList.remove('is-loading')
-            image.classList.add('is-loaded')
+    @Listen('resize', { target: 'window' })
+    handleResize() {
+        this.resize()
+    }
+
+    resize() {
+
+        const item = this.el.querySelector('.mdc-image-list__item')
+        if (item) {
+
+            // Adjust the height of the navigation to show a specific number of rows
+
+            const paddingTop = Number(window.getComputedStyle(item, null)
+                .getPropertyValue('padding-top').replace('px', ''))
+
+            const paddingBottom = Number(window.getComputedStyle(item, null)
+                .getPropertyValue('padding-bottom').replace('px', ''))
+
+            const marginBottom = Number(window.getComputedStyle(item, null)
+                .getPropertyValue('margin-bottom').replace('px', ''))
+
+            const rowHeight = (item.clientHeight + paddingTop + paddingBottom + marginBottom)
+
+            // Substract paddingBottom once at the end in order to cut in half the vertical padding of the last row
+            const height = (rowHeight * this.rows) + this.getListTopOffset() + paddingBottom + marginBottom
+
+            this.el.style.minHeight = height + 'px'
         }
     }
 
-    componentDidRender() {
+    private syncLazyLoadingClass(element: HTMLElement) {
 
-        // Register new elements with lazy loading
-        const navigationContent = this.el.querySelector('.navigation-content') as HTMLElement
-        if (navigationContent) {
-            Lazy.register(navigationContent)
+        if (!element) {
+            return undefined
         }
 
-        // const thumbnail = this.el.querySelector('img.is-loaded') as HTMLImageElement
-        // if (thumbnail) {
-        //     const li = thumbnail.closest('li')
-        //     if (li) {
-        //         this.el.style.minHeight = (li.clientHeight + 30) + 'px'
-        //     }
-        // }
+        const classNames = ['is-loading', 'is-loaded', 'is-observed', 'is-ghost', 'is-error']
+
+        const parent = element.closest('li')
+        if (parent) {
+
+            classNames.forEach((className) => {
+
+                if (element.classList.contains(className)) {
+                    parent.classList.add(className)
+                }
+                else {
+                    parent.classList.remove(className)
+                }
+            })
+        }
+    }
+
+    private getListTopOffset(): number {
+
+        const list = this.el.querySelector('.mdc-image-list')
+        if (list) {
+
+            const margin = Number(window.getComputedStyle(list, null)
+                .getPropertyValue('margin-top').replace('px', ''))
+
+            const borderWidth = Number(window.getComputedStyle(this.el, null)
+                .getPropertyValue('border-top-width').replace('px', ''))
+
+            return margin + borderWidth
+        }
+        else {
+            return 0
+        }
     }
 
     render() {
@@ -114,33 +153,36 @@ export class NavigationComponent {
         const skeleton = Array.apply(null, Array(16)).map(function () { })
 
         return (
-            <Host class={hasPages ? 'navigation is-loaded' : 'navigation'}>
-                <div class="navigation-content">
-                    <ul class="mdc-image-list navigation-list">
-                        {
-                            (hasPages) ?
-                                this.pages.map((page, index) => (
+            <div class="navigation-content">
+                <ul class="mdc-image-list navigation-list">
+                    {
+                        (hasPages) ? this.pages.map((page, index) => (
 
-                                    <li class={(this.page === index ? "mdc-image-list__item active" : "mdc-image-list__item")}>
-                                        <a class="navigation-item" title={page.label} onClick={this.handlePageClick.bind(this, index)}>
-                                            <div class="mdc-image-list__image-aspect-container">
-                                                <img class="mdc-image-list__image" data-src={page.thumbnail} onLoad={this.imageLoad.bind(this)} /></div>
-                                            <div class="mdc-image-list__supporting">
-                                                <span class="mdc-image-list__label">{page.label}</span>
-                                            </div>
-                                        </a>
-                                    </li>
-                                )) :
-                                skeleton.map(() => (
-                                    <li>
-                                        <span class="skeleton"></span>
-                                    </li>
-                                ))
-                        }
-                    </ul>
+                            <li class={(this.page === index ? "mdc-image-list__item active" : "mdc-image-list__item")}>
+                                <a class="navigation-item" title={page.label} onClick={this.handleThumbnailClick.bind(this, index)}>
+                                    <div class="mdc-image-list__image-aspect-container">
 
-                </div>
-            </Host>
+                                        <harmonized-thumbnail
+                                            src={page.thumbnail}
+                                            imgClass="mdc-image-list__image"
+                                            onLoad={this.handleThumbnailLoad.bind(this)}
+                                            alt={page.label} />
+
+                                    </div>
+                                    <div class="mdc-image-list__supporting">
+                                        <span class="mdc-image-list__label">{page.label}</span>
+                                    </div>
+                                </a>
+                            </li>
+
+                        )) : skeleton.map(() => (
+                            <li class="mdc-image-list__item is-ghost">
+                                <harmonized-thumbnail ghost />
+                            </li>
+                        ))
+                    }
+                </ul>
+            </div>
         )
     }
 }

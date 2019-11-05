@@ -146,3 +146,19 @@ export const setZoomRequest = (zoom: DocumentZoom) => (dispatch, _getState) => {
     }
     dispatch(action)
 }
+
+export interface AddTag {
+    type: TypeKeys.ADD_TAG
+    x: number,
+    y: number,
+    text: string
+}
+export const addTag = (x: number, y: number, text: string) => (dispatch, _getState) => {
+    const action: AddTag = {
+        type: TypeKeys.ADD_TAG,
+        x: x,
+        y: y,
+        text: text
+    }
+    dispatch(action)
+}

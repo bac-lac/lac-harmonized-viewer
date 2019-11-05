@@ -18,10 +18,10 @@ export class ViewportComponent {
 
     @Element() el: HTMLElement
 
-    @Prop({ reflect: true }) navigationEnable: boolean = true
-    @Prop({ reflect: true }) navigationLocation: LocationOption = 'left'
+    @Prop() navigationEnable: boolean = true
+    @Prop() navigationLocation: LocationOption = 'left'
 
-    @Prop({ reflect: true }) annotationsEnable: boolean = false
+    @Prop() annotationsEnable: boolean = false
 
     setLoading: typeof setLoading
     setError: typeof setError
@@ -120,11 +120,6 @@ export class ViewportComponent {
 
                 <div class="hv-content">
 
-                    {
-                        this.status.loading &&
-                        <harmonized-spinner />
-                    }
-
                     {this.renderNavigation('left')}
 
                     <main class="hv-main">
@@ -135,7 +130,7 @@ export class ViewportComponent {
                                 <span class="icon" innerHTML={icon({ prefix: "fas", iconName: "chevron-left" }).html[0]}></span>
                             </button>
 
-                            <div class={this.status.loading ? 'viewport-content viewport-content--loading' : 'viewport-content'}>
+                            <div class="viewport-content">
                                 {this.renderOpenSeadragon()}
                             </div>
 
@@ -164,33 +159,27 @@ export class ViewportComponent {
 
     renderNavigation(location: LocationOption) {
 
-        if (this.status.code == 'loading' || this.status.code == 'loaded') {
+        if (this.navigationEnable &&
+            this.navigationLocation === location) {
 
-            if (this.navigationEnable &&
-                this.navigationLocation == location) {
-                return <hv-navigation
-                    class={"navigation navigation-" + this.navigationLocation} />
-            }
+            return <harmonized-navigation class={"navigation navigation--" + this.navigationLocation} />
         }
     }
 
     renderViewport() {
 
-        if (this.status.code == 'prefetched' || this.status.code == 'loading' || this.status.code == 'loaded') {
+        let element = null
 
-            let element = null
-
-            switch (this.contentType) {
-                case 'application/json':
-                    element = this.renderOpenSeadragon()
-                    break
-                case 'application/pdf':
-                    element = this.renderPDF()
-                    break
-            }
-
-            return element
+        switch (this.contentType) {
+            case 'application/json':
+                element = this.renderOpenSeadragon()
+                break
+            case 'application/pdf':
+                element = this.renderPDF()
+                break
         }
+
+        return element
     }
 
     renderOpenSeadragon() {

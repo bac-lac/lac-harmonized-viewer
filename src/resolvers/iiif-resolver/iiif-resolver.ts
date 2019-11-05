@@ -174,22 +174,14 @@ export class IIIFResolver extends Resolver {
             return undefined
         }
 
-        let serviceUri: string = null
-
         const infoFile = 'info.json'
-
         const service = this.resolveImageService(resource)
-        if (service) {
 
-            serviceUri = service.getInfoUri()
+        let serviceUri: string = (service ? service.getInfoUri() : resource.id)
 
-            // Remove the info.json path from uri
-            if (serviceUri.indexOf(infoFile) != -1) {
-                serviceUri = serviceUri.substr(0, serviceUri.lastIndexOf(infoFile))
-            }
-        }
-        else {
-            serviceUri = resource.id
+        // Remove the info.json path from uri
+        if (trimFileName && serviceUri.indexOf(infoFile) !== -1) {
+            serviceUri = serviceUri.substr(0, serviceUri.lastIndexOf(infoFile))
         }
 
         // Trim last slash from uri
@@ -218,19 +210,49 @@ export class IIIFResolver extends Resolver {
             x.locale && (x.locale === this.locale || (x.locale.indexOf('-') != -1 && x.locale.substr(0, x.locale.indexOf('-')) === this.locale)))
     }
 
-    private resolveImageService(resource: Manifesto.IResource): Manifesto.IService {
+    resolveImageService(resource: Manifesto.IResource): Manifesto.IService {
 
         if (resource) {
 
-            const complianceIds: string[] = [
-                "http://iiif.io/api/image/2/level0.json",
-                "http://iiif.io/api/image/2/level1.json",
-                "http://iiif.io/api/image/2/level2.json"
+            const supportedProtocols = [
+                /http:\/\/iiif\.io\/api\/image/i
             ]
 
-            return resource.getServices()
-                .find(service => service.getProfile() && complianceIds.includes(service.getProfile().value))
+            const supportedContexts = [
+                /http:\/\/iiif\.io\/api\/image\/1\/context\.json/i,
+                /http:\/\/iiif\.io\/api\/image\/2\/context\.json/i
+            ]
+
+            let imageService: Manifesto.IService = null
+
+            // IIIF
+            // Attempt to resolve the image service with the protocol
+
+            const compatibleServices = resource.getServices().filter(service => {
+                const profile = service.getProfile() && service.getProfile().value
+                return this.matchesAtLeastOne(profile, supportedProtocols)
+            })
+            imageService = (compatibleServices.length > 0 && compatibleServices[0])
+
+            // Fallback
+            // Attempt to resolve the image service from the context
+
+            if (!imageService) {
+                imageService = resource.getServices().find(service => this.matchesAtLeastOne(service.context, supportedContexts))
+            }
+
+            return imageService
         }
+    }
+
+    private matchesAtLeastOne(value: string, regexCollection: RegExp[]) {
+
+        if (!value || !regexCollection) {
+            return undefined
+        }
+
+        const matches = regexCollection.filter(regex => value.match(regex))
+        return (matches.length >= 1)
     }
 
 }

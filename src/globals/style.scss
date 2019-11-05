@@ -1,12 +1,2 @@
-@import "bulma/sass/utilities/_all.sass";
-@import "variables.scss";
-
-img[data-src].is-loaded {
-    opacity: 1;
-}
-
-img[data-src],
-.skeleton {
-    opacity: 0.4;
-    background-color: $grey-lighter;
-}
+// @import "bulma/sass/utilities/_all.sass";
+// @import "variables.scss";

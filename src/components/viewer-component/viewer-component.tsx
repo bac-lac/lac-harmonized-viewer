@@ -3,7 +3,7 @@ import "@stencil/redux";
 import 'manifesto.js';
 import { Store, Unsubscribe } from "@stencil/redux";
 import { configureStore } from "../../store";
-import { setDocumentUrl, setDocumentContentType, setLoading, setStatus } from '../../store/actions/document';
+import { setDocumentUrl, setDocumentContentType, setLoading, setStatus, addTag } from '../../store/actions/document';
 import { MyAppState, DocumentError } from '../../interfaces';
 import { AnnotationsComponent } from '../annotations/annotations-component';
 
@@ -36,15 +36,18 @@ export class ViewerComponent {
 	// @Event() goto: EventEmitter
 	// @Event() nextLoad: EventEmitter
 
+	addTag: typeof addTag
 	setDocumentContentType: typeof setDocumentContentType
 	setDocumentUrl: typeof setDocumentUrl
 	setStatus: typeof setStatus
 	storeUnsubscribe: Unsubscribe
 
+	@State() tags: MyAppState["document"["tags"]]
 	@State() url: MyAppState["document"]["url"]
 	@State() status: MyAppState["document"]["status"]
 
 	@Prop({ context: "store" }) store: Store
+
 
 	@Watch('documentUrl')
 	handleUrlChange() {
@@ -68,12 +71,13 @@ export class ViewerComponent {
 	componentWillLoad() {
 
 		this.store.setStore(configureStore({}))
-		this.store.mapDispatchToProps(this, { setDocumentContentType, setDocumentUrl, setStatus })
+		this.store.mapDispatchToProps(this, { addTag, setDocumentContentType, setDocumentUrl, setStatus })
 		this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
-				document: { status: status, url: url }
+				document: { tags: tags, status: status, url: url }
 			} = state
 			return {
+				tags: tags,
 				status: status,
 				url: url
 			}
@@ -84,6 +88,11 @@ export class ViewerComponent {
 
 	componentDidUnload() {
 		this.storeUnsubscribe()
+	}
+
+	@Method()
+	async setTags() {
+		return this.tags
 	}
 
 	render() {
@@ -104,7 +113,10 @@ export class ViewerComponent {
 					</harmonized-message>
 				}
 
-				<harmonized-viewport navigation-location={this.navigationLocation} annotations-enable={this.annotationsEnable} />
+				<harmonized-viewport
+					navigation-enable={this.navigationEnable}
+					navigation-location={this.navigationLocation}
+					annotations-enable={this.annotationsEnable} />
 
 				<slot name="footer" />
 

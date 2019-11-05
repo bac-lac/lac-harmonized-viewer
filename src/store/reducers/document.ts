@@ -12,6 +12,7 @@ const getInitialState = (): DocumentState => {
         page: 0,
         pageCount: 0,
         pages: [],
+        tags: [],
         status: {
             code: 'initial',
             loading: false,
@@ -76,6 +77,9 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
         }
         case TypeKeys.SET_ZOOM_REQUEST: {
             return { ...state, zoomRequest: action.zoom }
+        }
+        case TypeKeys.ADD_TAG: {
+            return { ...state, tags: [{ x: action.x, y: action.y, text: action.text }] }
         }
     }
     return state

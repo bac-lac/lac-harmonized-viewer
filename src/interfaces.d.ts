@@ -8,7 +8,8 @@ export interface DocumentState {
     page: number
     pageCount: number
     pages: DocumentPage[]
-    status: DocumentStatus,
+    tags: Tag[]
+    status: DocumentStatus
     url: string
     zoom: DocumentZoom
     zoomRequest: DocumentZoom
@@ -56,6 +57,12 @@ interface DocumentZoom {
     max: number
     ratio?: number
     value: number
+}
+
+interface Tag {
+    x: number
+    y: number
+    text: string
 }
 
 //type DocumentContentType = 'IIIF' | 'application/pdf';

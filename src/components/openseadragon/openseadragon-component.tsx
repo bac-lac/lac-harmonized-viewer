@@ -23,7 +23,7 @@ export class OpenSeadragonComponent {
 
     //private this.viewer: any
     private overlays: Overlay[] = []
-    private openseadragon: any
+    private instance: any
     //private context: any
 
     setError: typeof setError
@@ -54,8 +54,8 @@ export class OpenSeadragonComponent {
 
     @Watch('page')
     handlePageChange(newValue: number, oldValue: number) {
-        if (this.openseadragon) {
-            this.openseadragon.goToPage(newValue)
+        if (this.instance) {
+            this.instance.goToPage(newValue)
         }
     }
 
@@ -69,8 +69,8 @@ export class OpenSeadragonComponent {
 
     @Watch('zoomRequest')
     handleZoomRequest(newValue: DocumentZoom, oldValue: DocumentZoom) {
-        if (this.openseadragon) {
-            this.openseadragon.viewport.zoomTo(newValue.value)
+        if (this.instance) {
+            this.instance.viewport.zoomTo(newValue.value)
         }
     }
 
@@ -131,6 +131,11 @@ export class OpenSeadragonComponent {
     }
 
     @Method()
+    async openseadragon(): Promise<any> {
+        return this.instance
+    }
+
+    @Method()
     async getOverlays(): Promise<Overlay[]> {
         return Promise.resolve(this.overlays)
     }
@@ -140,13 +145,11 @@ export class OpenSeadragonComponent {
         console.log('overlay click')
     }
 
-
-
     init() {
 
-        if (this.openseadragon) {
-            this.openseadragon.destroy()
-            this.openseadragon = null
+        if (this.instance) {
+            this.instance.destroy()
+            this.instance = null
         }
 
         this.overlays.push({
@@ -156,6 +159,8 @@ export class OpenSeadragonComponent {
             height: 500,
             text: "test overlay"
         })
+
+
 
         const document = this.document as IIIFDocument
         const resolver = this.resolver as IIIFResolver
@@ -180,7 +185,7 @@ export class OpenSeadragonComponent {
         // Alternate formats
         this.setDocumentAlternateFormats(resolver.alternateFormats())
 
-        this.openseadragon = openseadragon({
+        this.instance = openseadragon({
             element: this.el.querySelector(".openseadragon"),
             prefixUrl: "/dist/vendors/openseadragon/images/",
             animationTime: 0.1,
@@ -194,23 +199,24 @@ export class OpenSeadragonComponent {
             initialPage: resolver.startPageIndex()
         })
 
-        this.openseadragon.addHandler('open', () => {
+        this.instance.addHandler('open', () => {
 
-            const page = this.openseadragon.currentPage()
+            const page = this.instance.currentPage()
             this.setPage(page)
 
-            this.openseadragon.viewport.zoomTo(this.openseadragon.viewport.getMinZoom(), null, true)
-            this.openseadragon.viewport.applyConstraints()
+            this.instance.viewport.zoomTo(this.instance.viewport.getMinZoom(), null, true)
+            this.instance.viewport.applyConstraints()
 
-            this.drawShadow()
+            this.drawOverlays();
+
             this.setStatus('loaded')
         })
 
-        this.openseadragon.addHandler('page', (page: number) => {
+        this.instance.addHandler('page', (page: number) => {
             this.setStatus('loading')
         })
 
-        this.openseadragon.addHandler('zoom', (ev: any) => {
+        this.instance.addHandler('zoom', (ev: any) => {
 
             if (isNaN(ev.zoom)) {
                 return undefined
@@ -218,8 +224,8 @@ export class OpenSeadragonComponent {
 
             const value = Number(ev.zoom)
 
-            const min = this.openseadragon.viewport.getMinZoom()
-            const max = this.openseadragon.viewport.getMaxZoom()
+            const min = this.instance.viewport.getMinZoom()
+            const max = this.instance.viewport.getMaxZoom()
 
             const range = (max - min)
             let ratio = (range == 0) ? 0 : (value - min) / (max - min)
@@ -263,29 +269,29 @@ export class OpenSeadragonComponent {
 
     drawOverlays() {
 
+        console.log(this.overlays)
+
         this.overlays.forEach((overlay) => {
 
-            const elementId = "hv-overlay-" + id();
+            const elementId = "overlay-" + id();
 
-            const element = document.createElement("a")
+            const element = document.createElement('harmonized-overlay')
             element.id = elementId
-            //element.href = "javascript:;";
+            element.setAttribute('role', 'bu')
             element.textContent = overlay.text
-            element.classList.add("hv-overlay")
 
             // const tooltip = document.createElement("span")
             // tooltip.classList.add("bx--assistive-text")
             // tooltip.innerHTML = overlay.text
             // element.appendChild(tooltip)
 
-            const bounds = this.openseadragon.viewport.imageToViewportRectangle(overlay.x, overlay.y, overlay.width, overlay.height);
+            const bounds = this.instance.viewport.imageToViewportRectangle(overlay.x, overlay.y, overlay.width, overlay.height);
 
-            this.openseadragon.addOverlay(element, bounds, "TOP_LEFT");
+            this.instance.addOverlay(element, bounds, "TOP_LEFT");
 
             // Required in order to prevent click propagation to OpenSeadragon
             overlay.mouseTracker = new openseadragon.MouseTracker({
-                element: element,
-                clickHandler: () => this.overlayClick.emit(element)
+                element: element, clickHandler: () => this.overlayClick.emit(element)
             })
         })
     }
