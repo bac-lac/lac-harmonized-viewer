@@ -47,7 +47,7 @@ export namespace Components {
     'navigationEnable': boolean;
     'navigationHeight'?: number;
     'navigationLocation': LocationOption;
-    'setTags': () => Promise<any>;
+    'setTags': () => Promise<void>;
   }
   interface HarmonizedViewport {
     'annotationsEnable': boolean;

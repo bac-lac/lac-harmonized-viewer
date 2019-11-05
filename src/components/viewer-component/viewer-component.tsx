@@ -42,7 +42,7 @@ export class ViewerComponent {
 	setStatus: typeof setStatus
 	storeUnsubscribe: Unsubscribe
 
-	@State() tags: MyAppState["document"["tags"]]
+	//@State() tags: MyAppState["document"["tags"]]
 	@State() url: MyAppState["document"]["url"]
 	@State() status: MyAppState["document"]["status"]
 
@@ -77,7 +77,7 @@ export class ViewerComponent {
 				document: { tags: tags, status: status, url: url }
 			} = state
 			return {
-				tags: tags,
+				//tags: tags,
 				status: status,
 				url: url
 			}
@@ -92,7 +92,7 @@ export class ViewerComponent {
 
 	@Method()
 	async setTags() {
-		return this.tags
+		//return this.tags
 	}
 
 	render() {
