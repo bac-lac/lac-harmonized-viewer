@@ -8,7 +8,7 @@ export interface DocumentState {
     page: number
     pageCount: number
     pages: DocumentPage[]
-    tags: Tag[]
+    tags: DocumentTag[]
     status: DocumentStatus
     url: string
     zoom: DocumentZoom
@@ -59,7 +59,7 @@ interface DocumentZoom {
     value: number
 }
 
-interface Tag {
+interface DocumentTag {
     x: number
     y: number
     text: string

@@ -1,3 +1,4 @@
+import { GhostComponent } from "../components/ghost/ghost-component";
 
 export function format(first: string, middle: string, last: string): string {
     return (

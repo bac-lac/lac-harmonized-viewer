@@ -1,7 +1,7 @@
 import { Component, Prop, h, Element, Listen, State, Watch } from '@stencil/core';
 import 'manifesto.js';
 import { Unsubscribe, Store } from '@stencil/redux';
-import { MyAppState } from '../../interfaces';
+import { MyAppState, DocumentPage } from '../../interfaces';
 import { setPage } from '../../store/actions/document';
 
 @Component({
@@ -56,7 +56,7 @@ export class NavigationComponent {
         this.resize()
     }
 
-    @Listen('keydown', { target: 'window' })
+    @Listen('keydown', { target: 'window', capture: false })
     handleKeyDown(ev: KeyboardEvent) {
 
         // Handle keyboard previous/next navigation
@@ -149,39 +149,14 @@ export class NavigationComponent {
 
     render() {
 
-        const hasPages = this.pages && this.pages.length > 0
-        const skeleton = Array.apply(null, Array(16)).map(function () { })
-
         return (
             <div class="navigation-content">
-                <ul class="mdc-image-list navigation-list">
-                    {
-                        (hasPages) ? this.pages.map((page, index) => (
-
-                            <li class={(this.page === index ? "mdc-image-list__item active" : "mdc-image-list__item")}>
-                                <a class="navigation-item" title={page.label} onClick={this.handleThumbnailClick.bind(this, index)}>
-                                    <div class="mdc-image-list__image-aspect-container">
-
-                                        <harmonized-thumbnail
-                                            src={page.thumbnail}
-                                            imgClass="mdc-image-list__image"
-                                            onLoad={this.handleThumbnailLoad.bind(this)}
-                                            alt={page.label} />
-
-                                    </div>
-                                    <div class="mdc-image-list__supporting">
-                                        <span class="mdc-image-list__label">{page.label}</span>
-                                    </div>
-                                </a>
-                            </li>
-
-                        )) : skeleton.map(() => (
-                            <li class="mdc-image-list__item is-ghost">
-                                <harmonized-thumbnail ghost />
-                            </li>
-                        ))
-                    }
-                </ul>
+                <harmonized-image-list>
+                    {this.pages.map((page) => (
+                        <harmonized-image
+                            src={page.image} caption={page.label} />
+                    ))}
+                </harmonized-image-list>
             </div>
         )
     }

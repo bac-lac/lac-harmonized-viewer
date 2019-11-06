@@ -207,7 +207,7 @@ export class OpenSeadragonComponent {
             this.instance.viewport.zoomTo(this.instance.viewport.getMinZoom(), null, true)
             this.instance.viewport.applyConstraints()
 
-            this.drawOverlays();
+            this.drawOverlays()
 
             this.setStatus('loaded')
         })
@@ -269,8 +269,6 @@ export class OpenSeadragonComponent {
 
     drawOverlays() {
 
-        console.log(this.overlays)
-
         this.overlays.forEach((overlay) => {
 
             const elementId = "overlay-" + id();
@@ -285,9 +283,9 @@ export class OpenSeadragonComponent {
             // tooltip.innerHTML = overlay.text
             // element.appendChild(tooltip)
 
-            const bounds = this.instance.viewport.imageToViewportRectangle(overlay.x, overlay.y, overlay.width, overlay.height);
+            const bounds = this.instance.viewport.imageToViewportRectangle(overlay.x, overlay.y, overlay.width, overlay.height)
 
-            this.instance.addOverlay(element, bounds, "TOP_LEFT");
+            this.instance.addOverlay(element, bounds, "TOP_LEFT")
 
             // Required in order to prevent click propagation to OpenSeadragon
             overlay.mouseTracker = new openseadragon.MouseTracker({

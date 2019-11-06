@@ -116,6 +116,11 @@ export class ViewportComponent {
         return (
             <Host>
 
+                {
+                    this.status.code == 'loading' &&
+                    <harmonized-spinner />
+                }
+
                 {this.renderNavigation('top')}
 
                 <div class="hv-content">
@@ -162,7 +167,7 @@ export class ViewportComponent {
         if (this.navigationEnable &&
             this.navigationLocation === location) {
 
-            return <harmonized-navigation class={"navigation navigation--" + this.navigationLocation} />
+            return <harmonized-navigation class={"navigation navigation--" + this.navigationLocation} rows={2} />
         }
     }
 

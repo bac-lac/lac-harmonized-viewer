@@ -2,16 +2,24 @@
 @import "@material/linear-progress/mdc-linear-progress";
 
 harmonized-spinner {
+    display: inline-block;
+
     .progress-bar {
         @extend .mdc-linear-progress__bar;
         @extend .mdc-linear-progress--indeterminate;
-        @include mdc-linear-progress-bar-color($primary);
+        @include mdc-linear-progress-bar-color(#5772ff);
         @include mdc-linear-progress-buffer-color(transparent);
+
+        height: 3px;
         z-index: 99999;
         top: 0;
         width: 100%;
         display: block;
         position: absolute;
-        border-top: #fff 1px solid;
+        // border-top: #fff 1px solid;
+
+        .mdc-linear-progress__bar-inner {
+            border-top-width: 3px;
+        }
     }
 }

@@ -10,7 +10,7 @@
   "collection": "dist/collection/collection-manifest.json",
   "collection:main": "dist/collection/index.js",
   "scripts": {
-    "build": "stencil build --docs",
+    "build": "stencil build",
     "start": "stencil build --dev --watch --serve",
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
@@ -55,7 +55,6 @@
     "material-design-icons": "^3.0.1",
     "mime": "^2.4.4",
     "nouislider": "^14.0.3",
-    "npm": "^6.12.1",
     "openseadragon": "^2.4.1",
     "overlayscrollbars": "^1.9.1",
     "redux": "^4.0.4",

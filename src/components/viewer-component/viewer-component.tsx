@@ -1,12 +1,10 @@
-import { Component, h, Element, Listen, Prop, Event, EventEmitter, Method, State, Watch } from '@stencil/core';
+import { Component, h, Element, Listen, Prop, Method, State, Watch } from '@stencil/core';
 import "@stencil/redux";
 import 'manifesto.js';
 import { Store, Unsubscribe } from "@stencil/redux";
 import { configureStore } from "../../store";
-import { setDocumentUrl, setDocumentContentType, setLoading, setStatus, addTag } from '../../store/actions/document';
-import { MyAppState, DocumentError } from '../../interfaces';
-import { AnnotationsComponent } from '../annotations/annotations-component';
-
+import { setDocumentUrl, setDocumentContentType, setStatus, addTag } from '../../store/actions/document';
+import { MyAppState } from '../../interfaces';
 @Component({
 	tag: 'harmonized-viewer',
 	styleUrls: [
@@ -42,7 +40,7 @@ export class ViewerComponent {
 	setStatus: typeof setStatus
 	storeUnsubscribe: Unsubscribe
 
-	//@State() tags: MyAppState["document"["tags"]]
+	//@State() tags: MyAppState["document"["tags"]
 	@State() url: MyAppState["document"]["url"]
 	@State() status: MyAppState["document"]["status"]
 
@@ -74,7 +72,7 @@ export class ViewerComponent {
 		this.store.mapDispatchToProps(this, { addTag, setDocumentContentType, setDocumentUrl, setStatus })
 		this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
-				document: { tags: tags, status: status, url: url }
+				document: { status: status, url: url }
 			} = state
 			return {
 				//tags: tags,
@@ -88,11 +86,6 @@ export class ViewerComponent {
 
 	componentDidUnload() {
 		this.storeUnsubscribe()
-	}
-
-	@Method()
-	async setTags() {
-		//return this.tags
 	}
 
 	render() {
