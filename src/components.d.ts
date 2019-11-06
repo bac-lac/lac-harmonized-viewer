@@ -197,8 +197,6 @@ declare namespace LocalJSX {
   interface HarmonizedImage {
     'caption'?: string;
     'class'?: string;
-    'onError'?: (event: CustomEvent<any>) => void;
-    'onLoad'?: (event: CustomEvent<any>) => void;
     'src'?: string;
     'srcset'?: string;
   }
@@ -213,6 +211,7 @@ declare namespace LocalJSX {
   }
   interface HarmonizedOpenseadragon {
     'onOverlayClick'?: (event: CustomEvent<any>) => void;
+    'onPageLoad'?: (event: CustomEvent<any>) => void;
   }
   interface HarmonizedOverlay {}
   interface HarmonizedPager {}

@@ -45,8 +45,8 @@
 
         var viewer = document.getElementById('hv')
 
-        viewer.addEventListener('canvasLoaded', (event) => {
-            console.log('canvas loaded external', event)
+        viewer.addEventListener('pageLoad', (event) => {
+            console.log('page loaded external listener', event)
         })
     </script>
 

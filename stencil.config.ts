@@ -38,11 +38,7 @@ export const config: Config = {
   },
   globalStyle: 'src/globals/variables.scss',
   plugins: [
-    sass({
-      includePaths: [
-        'node_modules'
-      ]
-    }),
+    sass({ includePaths: ['node_modules'] }),
     nodePolyfills()
   ]
 };

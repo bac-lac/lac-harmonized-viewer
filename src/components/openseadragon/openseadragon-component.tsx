@@ -47,6 +47,8 @@ export class OpenSeadragonComponent {
 
     @Prop({ context: "store" }) store: Store
 
+    @Event() pageLoad: EventEmitter
+
     constructor() {
         this.resolver = new IIIFResolver()
         this.resolver.locale = Locale.get()
@@ -210,6 +212,7 @@ export class OpenSeadragonComponent {
             this.drawOverlays()
 
             this.setStatus('loaded')
+            this.pageLoad.emit(this.page)
         })
 
         this.instance.addHandler('page', (page: number) => {

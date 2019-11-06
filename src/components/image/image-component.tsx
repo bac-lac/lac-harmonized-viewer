@@ -15,9 +15,6 @@ export class ImageComponent {
 
     @State() failed: boolean = false
 
-    @Event() load: EventEmitter
-    @Event() error: EventEmitter
-
     componentDidLoad() {
 
         const image = this.el.querySelector('img')
@@ -64,7 +61,7 @@ export class ImageComponent {
 
         this.failed = false
 
-        this.load.emit(ev)
+        //this.load.emit(ev)
     }
 
     handleError() {
