@@ -29,6 +29,8 @@ export class NavigationComponent {
 
     @Prop({ context: "store" }) store: Store
 
+    @State() loadedImageCount: number = 0
+
     componentWillLoad() {
 
         this.store.mapDispatchToProps(this, { setPage })
@@ -45,7 +47,6 @@ export class NavigationComponent {
     }
 
     componentDidLoad() {
-        this.resize()
     }
 
     componentDidUnload() {
@@ -56,7 +57,7 @@ export class NavigationComponent {
         this.resize()
     }
 
-    @Listen('keydown', { target: 'window', capture: false })
+    @Listen('keydown', { target: 'window' })
     handleKeyDown(ev: KeyboardEvent) {
 
         // Handle keyboard previous/next navigation
@@ -73,7 +74,12 @@ export class NavigationComponent {
     }
 
     handleThumbnailLoad(ev: Event) {
-        this.syncLazyLoadingClass(ev.currentTarget as HTMLElement)
+
+        if (this.loadedImageCount === 0) {
+            this.resize()
+        }
+
+        this.loadedImageCount++
     }
 
     @Listen('resize', { target: 'window' })
@@ -83,10 +89,12 @@ export class NavigationComponent {
 
     resize() {
 
-        const item = this.el.querySelector('.mdc-image-list__item')
-        if (item) {
+        let height = 0
 
-            // Adjust the height of the navigation to show a specific number of rows
+        // Adjust the height of the navigation to show a specific number of rows
+
+        const item = this.el.querySelector('harmonized-image-list > .is-loaded')
+        if (item) {
 
             const paddingTop = Number(window.getComputedStyle(item, null)
                 .getPropertyValue('padding-top').replace('px', ''))
@@ -94,19 +102,22 @@ export class NavigationComponent {
             const paddingBottom = Number(window.getComputedStyle(item, null)
                 .getPropertyValue('padding-bottom').replace('px', ''))
 
+            const marginTop = Number(window.getComputedStyle(item, null)
+                .getPropertyValue('margin-top').replace('px', ''))
+
             const marginBottom = Number(window.getComputedStyle(item, null)
                 .getPropertyValue('margin-bottom').replace('px', ''))
 
-            const rowHeight = (item.clientHeight + paddingTop + paddingBottom + marginBottom)
+            const rowHeight = (item.clientHeight + paddingTop + paddingBottom + marginTop + marginBottom)
 
             // Substract paddingBottom once at the end in order to cut in half the vertical padding of the last row
-            const height = (rowHeight * this.rows) + this.getListTopOffset() + paddingBottom + marginBottom
-
-            this.el.style.minHeight = height + 'px'
+            height = (rowHeight * this.rows) + this.getListTopOffset() + paddingBottom + marginBottom
         }
+
+        this.el.style.minHeight = height + 'px'
     }
 
-    private syncLazyLoadingClass(element: HTMLElement) {
+    syncLazyLoadingClass(element: Element) {
 
         if (!element) {
             return undefined
@@ -114,50 +125,52 @@ export class NavigationComponent {
 
         const classNames = ['is-loading', 'is-loaded', 'is-observed', 'is-ghost', 'is-error']
 
-        const parent = element.closest('li')
-        if (parent) {
+        // const parent = element.closest('li')
+        // if (parent) {
 
-            classNames.forEach((className) => {
+        //     classNames.forEach((className) => {
 
-                if (element.classList.contains(className)) {
-                    parent.classList.add(className)
-                }
-                else {
-                    parent.classList.remove(className)
-                }
-            })
-        }
+        //         if (element.classList.contains(className)) {
+        //             parent.classList.add(className)
+        //         }
+        //         else {
+        //             parent.classList.remove(className)
+        //         }
+        //     })
+        // }
     }
 
-    private getListTopOffset(): number {
+    getListTopOffset(): number {
 
-        const list = this.el.querySelector('.mdc-image-list')
+        let marginTop = 0
+
+        const borderWidth = Number(window.getComputedStyle(this.el, null)
+            .getPropertyValue('border-top-width').replace('px', ''))
+
+        const list = this.el.querySelector('harmonized-image-list')
         if (list) {
 
-            const margin = Number(window.getComputedStyle(list, null)
+            marginTop = Number(window.getComputedStyle(list, null)
                 .getPropertyValue('margin-top').replace('px', ''))
-
-            const borderWidth = Number(window.getComputedStyle(this.el, null)
-                .getPropertyValue('border-top-width').replace('px', ''))
-
-            return margin + borderWidth
         }
-        else {
-            return 0
-        }
+
+        return (marginTop + borderWidth)
     }
 
     render() {
 
-        return (
-            <div class="navigation-content">
-                <harmonized-image-list>
-                    {this.pages.map((page) => (
+        return <div class="navigation-content">
+            <harmonized-image-list class="mdc-image-list">
+                {
+                    this.pages.map((page, index) =>
                         <harmonized-image
-                            src={page.image} caption={page.label} />
-                    ))}
-                </harmonized-image-list>
-            </div>
-        )
+                            src={page.thumbnail}
+                            caption={page.label}
+                            page={index}
+                            preload={(index < 16)}
+                            onImageLoad={this.handleThumbnailLoad.bind(this)} />)
+                }
+            </harmonized-image-list>
+        </div>
     }
 }

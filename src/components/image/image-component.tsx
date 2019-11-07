@@ -1,4 +1,8 @@
 import { Component, Prop, h, Element, Event, EventEmitter, Host, State, Listen } from '@stencil/core';
+import { MyAppState } from '../../interfaces';
+import { Unsubscribe, Store } from '@stencil/redux';
+import { setPage } from '../../store/actions/document';
+import { isNumber } from 'util';
 
 @Component({
     tag: 'harmonized-image',
@@ -10,10 +14,35 @@ export class ImageComponent {
 
     @Prop() src: string
     @Prop() srcset: string
-    @Prop() class: string
+    @Prop() preload: boolean = false
+    @Prop({ reflect: true }) page: number
     @Prop() caption: string
 
+    @State() loading: boolean = false
+    @State() loaded: boolean = false
     @State() failed: boolean = false
+
+    setPage: typeof setPage
+    storeUnsubscribe: Unsubscribe
+
+    @State() currentPage: MyAppState["document"]["page"]
+
+    @Prop({ context: "store" }) store: Store
+
+    @Event() imageLoad
+
+    componentWillLoad() {
+
+        this.store.mapDispatchToProps(this, { setPage })
+        this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
+            const {
+                document: { page: page }
+            } = state
+            return {
+                currentPage: page
+            }
+        })
+    }
 
     componentDidLoad() {
 
@@ -30,8 +59,7 @@ export class ImageComponent {
 
                             if (entry.isIntersecting) {
 
-                                this.el.classList.remove('is-loaded')
-                                this.el.classList.add('is-loading')
+                                this.loading = true
 
                                 image.src = this.src
                                 //image.srcset = this.srcset
@@ -52,26 +80,31 @@ export class ImageComponent {
         }
     }
 
+    componentDidUnload() {
+        this.storeUnsubscribe()
+    }
+
     handleLoad(ev: Event) {
 
-        this.el.classList.remove('is-observed')
-        this.el.classList.remove('is-loading')
-        this.el.classList.add('is-loaded')
-        this.el.classList.remove('is-error')
-
+        this.loading = false
+        this.loaded = true
         this.failed = false
 
-        //this.load.emit(ev)
+        this.imageLoad.emit(ev)
     }
 
     handleError() {
 
-        this.el.classList.remove('is-observed')
-        this.el.classList.remove('is-loading')
-        this.el.classList.remove('is-loaded')
-        this.el.classList.add('is-error')
-
+        this.loading = false
+        this.loaded = false
         this.failed = true
+    }
+
+    handleClick() {
+
+        if (isNumber(this.page)) {
+            this.setPage(this.page)
+        }
     }
 
     render() {
@@ -79,22 +112,47 @@ export class ImageComponent {
         if (this.failed) {
             return 'error'
         }
-        else if (!this.src && !this.srcset) {
-            return <harmonized-ghost class="mdc-image-list__item" />
-        }
         else {
 
-            return <div class="mdc-image-list__item">
+            let className = 'mdc-image-list__item'
+
+            if (this.loading) {
+                className += ' is-loading'
+            }
+            else if (this.loaded) {
+                className += ' is-loaded'
+            }
+            else {
+                className += ' is-ghost'
+            }
+
+            if (this.page === this.currentPage) {
+                className += ' is-active'
+            }
+
+            return <Host
+                class={className}
+                onClick={this.handleClick.bind(this)}
+                title={"Go to page " + (this.page + 1)}
+                role="button"
+                tabindex="0">
+
                 <div class="mdc-image-list__image-aspect-container">
                     <img
-                        class=""
+                        src={(this.preload && this.src)}
+                        //srcset={(this.preload && this.srcset)}
+                        class="mdc-image-list__image"
                         onLoad={this.handleLoad.bind(this)}
                         onError={this.handleError.bind(this)} />
                 </div>
-                <div class="mdc-image-list__supporting">
-                    <span class="mdc-image-list__label">{this.caption}</span>
+
+                <div class="mdc-image-list__supporting" title={this.loaded && this.caption}>
+                    <span class="mdc-image-list__label">
+                        {this.loaded ? this.caption : <span innerHTML="&nbsp;"></span>}
+                    </span>
                 </div>
-            </div>
+
+            </Host>
         }
     }
 }

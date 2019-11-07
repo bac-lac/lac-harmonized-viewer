@@ -13,7 +13,7 @@ harmonized-topbar {
 
     .topbar {
         @extend .mdc-top-app-bar;
-        // @extend .mdc-top-app-bar--dense;
+        @extend .mdc-top-app-bar--dense;
         top: 0 !important;
         position: absolute;
         //box-shadow: 0 0 4px 3px rgba(0, 0, 0, 0.3);

@@ -2,25 +2,26 @@
 @import "@material/image-list/mdc-image-list.scss";
 
 harmonized-image-list {
-    @extend .mdc-image-list;
-    width: 100%;
-    height: 100%;
-    display: inline-block;
+    //@extend .mdc-image-list;
+
+    display: block;
+    &.mdc-image-list {
+        margin: 15px 30px 0 30px;
+    }
 
     @include mdc-image-list-aspect(5/6);
-    margin: 20px 30px 0 30px;
 
     @media (min-width: 1200px) {
-        @include mdc-image-list-standard-columns(16);
+        @include mdc-image-list-standard-columns(16, 8px);
     }
     @media (max-width: 1199px) {
-        @include mdc-image-list-standard-columns(12);
+        @include mdc-image-list-standard-columns(8, 8px);
     }
     @media (max-width: 959px) {
-        @include mdc-image-list-standard-columns(8);
+        @include mdc-image-list-standard-columns(6, 8px);
     }
     @media (max-width: 599px) {
-        @include mdc-image-list-standard-columns(2);
+        @include mdc-image-list-standard-columns(4, 8px);
     }
 
     &--2col {

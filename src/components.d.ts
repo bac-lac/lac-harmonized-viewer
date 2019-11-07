@@ -15,10 +15,10 @@ import {
 } from './overlay';
 
 export namespace Components {
-  interface HarmonizedGhost {}
   interface HarmonizedImage {
     'caption': string;
-    'class': string;
+    'page': number;
+    'preload': boolean;
     'src': string;
     'srcset': string;
   }
@@ -62,12 +62,6 @@ export namespace Components {
 
 declare global {
 
-
-  interface HTMLHarmonizedGhostElement extends Components.HarmonizedGhost, HTMLStencilElement {}
-  var HTMLHarmonizedGhostElement: {
-    prototype: HTMLHarmonizedGhostElement;
-    new (): HTMLHarmonizedGhostElement;
-  };
 
   interface HTMLHarmonizedImageElement extends Components.HarmonizedImage, HTMLStencilElement {}
   var HTMLHarmonizedImageElement: {
@@ -171,7 +165,6 @@ declare global {
     new (): HTMLHvToolbarElement;
   };
   interface HTMLElementTagNameMap {
-    'harmonized-ghost': HTMLHarmonizedGhostElement;
     'harmonized-image': HTMLHarmonizedImageElement;
     'harmonized-image-list': HTMLHarmonizedImageListElement;
     'harmonized-message': HTMLHarmonizedMessageElement;
@@ -193,10 +186,11 @@ declare global {
 }
 
 declare namespace LocalJSX {
-  interface HarmonizedGhost {}
   interface HarmonizedImage {
     'caption'?: string;
-    'class'?: string;
+    'onImageLoad'?: (event: CustomEvent<any>) => void;
+    'page'?: number;
+    'preload'?: boolean;
     'src'?: string;
     'srcset'?: string;
   }
@@ -238,7 +232,6 @@ declare namespace LocalJSX {
   interface HvToolbar {}
 
   interface IntrinsicElements {
-    'harmonized-ghost': HarmonizedGhost;
     'harmonized-image': HarmonizedImage;
     'harmonized-image-list': HarmonizedImageList;
     'harmonized-message': HarmonizedMessage;
@@ -265,7 +258,6 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
   export namespace JSX {
     interface IntrinsicElements {
-      'harmonized-ghost': LocalJSX.HarmonizedGhost & JSXBase.HTMLAttributes<HTMLHarmonizedGhostElement>;
       'harmonized-image': LocalJSX.HarmonizedImage & JSXBase.HTMLAttributes<HTMLHarmonizedImageElement>;
       'harmonized-image-list': LocalJSX.HarmonizedImageList & JSXBase.HTMLAttributes<HTMLHarmonizedImageListElement>;
       'harmonized-message': LocalJSX.HarmonizedMessage & JSXBase.HTMLAttributes<HTMLHarmonizedMessageElement>;

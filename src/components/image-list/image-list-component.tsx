@@ -1,4 +1,4 @@
-import { Component, h, Host } from '@stencil/core';
+import { Component, h } from '@stencil/core';
 
 @Component({
     tag: 'harmonized-image-list',
@@ -7,9 +7,6 @@ import { Component, h, Host } from '@stencil/core';
 export class ImageListComponent {
 
     render() {
-
-        return <Host class="page-list">
-            <slot />
-        </Host>
+        return <slot />
     }
 }
