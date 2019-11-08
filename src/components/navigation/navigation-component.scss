@@ -1,8 +1,8 @@
-@import "../../globals/variables.scss";
-@import "../../globals/mixins.scss";
-@import "bulma/sass/utilities/_all.sass";
+@import '../../globals/variables.scss';
+@import '../../globals/mixins.scss';
+@import 'bulma/sass/utilities/_all.sass';
 
-@import "@material/icon-button/mdc-icon-button";
+@import '@material/icon-button/mdc-icon-button';
 
 harmonized-navigation {
     display: flex;
@@ -43,9 +43,5 @@ harmonized-navigation {
                 margin-bottom: 10px;
             }
         }
-    }
-
-    .test {
-        @include mdc-button-shape-radius($radius, $rtl-reflexive);
     }
 }

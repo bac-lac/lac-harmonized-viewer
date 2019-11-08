@@ -9,6 +9,8 @@ export class IIIFResolver extends Resolver {
     thumbnailDefaultExtension: string = 'jpg'
     thumbnailHeight: number = 100
 
+    ignoreImageService: boolean = false
+
     private manifest: Manifesto.IManifest
     private manifestJson: string
 
@@ -80,13 +82,10 @@ export class IIIFResolver extends Resolver {
             }))
     }
 
-    getTableOfContents() {
-        console.log(this.manifest.getAllRanges())
-    }
-
     tileSources(): string[] {
+
         return this.getDefaultSequence().getCanvases()
-            .flatMap((canvas) => canvas.getImages().map((image) => this.resolveImageServiceUri(image.getResource(), false)))
+            .flatMap((canvas) => canvas.getImages().map((image) => this.resolveTileSource(image)))
     }
 
     getAnnotations(): DocumentAnnotation[] {
@@ -147,7 +146,7 @@ export class IIIFResolver extends Resolver {
 
         const thumbnail = resource.getThumbnail()
         if (thumbnail) {
-            return thumbnail.id;
+            return thumbnail.id
         }
         else {
 
@@ -184,7 +183,6 @@ export class IIIFResolver extends Resolver {
         const infoFile = 'info.json'
         const service = this.resolveImageService(resource)
 
-        console.log(service)
         let serviceUri: string = (service ? service.getInfoUri() : resource.id)
 
         // Remove the info.json path from uri
@@ -198,6 +196,23 @@ export class IIIFResolver extends Resolver {
         }
 
         return serviceUri
+    }
+
+    resolveTileSource(image: Manifesto.IAnnotation): any {
+
+        if (!image) {
+            return undefined
+        }
+
+        if (this.ignoreImageService) {
+            return {
+                type: 'image',
+                url: image.getResource().id
+            }
+        }
+        else {
+            return this.resolveImageServiceUri(image.getResource(), false)
+        }
     }
 
     map(languageMap: Manifesto.LanguageMap): Manifesto.Language {

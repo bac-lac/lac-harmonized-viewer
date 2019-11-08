@@ -1,5 +1,7 @@
-@import "../../globals/variables.scss";
-@import "@material/top-app-bar/mdc-top-app-bar";
+@import '../../globals/variables.scss';
+@import '@material/button/mdc-button';
+@import '@material/top-app-bar/mdc-top-app-bar';
+@import '@material/icon-button/mdc-icon-button';
 
 harmonized-viewport {
     @extend .mdc-top-app-bar--dense-fixed-adjust;
@@ -12,18 +14,17 @@ harmonized-viewport {
 
     .hv-navigation__prev,
     .hv-navigation__next {
-        opacity: 0;
+        @include mdc-icon-button-icon-size(64px, 64px);
+        @include mdc-icon-button-ink-color(#fff);
+
+        opacity: 0.1;
+        z-index: 1;
         position: absolute;
-        z-index: 1000;
         transition: opacity 200ms ease;
-        box-shadow: 0 1px 2px 1px #e3e3e3;
 
-        &[disabled] {
-            opacity: 0;
-
-            .icon {
-                color: #ddd;
-            }
+        &::before,
+        &::after {
+            border-radius: 0;
         }
     }
 
@@ -62,24 +63,24 @@ harmonized-viewport {
         }
     }
 
-    .hv-overlay {
-        opacity: 0;
-        border: #fff 6px solid;
-        border-radius: 2px;
-        box-shadow: rgba(0, 0, 0, 0.1) 0 0 2px 2px;
-        background-color: transparent;
-        transition: background, opacity 100ms ease;
+    // .hv-overlay {
+    //     opacity: 0;
+    //     border: #fff 6px solid;
+    //     border-radius: 2px;
+    //     box-shadow: rgba(0, 0, 0, 0.1) 0 0 2px 2px;
+    //     background-color: transparent;
+    //     transition: background, opacity 100ms ease;
 
-        &:hover {
-            background-color: rgba(60, 66, 69, 0.2);
-        }
+    //     &:hover {
+    //         background-color: rgba(60, 66, 69, 0.2);
+    //     }
 
-        &:active {
-            background-color: rgba(60, 66, 69, 0.5);
-        }
-    }
+    //     &:active {
+    //         background-color: rgba(60, 66, 69, 0.5);
+    //     }
+    // }
 
-    &:hover .hv-overlay {
-        opacity: 1;
-    }
+    // &:hover .hv-overlay {
+    //     opacity: 1;
+    // }
 }

@@ -1,18 +1,17 @@
 import { Component, Element, h, Prop, State, Host } from '@stencil/core';
 import '../../utils/manifest';
-import "../../utils/icon-library";
-import { icon } from '@fortawesome/fontawesome-svg-core';
 import { setPage, setStatus, setDocumentContentType, setLoading, setError } from '../../store/actions/document';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { MyAppState } from '../../interfaces';
 import { parseContentType } from '../../utils/utils';
 import axios from 'axios';
+import { MDCRipple } from '@material/ripple';
+import iconChevronLeft from '../../assets/material-design-icons/ic_chevron_left_36px.svg'
+import iconChevronRight from '../../assets/material-design-icons/ic_chevron_right_36px.svg'
 
 @Component({
     tag: 'harmonized-viewport',
-    styleUrls: [
-        'viewport-component.scss',
-        '../../../node_modules/animate.css/animate.min.css']
+    styleUrl: 'viewport-component.scss'
 })
 export class ViewportComponent {
 
@@ -131,16 +130,24 @@ export class ViewportComponent {
 
                         <div class="hv-main__content">
 
-                            <button type="button" class="button hv-navigation__prev" onClick={this.handlePreviousClick.bind(this)} disabled={this.status.loading || this.isFirst()}>
-                                <span class="icon" innerHTML={icon({ prefix: "fas", iconName: "chevron-left" }).html[0]}></span>
+                            <button
+                                type="button"
+                                class="mdc-icon-button hv-navigation__prev"
+                                aria-label="Go to previous page"
+                                onClick={this.handlePreviousClick.bind(this)} disabled={this.status.loading || this.isFirst()}>
+                                <i class="mdc-icon-button__icon" innerHTML={iconChevronLeft}></i>
                             </button>
 
                             <div class="viewport-content">
                                 {this.renderOpenSeadragon()}
                             </div>
 
-                            <button type="button" class="button hv-navigation__next" onClick={this.handleNextClick.bind(this)} disabled={this.status.loading || this.isLast()}>
-                                <span class="icon" innerHTML={icon({ prefix: "fas", iconName: "chevron-right" }).html[0]}></span>
+                            <button
+                                type="button"
+                                class="mdc-icon-button hv-navigation__next"
+                                aria-label="Go to next page"
+                                onClick={this.handleNextClick.bind(this)} disabled={this.status.loading || this.isLast()}>
+                                <i class="mdc-icon-button__icon" innerHTML={iconChevronRight}></i>
                             </button>
 
                         </div>
@@ -167,7 +174,7 @@ export class ViewportComponent {
         if (this.navigationEnable &&
             this.navigationLocation === location) {
 
-            return <harmonized-navigation class={"navigation navigation--" + this.navigationLocation} rows={2} />
+            return <harmonized-navigation class={"navigation navigation--" + this.navigationLocation} rows={1} />
         }
     }
 

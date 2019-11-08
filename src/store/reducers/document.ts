@@ -2,13 +2,15 @@ import { ActionTypes, TypeKeys } from "../actions/index";
 import { DocumentState } from "../../interfaces";
 
 const getInitialState = (): DocumentState => {
+
     return {
-        error: null,
         alternateFormats: [],
         annotations: [],
         contentType: null,
         document: null,
+        error: null,
         loading: false,
+        options: [],
         page: 0,
         pageCount: 0,
         pages: [],
@@ -71,6 +73,9 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
         }
         case TypeKeys.SET_ANNOTATIONS: {
             return { ...state, annotations: action.annotations }
+        }
+        case TypeKeys.SET_OPTIONS: {
+            return { ...state, options: [...state.options, { component: action.component, name: action.name, value: action.value }] }
         }
         case TypeKeys.SET_ZOOM: {
             return { ...state, zoom: action.zoom }

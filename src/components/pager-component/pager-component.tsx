@@ -1,6 +1,4 @@
 import { Component, h, Element, Prop, State, Host } from '@stencil/core';
-import { icon } from '@fortawesome/fontawesome-svg-core';
-import "../../utils/icon-library";
 import { Unsubscribe, Store } from '@stencil/redux';
 import { MyAppState } from '../../interfaces';
 import { setPage } from '../../store/actions/document';
@@ -97,11 +95,11 @@ export class PagerComponent {
             <Host role="toolbar" aria-label="Toolbar navigation">
 
                 <button type="button" class="mdc-icon-button mdc-button--raised" title="Go to first page" onClick={this.handleFirstPageClick.bind(this)} disabled={this.isFirst()}>
-                    <span class="mdc-icon-button__icon" innerHTML={icon({ prefix: 'fas', iconName: 'angle-double-left' }).html[0]}></span>
+                    {/* <span class="mdc-icon-button__icon" innerHTML={icon({ prefix: 'fas', iconName: 'angle-double-left' }).html[0]}></span> */}
                 </button>
 
                 <button type="button" class="mdc-icon-button mdc-button--raised" title="Go to previous page" onClick={this.handlePreviousPageClick.bind(this)} disabled={this.isFirst()}>
-                    <span class="mdc-icon-button__icon" innerHTML={icon({ prefix: 'fas', iconName: 'angle-left' }).html[0]}></span>
+                    {/* <span class="mdc-icon-button__icon" innerHTML={icon({ prefix: 'fas', iconName: 'angle-left' }).html[0]}></span> */}
                 </button>
 
                 <div class="slider-control">
@@ -126,11 +124,11 @@ export class PagerComponent {
                 </div>
 
                 <button type="button" class="mdc-icon-button mdc-button--raised" title="Go to next page" onClick={this.handleNextPageClick.bind(this)} disabled={this.isLast()}>
-                    <span class="mdc-icon-button__icon" innerHTML={icon({ prefix: 'fas', iconName: 'angle-right' }).html[0]}></span>
+                    {/* <span class="mdc-icon-button__icon" innerHTML={icon({ prefix: 'fas', iconName: 'angle-right' }).html[0]}></span> */}
                 </button>
 
                 <button type="button" class="mdc-icon-button mdc-button--raised" title="Go to last page" onClick={this.handleLastPageClick.bind(this)} disabled={this.isLast()}>
-                    <span class="mdc-icon-button__icon" innerHTML={icon({ prefix: 'fas', iconName: 'angle-double-right' }).html[0]}></span>
+                    {/* <span class="mdc-icon-button__icon" innerHTML={icon({ prefix: 'fas', iconName: 'angle-double-right' }).html[0]}></span> */}
                 </button>
 
             </Host>

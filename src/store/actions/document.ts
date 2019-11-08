@@ -123,6 +123,22 @@ export const setAnnotations = (annotations: DocumentAnnotation[]) => (dispatch, 
     dispatch(action)
 }
 
+export interface SetOptions {
+    type: TypeKeys.SET_OPTIONS
+    component: string
+    name: string
+    value: any
+}
+export const setOptions = (component: string, name: string, value: any) => (dispatch, _getState) => {
+    const action: SetOptions = {
+        type: TypeKeys.SET_OPTIONS,
+        component: component,
+        name: name,
+        value: value
+    }
+    dispatch(action)
+}
+
 export interface SetZoom {
     type: TypeKeys.SET_ZOOM
     zoom: DocumentZoom

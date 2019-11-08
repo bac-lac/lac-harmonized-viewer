@@ -1,17 +1,11 @@
 import { Component, h, Element, Prop, State } from '@stencil/core';
-import { getInstance } from '../../utils/utils';
-import { icon } from '@fortawesome/fontawesome-svg-core';
-import "../../utils/icon-library";
 import { Unsubscribe, Store } from '@stencil/redux';
 import { MyAppState } from '../../interfaces';
 import { setPage } from '../../store/actions/document';
-import { fromContentType } from '../../utils/icon-library';
 
 @Component({
     tag: 'hv-toolbar',
-    styleUrls: [
-        'toolbar-component.scss'
-    ]
+    styleUrl: 'toolbar-component.scss'
 })
 export class HVToolbar {
 
@@ -105,7 +99,7 @@ export class HVToolbar {
                     <div class="navbar-start">
 
                         <a class="navbar-item" title="Home" onClick={this.handleHomeClick.bind(this)}>
-                            <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'home' }).html[0]}></span>
+                            {/* <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'home' }).html[0]}></span> */}
                         </a>
 
                         <harmonized-zoom-slider />
@@ -125,7 +119,7 @@ export class HVToolbar {
                     <div class="navbar-start navbar-center">
 
                         <a class="navbar-item" title="Previous" onClick={this.handlePreviousClick.bind(this)}>
-                            <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'chevron-left' }).html[0]}></span>
+                            {/* <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'chevron-left' }).html[0]}></span> */}
                         </a>
 
                         <div class="navbar-item toolbar-page">
@@ -135,7 +129,7 @@ export class HVToolbar {
                         </div>
 
                         <a class="navbar-item" title="Next" onClick={this.handleNextClick.bind(this)}>
-                            <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'chevron-right' }).html[0]}></span>
+                            {/* <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'chevron-right' }).html[0]}></span> */}
                         </a>
 
                     </div>
@@ -143,7 +137,7 @@ export class HVToolbar {
                     <div class="navbar-end">
 
                         <a class="navbar-item" title="Fullscreen" onClick={this.handleFullscreenClick.bind(this)}>
-                            <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'expand' }).html[0]}></span>
+                            {/* <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'expand' }).html[0]}></span> */}
                             <span class="text">Fullscreen</span>
                         </a>
 
@@ -152,7 +146,7 @@ export class HVToolbar {
 
                             <div class="navbar-item has-dropdown">
                                 <a class="navbar-link" onClick={this.handleDropdownClick.bind(this)}>
-                                    <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'download' }).html[0]}></span>
+                                    {/* <span class="icon" innerHTML={icon({ prefix: 'fas', iconName: 'download' }).html[0]}></span> */}
                                     <span class="text">Download</span>
                                 </a>
                                 <div class="navbar-dropdown is-right">

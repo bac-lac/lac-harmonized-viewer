@@ -4,10 +4,12 @@ import { Unsubscribe, Store } from '@stencil/redux';
 import { MyAppState } from '../../interfaces';
 import { setPage } from '../../store/actions/document';
 import { MDCRipple } from '@material/ripple';
+import iconClose from '../../assets/material-design-icons/ic_close_18px.svg'
 
 @Component({
     tag: 'harmonized-navigation',
-    styleUrl: 'navigation-component.scss'
+    styleUrl: 'navigation-component.scss',
+    assetsDir: ''
 })
 export class NavigationComponent {
 
@@ -49,6 +51,10 @@ export class NavigationComponent {
 
     componentDidUnload() {
         this.storeUnsubscribe()
+    }
+
+    componentDidLoad() {
+        this.resize()
     }
 
     @Listen('keydown', { target: 'window' })
@@ -123,20 +129,31 @@ export class NavigationComponent {
         return (marginTop + borderWidth)
     }
 
+    getComputedStyle(element: Element, name: string) {
+
+        if (!element || !name) {
+            return undefined
+        }
+
+        const value = window.getComputedStyle(element, null).getPropertyValue(name)
+
+        // Exclude units
+        const matches = value.match(/(([-0-9\.]+)+)/gi)
+        if (matches) {
+            return Number(matches[0])
+        }
+    }
+
     render() {
 
         return <div class="navigation-content">
 
             <button id="add-to-favorites"
-                class="mdc-icon-button test"
+                class="mdc-icon-button"
                 aria-label="Add to favorites"
                 aria-hidden="true"
-                aria-pressed="false">
-
-                <img
-                    src="/assets/material-design-icons/ic-close-white-16dp.png"
-                    width="32"
-                    height="32" />
+                aria-pressed="false"
+                innerHTML={iconClose}>
             </button>
 
             <harmonized-image-list class="mdc-image-list">

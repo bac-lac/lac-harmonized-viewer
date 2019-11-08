@@ -41,6 +41,7 @@ export class OpenSeadragonComponent {
     @State() document: MyAppState["document"]["document"]
     @State() error: MyAppState["document"]["error"]
     @State() url: MyAppState["document"]["url"]
+    @State() options: MyAppState["document"]["options"]
     @State() page: MyAppState["document"]["page"]
     @State() pages: MyAppState["document"]["pages"]
     @State() zoomRequest: MyAppState["document"]["zoomRequest"]
@@ -48,11 +49,6 @@ export class OpenSeadragonComponent {
     @Prop({ context: "store" }) store: Store
 
     @Event() pageLoad: EventEmitter
-
-    constructor() {
-        this.resolver = new IIIFResolver()
-        this.resolver.locale = Locale.get()
-    }
 
     @Watch('page')
     handlePageChange(newValue: number, oldValue: number) {
@@ -86,20 +82,36 @@ export class OpenSeadragonComponent {
         this.store.mapDispatchToProps(this, { setError, setStatus, setDocumentUrl, setDocumentPages, setDocumentTitle, setDocumentAlternateFormats, setAnnotations, setPage, setZoom })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { document: document, error: error, page: page, pages: pages, url: url, zoomRequest: zoomRequest }
+                document: { document: document, error: error, options: options, page: page, pages: pages, url: url, zoomRequest: zoomRequest }
             } = state
             return {
                 document: document,
                 error: error,
+                options: options,
                 page: page,
                 pages: pages,
                 url: url,
                 zoomRequest: zoomRequest
             }
         })
+
+        console.log('openseadragon options', this.options)
     }
 
     async componentDidLoad() {
+
+        const resolver = new IIIFResolver()
+        resolver.locale = Locale.get()
+
+        const options = this.options.filter(i => i.component && i.component === 'openseadragon')
+
+        const optionIgnoreImageService = options.find(i => i.name && i.name === 'ignoreimageservice')
+        if (optionIgnoreImageService) {
+            resolver.ignoreImageService = optionIgnoreImageService.value as boolean
+        }
+
+        this.resolver = resolver
+
         await this.resolve()
     }
 
@@ -184,6 +196,8 @@ export class OpenSeadragonComponent {
 
         // Alternate formats
         this.setDocumentAlternateFormats(resolver.alternateFormats())
+
+        console.log(resolver.tileSources())
 
         this.instance = openseadragon({
             element: this.el.querySelector(".openseadragon"),

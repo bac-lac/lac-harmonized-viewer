@@ -1,6 +1,7 @@
 import { Config } from '@stencil/core';
 import { sass } from '@stencil/sass';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
+import { inlineSvg } from 'stencil-inline-svg';
 
 export const config: Config = {
   namespace: 'lac-harmonized-viewer',
@@ -12,6 +13,10 @@ export const config: Config = {
         {
           src: 'locales/**.json',
           dest: 'locales'
+        },
+        {
+          src: 'assets/material-design-icons/**.svg',
+          dest: 'assets/material-design-icons'
         }
       ]
     },
@@ -21,6 +26,10 @@ export const config: Config = {
         {
           src: 'locales/**.json',
           dest: 'locales'
+        },
+        {
+          src: 'assets/material-design-icons/**.svg',
+          dest: 'assets/material-design-icons'
         }
       ],
       serviceWorker: null // disable service workers
@@ -39,6 +48,7 @@ export const config: Config = {
   globalStyle: 'src/globals/variables.scss',
   plugins: [
     sass({ includePaths: ['node_modules'] }),
-    nodePolyfills()
+    nodePolyfills(),
+    inlineSvg()
   ]
 };

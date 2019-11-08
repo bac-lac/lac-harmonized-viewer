@@ -1,6 +1,6 @@
-@import "../../globals/mixins.scss";
-@import "bulma/sass/utilities/_all.sass";
-@import "@material/image-list/mdc-image-list.scss";
+@import '../../globals/mixins.scss';
+@import 'bulma/sass/utilities/_all.sass';
+@import '@material/image-list/mdc-image-list.scss';
 
 harmonized-image {
     $active: #f4e6d4;
@@ -40,7 +40,7 @@ harmonized-image {
     .mdc-image-list__image {
         opacity: 0.8;
         filter: grayscale(20%);
-        padding: 2px;
+        padding: 0;
         transition: opacity 70ms ease;
         border: transparent 2px solid;
     }
@@ -88,7 +88,7 @@ harmonized-image {
 
         &.is-active {
             .mdc-image-list__image-aspect-container {
-                outline: $active 3px solid;
+                outline: $active 2px solid;
             }
             .mdc-image-list__supporting {
                 .mdc-image-list__label {

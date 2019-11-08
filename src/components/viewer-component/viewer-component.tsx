@@ -3,8 +3,8 @@ import "@stencil/redux";
 import 'manifesto.js';
 import { Store, Unsubscribe } from "@stencil/redux";
 import { configureStore } from "../../store";
-import { setDocumentUrl, setDocumentContentType, setStatus, addTag } from '../../store/actions/document';
-import { MyAppState } from '../../interfaces';
+import { setDocumentUrl, setDocumentContentType, setStatus, addTag, setOptions } from '../../store/actions/document';
+import { MyAppState, Options } from '../../interfaces';
 @Component({
 	tag: 'harmonized-viewer',
 	styleUrls: [
@@ -40,6 +40,8 @@ export class ViewerComponent {
 	setDocumentContentType: typeof setDocumentContentType
 	setDocumentUrl: typeof setDocumentUrl
 	setStatus: typeof setStatus
+	setOptions: typeof setOptions
+
 	storeUnsubscribe: Unsubscribe
 
 	//@State() tags: MyAppState["document"["tags"]
@@ -65,7 +67,7 @@ export class ViewerComponent {
 	}
 
 	@Listen('click', { target: 'document' })
-	handleDocumentClick(ev: MouseEvent) {
+	handleDocumentClick() {
 
 		// On any click inside the document, close all active dropdowns
 		// Events responsible to open dropdowns must stop propagation
@@ -81,7 +83,7 @@ export class ViewerComponent {
 	componentWillLoad() {
 
 		this.store.setStore(configureStore({}))
-		this.store.mapDispatchToProps(this, { addTag, setDocumentContentType, setDocumentUrl, setStatus })
+		this.store.mapDispatchToProps(this, { addTag, setDocumentContentType, setDocumentUrl, setOptions, setStatus })
 		this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
 				document: { status: status, url: url }
@@ -90,6 +92,28 @@ export class ViewerComponent {
 				//tags: tags,
 				status: status,
 				url: url
+			}
+		})
+
+		//let options: Options[] = []
+		Array.from(this.el.attributes).forEach((attr) => {
+
+			const matches = attr.name.match(
+				/data\-options\-([a-zA-Z0-9]+)\-([a-zA-Z0-9]+)/gi)
+
+			if (matches) {
+				matches.forEach((match) => {
+
+					//const namePath = `{${matches.groups[1]}: { component: '${matches.groups[2]}' }}`
+					// const option: Options = {
+					// 	component: matches.groups[1],
+					// 	name: matches.groups[2],
+					// 	value: JSON.parse(attr.value)
+					// }
+
+					const nodes = match.toLowerCase().split('-')
+					this.setOptions(nodes[2], nodes[3], JSON.parse(attr.value))
+				})
 			}
 		})
 
@@ -121,12 +145,11 @@ export class ViewerComponent {
 				<harmonized-viewport
 					navigation-enable={this.navigationEnable}
 					navigation-location={this.navigationLocation}
-					annotations-enable={this.annotationsEnable} />
+					annotations-enable={this.annotationsEnable}
+				/>
 
 				<slot name="footer" />
-
 				<slot name="overlays" />
-
 			</div>
 		)
 	}

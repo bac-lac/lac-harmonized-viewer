@@ -5,6 +5,7 @@ export interface DocumentState {
     annotations: DocumentAnnotation[]
     contentType: string
     document: Document
+    options: Options[]
     page: number
     pageCount: number
     pages: DocumentPage[]
@@ -17,6 +18,12 @@ export interface DocumentState {
 
 interface Document {
     title: string
+}
+
+interface Options {
+    component: string
+    name: string
+    value: any
 }
 
 interface DocumentError {

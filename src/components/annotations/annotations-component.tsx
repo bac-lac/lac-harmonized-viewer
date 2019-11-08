@@ -1,14 +1,12 @@
 import { Component, h, Element, State, Prop } from '@stencil/core';
-import OverlayScrollbars from 'overlayscrollbars';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { MyAppState } from '../../interfaces';
-import { icon } from '@fortawesome/fontawesome-svg-core';
 import { ScrollbarService } from '../../services/scrollbar-service';
 import { saveAnnotationVisibility } from '../../settings';
 
 @Component({
     tag: 'hv-annotations',
-    styleUrls: ['annotations-component.scss', '../../../node_modules/overlayscrollbars/css/OverlayScrollbars.min.css']
+    styleUrl: 'annotations-component.scss'
 })
 export class AnnotationsComponent {
 
@@ -97,8 +95,8 @@ export class AnnotationsComponent {
 
                                 </span>
                                 <span class="mdc-list-item__meta">
-                                    <span innerHTML={icon({ prefix: 'fas', iconName: 'minus' }).html[0]}>
-                                    </span>
+                                    {/* <span innerHTML={icon({ prefix: 'fas', iconName: 'minus' }).html[0]}>
+                                    </span> */}
                                 </span>
 
                             </li>))
