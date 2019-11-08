@@ -51,3 +51,17 @@ $light: #f5f5f5;
         position: relative;
     }
 }
+
+// Overlay class must appear at the root because they are declared
+// outside the shadow dom
+harmonized-overlay {
+    cursor: pointer;
+    display: inline-block;
+    border-radius: 2px;
+    border: #ccc 4px solid;
+    background-color: rgba(255, 255, 255, 0.3);
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+}

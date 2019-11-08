@@ -49,6 +49,16 @@ export class ViewerComponent {
 	@Prop({ context: "store" }) store: Store
 
 
+	// @Method()
+	// async addOverlay(element: Element, x: number, y: number): Promise<void> {
+
+	// 	if (!element) {
+	// 		return undefined
+	// 	}
+
+
+	// }
+
 	@Watch('documentUrl')
 	handleUrlChange() {
 		this.setDocumentUrl(this.documentUrl)
@@ -114,6 +124,8 @@ export class ViewerComponent {
 					annotations-enable={this.annotationsEnable} />
 
 				<slot name="footer" />
+
+				<slot name="overlays" />
 
 			</div>
 		)

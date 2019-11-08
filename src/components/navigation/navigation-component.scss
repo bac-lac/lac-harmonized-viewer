@@ -1,6 +1,8 @@
 @import "../../globals/variables.scss";
+@import "../../globals/mixins.scss";
 @import "bulma/sass/utilities/_all.sass";
-@import "@material/image-list/mdc-image-list.scss";
+
+@import "@material/icon-button/mdc-icon-button";
 
 harmonized-navigation {
     display: flex;
@@ -40,29 +42,10 @@ harmonized-navigation {
                 margin-top: 10px;
                 margin-bottom: 10px;
             }
-
-            &:not(.mdc-image-list--with-text-protection) {
-                .mdc-image-list__supporting {
-                    width: auto;
-                }
-            }
-
-            &.mdc-image-list--with-text-protection {
-                .mdc-image-list__supporting {
-                    height: auto;
-                    margin: 0;
-                    padding: 0;
-
-                    .mdc-image-list__label {
-                        color: $grey;
-                        font-size: 11px;
-                        font-weight: 600;
-                        line-height: 20px;
-                        margin: 0;
-                        padding: 0;
-                    }
-                }
-            }
         }
+    }
+
+    .test {
+        @include mdc-button-shape-radius($radius, $rtl-reflexive);
     }
 }
