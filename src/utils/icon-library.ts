@@ -16,7 +16,8 @@ import {
     faAngleDoubleLeft,
     faAngleDoubleRight,
     faPlus,
-    faMinus
+    faMinus,
+    faTimes
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
@@ -36,7 +37,8 @@ library.add(
     faAngleDoubleLeft,
     faAngleDoubleRight,
     faPlus,
-    faMinus
+    faMinus,
+    faTimes
 )
 
 export function fromContentType(contentType: string) {

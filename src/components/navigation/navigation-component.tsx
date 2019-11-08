@@ -1,8 +1,9 @@
 import { Component, Prop, h, Element, Listen, State, Watch } from '@stencil/core';
 import 'manifesto.js';
 import { Unsubscribe, Store } from '@stencil/redux';
-import { MyAppState, DocumentPage } from '../../interfaces';
+import { MyAppState } from '../../interfaces';
 import { setPage } from '../../store/actions/document';
+import { MDCRipple } from '@material/ripple';
 
 @Component({
     tag: 'harmonized-navigation',
@@ -46,15 +47,8 @@ export class NavigationComponent {
         })
     }
 
-    componentDidLoad() {
-    }
-
     componentDidUnload() {
         this.storeUnsubscribe()
-    }
-
-    componentDidRender() {
-        this.resize()
     }
 
     @Listen('keydown', { target: 'window' })
@@ -74,12 +68,7 @@ export class NavigationComponent {
     }
 
     handleThumbnailLoad(ev: Event) {
-
-        if (this.loadedImageCount === 0) {
-            this.resize()
-        }
-
-        this.loadedImageCount++
+        this.resize()
     }
 
     @Listen('resize', { target: 'window' })
@@ -117,29 +106,6 @@ export class NavigationComponent {
         this.el.style.minHeight = height + 'px'
     }
 
-    syncLazyLoadingClass(element: Element) {
-
-        if (!element) {
-            return undefined
-        }
-
-        const classNames = ['is-loading', 'is-loaded', 'is-observed', 'is-ghost', 'is-error']
-
-        // const parent = element.closest('li')
-        // if (parent) {
-
-        //     classNames.forEach((className) => {
-
-        //         if (element.classList.contains(className)) {
-        //             parent.classList.add(className)
-        //         }
-        //         else {
-        //             parent.classList.remove(className)
-        //         }
-        //     })
-        // }
-    }
-
     getListTopOffset(): number {
 
         let marginTop = 0
@@ -160,15 +126,29 @@ export class NavigationComponent {
     render() {
 
         return <div class="navigation-content">
+
+            <button id="add-to-favorites"
+                class="mdc-icon-button test"
+                aria-label="Add to favorites"
+                aria-hidden="true"
+                aria-pressed="false">
+
+                <img
+                    src="/assets/material-design-icons/ic-close-white-16dp.png"
+                    width="32"
+                    height="32" />
+            </button>
+
             <harmonized-image-list class="mdc-image-list">
                 {
-                    this.pages.map((page, index) =>
+                    this.pages.map((page, index) => (
+
                         <harmonized-image
                             src={page.thumbnail}
                             caption={page.label}
                             page={index}
-                            preload={(index < 16)}
-                            onImageLoad={this.handleThumbnailLoad.bind(this)} />)
+                            preload={index < 16}
+                            onImageLoad={this.handleThumbnailLoad.bind(this)} />))
                 }
             </harmonized-image-list>
         </div>

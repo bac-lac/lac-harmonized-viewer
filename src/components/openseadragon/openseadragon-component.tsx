@@ -154,15 +154,13 @@ export class OpenSeadragonComponent {
             this.instance = null
         }
 
-        this.overlays.push({
-            x: 50,
-            y: 80,
-            width: 500,
-            height: 500,
-            text: "test overlay"
-        })
-
-
+        // this.overlays.push({
+        //     x: 50,
+        //     y: 80,
+        //     width: 500,
+        //     height: 500,
+        //     text: "test overlay"
+        // })
 
         const document = this.document as IIIFDocument
         const resolver = this.resolver as IIIFResolver
@@ -272,29 +270,40 @@ export class OpenSeadragonComponent {
 
     drawOverlays() {
 
-        this.overlays.forEach((overlay) => {
+        const overlays: HTMLHarmonizedOverlayElement[] = Array.from(
+            document.querySelectorAll('harmonized-overlay'))
 
-            const elementId = "overlay-" + id();
+        if (overlays) {
 
-            const element = document.createElement('harmonized-overlay')
-            element.id = elementId
-            element.setAttribute('role', 'bu')
-            element.textContent = overlay.text
+            console.log(overlays)
 
-            // const tooltip = document.createElement("span")
-            // tooltip.classList.add("bx--assistive-text")
-            // tooltip.innerHTML = overlay.text
-            // element.appendChild(tooltip)
+            overlays.forEach((overlay: HTMLHarmonizedOverlayElement) => {
 
-            const bounds = this.instance.viewport.imageToViewportRectangle(overlay.x, overlay.y, overlay.width, overlay.height)
+                //const elementId = "overlay-" + id()
 
-            this.instance.addOverlay(element, bounds, "TOP_LEFT")
+                //const element = document.createElement('div')
+                //element.classList.add('harmonized-overlay')
+                //element.append(overlay)
 
-            // Required in order to prevent click propagation to OpenSeadragon
-            overlay.mouseTracker = new openseadragon.MouseTracker({
-                element: element, clickHandler: () => this.overlayClick.emit(element)
+                //element.id = elementId
+                //element.setAttribute('role', 'bu')
+                //element.textContent = 'abc123'
+
+                // const tooltip = document.createElement("span")
+                // tooltip.classList.add("bx--assistive-text")
+                // tooltip.innerHTML = overlay.text
+                // element.appendChild(tooltip)
+
+                const bounds = this.instance.viewport.imageToViewportRectangle(overlay.x, overlay.y, overlay.width, overlay.height)
+
+                this.instance.addOverlay(overlay, bounds, "TOP_LEFT")
+
+                // Required in order to prevent click propagation to OpenSeadragon
+                // overlay.mouseTracker = new openseadragon.MouseTracker({
+                //     element: element, clickHandler: () => this.overlayClick.emit(element)
+                // })
             })
-        })
+        }
     }
 
     render() {

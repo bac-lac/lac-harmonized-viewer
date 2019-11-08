@@ -7,18 +7,28 @@ harmonized-image {
 
     //@extend .mdc-image-list__item;
 
-    cursor: pointer;
     display: inline-block;
+    position: relative;
 
-    &:not(.is-loaded) {
-        visibility: hidden;
-    }
+    // .mdc-image-list__image {
+    //     opacity: 0;
+    // }
+
+    // &.is-loaded {
+    //     .mdc-image-list__image {
+    //         opacity: 1;
+    //     }
+    // }
 
     &.is-ghost,
     &.is-loading {
         .mdc-image-list__image-aspect-container {
             @include ghost();
         }
+    }
+
+    &.is-loaded {
+        cursor: pointer;
     }
 
     .mdc-image-list__image-aspect-container {
@@ -28,7 +38,6 @@ harmonized-image {
     }
 
     .mdc-image-list__image {
-        max-height: 150px;
         opacity: 0.8;
         filter: grayscale(20%);
         padding: 2px;
@@ -42,7 +51,7 @@ harmonized-image {
         justify-content: center;
 
         .mdc-image-list__label {
-            color: $grey-lighter;
+            color: #fff;
             letter-spacing: 0;
             text-transform: uppercase;
             font-size: 13px;
@@ -60,23 +69,37 @@ harmonized-image {
             opacity: 1;
             filter: grayscale(0%);
         }
-    }
-
-    // &:focus {
-    //     outline: none;
-    //     .mdc-image-list__image-aspect-container {
-    //         outline: $active 3px solid;
-    //     }
-    // }
-
-    &.is-active {
-        .mdc-image-list__image-aspect-container {
-            outline: $active 3px solid;
-        }
         .mdc-image-list__supporting {
+            padding: 1px 10px;
+            margin-top: 5px;
+            justify-content: center;
+
             .mdc-image-list__label {
-                color: $active;
+                color: #fff;
+            }
+        }
+
+        // &:focus {
+        //     outline: none;
+        //     .mdc-image-list__image-aspect-container {
+        //         outline: $active 3px solid;
+        //     }
+        // }
+
+        &.is-active {
+            .mdc-image-list__image-aspect-container {
+                outline: $active 3px solid;
+            }
+            .mdc-image-list__supporting {
+                .mdc-image-list__label {
+                    color: $active;
+                }
             }
         }
     }
+
+    // &:focus {
+    //     outline: $info 2px solid !important;
+    //     outline-offset: 5px !important;
+    // }
 }

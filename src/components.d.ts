@@ -35,7 +35,12 @@ export namespace Components {
     'getOverlays': () => Promise<Overlay[]>;
     'openseadragon': () => Promise<any>;
   }
-  interface HarmonizedOverlay {}
+  interface HarmonizedOverlay {
+    'height': number;
+    'width': number;
+    'x': number;
+    'y': number;
+  }
   interface HarmonizedPager {}
   interface HarmonizedPdf {}
   interface HarmonizedSpinner {}
@@ -188,6 +193,7 @@ declare global {
 declare namespace LocalJSX {
   interface HarmonizedImage {
     'caption'?: string;
+    'onImageAdded'?: (event: CustomEvent<any>) => void;
     'onImageLoad'?: (event: CustomEvent<any>) => void;
     'page'?: number;
     'preload'?: boolean;
@@ -207,7 +213,12 @@ declare namespace LocalJSX {
     'onOverlayClick'?: (event: CustomEvent<any>) => void;
     'onPageLoad'?: (event: CustomEvent<any>) => void;
   }
-  interface HarmonizedOverlay {}
+  interface HarmonizedOverlay {
+    'height'?: number;
+    'width'?: number;
+    'x'?: number;
+    'y'?: number;
+  }
   interface HarmonizedPager {}
   interface HarmonizedPdf {}
   interface HarmonizedSpinner {}

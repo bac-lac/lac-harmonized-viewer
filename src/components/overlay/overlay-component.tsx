@@ -1,4 +1,4 @@
-import { Component, h, Element, Event, EventEmitter } from '@stencil/core';
+import { Component, h, Element, Host, Prop } from '@stencil/core';
 
 
 @Component({
@@ -9,12 +9,23 @@ export class OverlayComponent {
 
     @Element() el: HTMLElement
 
+    @Prop() x: number
+    @Prop() y: number
+
+    @Prop() width: number
+    @Prop() height: number
+
     handleClick(ev: MouseEvent) {
 
     }
 
     render() {
-        return <div class="overlay-content" onClick={this.handleClick.bind(this)}></div>
+
+        return <Host onClick={this.handleClick.bind(this)}>
+            <div class="overlay-content">
+                <slot />>
+            </div>
+        </Host>
     }
 
 }
