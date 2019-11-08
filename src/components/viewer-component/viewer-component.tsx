@@ -24,6 +24,8 @@ export class ViewerComponent {
 
 	@Prop() annotationsEnable: boolean
 
+	@Prop() backgroundColor: string = '#181818'
+
 	// @Prop() page: number
 	// @Prop() totalPages: number
 
@@ -91,9 +93,9 @@ export class ViewerComponent {
 	render() {
 
 		return (
-			<div class="harmonized-viewer">
+			<div class="harmonized-viewer" style={{ backgroundColor: this.backgroundColor }}>
 
-				<harmonized-topbar />
+				<harmonized-topbar backgroundColor={this.backgroundColor} />
 
 				{
 					this.status.error &&

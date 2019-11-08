@@ -139,32 +139,39 @@ export class IIIFResolver extends Resolver {
         return 0
     }
 
-    getImageUri(resource: Manifesto.IResource, height: number) {
+    getImageUri(resource: Manifesto.IResource, height: number): string {
 
         if (!resource) {
             return undefined
         }
 
-        const infoUri = this.resolveImageServiceUri(resource, true)
-        if (infoUri.indexOf('/') != -1) {
+        const thumbnail = resource.getThumbnail()
+        if (thumbnail) {
+            return thumbnail.id;
+        }
+        else {
 
-            let extension = null
+            const infoUri = this.resolveImageServiceUri(resource, true)
+            if (infoUri.indexOf('/') != -1) {
 
-            if (infoUri.lastIndexOf('/') != -1) {
-                const fileName = infoUri.substr(infoUri.lastIndexOf('/') + 1)
-                if (fileName) {
+                let extension = null
 
-                    if (fileName.lastIndexOf('.') != -1) {
-                        extension = fileName.substr(fileName.lastIndexOf('.') + 1)
+                if (infoUri.lastIndexOf('/') != -1) {
+                    const fileName = infoUri.substr(infoUri.lastIndexOf('/') + 1)
+                    if (fileName) {
+
+                        if (fileName.lastIndexOf('.') != -1) {
+                            extension = fileName.substr(fileName.lastIndexOf('.') + 1)
+                        }
                     }
                 }
-            }
 
-            if (!extension) {
-                extension = this.thumbnailDefaultExtension
-            }
+                if (!extension) {
+                    extension = this.thumbnailDefaultExtension
+                }
 
-            return `${infoUri}/full/${height},/0/default.${extension}`
+                return `${infoUri}/full/${height},/0/default.${extension}`
+            }
         }
     }
 
@@ -177,6 +184,7 @@ export class IIIFResolver extends Resolver {
         const infoFile = 'info.json'
         const service = this.resolveImageService(resource)
 
+        console.log(service)
         let serviceUri: string = (service ? service.getInfoUri() : resource.id)
 
         // Remove the info.json path from uri

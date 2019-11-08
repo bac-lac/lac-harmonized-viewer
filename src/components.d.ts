@@ -39,9 +39,12 @@ export namespace Components {
   interface HarmonizedPager {}
   interface HarmonizedPdf {}
   interface HarmonizedSpinner {}
-  interface HarmonizedTopbar {}
+  interface HarmonizedTopbar {
+    'backgroundColor': string;
+  }
   interface HarmonizedViewer {
     'annotationsEnable': boolean;
+    'backgroundColor': string;
     'documentUrl': string;
     'language': string;
     'navigationEnable': boolean;
@@ -211,9 +214,12 @@ declare namespace LocalJSX {
   interface HarmonizedPager {}
   interface HarmonizedPdf {}
   interface HarmonizedSpinner {}
-  interface HarmonizedTopbar {}
+  interface HarmonizedTopbar {
+    'backgroundColor'?: string;
+  }
   interface HarmonizedViewer {
     'annotationsEnable'?: boolean;
+    'backgroundColor'?: string;
     'documentUrl'?: string;
     'language'?: string;
     'navigationEnable'?: boolean;

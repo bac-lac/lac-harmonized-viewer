@@ -13,6 +13,8 @@ export class TopbarComponent {
 
     @Element() el: HTMLElement
 
+    @Prop() backgroundColor: string
+
     @State() title: MyAppState["document"]["document"]["title"]
 
     @Prop({ context: "store" }) store: Store
@@ -50,7 +52,7 @@ export class TopbarComponent {
     render() {
         return (
             <Host>
-                <header class="topbar">
+                <header class="topbar" style={{ backgroundColor: this.backgroundColor }}>
                     <div class="topbar-row">
                         <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
                             <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">
