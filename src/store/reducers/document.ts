@@ -1,5 +1,6 @@
 import { ActionTypes, TypeKeys } from "../actions/index";
 import { DocumentState } from "../../interfaces";
+import { id } from "../../utils/utils";
 
 const getInitialState = (): DocumentState => {
 
@@ -11,6 +12,7 @@ const getInitialState = (): DocumentState => {
         error: null,
         loading: false,
         options: [],
+        overlays: [],
         page: 0,
         pageCount: 0,
         pages: [],
@@ -21,6 +23,9 @@ const getInitialState = (): DocumentState => {
             error: null
         },
         url: null,
+        viewport: {
+            navigationPlacement: 'left'
+        },
         zoom: {
             min: 0,
             max: 0,
@@ -83,8 +88,14 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
         case TypeKeys.SET_ZOOM_REQUEST: {
             return { ...state, zoomRequest: action.zoom }
         }
-        case TypeKeys.ADD_TAG: {
-            return { ...state, tags: [{ x: action.x, y: action.y, text: action.text }] }
+        case TypeKeys.ADD_OVERLAY: {
+            return { ...state, overlays: [...state.overlays, { id: id(), x: action.x, y: action.y, width: action.width, height: action.height, text: action.text }] }
+        }
+        case TypeKeys.CLEAR_OVERLAYS: {
+            return { ...state, overlays: [] }
+        }
+        case TypeKeys.SET_VIEWPORT: {
+            return { ...state, viewport: action.viewport }
         }
     }
     return state

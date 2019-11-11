@@ -1,16 +1,64 @@
+@import "../../globals/variables";
+@import "@material/button/mdc-button";
 @import "@material/icon-button/mdc-icon-button";
 @import "@material/slider/mdc-slider";
+@import "@material/chips/mdc-chips";
 
 harmonized-pager {
     display: flex;
     margin: 15px 0;
+    align-items: center;
     justify-content: center;
+    flex-direction: column;
 
     .slider-control {
         width: 300px;
+        margin: 0 15px;
+
+        .mdc-slider {
+            @include mdc-slider-color-accessible($primary);
+            @include mdc-slider-rail-color(#323232, 1);
+        }
+
+        // .mdc-slider:not(.mdc-slider--disabled) {
+        //     .mdc-slider__track-container {
+        //         background-color: #323232;
+        //         .mdc-slider__track {
+        //         }
+        //     }
+        // }
     }
 
-    .mdc-icon-button {
-        @include mdc-icon-button-ink-color(#fff);
+    .pager__text {
+        color: #fff;
+        text-align: center;
+        margin-bottom: -20px;
+
+        .mdc-chip {
+            @include mdc-chip-fill-color-accessible(#323232);
+            margin: 0 10px;
+            border-radius: 2px;
+        }
+    }
+
+    .pager__controls {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+    }
+
+    .button-pager {
+        @extend .mdc-touch-target-wrapper;
+
+        button {
+            @extend .mdc-icon-button;
+            @extend .mdc-button--touch;
+
+            @include mdc-button-shape-radius(2px);
+            @include mdc-icon-button-icon-size(30px, 30px);
+            @include mdc-icon-button-ink-color(#fff);
+
+            //@include mdc-shape-radius(mdc-shape-resolve-percentage-radius(16px, 2px));
+        }
     }
 }

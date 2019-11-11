@@ -1,7 +1,7 @@
-@import '../../globals/variables.scss';
-@import '@material/button/mdc-button';
-@import '@material/top-app-bar/mdc-top-app-bar';
-@import '@material/icon-button/mdc-icon-button';
+@import "../../globals/variables";
+@import "@material/button/mdc-button";
+@import "@material/icon-button/mdc-icon-button";
+@import "@material/top-app-bar/mdc-top-app-bar";
 
 harmonized-viewport {
     @extend .mdc-top-app-bar--dense-fixed-adjust;
@@ -12,44 +12,67 @@ harmonized-viewport {
     justify-content: center;
     position: relative;
 
-    .hv-navigation__prev,
-    .hv-navigation__next {
-        @include mdc-icon-button-icon-size(64px, 64px);
-        @include mdc-icon-button-ink-color(#fff);
+    .button-navigation {
+        @extend .mdc-touch-target-wrapper;
 
         opacity: 0.1;
-        z-index: 1;
-        position: absolute;
         transition: opacity 200ms ease;
 
-        &::before,
-        &::after {
-            border-radius: 0;
+        z-index: 1;
+        position: absolute;
+
+        &--prev {
+            left: 5px;
+        }
+
+        &--next {
+            right: 5px;
+        }
+
+        &:focus,
+        &:hover,
+        &:active {
+            &::before,
+            &::after {
+                //background-color: transparent;
+            }
+        }
+
+        button {
+            @extend .mdc-icon-button;
+            @extend .mdc-button--touch;
+            //@include mdc-button-shape-radius(2px);
+            @include mdc-icon-button-icon-size(40px, 40px);
+            @include mdc-icon-button-ink-color(#fff);
+
+            @include mdc-shape-radius(mdc-shape-resolve-percentage-radius(32px, 2px));
+
+            &::before,
+            &::after {
+                //border-radius: 2px;
+            }
         }
     }
 
-    .hv-navigation__prev {
-        border-top-left-radius: 2px;
-        border-bottom-left-radius: 2px;
+    &:hover {
+        .button-navigation {
+            opacity: 1;
+        }
+
+        .overlay {
+            opacity: 1;
+        }
     }
 
-    .hv-navigation__next {
-        border-top-right-radius: 2px;
-        border-bottom-right-radius: 2px;
-    }
+    // .hv-navigation__prev {
+    //     border-top-left-radius: 2px;
+    //     border-bottom-left-radius: 2px;
+    // }
 
-    &:hover .hv-navigation__prev,
-    &:hover .hv-navigation__next {
-        opacity: 1;
-    }
-
-    .hv-navigation__prev {
-        left: 0;
-    }
-
-    .hv-navigation__next {
-        right: 0;
-    }
+    // .hv-navigation__next {
+    //     border-top-right-radius: 2px;
+    //     border-bottom-right-radius: 2px;
+    // }
 
     .viewport-content {
         width: 100%;
@@ -59,7 +82,7 @@ harmonized-viewport {
         flex-direction: column;
 
         &--loading {
-            opacity: 0.4;
+            opacity: 0.3;
         }
     }
 

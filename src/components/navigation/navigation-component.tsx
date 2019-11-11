@@ -4,7 +4,11 @@ import { Unsubscribe, Store } from '@stencil/redux';
 import { MyAppState } from '../../interfaces';
 import { setPage } from '../../store/actions/document';
 import { MDCRipple } from '@material/ripple';
+import { MDCTabBar } from '@material/tab-bar';
 import iconClose from '../../assets/material-design-icons/ic_close_18px.svg'
+import iconMaximize from '../../assets/material-design-icons/ic_crop_square_24px.svg'
+import iconList from '../../assets/material-icons/ic_list_24px.svg'
+import iconGrid from '../../assets/material-icons/ic_grid_24px.svg'
 
 @Component({
     tag: 'harmonized-navigation',
@@ -17,6 +21,7 @@ export class NavigationComponent {
 
     @Prop() cols: number = 2
     @Prop() rows: number = 1
+    @Prop() placement: PlacementType = 'left'
 
     @Watch('rows')
     handleRowsChange() {
@@ -33,6 +38,8 @@ export class NavigationComponent {
     @Prop({ context: "store" }) store: Store
 
     @State() loadedImageCount: number = 0
+
+    private tabs: MDCTabBar
 
     componentWillLoad() {
 
@@ -54,6 +61,8 @@ export class NavigationComponent {
     }
 
     componentDidLoad() {
+
+        this.tabs = MDCTabBar.attachTo(this.el.querySelector('.mdc-tab-bar'))
         this.resize()
     }
 
@@ -84,49 +93,48 @@ export class NavigationComponent {
 
     resize() {
 
-        let height = 0
+        if (this.placement != 'top' && this.placement != 'bottom') {
+            return undefined
+        }
 
         // Adjust the height of the navigation to show a specific number of rows
-
         const item = this.el.querySelector('harmonized-image-list > .is-loaded')
         if (item) {
 
-            const paddingTop = Number(window.getComputedStyle(item, null)
-                .getPropertyValue('padding-top').replace('px', ''))
+            const paddingTop = this.getComputedStyle(item, 'padding-top')
+            const paddingBottom = this.getComputedStyle(item, 'padding-bottom')
 
-            const paddingBottom = Number(window.getComputedStyle(item, null)
-                .getPropertyValue('padding-bottom').replace('px', ''))
+            const marginTop = this.getComputedStyle(item, 'margin-top')
+            const marginBottom = this.getComputedStyle(item, 'margin-bottom')
 
-            const marginTop = Number(window.getComputedStyle(item, null)
-                .getPropertyValue('margin-top').replace('px', ''))
+            const paddingY = paddingTop + paddingBottom
+            const marginY = marginTop + marginBottom
 
-            const marginBottom = Number(window.getComputedStyle(item, null)
-                .getPropertyValue('margin-bottom').replace('px', ''))
+            // Padding already included in clientHeight
+            const rowHeight = (item.clientHeight + marginY)
 
-            const rowHeight = (item.clientHeight + paddingTop + paddingBottom + marginTop + marginBottom)
+            const height = (rowHeight * this.rows) + this.getListTopOffset()
 
-            // Substract paddingBottom once at the end in order to cut in half the vertical padding of the last row
-            height = (rowHeight * this.rows) + this.getListTopOffset() + paddingBottom + marginBottom
+            this.el.style.height = `${height}px`
         }
-
-        this.el.style.minHeight = height + 'px'
     }
 
-    getListTopOffset(): number {
-
-        let marginTop = 0
-
-        const borderWidth = Number(window.getComputedStyle(this.el, null)
-            .getPropertyValue('border-top-width').replace('px', ''))
+    getListTopOffset() {
 
         const list = this.el.querySelector('harmonized-image-list')
         if (list) {
 
-            marginTop = Number(window.getComputedStyle(list, null)
-                .getPropertyValue('margin-top').replace('px', ''))
-        }
+            const paddingTop = this.getComputedStyle(list, 'padding-top')
+            const paddingBottom = this.getComputedStyle(list, 'padding-bottom')
 
-        return (marginTop + borderWidth)
+            const marginTop = this.getComputedStyle(list, 'margin-top')
+            const marginBottom = this.getComputedStyle(list, 'margin-bottom')
+
+            return paddingTop + paddingBottom + marginTop + marginBottom
+        }
+        else {
+            return 0
+        }
     }
 
     getComputedStyle(element: Element, name: string) {
@@ -137,7 +145,7 @@ export class NavigationComponent {
 
         const value = window.getComputedStyle(element, null).getPropertyValue(name)
 
-        // Exclude units
+        // Strip units
         const matches = value.match(/(([-0-9\.]+)+)/gi)
         if (matches) {
             return Number(matches[0])
@@ -146,26 +154,65 @@ export class NavigationComponent {
 
     render() {
 
+        let className = 'mdc-image-list'
+
+        if (this.placement == 'left' || this.placement == 'right') {
+            className += ' mdc-image-list--2col'
+        }
+
         return <div class="navigation-content">
 
-            <button id="add-to-favorites"
-                class="mdc-icon-button"
-                aria-label="Add to favorites"
-                aria-hidden="true"
-                aria-pressed="false"
-                innerHTML={iconClose}>
-            </button>
+            <div class="mdc-tab-bar" role="tablist">
+                <div class="mdc-tab-scroller">
+                    <div class="mdc-tab-scroller__scroll-area">
+                        <div class="mdc-tab-scroller__scroll-content">
 
-            <harmonized-image-list class="mdc-image-list">
+                            <button class="mdc-tab mdc-tab--active" role="tab" aria-selected="true" tabindex="0">
+                                <span class="mdc-tab__content">
+                                    <span
+                                        class="mdc-tab__icon"
+                                        aria-hidden="true"
+                                        innerHTML={iconList} />
+                                    {/* <span class="mdc-tab__text-label">Favorites</span> */}
+                                </span>
+                                <span class="mdc-tab-indicator mdc-tab-indicator--active">
+                                    <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                                </span>
+                                <span class="mdc-tab__ripple"></span>
+                            </button>
+
+                            <button class="mdc-tab" role="tab" tabindex="0">
+                                <span class="mdc-tab__content">
+                                    <span
+                                        class="mdc-tab__icon"
+                                        aria-hidden="true"
+                                        innerHTML={iconGrid} />
+                                    {/* <span class="mdc-tab__text-label">Images</span> */}
+                                </span>
+                                <span class="mdc-tab-indicator">
+                                    <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                                </span>
+                                <span class="mdc-tab__ripple"></span>
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <harmonized-image-list class={className}>
                 {
-                    this.pages.map((page, index) => (
+                    this.pages.map((page, index) =>
 
                         <harmonized-image
                             src={page.thumbnail}
-                            caption={page.label}
                             page={index}
+                            caption={page.label}
+                            showCaption={true}
+                            showTooltip={false}
                             preload={index < 16}
-                            onImageLoad={this.handleThumbnailLoad.bind(this)} />))
+                            onImageLoad={this.handleThumbnailLoad.bind(this)} />
+                    )
                 }
             </harmonized-image-list>
         </div>

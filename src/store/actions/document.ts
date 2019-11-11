@@ -1,5 +1,5 @@
 import { TypeKeys } from "./index"
-import { DocumentPage, DocumentAnnotation, DocumentAlternateFormat, DocumentZoom, DocumentError, StatusCode } from "../../interfaces"
+import { DocumentPage, DocumentAnnotation, DocumentAlternateFormat, DocumentZoom, DocumentError, StatusCode, Viewport } from "../../interfaces"
 
 export interface SetError {
     type: TypeKeys.SET_ERROR
@@ -163,18 +163,45 @@ export const setZoomRequest = (zoom: DocumentZoom) => (dispatch, _getState) => {
     dispatch(action)
 }
 
-export interface AddTag {
-    type: TypeKeys.ADD_TAG
+export interface SetViewport {
+    type: TypeKeys.SET_VIEWPORT,
+    viewport: Viewport
+}
+export const setViewport = (viewport: Viewport) => (dispatch, _getState) => {
+    const action: SetViewport = {
+        type: TypeKeys.SET_VIEWPORT,
+        viewport: viewport
+    }
+    dispatch(action)
+}
+
+export interface AddOverlay {
+    type: TypeKeys.ADD_OVERLAY
     x: number,
     y: number,
+    width: number,
+    height: number,
     text: string
 }
-export const addTag = (x: number, y: number, text: string) => (dispatch, _getState) => {
-    const action: AddTag = {
-        type: TypeKeys.ADD_TAG,
+export const addOverlay = (x: number, y: number, width: number, height: number, text: string) => (dispatch, _getState) => {
+    const action: AddOverlay = {
+        type: TypeKeys.ADD_OVERLAY,
         x: x,
         y: y,
+        width: width,
+        height: height,
         text: text
+    }
+    dispatch(action)
+}
+
+export interface ClearOverlays {
+    type: TypeKeys.CLEAR_OVERLAYS
+
+}
+export const clearOverlays = () => (dispatch, _getState) => {
+    const action: ClearOverlays = {
+        type: TypeKeys.CLEAR_OVERLAYS
     }
     dispatch(action)
 }

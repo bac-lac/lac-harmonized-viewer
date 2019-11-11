@@ -5,9 +5,8 @@ import { Unsubscribe, Store } from '@stencil/redux';
 import { MyAppState } from '../../interfaces';
 import { parseContentType } from '../../utils/utils';
 import axios from 'axios';
-import { MDCRipple } from '@material/ripple';
-import iconChevronLeft from '../../assets/material-design-icons/ic_chevron_left_36px.svg'
-import iconChevronRight from '../../assets/material-design-icons/ic_chevron_right_36px.svg'
+import iconChevronLeft from '../../assets/material-design-icons/ic_chevron_left_48px.svg'
+import iconChevronRight from '../../assets/material-design-icons/ic_chevron_right_48px.svg'
 
 @Component({
     tag: 'harmonized-viewport',
@@ -18,7 +17,7 @@ export class ViewportComponent {
     @Element() el: HTMLElement
 
     @Prop() navigationEnable: boolean = true
-    @Prop() navigationLocation: LocationOption = 'left'
+    @Prop() navigationPlacement: PlacementType = 'left'
 
     @Prop() annotationsEnable: boolean = false
 
@@ -77,21 +76,20 @@ export class ViewportComponent {
             const err: Error = e
             this.setError(err.name, err.message)
         }
+
+        // const buttons = Array.from(this.el.querySelectorAll('.mdc-icon-button'))
+        // buttons.forEach((button) => {
+        //     const b = new MDCRipple(button)
+        //     b.unbounded = true
+        // })
     }
 
     componentDidUnload() {
         this.storeUnsubscribe()
     }
 
-    handleCanvasLoad(tiledImage: any, callback: () => any) {
-
-        if (tiledImage.getFullyLoaded()) {
-            setTimeout(callback, 1) // So both paths are asynchronous
-        } else {
-            tiledImage.addOnceHandler('fully-loaded-change', function () {
-                callback() // Calling it this way keeps the arguments consistent (if we passed callback into addOnceHandler it would get an event on this path but not on the setTimeout path above)
-            });
-        }
+    componentDidRender() {
+        this.setContentMargins()
     }
 
     isFirst() {
@@ -124,31 +122,38 @@ export class ViewportComponent {
 
                 <div class="hv-content">
 
+
                     {this.renderNavigation('left')}
 
-                    <main class="hv-main">
+                    <main class="hv-main mdc-drawer-app-content">
 
                         <div class="hv-main__content">
 
-                            <button
-                                type="button"
-                                class="mdc-icon-button hv-navigation__prev"
-                                aria-label="Go to previous page"
-                                onClick={this.handlePreviousClick.bind(this)} disabled={this.status.loading || this.isFirst()}>
-                                <i class="mdc-icon-button__icon" innerHTML={iconChevronLeft}></i>
-                            </button>
+                            <div class="button-navigation button-navigation--prev">
+                                <button
+                                    type="button"
+                                    aria-label="Go to previous page"
+                                    onClick={this.handlePreviousClick.bind(this)} disabled={this.status.loading || this.isFirst()}>
+                                    <div class="mdc-button__ripple"></div>
+                                    <div class="mdc-button__icon" innerHTML={iconChevronLeft}></div>
+                                    <div class="mdc-button__touch"></div>
+                                </button>
+                            </div>
 
-                            <div class="viewport-content">
+                            <div class={this.status.loading ? 'viewport-content viewport-content--loading' : 'viewport-content'}>
                                 {this.renderOpenSeadragon()}
                             </div>
 
-                            <button
-                                type="button"
-                                class="mdc-icon-button hv-navigation__next"
-                                aria-label="Go to next page"
-                                onClick={this.handleNextClick.bind(this)} disabled={this.status.loading || this.isLast()}>
-                                <i class="mdc-icon-button__icon" innerHTML={iconChevronRight}></i>
-                            </button>
+                            <div class="button-navigation button-navigation--next">
+                                <button
+                                    type="button"
+                                    aria-label="Go to next page"
+                                    onClick={this.handleNextClick.bind(this)} disabled={this.status.loading || this.isLast()}>
+                                    <div class="mdc-button__ripple"></div>
+                                    <div class="mdc-button__icon" innerHTML={iconChevronRight}></div>
+                                    <div class="mdc-button__touch"></div>
+                                </button>
+                            </div>
 
                         </div>
 
@@ -156,10 +161,13 @@ export class ViewportComponent {
 
                     {
                         this.annotationsEnable &&
-                        <hv-annotations style={{ width: '250px' }} />
+                        <harmonized-drawer placement="right" toolbar={false} visible={true}>
+                            <hv-annotations></hv-annotations>
+                        </harmonized-drawer>
                     }
 
                     {this.renderNavigation('right')}
+
 
                 </div>
 
@@ -169,12 +177,73 @@ export class ViewportComponent {
         )
     }
 
-    renderNavigation(location: LocationOption) {
+    setContentMargins() {
+
+        const content = this.el.querySelector('.mdc-drawer-app-content') as HTMLElement
+        if (content) {
+
+            const previousSibling = this.findPreviousSibling(content, '.mdc-drawer')
+            const nextSibling = this.findNextSibling(content, '.mdc-drawer')
+
+            content.style.marginLeft = `${(previousSibling && previousSibling.clientWidth) || 0}px`
+            content.style.marginRight = `${(nextSibling && nextSibling.clientWidth) || 0}px`
+        }
+    }
+
+    findPreviousSibling(element: Element, selector: string) {
+
+        if (!element || !selector) {
+            return undefined
+        }
+
+        const match = element.matches(selector)
+        if (match) {
+            return element
+        }
+        else {
+            return this.findPreviousSibling(element.previousElementSibling, selector)
+        }
+    }
+
+    findNextSibling(element: Element, selector: string) {
+
+        if (!element || !selector) {
+            return undefined
+        }
+
+        const match = element.matches(selector)
+        if (match) {
+            return element
+        }
+        else {
+            return this.findNextSibling(element.nextElementSibling, selector)
+        }
+    }
+
+    renderNavigation(placement: PlacementType) {
 
         if (this.navigationEnable &&
-            this.navigationLocation === location) {
+            this.navigationPlacement === placement) {
 
-            return <harmonized-navigation class={"navigation navigation--" + this.navigationLocation} rows={1} />
+            if (placement == 'left' || placement == 'right') {
+
+                return <harmonized-drawer
+                    placement={placement}
+                    visible={true}>
+                    <harmonized-navigation
+                        class={"navigation navigation--" + this.navigationPlacement}
+                        placement={placement}>
+                    </harmonized-navigation>
+                </harmonized-drawer>
+            }
+            else {
+
+                return <harmonized-navigation
+                    class={"navigation navigation--" + this.navigationPlacement}
+                    placement={placement}
+                    rows={1}>
+                </harmonized-navigation>
+            }
         }
     }
 
@@ -195,8 +264,8 @@ export class ViewportComponent {
     }
 
     renderOpenSeadragon() {
-        return <harmonized-openseadragon />
-        //return [<harmonized-openseadragon />, <harmonized-pager />]
+        //return <harmonized-openseadragon />
+        return [<harmonized-openseadragon />, <harmonized-pager />]
     }
 
     renderPDF() {

@@ -1,8 +1,10 @@
 import { Component, h, Element, State, Prop } from '@stencil/core';
 import { Unsubscribe, Store } from '@stencil/redux';
-import { MyAppState } from '../../interfaces';
-import { ScrollbarService } from '../../services/scrollbar-service';
+import { MyAppState, DocumentAnnotation } from '../../interfaces';
 import { saveAnnotationVisibility } from '../../settings';
+import iconExpand from '../../assets/material-design-icons/ic_add_24px.svg'
+import iconCollapse from '../../assets/material-design-icons/ic_remove_24px.svg'
+import { animate } from '../../utils/utils';
 
 @Component({
     tag: 'hv-annotations',
@@ -17,12 +19,6 @@ export class AnnotationsComponent {
     @State() annotations: MyAppState["document"]["annotations"]
 
     @Prop({ context: "store" }) store: Store
-
-    scrollbars: ScrollbarService
-
-    constructor() {
-        this.scrollbars = new ScrollbarService()
-    }
 
     componentWillLoad() {
 
@@ -40,69 +36,79 @@ export class AnnotationsComponent {
         this.storeUnsubscribe()
     }
 
-    componentDidRender() {
-
-        // Initialize scrollbars, register new elements with lazy loading
-        const inner = this.el.querySelector('.annotations-content') as HTMLElement
-        if (inner) {
-            this.scrollbars.init(inner)
-        }
-    }
-
     handleClick(ev: MouseEvent) {
 
         const target = ev.currentTarget as HTMLElement
         if (target) {
 
-            const dt = target.closest('dt')
-            const panel = dt.nextElementSibling
-            const id = dt.getAttribute('data-id')
-
-            // Toggle annotation panel
-            Array.from(target.querySelectorAll('.icon')).forEach((icon) => {
-                icon.classList.toggle('is-hidden')
-            })
-            panel.classList.toggle('is-hidden')
+            //const collapsed = target.classList.contains('is-collapsed')
+            target.classList.toggle('is-collapsed')
 
             // Persist state
-            const visible = !panel.classList.contains('is-hidden')
+            // const visible = !panel.classList.contains('is-hidden')
 
-            saveAnnotationVisibility(id, visible)
+            // saveAnnotationVisibility(id, visible)
         }
+
+        const icons = Array.from(this.el.querySelectorAll('.annotation-icon'))
+        icons.forEach((icon) => {
+
+            target.setAttribute('aria-hidden',
+                icon.closest('.mdc-list-item').classList.contains('is-collapsed').toString())
+        })
     }
 
     render() {
-        return (
-            <div class="annotations-content">
 
-                <ul class="mdc-list">
-                    {
-                        this.annotations.map((annotation, index) => (
-                            <li class={!annotation.visible ? "mdc-list-item is-hidden" : "mdc-list-item"} data-id={annotation.id} tabindex={index}>
-                                <span class="mdc-list-item__text" onClick={this.handleClick.bind(this)}>
+        return <nav class="mdc-list mdc-list--two-line mdc-list--dense">
+            {
+                this.annotations.map((annotation) => (
+                    <a
+                        class={this.renderAnnotationClass(annotation)}
+                        onClick={this.handleClick.bind(this)}
+                        data-id={annotation.id}
+                        tabindex="0">
 
-                                    <span class="mdc-list-item__primary-text">
-                                        {annotation.label ? annotation.label : 'Other'}
-                                        {/* <span class={!annotation.visible ? "icon is-hidden" : "icon"} innerHTML={icon({ prefix: 'fas', iconName: 'plus' }).html[0]}>
-                                        </span>
-                                        <span class={annotation.visible ? "icon is-hidden" : "icon"} innerHTML={icon({ prefix: 'fas', iconName: 'minus' }).html[0]}>
-                                        </span> */}
-                                    </span>
-
-                                    <span class="mdc-list-item__secondary-text">
-                                        {annotation.content}
-                                    </span>
-
+                        <span class="mdc-list-item__text">
+                            {
+                                annotation.label && <span class="mdc-list-item__primary-text">
+                                    <span>{annotation.label}</span>
+                                    <span
+                                        class="annotation-icon annotation-icon--expand"
+                                        aria-hidden={true}
+                                        innerHTML={iconExpand}></span>
+                                    <span
+                                        class="annotation-icon annotation-icon--collapse"
+                                        aria-hidden={true}
+                                        innerHTML={iconCollapse}></span>
                                 </span>
-                                <span class="mdc-list-item__meta">
-                                    {/* <span innerHTML={icon({ prefix: 'fas', iconName: 'minus' }).html[0]}>
-                                    </span> */}
-                                </span>
+                            }
+                            <span class="mdc-list-item__secondary-text" innerHTML={annotation.content}>
+                            </span>
+                        </span>
 
-                            </li>))
-                    }
-                </ul>
-            </div>
-        )
+                    </a>
+                ))
+            }
+        </nav>
+    }
+
+    renderAnnotationClass(annotation: DocumentAnnotation) {
+
+        if (!annotation) {
+            return undefined
+        }
+
+        let className = 'mdc-list-item'
+
+        if (!annotation.name) {
+            className += ' mdc-list--non-interactive'
+        }
+
+        if (!annotation.visible) {
+            className += ' is-collapsed'
+        }
+
+        return className
     }
 }

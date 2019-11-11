@@ -1,47 +1,27 @@
-@import '../../globals/variables.scss';
-@import '../../globals/mixins.scss';
-@import 'bulma/sass/utilities/_all.sass';
+@import "../../globals/variables";
+@import "../../globals/mixins";
+@import "bulma/sass/utilities/_all.sass";
 
-@import '@material/icon-button/mdc-icon-button';
+@import "@material/tab-bar/mdc-tab-bar";
+@import "@material/tab-scroller/mdc-tab-scroller";
+@import "@material/tab-indicator/mdc-tab-indicator";
+@import "@material/tab/mdc-tab";
 
 harmonized-navigation {
-    display: flex;
-    overflow: auto;
-    box-sizing: border-box;
-    border-top: #1e1e1e 2px solid;
-    background-color: #2e2e2e;
+    height: 100%;
+    display: block;
+    flex: 0 0 auto;
+    overflow-y: auto;
+    background-color: #181818;
 
-    &.navigation {
-        &--left,
-        &--right {
-            width: 250px;
-            height: 100%;
+    harmonized-image-list {
+        &.mdc-image-list {
+            padding: 15px 15px 0 15px;
         }
-
-        &--top,
-        &--bottom {
-            height: 0;
-            flex: 1 1 auto;
-        }
-
-        &--left {
-        }
-
-        &--bottom {
-        }
-    }
-
-    .navigation-content {
-        width: 100%;
-        height: 100%;
-
-        harmonized-image-list {
-            harmonized-image {
-                position: relative;
-
-                margin-top: 10px;
-                margin-bottom: 10px;
-            }
+        harmonized-image {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            position: relative;
         }
     }
 }

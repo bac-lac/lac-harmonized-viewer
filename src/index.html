@@ -37,26 +37,32 @@
 
     <!-- https://iiif.lib.harvard.edu/manifests/drs:14033171 -->
 
-    <harmonized-viewer id="hv" class="harmonized-viewer" navigation-location="bottom" annotations-enable="false"
+    <harmonized-viewer id="hv" class="harmonized-viewer" navigation-location="left" annotations-enable="true"
         style="height:100%" url="https://iiif.lib.harvard.edu/manifests/drs:14033171"
-        data-options-openseadragon-ignoreimageservice="true">
+        data-options-openseadragon-ignoreimageservice="false">
 
-        <div slot="overlays">
-            <harmonized-overlay x="50" y="80" width="500" height="500">
-                dskfjadsfes
-            </harmonized-overlay>
-
-        </div>
+        <!-- <div slot="overlays">
+            <harmonized-overlay x="50" y="80" width="500" height="500"></harmonized-overlay>
+        </div> -->
 
     </harmonized-viewer>
 
     <script type="text/javascript">
 
-        var viewer = document.getElementById('hv')
+        var viewer = document.getElementById('hv');
+
 
         viewer.addEventListener('pageLoad', (event) => {
-            //console.log('page loaded external listener', event)
-        })
+
+            if (event.detail === 0) {
+                viewer.addOverlay(50, 80, 500, 500, 'hello world');
+            }
+        });
+
+        viewer.addEventListener('overlayClick', (event) => {
+            console.log('overlayClick external listener', event)
+        });
+
     </script>
 
 </body>

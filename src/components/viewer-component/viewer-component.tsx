@@ -3,8 +3,9 @@ import "@stencil/redux";
 import 'manifesto.js';
 import { Store, Unsubscribe } from "@stencil/redux";
 import { configureStore } from "../../store";
-import { setDocumentUrl, setDocumentContentType, setStatus, addTag, setOptions } from '../../store/actions/document';
+import { setDocumentUrl, setDocumentContentType, setStatus, addOverlay, setOptions } from '../../store/actions/document';
 import { MyAppState, Options } from '../../interfaces';
+
 @Component({
 	tag: 'harmonized-viewer',
 	styleUrls: [
@@ -20,7 +21,7 @@ export class ViewerComponent {
 
 	@Prop() navigationEnable: boolean
 	@Prop() navigationHeight?: number
-	@Prop() navigationLocation: LocationOption
+	@Prop() navigationLocation: PlacementType
 
 	@Prop() annotationsEnable: boolean
 
@@ -31,12 +32,7 @@ export class ViewerComponent {
 
 	@Prop({ attribute: 'url' }) documentUrl: string
 
-	// @Event() manifestLoaded: EventEmitter
-	// @Event() canvasLoaded: EventEmitter
-	// @Event() goto: EventEmitter
-	// @Event() nextLoad: EventEmitter
-
-	addTag: typeof addTag
+	addOverlayState: typeof addOverlay
 	setDocumentContentType: typeof setDocumentContentType
 	setDocumentUrl: typeof setDocumentUrl
 	setStatus: typeof setStatus
@@ -44,22 +40,22 @@ export class ViewerComponent {
 
 	storeUnsubscribe: Unsubscribe
 
-	//@State() tags: MyAppState["document"["tags"]
+	@State() page: MyAppState["document"]["page"]
 	@State() url: MyAppState["document"]["url"]
 	@State() status: MyAppState["document"]["status"]
+	@State() viewport: MyAppState["document"]["viewport"]
 
 	@Prop({ context: "store" }) store: Store
 
+	@Method()
+	async getPage() {
+		return this.page
+	}
 
-	// @Method()
-	// async addOverlay(element: Element, x: number, y: number): Promise<void> {
-
-	// 	if (!element) {
-	// 		return undefined
-	// 	}
-
-
-	// }
+	@Method()
+	async addOverlay(x: number, y: number, width: number, height: number, text: string) {
+		this.addOverlayState(x, y, width, height, text)
+	}
 
 	@Watch('documentUrl')
 	handleUrlChange() {
@@ -83,15 +79,16 @@ export class ViewerComponent {
 	componentWillLoad() {
 
 		this.store.setStore(configureStore({}))
-		this.store.mapDispatchToProps(this, { addTag, setDocumentContentType, setDocumentUrl, setOptions, setStatus })
+		this.store.mapDispatchToProps(this, { addOverlay, setDocumentContentType, setDocumentUrl, setOptions, setStatus })
 		this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
-				document: { status: status, url: url }
+				document: { status: status, page: page, url: url, viewport: viewport }
 			} = state
 			return {
-				//tags: tags,
+				page: page,
 				status: status,
-				url: url
+				url: url,
+				viewport: viewport
 			}
 		})
 
@@ -120,6 +117,10 @@ export class ViewerComponent {
 		this.setDocumentUrl(this.documentUrl)
 	}
 
+	componentDidLoad() {
+
+	}
+
 	componentDidUnload() {
 		this.storeUnsubscribe()
 	}
@@ -129,7 +130,7 @@ export class ViewerComponent {
 		return (
 			<div class="harmonized-viewer" style={{ backgroundColor: this.backgroundColor }}>
 
-				<harmonized-topbar backgroundColor={this.backgroundColor} />
+				<harmonized-topbar />
 
 				{
 					this.status.error &&
@@ -144,12 +145,11 @@ export class ViewerComponent {
 
 				<harmonized-viewport
 					navigation-enable={this.navigationEnable}
-					navigation-location={this.navigationLocation}
+					navigation-placement={this.viewport.navigationPlacement}
 					annotations-enable={this.annotationsEnable}
 				/>
 
 				<slot name="footer" />
-				<slot name="overlays" />
 			</div>
 		)
 	}

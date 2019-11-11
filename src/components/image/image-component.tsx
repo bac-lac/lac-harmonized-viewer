@@ -3,6 +3,7 @@ import { MyAppState } from '../../interfaces';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { setPage } from '../../store/actions/document';
 import { isNumber } from 'util';
+import tippy, { sticky, Props, Instance } from 'tippy.js';
 
 @Component({
     tag: 'harmonized-image',
@@ -17,6 +18,8 @@ export class ImageComponent {
     @Prop() preload: boolean = false
     @Prop({ reflect: true }) page: number
     @Prop() caption: string
+    @Prop() showCaption: boolean
+    @Prop() showTooltip: boolean
 
     @State() loading: boolean = false
     @State() loaded: boolean = false
@@ -31,6 +34,8 @@ export class ImageComponent {
 
     @Event() imageAdded
     @Event() imageLoad
+
+    private tooltip: Instance<Props>
 
     componentWillLoad() {
 
@@ -55,6 +60,8 @@ export class ImageComponent {
         this.loaded = true
         this.failed = false
 
+        this.createTooltip()
+
         this.imageLoad.emit(ev)
     }
 
@@ -74,6 +81,33 @@ export class ImageComponent {
 
     componentDidRender() {
         this.imageAdded.emit(this.el)
+    }
+
+    createTooltip() {
+
+        if (!this.showTooltip) {
+            return undefined
+        }
+
+        if (this.loaded && this.caption) {
+
+            if (this.tooltip) {
+                this.tooltip.destroy()
+                this.tooltip = null
+            }
+
+            return this.tooltip = tippy(this.el, {
+                appendTo: 'parent',
+                theme: 'harmonized-light',
+                placement: 'bottom',
+                distance: -5,
+                animation: 'shift-toward',
+                arrow: false,
+                sticky: true,
+                plugins: [sticky],
+                content: this.caption
+            })
+        }
     }
 
     render() {
@@ -100,10 +134,10 @@ export class ImageComponent {
         const labelId = `label-page-${this.page}`
 
         return <Host
+            role="button"
             class={className}
             onClick={this.loaded && this.handleClick.bind(this)}
-            title={this.loaded && "Go to page " + (this.page + 1)}
-            role="button"
+            //title={this.loaded && "Go to page " + (this.page + 1)}
             tabindex={this.loaded && '0'}>
 
             <div class="mdc-image-list__image-aspect-container">
@@ -121,11 +155,14 @@ export class ImageComponent {
                     }} />
             </div>
 
-            <div class="mdc-image-list__supporting" title={this.loaded && this.caption}>
-                <span id={labelId} class="mdc-image-list__label">
-                    {this.loaded ? this.caption : <span innerHTML="&nbsp;"></span>}
-                </span>
-            </div>
+            {
+                this.showCaption &&
+                <div class="mdc-image-list__supporting">
+                    <span id={labelId} class="mdc-image-list__label">
+                        {this.loaded ? this.caption : <span innerHTML="&nbsp;"></span>}
+                    </span>
+                </div>
+            }
 
         </Host>
     }

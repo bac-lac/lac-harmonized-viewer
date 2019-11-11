@@ -1,9 +1,10 @@
-@import '../../globals/variables.scss';
-@import 'bulma/sass/utilities/_all.sass';
+@import "../../globals/variables.scss";
+@import "bulma/sass/utilities/_all.sass";
+@import "@material/top-app-bar/mdc-top-app-bar";
 
-@import '@material/top-app-bar/mdc-top-app-bar';
-@import '@material/button/mdc-button';
-@import '@material/icon-button/mdc-icon-button';
+@import "@material/list/mdc-list";
+@import "@material/menu-surface/mdc-menu-surface";
+@import "@material/menu/mdc-menu";
 
 harmonized-topbar {
     flex: 0 0 auto;
@@ -14,10 +15,12 @@ harmonized-topbar {
     .topbar {
         @extend .mdc-top-app-bar;
         @extend .mdc-top-app-bar--dense;
+        z-index: 99999;
         top: 0 !important;
         position: absolute;
-        //box-shadow: 0 0 4px 3px rgba(0, 0, 0, 0.3);
-        box-shadow: none;
+        //box-shadow: 0 0 2px 3px rgba(0, 0, 0, 0.6);
+        //background-color: rgba(255, 255, 255, 0.075);
+        background-color: transparent;
 
         &-row {
             @extend .mdc-top-app-bar__row;
@@ -26,22 +29,13 @@ harmonized-topbar {
         .mdc-top-app-bar__title {
             color: #bbb;
         }
-    }
 
-    .navbar-item {
-        padding: 0 1.4rem;
+        .mdc-menu {
+            border-radius: 1px;
 
-        .image {
-            display: flex;
-            align-items: center;
+            .mdc-menu__selection-group-icon {
+                fill: #828282;
+            }
         }
     }
-}
-
-.button-fullscreen-exit {
-    display: none;
-}
-
-.is-fullscreen .button-fullscreen-exit {
-    display: flex;
 }

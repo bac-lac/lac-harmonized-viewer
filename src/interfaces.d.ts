@@ -6,14 +6,20 @@ export interface DocumentState {
     contentType: string
     document: Document
     options: Options[]
+    overlays: DocumentOverlay[]
     page: number
     pageCount: number
     pages: DocumentPage[]
     tags: DocumentTag[]
     status: DocumentStatus
     url: string
+    viewport: Viewport
     zoom: DocumentZoom
     zoomRequest: DocumentZoom
+}
+
+interface Viewport {
+    navigationPlacement: PlacementType
 }
 
 interface Document {
@@ -86,4 +92,14 @@ interface ViewerSettings {
 interface AnnotationState {
     id: string,
     visible: boolean
+}
+
+interface DocumentOverlay {
+    id: string,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    page?: number,
+    text: string
 }

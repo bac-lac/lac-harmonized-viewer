@@ -26,11 +26,21 @@ export class Locale {
 
     languageChanged: EventEmitter = new EventEmitter()
 
-
-
     constructor() {
         this.init()
     }
+
+    async fetch(language: string, localesUri: string = null) {
+
+        if (!localesUri) {
+            return undefined
+        }
+
+
+    }
+
+
+
 
     init() {
 

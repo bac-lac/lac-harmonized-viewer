@@ -1,52 +1,96 @@
-@import "../../globals/variables.scss";
-@import "bulma/sass/utilities/_all.sass";
+@import "../../globals/variables";
 @import "@material/list/mdc-list";
 
 hv-annotations {
-    box-sizing: border-box;
+    height: 100%;
+    display: block;
+    background-color: #181818;
 
-    .annotations-content {
-        width: 100%;
-        height: 100%;
-        border-left: $grey-lighter 1px solid;
-        background-color: $light;
-
-        .mdc-list {
+    .mdc-list {
+        &.mdc-list--two-line.mdc-list--dense {
             .mdc-list-item {
-                a {
-                    color: $dark;
-                    font-size: 0.8em;
-                    line-height: 1.7;
-                    font-weight: 400;
-                    padding: 0.25rem 1rem;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    text-transform: uppercase;
-                    border-bottom: $grey-lighter 1px solid;
+                height: auto !important;
+            }
+        }
 
-                    &:hover {
-                    }
+        .mdc-list-item {
+            margin: 0;
+            padding: 14px 16px;
+            animation-delay: 0 !important;
 
-                    .icon {
-                        color: $grey-light;
-                        height: 12px;
+            .annotation-icon {
+                display: none;
+                &--collapse {
+                    display: inline;
+                }
+            }
+
+            &.is-collapsed {
+                .annotation-icon {
+                    display: inline;
+                    &--collapse {
+                        display: none;
                     }
                 }
             }
 
-            dd {
-                @extend .mdc-list-item;
+            &__text {
+                width: 100%;
+            }
 
-                padding: 1rem;
-                overflow: hidden;
-                font-size: 0.9rem;
-                word-wrap: break-word;
-                border-bottom: $grey-lighter 1px solid;
-                background-color: $white;
+            &__primary-text,
+            &__secondary-text {
+                &::before,
+                &::after {
+                    display: none;
+                    vertical-align: initial;
+                }
+            }
 
-                &:last-child {
-                    margin-bottom: 0;
+            &__primary-text {
+                color: darken(desaturate($link, 60), 5);
+                width: 100%;
+                display: flex;
+                margin-bottom: 3px;
+                align-items: center;
+                position: relative;
+                justify-content: space-between;
+                text-transform: uppercase;
+
+                svg {
+                    width: 16px;
+                    height: 16px;
+                    fill: #757575;
+                }
+            }
+
+            &__secondary-text {
+                color: #fff;
+                line-height: 1.5;
+
+                a {
+                    &:link {
+                        color: $link;
+                    }
+                    &:visited {
+                        color: $link-visited;
+                    }
+                }
+            }
+
+            &:not(.is-collapsed) {
+                .mdc-list-item__secondary-text {
+                    text-overflow: initial;
+                    white-space: initial;
+                    overflow: visible;
+                }
+            }
+        }
+
+        &--dense {
+            .mdc-list-item {
+                .mdc-list-item__primary-text {
+                    font-size: 12px;
                 }
             }
         }

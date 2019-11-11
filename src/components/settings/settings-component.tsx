@@ -1,6 +1,7 @@
-import { Component, h, Element, State, Listen } from '@stencil/core';
+import { Component, h, Element, State, Listen, Host, Method } from '@stencil/core';
 import { I18nService, t, Locale } from '../../services/locale-service';
 import i18next from 'i18next';
+import { MDCDialog } from '@material/dialog';
 
 @Component({
     tag: 'hv-settings',
@@ -12,7 +13,11 @@ export class SettingsComponent {
 
     @State() language: string
 
+    dialog: MDCDialog
+
     componentDidLoad() {
+
+        this.dialog = new MDCDialog(this.el)
 
         const selectLanguage = this.el.querySelector('#settings-language') as HTMLSelectElement
         selectLanguage.value = Locale.get()
@@ -23,6 +28,11 @@ export class SettingsComponent {
         Locale.change(() => {
             console.log('lc i18n')
         })
+    }
+
+    @Method()
+    async open() {
+        this.dialog.open()
     }
 
     apply() {
@@ -46,42 +56,33 @@ export class SettingsComponent {
 
         const selectedLanguage = Locale.get()
 
-        return (
-            <div class="modal modal-settings" role="dialog" aria-modal="true" tabindex="-1">
-                <div class="modal-background" onClick={this.handleCloseClick.bind(this)}></div>
-                <div class="modal-card">
-                    <header class="modal-card-head">
-                        <p class="modal-card-title">Settings</p>
-                        <button class="delete" title="Close" aria-label="close" onClick={this.handleCloseClick.bind(this)}></button>
-                    </header>
-                    <section class="modal-card-body">
-
-                        <div class="columns">
-                            <div class="column">
-                                <div class="field">
-                                    <label class="label" htmlFor="settings-language">Language</label>
-                                    <div class="description">
-                                        Your preferred interface language.
-                                    </div>
-                                    <div class="control control-settings">
-                                        <div class="select">
-                                            <select class="select" id="settings-language">
-                                                {Locale.all().map((locale) =>
-                                                    <option value={locale} selected={selectedLanguage === locale}>{t('name', locale)}</option>)}
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </section>
-                    <footer class="modal-card-foot is-right">
-                        <button class="button is-primary" onClick={this.apply.bind(this)}>Apply</button>
-                        <button class="button" onClick={this.handleCloseClick.bind(this)}>Close</button>
+        return <Host
+            class="mdc-dialog"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="my-dialog-title"
+            aria-describedby="my-dialog-content">
+            <div class="mdc-dialog__container">
+                <div class="mdc-dialog__surface">
+                    <h2 class="mdc-dialog__title" id="my-dialog-title">Settings</h2>
+                    <div class="mdc-dialog__content" id="my-dialog-content">
+                        Dialog body text goes here.
+                            <select class="select" id="settings-language">
+                            {Locale.all().map((locale) =>
+                                <option value={locale} selected={selectedLanguage === locale}>{t('name', locale)}</option>)}
+                        </select>
+                    </div>
+                    <footer class="mdc-dialog__actions">
+                        <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="no">
+                            <span class="mdc-button__label">No</span>
+                        </button>
+                        <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="yes">
+                            <span class="mdc-button__label">Yes</span>
+                        </button>
                     </footer>
                 </div>
             </div>
-        )
+            <div class="mdc-dialog__scrim"></div>
+        </Host>
     }
 }

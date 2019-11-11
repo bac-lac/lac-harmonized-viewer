@@ -1,1 +1,1 @@
-type LocationOption = 'top' | 'right' | 'bottom' | 'left'
+type PlacementType = 'top' | 'right' | 'bottom' | 'left'

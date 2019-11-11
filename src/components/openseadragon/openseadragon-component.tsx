@@ -1,14 +1,15 @@
-import { Component, h, Element, Event, EventEmitter, Method, Listen, State, Prop, Watch } from '@stencil/core';
-import { id } from '../../utils/utils';
+import { Component, h, Element, Event, EventEmitter, Method, Listen, State, Prop, Watch, Host } from '@stencil/core';
 import { Overlay } from '../../overlay';
 import { Store, Unsubscribe } from "@stencil/redux";
-import { setDocumentUrl, setDocumentPages, setDocumentTitle, setLoading, setAnnotations, setZoom, setPage, setDocumentAlternateFormats, setError, setStatus } from "../../store/actions/document";
+import { setDocumentUrl, setDocumentPages, setDocumentTitle, setLoading, setAnnotations, setZoom, setPage, setDocumentAlternateFormats, setError, setStatus, clearOverlays } from "../../store/actions/document";
 import { MyAppState, DocumentZoom } from '../../interfaces';
 import openseadragon from 'openseadragon';
 import { Resolver } from '../../resolvers/resolver';
 import { IIIFResolver } from '../../resolvers/iiif-resolver/iiif-resolver';
 import { IIIFDocument } from '../../resolvers/iiif-resolver/iiif-document';
 import { Locale } from '../../services/locale-service';
+import tippy, { Tippy, Props, Plugin, LifecycleHooks, sticky } from 'tippy.js';
+import { id } from '../../utils/utils';
 
 @Component({
     tag: 'harmonized-openseadragon',
@@ -22,8 +23,8 @@ export class OpenSeadragonComponent {
     private resolver: Resolver
 
     //private this.viewer: any
-    private overlays: Overlay[] = []
     private instance: any
+    private mouseTracker: any
     //private context: any
 
     setError: typeof setError
@@ -35,6 +36,7 @@ export class OpenSeadragonComponent {
     setAnnotations: typeof setAnnotations
     setPage: typeof setPage
     setZoom: typeof setZoom
+    clearOverlays: typeof clearOverlays
 
     storeUnsubscribe: Unsubscribe
 
@@ -42,6 +44,7 @@ export class OpenSeadragonComponent {
     @State() error: MyAppState["document"]["error"]
     @State() url: MyAppState["document"]["url"]
     @State() options: MyAppState["document"]["options"]
+    @State() overlays: MyAppState["document"]["overlays"]
     @State() page: MyAppState["document"]["page"]
     @State() pages: MyAppState["document"]["pages"]
     @State() zoomRequest: MyAppState["document"]["zoomRequest"]
@@ -59,10 +62,7 @@ export class OpenSeadragonComponent {
 
     @Watch('url')
     handleUrlChange(newValue: string, oldValue: string) {
-        //console.log(newValue, ' => ', oldValue)
-        if (this.url) {
-            //this.resolve()
-        }
+
     }
 
     @Watch('zoomRequest')
@@ -74,28 +74,27 @@ export class OpenSeadragonComponent {
 
     async resolve() {
         await this.resolver.init(this.url)
-        this.init()
+        this.create()
     }
 
     componentWillLoad() {
 
-        this.store.mapDispatchToProps(this, { setError, setStatus, setDocumentUrl, setDocumentPages, setDocumentTitle, setDocumentAlternateFormats, setAnnotations, setPage, setZoom })
+        this.store.mapDispatchToProps(this, { setError, setStatus, setDocumentUrl, setDocumentPages, setDocumentTitle, setDocumentAlternateFormats, setAnnotations, setPage, setZoom, clearOverlays })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { document: document, error: error, options: options, page: page, pages: pages, url: url, zoomRequest: zoomRequest }
+                document: { document: document, error: error, options: options, overlays: overlays, page: page, pages: pages, url: url, zoomRequest: zoomRequest }
             } = state
             return {
                 document: document,
                 error: error,
                 options: options,
+                overlays: overlays,
                 page: page,
                 pages: pages,
                 url: url,
                 zoomRequest: zoomRequest
             }
         })
-
-        console.log('openseadragon options', this.options)
     }
 
     async componentDidLoad() {
@@ -144,14 +143,18 @@ export class OpenSeadragonComponent {
         this.storeUnsubscribe()
     }
 
+    componentDidRender() {
+        this.drawOverlays()
+    }
+
     @Method()
-    async openseadragon(): Promise<any> {
+    async openseadragon() {
         return this.instance
     }
 
     @Method()
-    async getOverlays(): Promise<Overlay[]> {
-        return Promise.resolve(this.overlays)
+    async getOverlays() {
+        return this.overlays
     }
 
     @Listen('overlayClick')
@@ -159,20 +162,23 @@ export class OpenSeadragonComponent {
         console.log('overlay click')
     }
 
-    init() {
+    handleCanvasLoad(tiledImage: any, callback: () => any) {
+
+        if (tiledImage.getFullyLoaded()) {
+            setTimeout(callback, 1) // So both paths are asynchronous
+        } else {
+            tiledImage.addOnceHandler('fully-loaded-change', function () {
+                callback() // Calling it this way keeps the arguments consistent (if we passed callback into addOnceHandler it would get an event on this path but not on the setTimeout path above)
+            })
+        }
+    }
+
+    create() {
 
         if (this.instance) {
             this.instance.destroy()
             this.instance = null
         }
-
-        // this.overlays.push({
-        //     x: 50,
-        //     y: 80,
-        //     width: 500,
-        //     height: 500,
-        //     text: "test overlay"
-        // })
 
         const document = this.document as IIIFDocument
         const resolver = this.resolver as IIIFResolver
@@ -197,8 +203,6 @@ export class OpenSeadragonComponent {
         // Alternate formats
         this.setDocumentAlternateFormats(resolver.alternateFormats())
 
-        console.log(resolver.tileSources())
-
         this.instance = openseadragon({
             element: this.el.querySelector(".openseadragon"),
             prefixUrl: "/dist/vendors/openseadragon/images/",
@@ -215,20 +219,25 @@ export class OpenSeadragonComponent {
 
         this.instance.addHandler('open', () => {
 
+            this.clearOverlays()
+
             const page = this.instance.currentPage()
             this.setPage(page)
 
             this.instance.viewport.zoomTo(this.instance.viewport.getMinZoom(), null, true)
             this.instance.viewport.applyConstraints()
 
-            this.drawOverlays()
-
             this.setStatus('loaded')
             this.pageLoad.emit(this.page)
         })
 
         this.instance.addHandler('page', (page: number) => {
+
             this.setStatus('loading')
+        })
+
+        this.instance.addHandler('tile-loaded', (image: any) => {
+
         })
 
         this.instance.addHandler('zoom', (ev: any) => {
@@ -282,45 +291,70 @@ export class OpenSeadragonComponent {
 
     }
 
+    // clearOverlays() {
+
+    //     this.clearOverlays()
+
+    //     // const elements = Array.from(this.el.querySelectorAll('.overlay'))
+    //     // elements.forEach((elem) => elem.parentElement.removeChild(elem))
+
+    // }
+
     drawOverlays() {
 
-        const overlays: HTMLHarmonizedOverlayElement[] = Array.from(
-            document.querySelectorAll('harmonized-overlay'))
+        // if (!this.instance) {
+        //     this.create()
+        // }
 
-        if (overlays) {
+        const container = this.el.querySelector('.overlays')
+        if (!container) {
+            return undefined
+        }
 
-            console.log(overlays)
+        this.overlays.forEach((overlay) => {
 
-            overlays.forEach((overlay: HTMLHarmonizedOverlayElement) => {
-
-                //const elementId = "overlay-" + id()
-
-                //const element = document.createElement('div')
-                //element.classList.add('harmonized-overlay')
-                //element.append(overlay)
-
-                //element.id = elementId
-                //element.setAttribute('role', 'bu')
-                //element.textContent = 'abc123'
-
-                // const tooltip = document.createElement("span")
-                // tooltip.classList.add("bx--assistive-text")
-                // tooltip.innerHTML = overlay.text
-                // element.appendChild(tooltip)
+            const element = container.querySelector(`#overlay-${overlay.id}`)
+            if (element) {
 
                 const bounds = this.instance.viewport.imageToViewportRectangle(overlay.x, overlay.y, overlay.width, overlay.height)
+                this.instance.addOverlay(element, bounds, 'TOP_LEFT')
 
-                this.instance.addOverlay(overlay, bounds, "TOP_LEFT")
+                if (overlay.text) {
+
+                    tippy(element, {
+                        appendTo: 'parent',
+                        theme: 'harmonized-light',
+                        placement: 'bottom',
+                        animation: 'shift-toward',
+                        arrow: false,
+                        sticky: true,
+                        plugins: [sticky],
+                        content: overlay.text
+                    })
+                }
 
                 // Required in order to prevent click propagation to OpenSeadragon
-                // overlay.mouseTracker = new openseadragon.MouseTracker({
-                //     element: element, clickHandler: () => this.overlayClick.emit(element)
-                // })
-            })
-        }
+                new openseadragon.MouseTracker({
+                    element: element, clickHandler: () => this.overlayClick.emit(overlay)
+                })
+            }
+        })
+
+
     }
 
     render() {
-        return <div class="openseadragon"></div>
+        return <Host>
+            <div class="openseadragon"></div>
+            <div class="overlays">
+                {
+                    this.overlays.map((overlay) =>
+                        <harmonized-overlay
+                            id={"overlay-" + overlay.id}
+                            class="overlay"
+                            tabindex="-1" />)
+                }
+            </div>
+        </Host>
     }
 }

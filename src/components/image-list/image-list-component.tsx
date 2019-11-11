@@ -1,4 +1,5 @@
 import { Component, h, Element, State, Listen, Host, Prop, Watch } from '@stencil/core';
+import tippy, { sticky } from 'tippy.js';
 
 @Component({
     tag: 'harmonized-image-list',
@@ -10,10 +11,10 @@ export class ImageListComponent {
 
     @State() children: number = 0
 
-    observer: IntersectionObserver
+    private observer: IntersectionObserver
 
     componentDidLoad() {
-        this.observer = new IntersectionObserver(this.handleObserve)
+        this.observer = this.createObserver()
         this.bind()
     }
 
@@ -30,6 +31,10 @@ export class ImageListComponent {
         this.children = this.el.children.length
     }
 
+    createObserver() {
+        return new IntersectionObserver(this.handleObserve)
+    }
+
     bind() {
 
         const images: HTMLElement[] = Array.from(
@@ -42,6 +47,10 @@ export class ImageListComponent {
 
         if (!element) {
             return undefined
+        }
+
+        if (!this.observer) {
+            this.observer = this.createObserver()
         }
 
         if (element.classList.contains('is-observed') === false) {

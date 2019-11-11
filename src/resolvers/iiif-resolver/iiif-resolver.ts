@@ -7,7 +7,7 @@ export class IIIFResolver extends Resolver {
 
     thumbnailDefaultFormat: string = 'image/jpeg'
     thumbnailDefaultExtension: string = 'jpg'
-    thumbnailHeight: number = 100
+    thumbnailHeight: number = 150
 
     ignoreImageService: boolean = false
 
@@ -76,7 +76,7 @@ export class IIIFResolver extends Resolver {
                         id: canvas.id,
                         label: (label ? label.value : null),
                         image: this.getImageUri(resource, 1000),
-                        thumbnail: this.getImageUri(resource, this.thumbnailHeight)
+                        thumbnail: this.getThumbnailUri(resource)
                     }
                 }
             }))
@@ -90,20 +90,21 @@ export class IIIFResolver extends Resolver {
 
     getAnnotations(): DocumentAnnotation[] {
 
-        if (this.manifest) {
-
-            return this.manifest.getMetadata().map((annotation) => {
-
-                const label = this.resolveLanguage(annotation.label)
-                return {
-                    id: null,
-                    name: annotation.getLabel(),
-                    label: (label ? label.value : null),
-                    content: annotation.getValue(),
-                    visible: true
-                }
-            })
+        if (!this.manifest) {
+            return undefined
         }
+
+        return this.manifest.getMetadata().map((annotation) => {
+
+            const label = this.resolveLanguage(annotation.label)
+            return {
+                id: null,
+                name: annotation.getLabel(),
+                label: (label ? label.value : null),
+                content: annotation.getValue(),
+                visible: true
+            }
+        })
     }
 
     getAlternateFormats(): DocumentAlternateFormat[] {
@@ -138,7 +139,7 @@ export class IIIFResolver extends Resolver {
         return 0
     }
 
-    getImageUri(resource: Manifesto.IResource, height: number): string {
+    getThumbnailUri(resource: Manifesto.IResource): string {
 
         if (!resource) {
             return undefined
@@ -149,28 +150,36 @@ export class IIIFResolver extends Resolver {
             return thumbnail.id
         }
         else {
+            return this.getImageUri(resource, this.thumbnailHeight)
+        }
+    }
 
-            const infoUri = this.resolveImageServiceUri(resource, true)
-            if (infoUri.indexOf('/') != -1) {
+    getImageUri(resource: Manifesto.IResource, height: number): string {
 
-                let extension = null
+        if (!resource) {
+            return undefined
+        }
 
-                if (infoUri.lastIndexOf('/') != -1) {
-                    const fileName = infoUri.substr(infoUri.lastIndexOf('/') + 1)
-                    if (fileName) {
+        const infoUri = this.resolveImageServiceUri(resource, true)
+        if (infoUri.indexOf('/') != -1) {
 
-                        if (fileName.lastIndexOf('.') != -1) {
-                            extension = fileName.substr(fileName.lastIndexOf('.') + 1)
-                        }
+            let extension = null
+
+            if (infoUri.lastIndexOf('/') != -1) {
+                const fileName = infoUri.substr(infoUri.lastIndexOf('/') + 1)
+                if (fileName) {
+
+                    if (fileName.lastIndexOf('.') != -1) {
+                        extension = fileName.substr(fileName.lastIndexOf('.') + 1)
                     }
                 }
-
-                if (!extension) {
-                    extension = this.thumbnailDefaultExtension
-                }
-
-                return `${infoUri}/full/${height},/0/default.${extension}`
             }
+
+            if (!extension) {
+                extension = this.thumbnailDefaultExtension
+            }
+
+            return `${infoUri}/full/${height},/0/default.${extension}`
         }
     }
 

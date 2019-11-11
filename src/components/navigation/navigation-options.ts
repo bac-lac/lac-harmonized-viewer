@@ -1,5 +1,5 @@
 export interface NavigationOptions {
     height: number
-    location: LocationOption
+    location: PlacementType
     show: boolean
 }

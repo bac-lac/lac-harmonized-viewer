@@ -36,3 +36,24 @@ export function parseContentType(value: string): string {
         return matches[0]
     }
 }
+
+export function animate(element: Element, animation: string, callback?: () => void) {
+
+    if (!element || !animation) {
+        return undefined
+    }
+
+    element.classList.add('animated', animation)
+
+    const handleAnimationEnd = () => {
+
+        element.classList.remove('animated', animation)
+        element.removeEventListener('animationend', handleAnimationEnd)
+
+        console.log('anim end')
+
+        if (callback) callback()
+    }
+
+    element.addEventListener('animationend', handleAnimationEnd)
+}

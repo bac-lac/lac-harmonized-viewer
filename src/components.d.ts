@@ -10,15 +10,20 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
   MessageType,
 } from './components/message-component/message-options';
-import {
-  Overlay,
-} from './overlay';
 
 export namespace Components {
+  interface HarmonizedDrawer {
+    'open': () => Promise<void>;
+    'placement': string;
+    'toolbar': boolean;
+    'visible': boolean;
+  }
   interface HarmonizedImage {
     'caption': string;
     'page': number;
     'preload': boolean;
+    'showCaption': boolean;
+    'showTooltip': boolean;
     'src': string;
     'srcset': string;
   }
@@ -29,14 +34,16 @@ export namespace Components {
   }
   interface HarmonizedNavigation {
     'cols': number;
+    'placement': PlacementType;
     'rows': number;
   }
   interface HarmonizedOpenseadragon {
-    'getOverlays': () => Promise<Overlay[]>;
+    'getOverlays': () => Promise<import("C:/Users/gabri/source/Workspaces/lac-harmonized-viewer/src/interfaces").DocumentOverlay[]>;
     'openseadragon': () => Promise<any>;
   }
   interface HarmonizedOverlay {
     'height': number;
+    'mouseTracker': any;
     'width': number;
     'x': number;
     'y': number;
@@ -48,28 +55,38 @@ export namespace Components {
     'backgroundColor': string;
   }
   interface HarmonizedViewer {
+    'addOverlay': (x: number, y: number, width: number, height: number, text: string) => Promise<void>;
     'annotationsEnable': boolean;
     'backgroundColor': string;
     'documentUrl': string;
+    'getPage': () => Promise<number>;
     'language': string;
     'navigationEnable': boolean;
     'navigationHeight'?: number;
-    'navigationLocation': LocationOption;
+    'navigationLocation': PlacementType;
   }
   interface HarmonizedViewport {
     'annotationsEnable': boolean;
     'navigationEnable': boolean;
-    'navigationLocation': LocationOption;
+    'navigationPlacement': PlacementType;
   }
   interface HarmonizedZoomSlider {}
   interface HvAnnotations {}
-  interface HvSettings {}
+  interface HvSettings {
+    'open': () => Promise<void>;
+  }
   interface HvStatusbar {}
   interface HvToolbar {}
 }
 
 declare global {
 
+
+  interface HTMLHarmonizedDrawerElement extends Components.HarmonizedDrawer, HTMLStencilElement {}
+  var HTMLHarmonizedDrawerElement: {
+    prototype: HTMLHarmonizedDrawerElement;
+    new (): HTMLHarmonizedDrawerElement;
+  };
 
   interface HTMLHarmonizedImageElement extends Components.HarmonizedImage, HTMLStencilElement {}
   var HTMLHarmonizedImageElement: {
@@ -173,6 +190,7 @@ declare global {
     new (): HTMLHvToolbarElement;
   };
   interface HTMLElementTagNameMap {
+    'harmonized-drawer': HTMLHarmonizedDrawerElement;
     'harmonized-image': HTMLHarmonizedImageElement;
     'harmonized-image-list': HTMLHarmonizedImageListElement;
     'harmonized-message': HTMLHarmonizedMessageElement;
@@ -194,12 +212,19 @@ declare global {
 }
 
 declare namespace LocalJSX {
+  interface HarmonizedDrawer {
+    'placement'?: string;
+    'toolbar'?: boolean;
+    'visible'?: boolean;
+  }
   interface HarmonizedImage {
     'caption'?: string;
     'onImageAdded'?: (event: CustomEvent<any>) => void;
     'onImageLoad'?: (event: CustomEvent<any>) => void;
     'page'?: number;
     'preload'?: boolean;
+    'showCaption'?: boolean;
+    'showTooltip'?: boolean;
     'src'?: string;
     'srcset'?: string;
   }
@@ -210,6 +235,7 @@ declare namespace LocalJSX {
   }
   interface HarmonizedNavigation {
     'cols'?: number;
+    'placement'?: PlacementType;
     'rows'?: number;
   }
   interface HarmonizedOpenseadragon {
@@ -218,6 +244,7 @@ declare namespace LocalJSX {
   }
   interface HarmonizedOverlay {
     'height'?: number;
+    'mouseTracker'?: any;
     'width'?: number;
     'x'?: number;
     'y'?: number;
@@ -235,12 +262,12 @@ declare namespace LocalJSX {
     'language'?: string;
     'navigationEnable'?: boolean;
     'navigationHeight'?: number;
-    'navigationLocation'?: LocationOption;
+    'navigationLocation'?: PlacementType;
   }
   interface HarmonizedViewport {
     'annotationsEnable'?: boolean;
     'navigationEnable'?: boolean;
-    'navigationLocation'?: LocationOption;
+    'navigationPlacement'?: PlacementType;
   }
   interface HarmonizedZoomSlider {}
   interface HvAnnotations {}
@@ -249,6 +276,7 @@ declare namespace LocalJSX {
   interface HvToolbar {}
 
   interface IntrinsicElements {
+    'harmonized-drawer': HarmonizedDrawer;
     'harmonized-image': HarmonizedImage;
     'harmonized-image-list': HarmonizedImageList;
     'harmonized-message': HarmonizedMessage;
@@ -275,6 +303,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
   export namespace JSX {
     interface IntrinsicElements {
+      'harmonized-drawer': LocalJSX.HarmonizedDrawer & JSXBase.HTMLAttributes<HTMLHarmonizedDrawerElement>;
       'harmonized-image': LocalJSX.HarmonizedImage & JSXBase.HTMLAttributes<HTMLHarmonizedImageElement>;
       'harmonized-image-list': LocalJSX.HarmonizedImageList & JSXBase.HTMLAttributes<HTMLHarmonizedImageListElement>;
       'harmonized-message': LocalJSX.HarmonizedMessage & JSXBase.HTMLAttributes<HTMLHarmonizedMessageElement>;
