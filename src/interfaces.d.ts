@@ -5,6 +5,7 @@ export interface DocumentState {
     annotations: DocumentAnnotation[]
     contentType: string
     document: Document
+    locale: string
     options: Options[]
     overlays: DocumentOverlay[]
     page: number
@@ -23,7 +24,7 @@ interface Viewport {
 }
 
 interface Document {
-    title: string
+    title: LanguageMap
 }
 
 interface Options {
@@ -102,4 +103,9 @@ interface DocumentOverlay {
     height: number,
     page?: number,
     text: string
+}
+
+interface LanguageMap {
+    locale: string
+    value: string
 }

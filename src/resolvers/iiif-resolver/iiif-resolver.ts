@@ -1,7 +1,6 @@
-import { DocumentPage, DocumentAnnotation, DocumentAlternateFormat } from "../../interfaces"
+import { DocumentPage, DocumentAnnotation, DocumentAlternateFormat, LanguageMap } from "../../interfaces"
 import { Resolver } from "../resolver"
 import { IIIFDocument } from "./iiif-document"
-import { Locale } from "../../services/locale-service"
 
 export class IIIFResolver extends Resolver {
 
@@ -37,254 +36,254 @@ export class IIIFResolver extends Resolver {
         ]
     }
 
-    getTitle(): string {
-        if (this.manifest) {
-            const label = this.resolveLanguage(this.manifest.getLabel())
-            return label ? label.value : null
-        }
+    getTitle(): LanguageMap {
+
+        // if (this.manifest) {
+        //     return this.manifest.getLabel().map(i => this.locale.i})
+    }
+}
+
+getDocument(): IIIFDocument {
+    return {
+        title: this.getTitle(),
+        tileSources: this.tileSources()
+    }
+}
+
+getSequence(index: number): Manifesto.ISequence {
+
+    if (this.manifest) {
+        return this.manifest.getSequenceByIndex(index)
+    }
+}
+
+getDefaultSequence(): Manifesto.ISequence {
+    return this.getSequence(0)
+}
+
+getPages(): DocumentPage[] {
+
+    return this.getDefaultSequence().getCanvases()
+        .flatMap((canvas) => canvas.getImages().map((image) => {
+
+            const resource = image.getResource()
+            if (resource) {
+
+                const label = this.resolveLanguage(canvas.getLabel())
+
+                return {
+                    id: canvas.id,
+                    label: (label ? label.value : null),
+                    image: this.getImageUri(resource, 1000),
+                    thumbnail: this.getThumbnailUri(resource)
+                }
+            }
+        }))
+}
+
+tileSources(): string[] {
+
+    return this.getDefaultSequence().getCanvases()
+        .flatMap((canvas) => canvas.getImages().map((image) => this.resolveTileSource(image)))
+}
+
+getAnnotations(): DocumentAnnotation[] {
+
+    if (!this.manifest) {
+        return undefined
     }
 
-    getDocument(): IIIFDocument {
+    return this.manifest.getMetadata().map((annotation) => {
+
+        const label = this.resolveLanguage(annotation.label)
         return {
-            title: this.getTitle(),
-            tileSources: this.tileSources()
+            id: null,
+            name: annotation.getLabel(),
+            label: (label ? label.value : null),
+            content: annotation.getValue(),
+            visible: true
         }
-    }
+    })
+}
 
-    getSequence(index: number): Manifesto.ISequence {
+getAlternateFormats(): DocumentAlternateFormat[] {
 
-        if (this.manifest) {
-            return this.manifest.getSequenceByIndex(index)
+    return this.getDefaultSequence().getRenderings().map((rendering) => {
+
+        const label = this.resolveLanguage(rendering.getLabel())
+        const format = rendering.getFormat()
+
+        return {
+            contentType: (format ? format.value : null),
+            label: (label ? label.value : null),
+            url: rendering.id
         }
-    }
+    })
+}
 
-    getDefaultSequence(): Manifesto.ISequence {
-        return this.getSequence(0)
-    }
+getStartPageIndex(): number {
 
-    getPages(): DocumentPage[] {
+    if (this.manifest) {
 
-        return this.getDefaultSequence().getCanvases()
-            .flatMap((canvas) => canvas.getImages().map((image) => {
+        const startCanvas = this.getDefaultSequence().getStartCanvas()
+        if (startCanvas) {
 
-                const resource = image.getResource()
-                if (resource) {
-
-                    const label = this.resolveLanguage(canvas.getLabel())
-
-                    return {
-                        id: canvas.id,
-                        label: (label ? label.value : null),
-                        image: this.getImageUri(resource, 1000),
-                        thumbnail: this.getThumbnailUri(resource)
-                    }
-                }
-            }))
-    }
-
-    tileSources(): string[] {
-
-        return this.getDefaultSequence().getCanvases()
-            .flatMap((canvas) => canvas.getImages().map((image) => this.resolveTileSource(image)))
-    }
-
-    getAnnotations(): DocumentAnnotation[] {
-
-        if (!this.manifest) {
-            return undefined
-        }
-
-        return this.manifest.getMetadata().map((annotation) => {
-
-            const label = this.resolveLanguage(annotation.label)
-            return {
-                id: null,
-                name: annotation.getLabel(),
-                label: (label ? label.value : null),
-                content: annotation.getValue(),
-                visible: true
+            const startPage = this.getPages().find((page) => page.id == startCanvas)
+            if (startPage) {
+                return this.getPages().indexOf(startPage)
             }
-        })
+        }
     }
 
-    getAlternateFormats(): DocumentAlternateFormat[] {
+    return 0
+}
 
-        return this.getDefaultSequence().getRenderings().map((rendering) => {
+getThumbnailUri(resource: Manifesto.IResource): string {
 
-            const label = this.resolveLanguage(rendering.getLabel())
-            const format = rendering.getFormat()
-
-            return {
-                contentType: (format ? format.value : null),
-                label: (label ? label.value : null),
-                url: rendering.id
-            }
-        })
+    if (!resource) {
+        return undefined
     }
 
-    getStartPageIndex(): number {
+    const thumbnail = resource.getThumbnail()
+    if (thumbnail) {
+        return thumbnail.id
+    }
+    else {
+        return this.getImageUri(resource, this.thumbnailHeight)
+    }
+}
 
-        if (this.manifest) {
+getImageUri(resource: Manifesto.IResource, height: number): string {
 
-            const startCanvas = this.getDefaultSequence().getStartCanvas()
-            if (startCanvas) {
+    if (!resource) {
+        return undefined
+    }
 
-                const startPage = this.getPages().find((page) => page.id == startCanvas)
-                if (startPage) {
-                    return this.getPages().indexOf(startPage)
+    const infoUri = this.resolveImageServiceUri(resource, true)
+    if (infoUri.indexOf('/') != -1) {
+
+        let extension = null
+
+        if (infoUri.lastIndexOf('/') != -1) {
+            const fileName = infoUri.substr(infoUri.lastIndexOf('/') + 1)
+            if (fileName) {
+
+                if (fileName.lastIndexOf('.') != -1) {
+                    extension = fileName.substr(fileName.lastIndexOf('.') + 1)
                 }
             }
         }
 
-        return 0
+        if (!extension) {
+            extension = this.thumbnailDefaultExtension
+        }
+
+        return `${infoUri}/full/${height},/0/default.${extension}`
+    }
+}
+
+resolveImageServiceUri(resource: Manifesto.IResource, trimFileName: boolean = false): string {
+
+    if (!resource) {
+        return undefined
     }
 
-    getThumbnailUri(resource: Manifesto.IResource): string {
+    const infoFile = 'info.json'
+    const service = this.resolveImageService(resource)
 
-        if (!resource) {
-            return undefined
-        }
+    let serviceUri: string = (service ? service.getInfoUri() : resource.id)
 
-        const thumbnail = resource.getThumbnail()
-        if (thumbnail) {
-            return thumbnail.id
-        }
-        else {
-            return this.getImageUri(resource, this.thumbnailHeight)
-        }
+    // Remove the info.json path from uri
+    if (trimFileName && serviceUri.indexOf(infoFile) !== -1) {
+        serviceUri = serviceUri.substr(0, serviceUri.lastIndexOf(infoFile))
     }
 
-    getImageUri(resource: Manifesto.IResource, height: number): string {
-
-        if (!resource) {
-            return undefined
-        }
-
-        const infoUri = this.resolveImageServiceUri(resource, true)
-        if (infoUri.indexOf('/') != -1) {
-
-            let extension = null
-
-            if (infoUri.lastIndexOf('/') != -1) {
-                const fileName = infoUri.substr(infoUri.lastIndexOf('/') + 1)
-                if (fileName) {
-
-                    if (fileName.lastIndexOf('.') != -1) {
-                        extension = fileName.substr(fileName.lastIndexOf('.') + 1)
-                    }
-                }
-            }
-
-            if (!extension) {
-                extension = this.thumbnailDefaultExtension
-            }
-
-            return `${infoUri}/full/${height},/0/default.${extension}`
-        }
+    // Trim last slash from uri
+    if (serviceUri.endsWith('/')) {
+        serviceUri = serviceUri.substr(0, serviceUri.length - 1)
     }
 
-    resolveImageServiceUri(resource: Manifesto.IResource, trimFileName: boolean = false): string {
+    return serviceUri
+}
 
-        if (!resource) {
-            return undefined
-        }
+resolveTileSource(image: Manifesto.IAnnotation): any {
 
-        const infoFile = 'info.json'
-        const service = this.resolveImageService(resource)
-
-        let serviceUri: string = (service ? service.getInfoUri() : resource.id)
-
-        // Remove the info.json path from uri
-        if (trimFileName && serviceUri.indexOf(infoFile) !== -1) {
-            serviceUri = serviceUri.substr(0, serviceUri.lastIndexOf(infoFile))
-        }
-
-        // Trim last slash from uri
-        if (serviceUri.endsWith('/')) {
-            serviceUri = serviceUri.substr(0, serviceUri.length - 1)
-        }
-
-        return serviceUri
+    if (!image) {
+        return undefined
     }
 
-    resolveTileSource(image: Manifesto.IAnnotation): any {
-
-        if (!image) {
-            return undefined
-        }
-
-        if (this.ignoreImageService) {
-            return {
-                type: 'image',
-                url: image.getResource().id
-            }
-        }
-        else {
-            return this.resolveImageServiceUri(image.getResource(), false)
+    if (this.ignoreImageService) {
+        return {
+            type: 'image',
+            url: image.getResource().id
         }
     }
-
-    map(languageMap: Manifesto.LanguageMap): Manifesto.Language {
-
-        if (!languageMap) {
-            return undefined
-        }
-        const language = Locale.get()
-        return languageMap.find((x) =>
-            x.locale && (x.locale === language || (x.locale.indexOf('-') != -1 && x.locale.substr(0, x.locale.indexOf('-')) === language)))
+    else {
+        return this.resolveImageServiceUri(image.getResource(), false)
     }
+}
+
+map(languageMap: Manifesto.LanguageMap): Manifesto.Language {
+
+    if (!languageMap) {
+        return undefined
+    }
+    const language = Locale.get()
+    return languageMap.find((x) =>
+        x.locale && (x.locale === language || (x.locale.indexOf('-') != -1 && x.locale.substr(0, x.locale.indexOf('-')) === language)))
+}
 
     private resolveLanguage(languageMap: Manifesto.LanguageMap): Manifesto.Language {
-        if (!languageMap) {
-            return undefined
-        }
-        return languageMap.find((x) =>
-            x.locale && (x.locale === this.locale || (x.locale.indexOf('-') != -1 && x.locale.substr(0, x.locale.indexOf('-')) === this.locale)))
+    if (!languageMap) {
+        return undefined
     }
+    return languageMap.find((x) =>
+        x.locale && (x.locale === this.locale || (x.locale.indexOf('-') != -1 && x.locale.substr(0, x.locale.indexOf('-')) === this.locale)))
+}
 
-    resolveImageService(resource: Manifesto.IResource): Manifesto.IService {
+resolveImageService(resource: Manifesto.IResource): Manifesto.IService {
 
-        if (resource) {
+    if (resource) {
 
-            const supportedProtocols = [
-                /http:\/\/iiif\.io\/api\/image/i
-            ]
+        const supportedProtocols = [
+            /http:\/\/iiif\.io\/api\/image/i
+        ]
 
-            const supportedContexts = [
-                /http:\/\/iiif\.io\/api\/image\/1\/context\.json/i,
-                /http:\/\/iiif\.io\/api\/image\/2\/context\.json/i
-            ]
+        const supportedContexts = [
+            /http:\/\/iiif\.io\/api\/image\/1\/context\.json/i,
+            /http:\/\/iiif\.io\/api\/image\/2\/context\.json/i
+        ]
 
-            let imageService: Manifesto.IService = null
+        let imageService: Manifesto.IService = null
 
-            // IIIF
-            // Attempt to resolve the image service with the protocol
+        // IIIF
+        // Attempt to resolve the image service with the protocol
 
-            const compatibleServices = resource.getServices().filter(service => {
-                const profile = service.getProfile() && service.getProfile().value
-                return this.matchesAtLeastOne(profile, supportedProtocols)
-            })
-            imageService = (compatibleServices.length > 0 && compatibleServices[0])
+        const compatibleServices = resource.getServices().filter(service => {
+            const profile = service.getProfile() && service.getProfile().value
+            return this.matchesAtLeastOne(profile, supportedProtocols)
+        })
+        imageService = (compatibleServices.length > 0 && compatibleServices[0])
 
-            // Fallback
-            // Attempt to resolve the image service from the context
+        // Fallback
+        // Attempt to resolve the image service from the context
 
-            if (!imageService) {
-                imageService = resource.getServices().find(service => this.matchesAtLeastOne(service.context, supportedContexts))
-            }
-
-            return imageService
+        if (!imageService) {
+            imageService = resource.getServices().find(service => this.matchesAtLeastOne(service.context, supportedContexts))
         }
+
+        return imageService
     }
+}
 
     private matchesAtLeastOne(value: string, regexCollection: RegExp[]) {
 
-        if (!value || !regexCollection) {
-            return undefined
-        }
-
-        const matches = regexCollection.filter(regex => value.match(regex))
-        return (matches.length >= 1)
+    if (!value || !regexCollection) {
+        return undefined
     }
+
+    const matches = regexCollection.filter(regex => value.match(regex))
+    return (matches.length >= 1)
+}
 
 }

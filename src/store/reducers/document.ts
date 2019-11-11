@@ -1,6 +1,7 @@
 import { ActionTypes, TypeKeys } from "../actions/index";
 import { DocumentState } from "../../interfaces";
 import { id } from "../../utils/utils";
+import { stringify } from "querystring";
 
 const getInitialState = (): DocumentState => {
 
@@ -11,6 +12,7 @@ const getInitialState = (): DocumentState => {
         document: null,
         error: null,
         loading: false,
+        locale: 'en-US',
         options: [],
         overlays: [],
         page: 0,

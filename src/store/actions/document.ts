@@ -1,5 +1,5 @@
 import { TypeKeys } from "./index"
-import { DocumentPage, DocumentAnnotation, DocumentAlternateFormat, DocumentZoom, DocumentError, StatusCode, Viewport } from "../../interfaces"
+import { DocumentPage, DocumentAnnotation, DocumentAlternateFormat, DocumentZoom, DocumentError, StatusCode, Viewport, LanguageMap } from "../../interfaces"
 
 export interface SetError {
     type: TypeKeys.SET_ERROR
@@ -77,9 +77,9 @@ export const setDocumentPages = (pages: DocumentPage[]) => (dispatch, _getState)
 
 export interface SetDocumentTitle {
     type: TypeKeys.SET_DOCUMENT_TITLE
-    title: string
+    title: LanguageMap
 }
-export const setDocumentTitle = (title: string) => (dispatch, _getState) => {
+export const setDocumentTitle = (title: LanguageMap) => (dispatch, _getState) => {
     const action: SetDocumentTitle = {
         type: TypeKeys.SET_DOCUMENT_TITLE,
         title: title
