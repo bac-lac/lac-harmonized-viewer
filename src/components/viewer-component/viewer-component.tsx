@@ -120,8 +120,8 @@ export class ViewerComponent {
 		this.setDocumentUrl(this.documentUrl)
 	}
 
-	async componentDidLoad() {
-		await i18n.load(this.locale)
+	componentDidLoad() {
+
 	}
 
 	componentDidUnload() {

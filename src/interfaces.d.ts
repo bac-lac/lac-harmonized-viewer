@@ -8,8 +8,8 @@ export interface DocumentState {
     annotations: DocumentAnnotation[]
     contentType: string
     document: Document
-    locale: Locale
-    supportedLocales: Locale[]
+    locale: string
+    supportedLocales: string[]
     options: Options[]
     overlays: DocumentOverlay[]
     page: number

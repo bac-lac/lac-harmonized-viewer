@@ -1,5 +1,24 @@
-// import i18next from 'i18next';
-// import LanguageDetector from 'i18next-browser-languagedetector';
+import i18next from 'i18next';
+import i18nextXHRBackend from 'i18next-xhr-backend';
+import i18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
+
+export const languages: string[] = ['en', 'fr']
+
+i18next
+    .use(i18nextXHRBackend)
+    .use(i18nextBrowserLanguageDetector)
+    .init({
+        fallbackLng: 'en',
+        debug: true,
+        ns: ['common'],
+        defaultNS: 'common',
+        backend: {
+            loadPath: './locales/{{lng}}/{{ns}}.json'
+        }
+    }, (err, t) => {
+        console.log('update lang')
+    })
+
 // import { EventEmitter } from 'events';
 // import { saveLocale, loadSettings } from '../settings';
 

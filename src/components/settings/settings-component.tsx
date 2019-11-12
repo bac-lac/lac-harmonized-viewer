@@ -1,10 +1,9 @@
 import { Component, h, Element, State, Listen, Host, Method, Prop } from '@stencil/core';
-import i18next from 'i18next';
 import { MDCDialog } from '@material/dialog';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { MyAppState } from '../../interfaces';
 import { setLocale, addLocale } from '../../store/actions/document';
-import { Locale } from '../../services/i18n/locale';
+import i18next, { t } from 'i18next';
 
 @Component({
     tag: 'hv-settings',
@@ -54,8 +53,7 @@ export class SettingsComponent {
     }
 
     handleApplyClick() {
-
-        this.setLocale(Locale.create('en-CA'))
+        i18next.changeLanguage('fr')
     }
 
     render() {
@@ -68,7 +66,7 @@ export class SettingsComponent {
             aria-describedby="my-dialog-content">
             <div class="mdc-dialog__container">
                 <div class="mdc-dialog__surface">
-                    <h2 class="mdc-dialog__title" id="my-dialog-title">Settings</h2>
+                    <h2 class="mdc-dialog__title" id="my-dialog-title">{t('test')}</h2>
                     <div class="mdc-dialog__content" id="my-dialog-content">
                         Dialog body text goes here.
                             <select class="select" id="settings-language">

@@ -12,7 +12,7 @@ const getInitialState = (): DocumentState => {
         document: null,
         error: null,
         loading: false,
-        locale: Locale.create('en-US'),
+        locale: 'en',
         supportedLocales: [],
         options: [],
         overlays: [],

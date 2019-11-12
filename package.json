@@ -50,6 +50,7 @@
     "i18next-browser-languagedetector": "^3.1.1",
     "i18next-chained-backend": "^2.0.0",
     "i18next-localstorage-backend": "^3.0.0",
+    "i18next-xhr-backend": "^3.2.2",
     "manifesto.js": "^3.0.12",
     "material-components-web": "^4.0.0",
     "material-design-icons": "^3.0.1",

@@ -53,25 +53,25 @@ export class i18n {
     }
 }
 
-export function t(key: string | LabelMap[], locale: Locale): string {
+// export function t(key: string | LabelMap[], locale: Locale): string {
 
-    if (!key || !locale) {
-        return undefined
-    }
+//     if (!key || !locale) {
+//         return undefined
+//     }
 
-    if (typeof key === "string") {
-        const label = i18n.labels(locale).find(i => i.key && i.key === key)
-        return (label ? label.value : key)
-    }
-    else {
-        let resolved: LabelMap = null
+//     if (typeof key === "string") {
+//         const label = i18n.labels(locale).find(i => i.key && i.key === key)
+//         return (label ? label.value : key)
+//     }
+//     else {
+//         let resolved: LabelMap = null
 
-        resolved = key.find(i => i.locale && locale.same(i.locale))
-        if (resolved) return resolved.value
+//         resolved = key.find(i => i.locale && locale.same(i.locale))
+//         if (resolved) return resolved.value
 
-        resolved = key.find(i => i.locale && locale.sameLanguage(i.locale))
-        if (resolved) return resolved.value
+//         resolved = key.find(i => i.locale && locale.sameLanguage(i.locale))
+//         if (resolved) return resolved.value
 
-        return null
-    }
-}
+//         return null
+//     }
+// }

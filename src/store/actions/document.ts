@@ -1,7 +1,6 @@
 import { TypeKeys } from "./index"
-import { DocumentPage, DocumentAnnotation, DocumentAlternateFormat, DocumentZoom, DocumentError, StatusCode, Viewport } from "../../interfaces"
-import { Label, LabelMap } from "../../services/i18n/label"
-import { Locale } from "../../services/i18n/locale"
+import { DocumentPage, DocumentAnnotation, DocumentAlternateFormat, DocumentZoom, StatusCode, Viewport } from "../../interfaces"
+import { LabelMap } from "../../services/i18n/label"
 
 export interface SetError {
     type: TypeKeys.SET_ERROR
@@ -56,9 +55,9 @@ export const setStatus = (code: StatusCode) => (dispatch, _getState) => {
 
 export interface SetLocale {
     type: TypeKeys.SET_LOCALE
-    locale: Locale
+    locale: string
 }
-export const setLocale = (locale: Locale) => (dispatch, _getState) => {
+export const setLocale = (locale: string) => (dispatch, _getState) => {
     const action: SetLocale = {
         type: TypeKeys.SET_LOCALE,
         locale: locale
@@ -68,9 +67,9 @@ export const setLocale = (locale: Locale) => (dispatch, _getState) => {
 
 export interface AddLocale {
     type: TypeKeys.ADD_LOCALE
-    locale: Locale
+    locale: string
 }
-export const addLocale = (locale: Locale) => (dispatch, _getState) => {
+export const addLocale = (locale: string) => (dispatch, _getState) => {
     const action: AddLocale = {
         type: TypeKeys.ADD_LOCALE,
         locale: locale

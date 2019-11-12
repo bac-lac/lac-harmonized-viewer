@@ -1,5 +1,4 @@
 import { Component, h, Element, Prop, Host, State, Event, EventEmitter } from '@stencil/core';
-import "../../utils/icon-library";
 import { MyAppState } from '../../interfaces';
 import { Store, Unsubscribe } from '@stencil/redux';
 import { MDCTopAppBar } from '@material/top-app-bar';
@@ -10,7 +9,6 @@ import iconDisplay from '../../assets/material-icons/ic_display_24px.svg';
 import iconDockLeft from '../../assets/material-icons/ic_dock_left_24px.svg';
 import iconDockBottom from '../../assets/material-icons/ic_dock_bottom_24px.svg';
 import { setViewport } from '../../store/actions/document';
-import { t } from '../../services/i18n/i18n-service';
 
 @Component({
     tag: 'harmonized-topbar',
@@ -87,7 +85,7 @@ export class TopbarComponent {
                                 <i class="mdc-icon-button__icon" innerHTML={iconMenu}></i>
                             </button>
                             <span class="mdc-top-app-bar__title">
-                                {t(this.title, this.locale)}
+
                             </span>
                         </section>
                         <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
