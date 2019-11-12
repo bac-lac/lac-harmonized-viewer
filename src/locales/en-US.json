@@ -1,3 +1,14 @@
 {
-    "testlocale": "worded!"
+    "name": "English (US)",
+    "namespace": "1.0",
+    "locale": {
+        "language": "en",
+        "country": "US"
+    },
+    "labels": [
+        {
+            "key": "test",
+            "value": "test value eng"
+        }
+    ]
 }

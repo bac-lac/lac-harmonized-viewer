@@ -1,5 +1,7 @@
 import { TypeKeys } from "./index"
-import { DocumentPage, DocumentAnnotation, DocumentAlternateFormat, DocumentZoom, DocumentError, StatusCode, Viewport, LanguageMap } from "../../interfaces"
+import { DocumentPage, DocumentAnnotation, DocumentAlternateFormat, DocumentZoom, DocumentError, StatusCode, Viewport } from "../../interfaces"
+import { Label, LabelMap } from "../../services/i18n/label"
+import { Locale } from "../../services/i18n/locale"
 
 export interface SetError {
     type: TypeKeys.SET_ERROR
@@ -51,6 +53,31 @@ export const setStatus = (code: StatusCode) => (dispatch, _getState) => {
     dispatch(action)
 }
 
+
+export interface SetLocale {
+    type: TypeKeys.SET_LOCALE
+    locale: Locale
+}
+export const setLocale = (locale: Locale) => (dispatch, _getState) => {
+    const action: SetLocale = {
+        type: TypeKeys.SET_LOCALE,
+        locale: locale
+    }
+    dispatch(action)
+}
+
+export interface AddLocale {
+    type: TypeKeys.ADD_LOCALE
+    locale: Locale
+}
+export const addLocale = (locale: Locale) => (dispatch, _getState) => {
+    const action: AddLocale = {
+        type: TypeKeys.ADD_LOCALE,
+        locale: locale
+    }
+    dispatch(action)
+}
+
 export interface SetDocumentUrl {
     type: TypeKeys.SET_DOCUMENT_URL
     url: string
@@ -77,9 +104,9 @@ export const setDocumentPages = (pages: DocumentPage[]) => (dispatch, _getState)
 
 export interface SetDocumentTitle {
     type: TypeKeys.SET_DOCUMENT_TITLE
-    title: LanguageMap
+    title: LabelMap[]
 }
-export const setDocumentTitle = (title: LanguageMap) => (dispatch, _getState) => {
+export const setDocumentTitle = (title: LabelMap[]) => (dispatch, _getState) => {
     const action: SetDocumentTitle = {
         type: TypeKeys.SET_DOCUMENT_TITLE,
         title: title

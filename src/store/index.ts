@@ -9,4 +9,4 @@ export const configureStore = (preloadedState: Partial<MyAppState>) =>
         rootReducer,
         preloadedState,
         composeWithDevTools(applyMiddleware(thunk))
-    );
+    )

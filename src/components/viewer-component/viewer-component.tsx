@@ -4,7 +4,8 @@ import 'manifesto.js';
 import { Store, Unsubscribe } from "@stencil/redux";
 import { configureStore } from "../../store";
 import { setDocumentUrl, setDocumentContentType, setStatus, addOverlay, setOptions } from '../../store/actions/document';
-import { MyAppState, Options } from '../../interfaces';
+import { MyAppState } from '../../interfaces';
+import { i18n } from '../../services/i18n/i18n-service';
 
 @Component({
 	tag: 'harmonized-viewer',
@@ -40,6 +41,7 @@ export class ViewerComponent {
 
 	storeUnsubscribe: Unsubscribe
 
+	@State() locale: MyAppState["document"]["locale"]
 	@State() page: MyAppState["document"]["page"]
 	@State() url: MyAppState["document"]["url"]
 	@State() status: MyAppState["document"]["status"]
@@ -82,9 +84,10 @@ export class ViewerComponent {
 		this.store.mapDispatchToProps(this, { addOverlay, setDocumentContentType, setDocumentUrl, setOptions, setStatus })
 		this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
-				document: { status: status, page: page, url: url, viewport: viewport }
+				document: { locale: locale, status: status, page: page, url: url, viewport: viewport }
 			} = state
 			return {
+				locale: locale,
 				page: page,
 				status: status,
 				url: url,
@@ -117,8 +120,8 @@ export class ViewerComponent {
 		this.setDocumentUrl(this.documentUrl)
 	}
 
-	componentDidLoad() {
-
+	async componentDidLoad() {
+		await i18n.load(this.locale)
 	}
 
 	componentDidUnload() {

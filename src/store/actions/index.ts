@@ -1,11 +1,11 @@
-import { SetLoading, SetDocumentContentType, SetDocumentUrl, SetDocumentPages, SetDocumentTitle, SetDocumentAlternateFormats, SetPage, SetAnnotations, SetOptions, SetZoom, SetZoomRequest, SetError, SetStatus, AddOverlay, ClearOverlays, SetViewport } from "./document";
+import { SetLoading, SetDocumentContentType, SetDocumentUrl, SetDocumentPages, SetDocumentTitle, SetDocumentAlternateFormats, SetPage, SetAnnotations, SetOptions, SetZoom, SetZoomRequest, SetError, SetStatus, AddOverlay, ClearOverlays, SetViewport, SetLocale, AddLocale } from "./document";
 
 export interface NullAction {
     type: TypeKeys.NULL
 }
 
 // Keep this type updated with each known action
-export type ActionTypes = NullAction | SetError | SetLoading | SetStatus | SetDocumentContentType | SetDocumentUrl | SetDocumentPages | SetDocumentTitle | SetDocumentAlternateFormats | SetPage | SetAnnotations | SetOptions | SetZoom | SetZoomRequest | AddOverlay | ClearOverlays | SetViewport
+export type ActionTypes = NullAction | SetError | SetLoading | SetStatus | AddLocale | SetLocale | SetDocumentContentType | SetDocumentUrl | SetDocumentPages | SetDocumentTitle | SetDocumentAlternateFormats | SetPage | SetAnnotations | SetOptions | SetZoom | SetZoomRequest | AddOverlay | ClearOverlays | SetViewport
 
 export enum TypeKeys {
     // Won't match anything
@@ -14,6 +14,8 @@ export enum TypeKeys {
     SET_ERROR = "SET_ERROR",
     SET_LOADING = "SET_LOADING",
     SET_STATUS = "SET_STATUS",
+    ADD_LOCALE = "ADD_LOCALE",
+    SET_LOCALE = "SET_LOCALE",
     SET_DOCUMENT_CONTENT_TYPE = "SET_DOCUMENT_CONTENT_TYPE",
     SET_DOCUMENT_URL = "SET_DOCUMENT_URL",
     SET_DOCUMENT_PAGES = "SET_DOCUMENT_PAGES",

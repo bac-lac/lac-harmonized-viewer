@@ -9,6 +9,7 @@ import iconClose from '../../assets/material-design-icons/ic_close_18px.svg'
 import iconMaximize from '../../assets/material-design-icons/ic_crop_square_24px.svg'
 import iconList from '../../assets/material-icons/ic_list_24px.svg'
 import iconGrid from '../../assets/material-icons/ic_grid_24px.svg'
+import { t } from '../../services/i18n/i18n-service';
 
 @Component({
     tag: 'harmonized-navigation',
@@ -32,6 +33,7 @@ export class NavigationComponent {
     storeUnsubscribe: Unsubscribe
 
     @State() loading: MyAppState["document"]["loading"]
+    @State() locale: MyAppState["document"]["locale"]
     @State() page: MyAppState["document"]["page"]
     @State() pages: MyAppState["document"]["pages"]
 
@@ -46,9 +48,10 @@ export class NavigationComponent {
         this.store.mapDispatchToProps(this, { setPage })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { loading: loading, page: page, pages: pages }
+                document: { locale: locale, loading: loading, page: page, pages: pages }
             } = state
             return {
+                locale: locale,
                 loading: loading,
                 page: page,
                 pages: pages
@@ -207,7 +210,7 @@ export class NavigationComponent {
                         <harmonized-image
                             src={page.thumbnail}
                             page={index}
-                            caption={page.label}
+                            caption={t(page.label, this.locale)}
                             showCaption={true}
                             showTooltip={false}
                             preload={index < 16}

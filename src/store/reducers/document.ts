@@ -1,7 +1,7 @@
 import { ActionTypes, TypeKeys } from "../actions/index";
 import { DocumentState } from "../../interfaces";
 import { id } from "../../utils/utils";
-import { stringify } from "querystring";
+import { Locale } from "../../services/i18n/locale";
 
 const getInitialState = (): DocumentState => {
 
@@ -12,7 +12,8 @@ const getInitialState = (): DocumentState => {
         document: null,
         error: null,
         loading: false,
-        locale: 'en-US',
+        locale: Locale.create('en-US'),
+        supportedLocales: [],
         options: [],
         overlays: [],
         page: 0,
@@ -54,6 +55,9 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
         case TypeKeys.SET_STATUS: {
 
             return { ...state, status: { ...state.status, loading: (action.code == 'prefetching' || action.code == 'loading'), code: action.code } }
+        }
+        case TypeKeys.SET_LOCALE: {
+            return { ...state, locale: action.locale }
         }
         case TypeKeys.SET_DOCUMENT_CONTENT_TYPE: {
             return { ...state, contentType: action.contentType }

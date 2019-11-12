@@ -1,5 +1,4 @@
 import { Component, h, Element, Event, EventEmitter, Method, Listen, State, Prop, Watch, Host } from '@stencil/core';
-import { Overlay } from '../../overlay';
 import { Store, Unsubscribe } from "@stencil/redux";
 import { setDocumentUrl, setDocumentPages, setDocumentTitle, setLoading, setAnnotations, setZoom, setPage, setDocumentAlternateFormats, setError, setStatus, clearOverlays } from "../../store/actions/document";
 import { MyAppState, DocumentZoom } from '../../interfaces';
@@ -7,9 +6,7 @@ import openseadragon from 'openseadragon';
 import { Resolver } from '../../resolvers/resolver';
 import { IIIFResolver } from '../../resolvers/iiif-resolver/iiif-resolver';
 import { IIIFDocument } from '../../resolvers/iiif-resolver/iiif-document';
-import { Locale } from '../../services/locale-service';
-import tippy, { Tippy, Props, Plugin, LifecycleHooks, sticky } from 'tippy.js';
-import { id } from '../../utils/utils';
+import tippy, { sticky } from 'tippy.js';
 
 @Component({
     tag: 'harmonized-openseadragon',
@@ -100,7 +97,6 @@ export class OpenSeadragonComponent {
     async componentDidLoad() {
 
         const resolver = new IIIFResolver()
-        resolver.locale = Locale.get()
 
         const options = this.options.filter(i => i.component && i.component === 'openseadragon')
 

@@ -10,6 +10,7 @@ import iconDisplay from '../../assets/material-icons/ic_display_24px.svg';
 import iconDockLeft from '../../assets/material-icons/ic_dock_left_24px.svg';
 import iconDockBottom from '../../assets/material-icons/ic_dock_bottom_24px.svg';
 import { setViewport } from '../../store/actions/document';
+import { t } from '../../services/i18n/i18n-service';
 
 @Component({
     tag: 'harmonized-topbar',
@@ -23,6 +24,7 @@ export class TopbarComponent {
 
     @Prop({ context: "store" }) store: Store
 
+    @State() locale: MyAppState["document"]["locale"]
     @State() title: MyAppState["document"]["document"]["title"]
     @State() viewport: MyAppState["document"]["viewport"]
 
@@ -39,9 +41,10 @@ export class TopbarComponent {
         this.store.mapDispatchToProps(this, { setViewport })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { document: document, viewport: viewport }
+                document: { document: document, locale: locale, viewport: viewport }
             } = state
             return {
+                locale: locale,
                 title: (document ? document.title : null),
                 viewport: viewport
             }
@@ -84,7 +87,7 @@ export class TopbarComponent {
                                 <i class="mdc-icon-button__icon" innerHTML={iconMenu}></i>
                             </button>
                             <span class="mdc-top-app-bar__title">
-                                {this.title}
+                                {t(this.title, this.locale)}
                             </span>
                         </section>
                         <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">

@@ -1,3 +1,6 @@
+import { Label, LabelMap } from "./services/i18n/label";
+import { Locale } from "./services/i18n/locale";
+
 export interface DocumentState {
     error: DocumentError
     loading: boolean
@@ -5,7 +8,8 @@ export interface DocumentState {
     annotations: DocumentAnnotation[]
     contentType: string
     document: Document
-    locale: string
+    locale: Locale
+    supportedLocales: Locale[]
     options: Options[]
     overlays: DocumentOverlay[]
     page: number
@@ -24,7 +28,7 @@ interface Viewport {
 }
 
 interface Document {
-    title: LanguageMap
+    title: LabelMap[]
 }
 
 interface Options {
@@ -47,7 +51,7 @@ type StatusCode = 'initial' | 'prefetching' | 'prefetched' | 'loading' | 'loaded
 
 interface DocumentPage {
     id: string
-    label: string
+    label: LabelMap[]
     image: string
     thumbnail: string
 }
@@ -55,14 +59,14 @@ interface DocumentPage {
 interface DocumentAnnotation {
     id: string
     name: string
-    label: string
+    label: LabelMap[]
     content: string
     visible: boolean
 }
 
 interface DocumentAlternateFormat {
     contentType: string
-    label: string
+    label: LabelMap[]
     url: string
 }
 
@@ -103,9 +107,4 @@ interface DocumentOverlay {
     height: number,
     page?: number,
     text: string
-}
-
-interface LanguageMap {
-    locale: string
-    value: string
 }

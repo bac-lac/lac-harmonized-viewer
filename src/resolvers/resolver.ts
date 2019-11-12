@@ -3,17 +3,17 @@ import { DocumentPage, DocumentAnnotation, DocumentAlternateFormat, Document } f
 import { Md5 } from 'ts-md5/dist/md5'
 import { loadSettings } from '../settings'
 import { IIIFResolver } from './iiif-resolver/iiif-resolver'
+import { Label, LabelMap } from '../services/i18n/label'
+import { Locale } from '../services/i18n/locale'
 
 export abstract class Resolver {
-
-    locale: string = 'en'
 
     private _pages: DocumentPage[]
 
     async abstract init(url: string): Promise<this>
 
     title() { return this.getTitle() }
-    abstract getTitle(): string
+    abstract getTitle(): LabelMap[]
 
     document(): Document { return this.getDocument() }
     abstract getDocument(): Document
@@ -67,7 +67,19 @@ export abstract class Resolver {
         return await axios.get(url)
     }
 
-    static from(contentType: string): Resolver {
+    protected mapLabels(languageMap: Manifesto.LanguageMap): LabelMap[] {
+
+        if (!languageMap) {
+            return undefined
+        }
+
+        const labels: LabelMap[] = []
+        languageMap.forEach(i => labels.push({ locale: Locale.create(i.locale), value: i.value }))
+
+        return labels
+    }
+
+    static create(): Resolver {
         return new IIIFResolver()
     }
 }

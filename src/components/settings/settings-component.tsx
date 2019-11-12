@@ -1,7 +1,10 @@
-import { Component, h, Element, State, Listen, Host, Method } from '@stencil/core';
-import { I18nService, t, Locale } from '../../services/locale-service';
+import { Component, h, Element, State, Listen, Host, Method, Prop } from '@stencil/core';
 import i18next from 'i18next';
 import { MDCDialog } from '@material/dialog';
+import { Unsubscribe, Store } from '@stencil/redux';
+import { MyAppState } from '../../interfaces';
+import { setLocale, addLocale } from '../../store/actions/document';
+import { Locale } from '../../services/i18n/locale';
 
 @Component({
     tag: 'hv-settings',
@@ -11,23 +14,38 @@ export class SettingsComponent {
 
     @Element() el: HTMLElement
 
-    @State() language: string
+    @State() locale: MyAppState["document"]["locale"]
+    @State() supportedLocales: MyAppState["document"]["supportedLocales"]
 
-    dialog: MDCDialog
+    @Prop({ context: "store" }) store: Store
 
-    componentDidLoad() {
+    addLocale: typeof addLocale
+    setLocale: typeof setLocale
 
-        this.dialog = new MDCDialog(this.el)
+    storeUnsubscribe: Unsubscribe
 
-        const selectLanguage = this.el.querySelector('#settings-language') as HTMLSelectElement
-        selectLanguage.value = Locale.get()
-    }
+    private dialog: MDCDialog
 
     componentWillLoad() {
 
-        Locale.change(() => {
-            console.log('lc i18n')
+        this.store.mapDispatchToProps(this, { addLocale, setLocale })
+        this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
+            const {
+                document: { locale: locale, supportedLocales: supportedLocales }
+            } = state
+            return {
+                locale: locale,
+                supportedLocales: supportedLocales
+            }
         })
+    }
+
+    componentDidLoad() {
+        this.dialog = new MDCDialog(this.el)
+    }
+
+    componentDidUnload() {
+        this.storeUnsubscribe()
     }
 
     @Method()
@@ -35,26 +53,12 @@ export class SettingsComponent {
         this.dialog.open()
     }
 
-    apply() {
+    handleApplyClick() {
 
-        const selectLanguage = this.el.querySelector('#settings-language') as HTMLSelectElement
-        if (selectLanguage) {
-            this.language = selectLanguage.value
-            Locale.set(selectLanguage.value)
-        }
-    }
-
-    handleCloseClick() {
-
-        const modal = this.el.querySelector('.modal-settings')
-        if (modal) {
-            modal.classList.remove('is-active')
-        }
+        this.setLocale(Locale.create('en-CA'))
     }
 
     render() {
-
-        const selectedLanguage = Locale.get()
 
         return <Host
             class="mdc-dialog"
@@ -68,15 +72,15 @@ export class SettingsComponent {
                     <div class="mdc-dialog__content" id="my-dialog-content">
                         Dialog body text goes here.
                             <select class="select" id="settings-language">
-                            {Locale.all().map((locale) =>
-                                <option value={locale} selected={selectedLanguage === locale}>{t('name', locale)}</option>)}
+                            {this.supportedLocales.map((locale) =>
+                                <option value={locale.toString()} selected={this.locale === locale}>{locale.toString()}</option>)}
                         </select>
                     </div>
                     <footer class="mdc-dialog__actions">
                         <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="no">
                             <span class="mdc-button__label">No</span>
                         </button>
-                        <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="yes">
+                        <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="yes" onClick={this.handleApplyClick.bind(this)}>
                             <span class="mdc-button__label">Yes</span>
                         </button>
                     </footer>
