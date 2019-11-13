@@ -1,5 +1,4 @@
 import { Label, LabelMap } from "./services/i18n/label";
-import { Locale } from "./services/i18n/locale";
 
 export interface DocumentState {
     error: DocumentError

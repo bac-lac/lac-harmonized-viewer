@@ -3,8 +3,7 @@ import { DocumentPage, DocumentAnnotation, DocumentAlternateFormat, Document } f
 import { Md5 } from 'ts-md5/dist/md5'
 import { loadSettings } from '../settings'
 import { IIIFResolver } from './iiif-resolver/iiif-resolver'
-import { Label, LabelMap } from '../services/i18n/label'
-import { Locale } from '../services/i18n/locale'
+import { LabelMap } from '../services/i18n/label'
 
 export abstract class Resolver {
 
@@ -74,7 +73,7 @@ export abstract class Resolver {
         }
 
         const labels: LabelMap[] = []
-        languageMap.forEach(i => labels.push({ locale: Locale.create(i.locale), value: i.value }))
+        languageMap.forEach(i => labels.push({ locale: i.locale, value: i.value }))
 
         return labels
     }

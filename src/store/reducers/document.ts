@@ -1,7 +1,6 @@
 import { ActionTypes, TypeKeys } from "../actions/index";
 import { DocumentState } from "../../interfaces";
 import { id } from "../../utils/utils";
-import { Locale } from "../../services/i18n/locale";
 
 const getInitialState = (): DocumentState => {
 
@@ -53,7 +52,6 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
             return { ...state, status: { ...state.status, loading: action.loading } }
         }
         case TypeKeys.SET_STATUS: {
-
             return { ...state, status: { ...state.status, loading: (action.code == 'prefetching' || action.code == 'loading'), code: action.code } }
         }
         case TypeKeys.SET_LOCALE: {
@@ -93,6 +91,9 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
         }
         case TypeKeys.SET_ZOOM_REQUEST: {
             return { ...state, zoomRequest: action.zoom }
+        }
+        case TypeKeys.ADD_LOCALE: {
+            return { ...state, supportedLocales: [...state.supportedLocales, action.locale] }
         }
         case TypeKeys.ADD_OVERLAY: {
             return { ...state, overlays: [...state.overlays, { id: id(), x: action.x, y: action.y, width: action.width, height: action.height, text: action.text }] }

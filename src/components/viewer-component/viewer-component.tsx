@@ -3,9 +3,11 @@ import "@stencil/redux";
 import 'manifesto.js';
 import { Store, Unsubscribe } from "@stencil/redux";
 import { configureStore } from "../../store";
-import { setDocumentUrl, setDocumentContentType, setStatus, addOverlay, setOptions } from '../../store/actions/document';
+import { setDocumentUrl, setDocumentContentType, setStatus, addOverlay, setOptions, setLocale, addLocale } from '../../store/actions/document';
 import { MyAppState } from '../../interfaces';
-import { i18n } from '../../services/i18n/i18n-service';
+import i18next from 'i18next';
+import i18nextXHRBackend from 'i18next-xhr-backend';
+import i18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 
 @Component({
 	tag: 'harmonized-viewer',
@@ -33,9 +35,11 @@ export class ViewerComponent {
 
 	@Prop({ attribute: 'url' }) documentUrl: string
 
+	addLocale: typeof addLocale
 	addOverlayState: typeof addOverlay
 	setDocumentContentType: typeof setDocumentContentType
 	setDocumentUrl: typeof setDocumentUrl
+	setLocale: typeof setLocale
 	setStatus: typeof setStatus
 	setOptions: typeof setOptions
 
@@ -81,10 +85,10 @@ export class ViewerComponent {
 	componentWillLoad() {
 
 		this.store.setStore(configureStore({}))
-		this.store.mapDispatchToProps(this, { addOverlay, setDocumentContentType, setDocumentUrl, setOptions, setStatus })
+		this.store.mapDispatchToProps(this, { addLocale, addOverlay, setDocumentContentType, setDocumentUrl, setLocale, setOptions, setStatus })
 		this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
-				document: { locale: locale, status: status, page: page, url: url, viewport: viewport }
+				document: { locale: locale, page: page, url: url, status: status, viewport: viewport }
 			} = state
 			return {
 				locale: locale,
@@ -117,6 +121,7 @@ export class ViewerComponent {
 			}
 		})
 
+		this.initLocale()
 		this.setDocumentUrl(this.documentUrl)
 	}
 
@@ -128,32 +133,52 @@ export class ViewerComponent {
 		this.storeUnsubscribe()
 	}
 
+	initLocale() {
+
+		this.addLocale('en')
+		this.addLocale('fr')
+
+		i18next
+			.use(i18nextXHRBackend)
+			.use(i18nextBrowserLanguageDetector)
+			.init({
+				lng: 'en',
+				fallbackLng: 'en',
+				debug: true,
+				// ns: ['common'],
+				// defaultNS: 'common',
+				backend: {
+					loadPath: './locales/{{lng}}.json?ns={{ns}}'
+				}
+			}, (err, t) => {
+				i18next.on('languageChanged', (language: string) => this.setLocale(language))
+			})
+	}
+
 	render() {
 
-		return (
-			<div class="harmonized-viewer" style={{ backgroundColor: this.backgroundColor }}>
+		return <div class="harmonized-viewer" style={{ backgroundColor: this.backgroundColor }}>
 
-				<harmonized-topbar />
+			<harmonized-topbar />
 
-				{
-					this.status.error &&
-					<harmonized-message type="error">
-						<p>
-							<strong>{this.status.error.code}</strong>
-							<span>&nbsp;&ndash;&nbsp;</span>
-							<span>{this.status.error.message}</span>
-						</p>
-					</harmonized-message>
-				}
+			{
+				this.status.error &&
+				<harmonized-message type="error">
+					<p>
+						<strong>{this.status.error.code}</strong>
+						<span>&nbsp;&ndash;&nbsp;</span>
+						<span>{this.status.error.message}</span>
+					</p>
+				</harmonized-message>
+			}
 
-				<harmonized-viewport
-					navigation-enable={this.navigationEnable}
-					navigation-placement={this.viewport.navigationPlacement}
-					annotations-enable={this.annotationsEnable}
-				/>
+			<harmonized-viewport
+				navigation-enable={this.navigationEnable}
+				navigation-placement={this.viewport.navigationPlacement}
+				annotations-enable={this.annotationsEnable}
+			/>
 
-				<slot name="footer" />
-			</div>
-		)
+			<slot name="footer" />
+		</div>
 	}
 }

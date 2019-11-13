@@ -1,5 +1,9 @@
-@import "../../global/variables.scss";
-@import "@material/dialog/mdc-dialog";
+@import '../../global/variables.scss';
+@import '@material/dialog/mdc-dialog';
+@import '@material/list/mdc-list';
+@import '@material/menu-surface/mdc-menu-surface';
+@import '@material/menu/mdc-menu';
+@import '@material/select/mdc-select';
 
 hv-settings {
     display: inline-block;
