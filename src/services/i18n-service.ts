@@ -1,9 +1,8 @@
 import i18next from 'i18next';
 import i18nextXHRBackend from 'i18next-xhr-backend';
 import i18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
-import { EventEmitter } from '@stencil/core';
 
-export function label(items: DocumentLabel[]) {
+export function label(items: DocumentLabel[]): string {
 
     if (!items) {
         return undefined

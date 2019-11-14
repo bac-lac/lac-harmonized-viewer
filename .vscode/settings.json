@@ -3,5 +3,6 @@
     "http.proxySupport": "on",
     "scss.lint.emptyRules": "ignore",
     "scssFormatter.tabWidth": 4,
-    "appService.defaultWebAppToDeploy": "None"
+    "appService.defaultWebAppToDeploy": "None",
+    "appService.showBuildDuringDeployPrompt": false
 }

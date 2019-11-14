@@ -34,9 +34,9 @@ harmonized-image {
     }
 
     .mdc-image-list__image {
-        padding: 2px;
-        border: #6e6460 1px solid;
-        background: #111;
+        padding: 0;
+        border: #111 2px solid;
+        background-color: #111;
     }
 
     .mdc-image-list__supporting {
@@ -74,7 +74,9 @@ harmonized-image {
 
         &.is-active {
             .mdc-image-list__image-aspect-container {
-                outline: #e8d3a9 3px solid;
+                outline: #ccc 3px solid;
+                .mdc-image-list__image {
+                }
             }
             .mdc-image-list__supporting {
                 .mdc-image-list__label {
