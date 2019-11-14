@@ -205,16 +205,16 @@ export interface AddOverlay {
     y: number,
     width: number,
     height: number,
-    text: string
+    body: Element
 }
-export const addOverlay = (x: number, y: number, width: number, height: number, text: string) => (dispatch, _getState) => {
+export const addOverlay = (x: number, y: number, width: number, height: number, body: Element) => (dispatch, _getState) => {
     const action: AddOverlay = {
         type: TypeKeys.ADD_OVERLAY,
         x: x,
         y: y,
         width: width,
         height: height,
-        text: text
+        body: body
     }
     dispatch(action)
 }

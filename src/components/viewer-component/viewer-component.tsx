@@ -61,8 +61,8 @@ export class ViewerComponent {
 	}
 
 	@Method()
-	async addOverlay(x: number, y: number, width: number, height: number, text: string) {
-		this.addOverlayState(x, y, width, height, text)
+	async addOverlay(x: number, y: number, width: number, height: number, body: Element) {
+		this.addOverlayState(x, y, width, height, body)
 	}
 
 	@Watch('documentUrl')

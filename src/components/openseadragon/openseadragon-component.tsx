@@ -314,7 +314,7 @@ export class OpenSeadragonComponent {
                 const bounds = this.instance.viewport.imageToViewportRectangle(overlay.x, overlay.y, overlay.width, overlay.height)
                 this.instance.addOverlay(element, bounds, 'TOP_LEFT')
 
-                if (overlay.text) {
+                if (overlay.body) {
 
                     tippy(element, {
                         appendTo: 'parent',
@@ -324,7 +324,7 @@ export class OpenSeadragonComponent {
                         arrow: false,
                         sticky: true,
                         plugins: [sticky],
-                        content: overlay.text
+                        content: overlay.body
                     })
                 }
 
@@ -343,11 +343,7 @@ export class OpenSeadragonComponent {
             <div class="openseadragon"></div>
             <div class="overlays">
                 {
-                    this.overlays.map((overlay) =>
-                        <harmonized-overlay
-                            id={"overlay-" + overlay.id}
-                            class="overlay"
-                            tabindex="-1" />)
+                    this.overlays.map((overlay) => <harmonized-overlay id={"overlay-" + overlay.id} tabindex="-1"><slot /></harmonized-overlay>)
                 }
             </div>
         </Host>

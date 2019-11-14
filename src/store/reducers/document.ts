@@ -95,7 +95,7 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
             return { ...state, supportedLocales: [...state.supportedLocales, action.locale] }
         }
         case TypeKeys.ADD_OVERLAY: {
-            return { ...state, overlays: [...state.overlays, { id: id(), x: action.x, y: action.y, width: action.width, height: action.height, text: action.text }] }
+            return { ...state, overlays: [...state.overlays, { id: id(), x: action.x, y: action.y, width: action.width, height: action.height, body: action.body }] }
         }
         case TypeKeys.CLEAR_OVERLAYS: {
             return { ...state, overlays: [] }

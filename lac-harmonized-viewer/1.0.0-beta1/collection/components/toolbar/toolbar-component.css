@@ -1,0 +1,50 @@
+@keyframes spinAround {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+.hv-toolbar {
+  padding: 0;
+  border-bottom: #d3d3d3 1px solid;
+  background-color: #f5f5f5;
+}
+.hv-toolbar .navbar-center {
+  flex-grow: 1;
+  justify-content: center;
+}
+.hv-toolbar .navbar-item {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+.hv-toolbar .navbar-item.has-dropdown .navbar-link {
+  padding-right: 2rem;
+}
+.hv-toolbar .navbar-item.has-dropdown .navbar-link .icon ~ .text {
+  margin-left: 4px;
+}
+.hv-toolbar .navbar-item.has-dropdown .navbar-link:after {
+  font-size: 10px;
+}
+.hv-toolbar .navbar-item .tag {
+  font-size: 1rem;
+  padding: 0 0.5rem;
+}
+.hv-toolbar .navbar-item .tag:hover {
+  text-decoration: none;
+  background-color: #e8e8e8;
+}
+.hv-toolbar .navbar-item svg {
+  height: 16px;
+}
+.hv-toolbar .toolbar-page {
+  padding: 0 0.75rem;
+}
+
+@media screen and (min-width: 1024px) {
+  .hv-toolbar .navbar {
+    min-height: 3rem;
+  }
+}

@@ -10,6 +10,9 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
   MessageType,
 } from './components/message-component/message-options';
+import {
+  Element,
+} from '@stencil/core';
 
 export namespace Components {
   interface HarmonizedDrawer {
@@ -55,7 +58,7 @@ export namespace Components {
     'backgroundColor': string;
   }
   interface HarmonizedViewer {
-    'addOverlay': (x: number, y: number, width: number, height: number, text: string) => Promise<void>;
+    'addOverlay': (x: number, y: number, width: number, height: number, body: Element) => Promise<void>;
     'annotationsEnable': boolean;
     'backgroundColor': string;
     'documentUrl': string;

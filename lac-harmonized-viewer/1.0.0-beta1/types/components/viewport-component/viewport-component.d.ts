@@ -1,0 +1,37 @@
+import '../../utils/manifest';
+import { Unsubscribe, Store } from '@stencil/redux';
+import { setDocumentContentType, setStatus, setPage, setLoading, setError } from '../../store/actions/document';
+export declare class ViewportComponent {
+    el: HTMLElement;
+    navigationEnable: boolean;
+    navigationPlacement: PlacementType;
+    annotationsEnable: boolean;
+    setLoading: typeof setLoading;
+    setError: typeof setError;
+    setPage: typeof setPage;
+    setStatus: typeof setStatus;
+    setDocumentContentType: typeof setDocumentContentType;
+    storeUnsubscribe: Unsubscribe;
+    contentType: MyAppState["document"]["contentType"];
+    status: MyAppState["document"]["status"];
+    page: MyAppState["document"]["page"];
+    pageCount: MyAppState["document"]["pageCount"];
+    url: MyAppState["document"]["url"];
+    store: Store;
+    componentWillLoad(): void;
+    componentDidLoad(): Promise<void>;
+    componentDidUnload(): void;
+    componentDidRender(): void;
+    isFirst(): boolean;
+    isLast(): boolean;
+    handlePreviousClick(): void;
+    handleNextClick(): void;
+    render(): any;
+    setContentMargins(): void;
+    findPreviousSibling(element: Element, selector: string): any;
+    findNextSibling(element: Element, selector: string): any;
+    renderNavigation(placement: PlacementType): any;
+    renderViewport(): any;
+    renderOpenSeadragon(): any[];
+    renderPDF(): any;
+}

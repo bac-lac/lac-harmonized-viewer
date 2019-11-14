@@ -11,6 +11,10 @@
     <script nomodule src="/build/lac-harmonized-viewer.js"></script>
 
     <style type="text/css">
+        html {
+            font-size: 16px;
+        }
+
         html,
         body {
             height: 100%;
@@ -55,7 +59,7 @@
         viewer.addEventListener('pageLoad', (event) => {
 
             if (event.detail === 0) {
-                viewer.addOverlay(50, 80, 500, 500, 'hello world');
+                //viewer.addOverlay(50, 80, 500, 500, 'hello world');
             }
         });
 

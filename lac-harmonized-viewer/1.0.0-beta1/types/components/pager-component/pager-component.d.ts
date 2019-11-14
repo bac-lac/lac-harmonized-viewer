@@ -1,0 +1,30 @@
+import { Unsubscribe, Store } from '@stencil/redux';
+import { setPage } from '../../store/actions/document';
+import { MDCSlider } from '@material/slider';
+export declare class PagerComponent {
+    el: HTMLElement;
+    setPage: typeof setPage;
+    storeUnsubscribe: Unsubscribe;
+    loading: MyAppState["document"]["loading"];
+    page: MyAppState["document"]["page"];
+    pageCount: MyAppState["document"]["pageCount"];
+    status: MyAppState["document"]["status"];
+    marker: number;
+    store: Store;
+    private slider;
+    componentWillLoad(): void;
+    componentDidLoad(): void;
+    componentDidUnload(): void;
+    componentDidRender(): void;
+    handleSliderInput(): void;
+    handleSliderChange(): void;
+    isFirst(): boolean;
+    isLast(): boolean;
+    handleFirstClick(): void;
+    handlePreviousClick(): void;
+    handleNextClick(): void;
+    handleLastClick(): void;
+    createSlider(): MDCSlider;
+    updateSlider(): any;
+    render(): any;
+}

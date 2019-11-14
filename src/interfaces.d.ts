@@ -103,7 +103,7 @@ interface DocumentOverlay {
     width: number,
     height: number,
     page?: number,
-    text: string
+    body: Element
 }
 
 interface DocumentLabel {

@@ -1,0 +1,31 @@
+import { Unsubscribe, Store } from '@stencil/redux';
+import { setPage } from '../../store/actions/document';
+import { Props, Instance } from 'tippy.js';
+export declare class ImageComponent {
+    el: HTMLElement;
+    src: string;
+    srcset: string;
+    preload: boolean;
+    page: number;
+    caption: string;
+    showCaption: boolean;
+    showTooltip: boolean;
+    loading: boolean;
+    loaded: boolean;
+    failed: boolean;
+    setPage: typeof setPage;
+    storeUnsubscribe: Unsubscribe;
+    currentPage: MyAppState["document"]["page"];
+    store: Store;
+    imageAdded: any;
+    imageLoad: any;
+    private tooltip;
+    componentWillLoad(): void;
+    componentDidUnload(): void;
+    handleLoad(ev: Event): void;
+    handleError(): void;
+    handleClick(): void;
+    componentDidRender(): void;
+    createTooltip(): Instance<Props>;
+    render(): any;
+}
