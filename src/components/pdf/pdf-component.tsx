@@ -1,7 +1,6 @@
 import { Component, h, Element, Prop, State } from '@stencil/core';
 import "../../utils/icon-library";
 import { Unsubscribe, Store } from '@stencil/redux';
-import { MyAppState } from '../../interfaces';
 
 @Component({
     tag: 'harmonized-pdf',

@@ -1,6 +1,5 @@
 import { Component, h, Element, Prop, State } from '@stencil/core';
 import { Unsubscribe, Store } from '@stencil/redux';
-import { MyAppState } from '../../interfaces';
 import { setPage } from '../../store/actions/document';
 
 @Component({

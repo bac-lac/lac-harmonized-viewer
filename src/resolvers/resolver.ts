@@ -1,9 +1,7 @@
 import axios from 'axios'
-import { DocumentPage, DocumentAnnotation, DocumentAlternateFormat, Document } from '../interfaces'
 import { Md5 } from 'ts-md5/dist/md5'
 import { loadSettings } from '../settings'
 import { IIIFResolver } from './iiif-resolver/iiif-resolver'
-import { LabelMap } from '../services/i18n/label'
 
 export abstract class Resolver {
 
@@ -12,10 +10,10 @@ export abstract class Resolver {
     async abstract init(url: string): Promise<this>
 
     title() { return this.getTitle() }
-    abstract getTitle(): LabelMap[]
+    abstract getTitle(): DocumentLabel[]
 
-    document(): Document { return this.getDocument() }
-    abstract getDocument(): Document
+    document(): DocumentBase { return this.getDocument() }
+    abstract getDocument(): DocumentBase
 
     pages(): DocumentPage[] {
         if (!this._pages) {
@@ -66,13 +64,13 @@ export abstract class Resolver {
         return await axios.get(url)
     }
 
-    protected mapLabels(languageMap: Manifesto.LanguageMap): LabelMap[] {
+    protected mapLabels(languageMap: Manifesto.LanguageMap): DocumentLabel[] {
 
         if (!languageMap) {
             return undefined
         }
 
-        const labels: LabelMap[] = []
+        const labels: DocumentLabel[] = []
         languageMap.forEach(i => labels.push({ locale: i.locale, value: i.value }))
 
         return labels

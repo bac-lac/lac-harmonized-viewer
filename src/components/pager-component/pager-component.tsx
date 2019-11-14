@@ -1,6 +1,5 @@
 import { Component, h, Element, Prop, State, Host, Watch } from '@stencil/core';
 import { Unsubscribe, Store } from '@stencil/redux';
-import { MyAppState } from '../../interfaces';
 import { setPage } from '../../store/actions/document';
 import { MDCRipple } from '@material/ripple';
 import { MDCSlider } from '@material/slider';

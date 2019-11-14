@@ -1,7 +1,6 @@
 import { Component, h, Element, Event, EventEmitter, Method, Listen, State, Prop, Watch, Host } from '@stencil/core';
 import { Store, Unsubscribe } from "@stencil/redux";
-import { setDocumentUrl, setDocumentPages, setDocumentTitle, setLoading, setAnnotations, setZoom, setPage, setDocumentAlternateFormats, setError, setStatus, clearOverlays } from "../../store/actions/document";
-import { MyAppState, DocumentZoom } from '../../interfaces';
+import { setDocumentUrl, setDocumentPages, setDocumentTitle, setAnnotations, setZoom, setPage, setDocumentAlternateFormats, setError, setStatus, clearOverlays } from "../../store/actions/document";
 import openseadragon from 'openseadragon';
 import { Resolver } from '../../resolvers/resolver';
 import { IIIFResolver } from '../../resolvers/iiif-resolver/iiif-resolver';

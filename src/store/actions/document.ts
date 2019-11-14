@@ -1,6 +1,4 @@
 import { TypeKeys } from "./index"
-import { DocumentPage, DocumentAnnotation, DocumentAlternateFormat, DocumentZoom, StatusCode, Viewport } from "../../interfaces"
-import { LabelMap } from "../../services/i18n/label"
 
 export interface SetError {
     type: TypeKeys.SET_ERROR
@@ -103,12 +101,12 @@ export const setDocumentPages = (pages: DocumentPage[]) => (dispatch, _getState)
 
 export interface SetDocumentTitle {
     type: TypeKeys.SET_DOCUMENT_TITLE
-    title: LabelMap[]
+    label: DocumentLabel[]
 }
-export const setDocumentTitle = (title: LabelMap[]) => (dispatch, _getState) => {
+export const setDocumentTitle = (label: DocumentLabel[]) => (dispatch, _getState) => {
     const action: SetDocumentTitle = {
         type: TypeKeys.SET_DOCUMENT_TITLE,
-        title: title
+        label: label
     }
     dispatch(action)
 }

@@ -38,7 +38,7 @@ export namespace Components {
     'rows': number;
   }
   interface HarmonizedOpenseadragon {
-    'getOverlays': () => Promise<import("C:/Users/Administrator/Source/Workspaces/lac-harmonized-viewer/src/interfaces").DocumentOverlay[]>;
+    'getOverlays': () => Promise<DocumentOverlay[]>;
     'openseadragon': () => Promise<any>;
   }
   interface HarmonizedOverlay {

@@ -1,5 +1,4 @@
-import { Component, h, Element, Prop, Host, State, Event, EventEmitter } from '@stencil/core';
-import { MyAppState } from '../../interfaces';
+import { Component, h, Element, Prop, Host, State } from '@stencil/core';
 import { Store, Unsubscribe } from '@stencil/redux';
 import { MDCTopAppBar } from '@material/top-app-bar';
 import { MDCMenu, Corner } from '@material/menu';
@@ -9,6 +8,8 @@ import iconDisplay from '../../assets/material-icons/ic_display_24px.svg';
 import iconDockLeft from '../../assets/material-icons/ic_dock_left_24px.svg';
 import iconDockBottom from '../../assets/material-icons/ic_dock_bottom_24px.svg';
 import { setViewport } from '../../store/actions/document';
+import { t } from 'i18next';
+import { label } from '../../services/i18n-service';
 
 @Component({
     tag: 'harmonized-topbar',
@@ -23,7 +24,7 @@ export class TopbarComponent {
     @Prop({ context: "store" }) store: Store
 
     @State() locale: MyAppState["document"]["locale"]
-    @State() title: MyAppState["document"]["document"]["title"]
+    @State() title: MyAppState["document"]["document"]["label"]
     @State() viewport: MyAppState["document"]["viewport"]
 
     setViewport: typeof setViewport
@@ -43,7 +44,7 @@ export class TopbarComponent {
             } = state
             return {
                 locale: locale,
-                title: (document ? document.title : null),
+                title: (document ? document.label : null),
                 viewport: viewport
             }
         })
@@ -76,66 +77,64 @@ export class TopbarComponent {
     }
 
     render() {
-        return (
-            <Host>
-                <header class="topbar" style={{ backgroundColor: this.backgroundColor }}>
-                    <div class="topbar-row">
-                        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-                            <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">
-                                <i class="mdc-icon-button__icon" innerHTML={iconMenu}></i>
-                            </button>
-                            <span class="mdc-top-app-bar__title">
 
-                            </span>
-                        </section>
-                        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
-                            {/* <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Download">file_download</button>
+        return <Host>
+            <header class="topbar" style={{ backgroundColor: this.backgroundColor }}>
+                <div class="topbar-row">
+                    <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+                        <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">
+                            <i class="mdc-icon-button__icon" innerHTML={iconMenu}></i>
+                        </button>
+                        <span class="mdc-top-app-bar__title">{label(this.title)}</span>
+                    </section>
+                    <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
+                        {/* <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Download">file_download</button>
                             <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Print this page">print</button> */}
 
-                            <div class="mdc-menu-surface--anchor">
-                                <button
-                                    type="button"
-                                    class="material-icons mdc-top-app-bar__action-item mdc-icon-button"
-                                    onClick={this.handleDisplayClick.bind(this)}>
-                                    <i class="mdc-icon-button__icon" innerHTML={iconDisplay}></i>
-                                </button>
-                                <div class="mdc-menu mdc-menu-surface" id="demo-menu">
-                                    <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
-                                        <li>
-                                            <ul class="mdc-menu__selection-group">
-                                                <li
-                                                    role="menuitem"
-                                                    class="mdc-list-item mdc-list-item--selected"
-                                                    onClick={this.handleDisplaySelectionChange.bind(this, 'left')}>
-                                                    <span
-                                                        class="mdc-list-item__graphic mdc-menu__selection-group-icon"
-                                                        innerHTML={iconDockLeft}>
-                                                    </span>
-                                                    <span class="mdc-list-item__text">Left</span>
-                                                </li>
-                                                <li
-                                                    role="menuitem"
-                                                    class="mdc-list-item"
-                                                    onClick={this.handleDisplaySelectionChange.bind(this, 'bottom')}>
-                                                    <span class="mdc-list-item__graphic mdc-menu__selection-group-icon"
-                                                        innerHTML={iconDockBottom}>
-                                                    </span>
-                                                    <span class="mdc-list-item__text">Bottom</span>
-                                                </li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <button type="button" class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Bookmark this page" onClick={this.openSettings.bind(this)}>
-                                <i class="mdc-icon-button__icon" innerHTML={iconMore}></i>
+                        <div class="mdc-menu-surface--anchor">
+                            <button
+                                type="button"
+                                class="material-icons mdc-top-app-bar__action-item mdc-icon-button"
+                                onClick={this.handleDisplayClick.bind(this)}>
+                                <i class="mdc-icon-button__icon" innerHTML={iconDisplay}></i>
                             </button>
-                        </section>
-                    </div>
-                </header>
+                            <div class="mdc-menu mdc-menu-surface" id="demo-menu">
+                                <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
+                                    <li>
+                                        <ul class="mdc-menu__selection-group">
+                                            <li
+                                                role="menuitem"
+                                                class="mdc-list-item mdc-list-item--selected"
+                                                onClick={this.handleDisplaySelectionChange.bind(this, 'left')}>
+                                                <span
+                                                    class="mdc-list-item__graphic mdc-menu__selection-group-icon"
+                                                    innerHTML={iconDockLeft}>
+                                                </span>
+                                                <span class="mdc-list-item__text">Left</span>
+                                            </li>
+                                            <li
+                                                role="menuitem"
+                                                class="mdc-list-item"
+                                                onClick={this.handleDisplaySelectionChange.bind(this, 'bottom')}>
+                                                <span class="mdc-list-item__graphic mdc-menu__selection-group-icon"
+                                                    innerHTML={iconDockBottom}>
+                                                </span>
+                                                <span class="mdc-list-item__text">Bottom</span>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
 
-                {/* <nav class="navbar is-primary" role="navigation" aria-label="Dropdown navigation">
+                        <button type="button" class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Bookmark this page" onClick={this.openSettings.bind(this)}>
+                            <i class="mdc-icon-button__icon" innerHTML={iconMore}></i>
+                        </button>
+                    </section>
+                </div>
+            </header>
+
+            {/* <nav class="navbar is-primary" role="navigation" aria-label="Dropdown navigation">
                     <div class="navbar-brand">
 
                         <a class="navbar-item">
@@ -183,9 +182,8 @@ export class TopbarComponent {
                     </div>
                 </nav> */}
 
-                <hv-settings
-                    ref={el => this.elemSettings = el as HTMLHvSettingsElement}></hv-settings>
-            </Host>
-        )
+            <hv-settings
+                ref={el => this.elemSettings = el as HTMLHvSettingsElement}></hv-settings>
+        </Host>
     }
 }

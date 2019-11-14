@@ -1,5 +1,3 @@
-import { ViewerSettings } from "./interfaces";
-
 const settingsStorageKey = 'harmonized-viewer'
 
 const defaultSettings: ViewerSettings = {

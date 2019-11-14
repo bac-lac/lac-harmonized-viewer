@@ -1,5 +1,4 @@
 import { Component, Prop, h, Element, Event, EventEmitter, Host, State, Listen } from '@stencil/core';
-import { MyAppState } from '../../interfaces';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { setPage } from '../../store/actions/document';
 import { isNumber } from 'util';

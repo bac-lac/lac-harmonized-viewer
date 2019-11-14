@@ -1,10 +1,10 @@
 import { Component, h, Element, State, Prop } from '@stencil/core';
 import { Unsubscribe, Store } from '@stencil/redux';
-import { MyAppState, DocumentAnnotation } from '../../interfaces';
 import { saveAnnotationVisibility } from '../../settings';
 import iconExpand from '../../assets/material-design-icons/ic_add_24px.svg'
 import iconCollapse from '../../assets/material-design-icons/ic_remove_24px.svg'
 import { animate } from '../../utils/utils';
+import { label } from '../../services/i18n-service';
 
 @Component({
     tag: 'hv-annotations',
@@ -72,7 +72,7 @@ export class AnnotationsComponent {
                         <span class="mdc-list-item__text">
                             {
                                 annotation.label && <span class="mdc-list-item__primary-text">
-                                    <span>{annotation.label}</span>
+                                    <span>{label(annotation.label)}</span>
                                     <span
                                         class="annotation-icon annotation-icon--expand"
                                         aria-hidden={true}

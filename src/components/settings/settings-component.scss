@@ -1,10 +1,19 @@
-@import '../../global/variables.scss';
-@import '@material/dialog/mdc-dialog';
-@import '@material/list/mdc-list';
-@import '@material/menu-surface/mdc-menu-surface';
-@import '@material/menu/mdc-menu';
-@import '@material/select/mdc-select';
+@import "../../global/variables.scss";
+@import "@material/dialog/mdc-dialog";
+@import "@material/list/mdc-list";
+@import "@material/menu-surface/mdc-menu-surface";
+@import "@material/menu/mdc-menu";
 
 hv-settings {
     display: inline-block;
+
+    &.mdc-dialog {
+        border-radius: 2px;
+
+        .mdc-dialog__container {
+            .mdc-dialog__surface {
+                width: 650px;
+            }
+        }
+    }
 }

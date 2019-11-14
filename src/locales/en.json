@@ -1,6 +1,4 @@
 {
     "name": "English",
-    "labels": {
-        "test1": "test eng"
-    }
+    "test1": "test eng"
 }

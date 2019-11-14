@@ -1,5 +1,3 @@
-import { Document } from "../../interfaces";
-
-export interface IIIFDocument extends Document {
+export interface IIIFDocument extends DocumentBase {
     tileSources: string[]
 }

@@ -1,7 +1,6 @@
 import { Component, Prop, h, Element, Listen, State, Watch } from '@stencil/core';
 import 'manifesto.js';
 import { Unsubscribe, Store } from '@stencil/redux';
-import { MyAppState } from '../../interfaces';
 import { setPage } from '../../store/actions/document';
 import { MDCRipple } from '@material/ripple';
 import { MDCTabBar } from '@material/tab-bar';
@@ -40,7 +39,7 @@ export class NavigationComponent {
 
     @State() loadedImageCount: number = 0
 
-    private tabs: MDCTabBar
+    //private tabs: MDCTabBar
 
     componentWillLoad() {
 
@@ -64,7 +63,7 @@ export class NavigationComponent {
 
     componentDidLoad() {
 
-        this.tabs = MDCTabBar.attachTo(this.el.querySelector('.mdc-tab-bar'))
+        //this.tabs = new MDCTabBar(this.el.querySelector('.mdc-tab-bar'))
         this.resize()
     }
 
@@ -163,44 +162,6 @@ export class NavigationComponent {
         }
 
         return <div class="navigation-content">
-
-            <div class="mdc-tab-bar" role="tablist">
-                <div class="mdc-tab-scroller">
-                    <div class="mdc-tab-scroller__scroll-area">
-                        <div class="mdc-tab-scroller__scroll-content">
-
-                            <button class="mdc-tab mdc-tab--active" role="tab" aria-selected="true" tabindex="0">
-                                <span class="mdc-tab__content">
-                                    <span
-                                        class="mdc-tab__icon"
-                                        aria-hidden="true"
-                                        innerHTML={iconList} />
-                                    {/* <span class="mdc-tab__text-label">Favorites</span> */}
-                                </span>
-                                <span class="mdc-tab-indicator mdc-tab-indicator--active">
-                                    <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
-                                </span>
-                                <span class="mdc-tab__ripple"></span>
-                            </button>
-
-                            <button class="mdc-tab" role="tab" tabindex="0">
-                                <span class="mdc-tab__content">
-                                    <span
-                                        class="mdc-tab__icon"
-                                        aria-hidden="true"
-                                        innerHTML={iconGrid} />
-                                    {/* <span class="mdc-tab__text-label">Images</span> */}
-                                </span>
-                                <span class="mdc-tab-indicator">
-                                    <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
-                                </span>
-                                <span class="mdc-tab__ripple"></span>
-                            </button>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <harmonized-image-list class={className}>
                 {

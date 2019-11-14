@@ -1,6 +1,31 @@
 import i18next from 'i18next';
 import i18nextXHRBackend from 'i18next-xhr-backend';
 import i18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
+import { EventEmitter } from '@stencil/core';
+
+export function label(items: DocumentLabel[]) {
+
+    if (!items) {
+        return undefined
+    }
+
+    const item = items.find(i => i.locale && parseLanguage(i.locale) === i18next.language)
+    if (item) {
+        return item.value
+    }
+}
+
+function parseLanguage(locale: string) {
+
+    if (!locale) {
+        return undefined
+    }
+
+    if (locale.indexOf('-') === -1)
+        return locale
+    else
+        return locale.substr(0, locale.indexOf('-')).toLowerCase()
+}
 
 //export const languages: string[] = ['en', 'fr']
 

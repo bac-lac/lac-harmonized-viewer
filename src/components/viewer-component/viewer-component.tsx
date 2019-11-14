@@ -4,10 +4,10 @@ import 'manifesto.js';
 import { Store, Unsubscribe } from "@stencil/redux";
 import { configureStore } from "../../store";
 import { setDocumentUrl, setDocumentContentType, setStatus, addOverlay, setOptions, setLocale, addLocale } from '../../store/actions/document';
-import { MyAppState } from '../../interfaces';
 import i18next from 'i18next';
 import i18nextXHRBackend from 'i18next-xhr-backend';
 import i18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
+import { EventEmitter } from 'events';
 
 @Component({
 	tag: 'harmonized-viewer',
@@ -53,6 +53,8 @@ export class ViewerComponent {
 
 	@Prop({ context: "store" }) store: Store
 
+	private i18n: EventEmitter
+
 	@Method()
 	async getPage() {
 		return this.page
@@ -80,6 +82,12 @@ export class ViewerComponent {
 		if (dropdowns) {
 			dropdowns.forEach((dropdown) => dropdown.classList.remove('is-active'))
 		}
+	}
+
+	@Listen('languageChanged')
+	handleLanguageChange() {
+		console.log('lang chan')
+		this.setLocale(this.language)
 	}
 
 	componentWillLoad() {
@@ -121,7 +129,8 @@ export class ViewerComponent {
 			}
 		})
 
-		this.initLocale()
+		this.configure()
+
 		this.setDocumentUrl(this.documentUrl)
 	}
 
@@ -133,7 +142,7 @@ export class ViewerComponent {
 		this.storeUnsubscribe()
 	}
 
-	initLocale() {
+	configure() {
 
 		this.addLocale('en')
 		this.addLocale('fr')
@@ -151,7 +160,11 @@ export class ViewerComponent {
 					loadPath: './locales/{{lng}}.json?ns={{ns}}'
 				}
 			}, (err, t) => {
-				i18next.on('languageChanged', (language: string) => this.setLocale(language))
+
+				i18next.on('languageChanged', (language: string) => {
+					console.log(language)
+					this.setLocale(language)
+				})
 			})
 	}
 

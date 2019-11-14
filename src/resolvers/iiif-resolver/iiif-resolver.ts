@@ -1,7 +1,5 @@
-import { DocumentPage, DocumentAnnotation, DocumentAlternateFormat } from "../../interfaces"
 import { Resolver } from "../resolver"
 import { IIIFDocument } from "./iiif-document"
-import { LabelMap } from "../../services/i18n/label"
 
 export class IIIFResolver extends Resolver {
 
@@ -37,7 +35,7 @@ export class IIIFResolver extends Resolver {
         ]
     }
 
-    getTitle(): LabelMap[] {
+    getTitle(): DocumentLabel[] {
 
         if (!this.manifest) {
             return undefined
@@ -47,7 +45,7 @@ export class IIIFResolver extends Resolver {
 
     getDocument(): IIIFDocument {
         return {
-            title: this.getTitle(),
+            label: this.getTitle(),
             tileSources: this.tileSources()
         }
     }

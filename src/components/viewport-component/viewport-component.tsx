@@ -1,12 +1,11 @@
 import { Component, Element, h, Prop, State, Host } from '@stencil/core';
 import '../../utils/manifest';
-import { setPage, setStatus, setDocumentContentType, setLoading, setError } from '../../store/actions/document';
 import { Unsubscribe, Store } from '@stencil/redux';
-import { MyAppState } from '../../interfaces';
 import { parseContentType } from '../../utils/utils';
 import axios from 'axios';
 import iconChevronLeft from '../../assets/material-design-icons/ic_chevron_left_48px.svg'
 import iconChevronRight from '../../assets/material-design-icons/ic_chevron_right_48px.svg'
+import { setDocumentContentType, setStatus, setPage, setLoading, setError } from '../../store/actions/document';
 
 @Component({
     tag: 'harmonized-viewport',

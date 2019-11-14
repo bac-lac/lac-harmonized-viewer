@@ -1,5 +1,4 @@
 import { ActionTypes, TypeKeys } from "../actions/index";
-import { DocumentState } from "../../interfaces";
 import { id } from "../../utils/utils";
 
 const getInitialState = (): DocumentState => {
@@ -67,7 +66,7 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
             return { ...state, pages: action.pages, page: 0, pageCount: action.pages.length }
         }
         case TypeKeys.SET_DOCUMENT_TITLE: {
-            return { ...state, document: { ...state.document, title: action.title } }
+            return { ...state, document: { ...state.document, label: action.label } }
         }
         case TypeKeys.SET_DOCUMENT_ALTERNATE_FORMATS: {
             return { ...state, alternateFormats: action.alternateFormats }

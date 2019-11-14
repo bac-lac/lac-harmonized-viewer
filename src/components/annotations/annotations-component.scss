@@ -48,7 +48,7 @@ hv-annotations {
             }
 
             &__primary-text {
-                color: darken(desaturate($link, 60), 5);
+                color: #e39b7d;
                 width: 100%;
                 display: flex;
                 margin-bottom: 3px;
@@ -70,10 +70,10 @@ hv-annotations {
 
                 a {
                     &:link {
-                        color: $link;
+                        color: #e8d3a9;
                     }
                     &:visited {
-                        color: $link-visited;
+                        color: #e8d3a9;
                     }
                 }
             }

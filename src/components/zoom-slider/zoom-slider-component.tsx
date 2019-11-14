@@ -1,7 +1,6 @@
 import { Component, h, Element, Prop, State } from '@stencil/core';
 import "../../utils/icon-library";
 import { Unsubscribe, Store } from '@stencil/redux';
-import { MyAppState } from '../../interfaces';
 import { setZoomRequest } from '../../store/actions/document';
 import noUiSlider from 'nouislider';
 

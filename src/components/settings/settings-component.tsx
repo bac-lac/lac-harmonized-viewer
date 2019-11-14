@@ -1,8 +1,7 @@
 import { Component, h, Element, State, Host, Method, Prop } from '@stencil/core';
 import { MDCDialog } from '@material/dialog';
-import { MDCSelect } from '@material/select';
+import { MDCMenu } from '@material/menu';
 import { Unsubscribe, Store } from '@stencil/redux';
-import { MyAppState } from '../../interfaces';
 import { setLocale, addLocale } from '../../store/actions/document';
 import i18next from 'i18next';
 import '../../services/i18n-service';
@@ -18,6 +17,8 @@ export class SettingsComponent {
     @State() locale: MyAppState["document"]["locale"]
     @State() supportedLocales: MyAppState["document"]["supportedLocales"]
 
+    @State() language: string
+
     @Prop({ context: "store" }) store: Store
 
     addLocale: typeof addLocale
@@ -26,7 +27,6 @@ export class SettingsComponent {
     storeUnsubscribe: Unsubscribe
 
     private dialog: MDCDialog
-    private language: MDCSelect
 
     componentWillLoad() {
 
@@ -43,8 +43,8 @@ export class SettingsComponent {
     }
 
     componentDidLoad() {
+
         this.dialog = new MDCDialog(this.el)
-        this.language = new MDCSelect(this.el.querySelector('.mdc-select'))
     }
 
     componentDidUnload() {
@@ -66,7 +66,7 @@ export class SettingsComponent {
     // }
 
     handleApplyClick() {
-        i18next.changeLanguage('fr')
+        i18next.changeLanguage(this.language)
     }
 
     render() {
@@ -80,29 +80,17 @@ export class SettingsComponent {
             <div class="mdc-dialog__container">
                 <div class="mdc-dialog__surface">
                     <h2 class="mdc-dialog__title" id="my-dialog-title">
-                        {i18next.t('labels.test1')}
+                        {i18next.t('test1')}
                     </h2>
                     <div class="mdc-dialog__content" id="my-dialog-content">
+
                         Dialog body text goes here.
 
-                        <div class="mdc-select">
-
-                            <div class="mdc-select__anchor">
-                                <i class="mdc-select__dropdown-icon"></i>
-                                <div class="mdc-select__selected-text"></div>
-                                <span class="mdc-floating-label">Language</span>
-                                <div class="mdc-line-ripple"></div>
-                            </div>
-
-                            <div class="mdc-select__menu mdc-menu mdc-menu-surface">
-                                <ul class="mdc-list">
-                                    <li class="mdc-list-item mdc-list-item--selected" data-value="" aria-selected="true"></li>
-                                    {this.supportedLocales.map((locale) =>
-                                        <li class="mdc-list-item" data-value={locale.toString()}>{locale.toString()}</li>)}
-                                </ul>
-                            </div>
-
-                        </div>
+                        <select class="form-control" name="language" onInput={(ev) => { this.language = (ev.target as any).value }}>
+                            {
+                                this.supportedLocales.map(i => <option value={i}>{i}</option>)
+                            }
+                        </select>
 
                     </div>
                     <footer class="mdc-dialog__actions">
