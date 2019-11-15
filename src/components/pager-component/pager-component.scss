@@ -1,4 +1,5 @@
 @import "../../global/variables";
+
 @import "@material/button/mdc-button";
 @import "@material/icon-button/mdc-icon-button";
 @import "@material/slider/mdc-slider";
@@ -16,7 +17,7 @@ harmonized-pager {
         margin: 0 15px;
 
         .mdc-slider {
-            @include mdc-slider-color-accessible($primary);
+            @include mdc-slider-color-accessible(#f6e0b5);
             @include mdc-slider-rail-color(#323232, 1);
         }
 
@@ -45,20 +46,5 @@ harmonized-pager {
         display: flex;
         align-items: center;
         flex-direction: row;
-    }
-
-    .button-pager {
-        @extend .mdc-touch-target-wrapper;
-
-        button {
-            @extend .mdc-icon-button;
-            @extend .mdc-button--touch;
-
-            @include mdc-button-shape-radius(2px);
-            @include mdc-icon-button-icon-size(30px, 30px);
-            @include mdc-icon-button-ink-color(#fff);
-
-            //@include mdc-shape-radius(mdc-shape-resolve-percentage-radius(16px, 2px));
-        }
     }
 }

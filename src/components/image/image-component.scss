@@ -1,6 +1,6 @@
-@import '../../global/variables';
-@import '../../global/mixins';
-@import 'bulma/sass/utilities/_all.sass';
+@import "../../global/variables";
+@import "../../global/mixins";
+@import "bulma/sass/utilities/_all.sass";
 
 harmonized-image {
     display: inline-block;
@@ -35,15 +35,14 @@ harmonized-image {
 
     .mdc-image-list__image {
         padding: 0;
-        border: #111 2px solid;
-        background-color: #111;
+        border: #111 3px solid;
     }
 
     .mdc-image-list__supporting {
         margin-top: 5px;
         padding: 1px 10px;
         justify-content: center;
-        background-color: #222;
+        background-color: #111;
 
         .mdc-image-list__label {
             color: #929292;
@@ -75,7 +74,7 @@ harmonized-image {
 
         &.is-active {
             .mdc-image-list__image-aspect-container {
-                outline: #ccc 3px solid;
+                outline: #e4e0ea 3px solid;
                 .mdc-image-list__image {
                 }
             }

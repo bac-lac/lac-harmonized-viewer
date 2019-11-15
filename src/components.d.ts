@@ -10,11 +10,17 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
   MessageType,
 } from './components/message-component/message-options';
-import {
-  Element,
-} from '@stencil/core';
 
 export namespace Components {
+  interface HarmonizedButton {
+    'disabled': boolean;
+    'fontSize': number;
+    'fullWidth': boolean;
+    'icon': string;
+    'iconSize': string;
+    'label': string;
+    'tooltip': string;
+  }
   interface HarmonizedDrawer {
     'open': () => Promise<void>;
     'placement': string;
@@ -58,7 +64,7 @@ export namespace Components {
     'backgroundColor': string;
   }
   interface HarmonizedViewer {
-    'addOverlay': (x: number, y: number, width: number, height: number, body: Element) => Promise<void>;
+    'addOverlay': (x: number, y: number, width: number, height: number) => Promise<void>;
     'annotationsEnable': boolean;
     'backgroundColor': string;
     'documentUrl': string;
@@ -79,11 +85,16 @@ export namespace Components {
     'open': () => Promise<void>;
   }
   interface HvStatusbar {}
-  interface HvToolbar {}
 }
 
 declare global {
 
+
+  interface HTMLHarmonizedButtonElement extends Components.HarmonizedButton, HTMLStencilElement {}
+  var HTMLHarmonizedButtonElement: {
+    prototype: HTMLHarmonizedButtonElement;
+    new (): HTMLHarmonizedButtonElement;
+  };
 
   interface HTMLHarmonizedDrawerElement extends Components.HarmonizedDrawer, HTMLStencilElement {}
   var HTMLHarmonizedDrawerElement: {
@@ -186,13 +197,8 @@ declare global {
     prototype: HTMLHvStatusbarElement;
     new (): HTMLHvStatusbarElement;
   };
-
-  interface HTMLHvToolbarElement extends Components.HvToolbar, HTMLStencilElement {}
-  var HTMLHvToolbarElement: {
-    prototype: HTMLHvToolbarElement;
-    new (): HTMLHvToolbarElement;
-  };
   interface HTMLElementTagNameMap {
+    'harmonized-button': HTMLHarmonizedButtonElement;
     'harmonized-drawer': HTMLHarmonizedDrawerElement;
     'harmonized-image': HTMLHarmonizedImageElement;
     'harmonized-image-list': HTMLHarmonizedImageListElement;
@@ -210,11 +216,20 @@ declare global {
     'hv-annotations': HTMLHvAnnotationsElement;
     'hv-settings': HTMLHvSettingsElement;
     'hv-statusbar': HTMLHvStatusbarElement;
-    'hv-toolbar': HTMLHvToolbarElement;
   }
 }
 
 declare namespace LocalJSX {
+  interface HarmonizedButton {
+    'disabled'?: boolean;
+    'fontSize'?: number;
+    'fullWidth'?: boolean;
+    'icon'?: string;
+    'iconSize'?: string;
+    'label'?: string;
+    'onClick'?: (event: CustomEvent<any>) => void;
+    'tooltip'?: string;
+  }
   interface HarmonizedDrawer {
     'placement'?: string;
     'toolbar'?: boolean;
@@ -276,9 +291,9 @@ declare namespace LocalJSX {
   interface HvAnnotations {}
   interface HvSettings {}
   interface HvStatusbar {}
-  interface HvToolbar {}
 
   interface IntrinsicElements {
+    'harmonized-button': HarmonizedButton;
     'harmonized-drawer': HarmonizedDrawer;
     'harmonized-image': HarmonizedImage;
     'harmonized-image-list': HarmonizedImageList;
@@ -296,7 +311,6 @@ declare namespace LocalJSX {
     'hv-annotations': HvAnnotations;
     'hv-settings': HvSettings;
     'hv-statusbar': HvStatusbar;
-    'hv-toolbar': HvToolbar;
   }
 }
 
@@ -306,6 +320,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
   export namespace JSX {
     interface IntrinsicElements {
+      'harmonized-button': LocalJSX.HarmonizedButton & JSXBase.HTMLAttributes<HTMLHarmonizedButtonElement>;
       'harmonized-drawer': LocalJSX.HarmonizedDrawer & JSXBase.HTMLAttributes<HTMLHarmonizedDrawerElement>;
       'harmonized-image': LocalJSX.HarmonizedImage & JSXBase.HTMLAttributes<HTMLHarmonizedImageElement>;
       'harmonized-image-list': LocalJSX.HarmonizedImageList & JSXBase.HTMLAttributes<HTMLHarmonizedImageListElement>;
@@ -323,7 +338,6 @@ declare module "@stencil/core" {
       'hv-annotations': LocalJSX.HvAnnotations & JSXBase.HTMLAttributes<HTMLHvAnnotationsElement>;
       'hv-settings': LocalJSX.HvSettings & JSXBase.HTMLAttributes<HTMLHvSettingsElement>;
       'hv-statusbar': LocalJSX.HvStatusbar & JSXBase.HTMLAttributes<HTMLHvStatusbarElement>;
-      'hv-toolbar': LocalJSX.HvToolbar & JSXBase.HTMLAttributes<HTMLHvToolbarElement>;
     }
   }
 }

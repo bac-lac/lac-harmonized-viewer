@@ -1,10 +1,12 @@
 @import "../../global/variables.scss";
 @import "bulma/sass/utilities/_all.sass";
-@import "@material/top-app-bar/mdc-top-app-bar";
 
+@import "@material/button/mdc-button";
+@import "@material/icon-button/mdc-icon-button";
 @import "@material/list/mdc-list";
-@import "@material/menu-surface/mdc-menu-surface";
 @import "@material/menu/mdc-menu";
+@import "@material/menu-surface/mdc-menu-surface";
+@import "@material/top-app-bar/mdc-top-app-bar";
 
 harmonized-topbar {
     flex: 0 0 auto;
@@ -35,6 +37,29 @@ harmonized-topbar {
 
             .mdc-menu__selection-group-icon {
                 fill: #828282;
+            }
+        }
+
+        .topbar__button {
+            @extend .mdc-touch-target-wrapper;
+
+            button {
+                @extend .mdc-button;
+                @extend .mdc-button--touch;
+
+                @include mdc-button-filled-accessible(#181818);
+                @include mdc-button-ink-color(#fff);
+                @include mdc-button-shape-radius(2px);
+                //@include mdc-button-icon-size(30px, 30px);
+                //@include mdc-button-ink-color(#fff);
+                svg {
+                    fill: #fff;
+                    margin-right: 10px;
+                }
+
+                .mdc-button__label {
+                    font-size: 12px;
+                }
             }
         }
     }

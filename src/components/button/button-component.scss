@@ -1,0 +1,45 @@
+@import "@material/button/mdc-button";
+@import "@material/icon-button/mdc-icon-button";
+
+harmonized-button {
+    @extend .mdc-touch-target-wrapper;
+    display: flex;
+
+    .mdc-button,
+    .mdc-icon-button {
+        @extend .mdc-button--touch;
+
+        @include mdc-button-shape-radius(2px);
+        @include mdc-button-ink-color(#fff);
+
+        .mdc-button__label {
+            font-weight: normal;
+        }
+
+        &.full-width {
+            width: 100%;
+        }
+
+        &[disabled] {
+            @include mdc-button-ink-color(#383838);
+        }
+    }
+
+    .mdc-icon-button {
+        @include mdc-icon-button-ink-color(#fff);
+
+        &--sm {
+            @include mdc-icon-button-icon-size(24px, 24px);
+        }
+        &--md {
+            @include mdc-icon-button-icon-size(30px, 30px);
+        }
+        &--lg {
+            @include mdc-icon-button-icon-size(36px, 36px);
+        }
+
+        &[disabled] {
+            @include mdc-icon-button-ink-color(#383838);
+        }
+    }
+}

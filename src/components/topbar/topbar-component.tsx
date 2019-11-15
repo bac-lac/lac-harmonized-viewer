@@ -4,6 +4,8 @@ import { MDCTopAppBar } from '@material/top-app-bar';
 import { MDCMenu, Corner } from '@material/menu';
 import iconMenu from '../../assets/material-design-icons/ic_menu_18px.svg'
 import iconMore from '../../assets/material-design-icons/navigation/ic_more_vert_18px.svg'
+import iconFullscreen from '../../assets/material-icons/ic_fullscreen_24px.svg';
+import iconFullscreenExit from '../../assets/material-icons/ic_fullscreen_exit_24px.svg';
 import iconDisplay from '../../assets/material-icons/ic_display_24px.svg';
 import iconDockLeft from '../../assets/material-icons/ic_dock_left_24px.svg';
 import iconDockBottom from '../../assets/material-icons/ic_dock_bottom_24px.svg';
@@ -91,12 +93,26 @@ export class TopbarComponent {
                         {/* <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Download">file_download</button>
                             <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Print this page">print</button> */}
 
-                        <div class="mdc-menu-surface--anchor">
+                        <div class="topbar__button button-fullscreen">
                             <button
                                 type="button"
-                                class="material-icons mdc-top-app-bar__action-item mdc-icon-button"
+                                aria-label="Go to previous page">
+                                <div class="mdc-button__ripple"></div>
+                                <div innerHTML={iconFullscreen}></div>
+                                <div class="mdc-button__label">Fullscreen</div>
+                                <div class="mdc-button__touch"></div>
+                            </button>
+                        </div>
+
+                        <div class="topbar__button button-navigation">
+                            <button
+                                type="button"
+                                aria-label="Go to previous page"
                                 onClick={this.handleDisplayClick.bind(this)}>
-                                <i class="mdc-icon-button__icon" innerHTML={iconDisplay}></i>
+                                <div class="mdc-button__ripple"></div>
+                                <div innerHTML={iconDisplay}></div>
+                                <div class="mdc-button__label">Display</div>
+                                <div class="mdc-button__touch"></div>
                             </button>
                             <div class="mdc-menu mdc-menu-surface" id="demo-menu">
                                 <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
@@ -130,6 +146,7 @@ export class TopbarComponent {
                         <button type="button" class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Bookmark this page" onClick={this.openSettings.bind(this)}>
                             <i class="mdc-icon-button__icon" innerHTML={iconMore}></i>
                         </button>
+
                     </section>
                 </div>
             </header>

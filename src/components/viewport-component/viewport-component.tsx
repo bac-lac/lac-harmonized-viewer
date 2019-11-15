@@ -143,16 +143,14 @@ export class ViewportComponent {
                                 {this.renderOpenSeadragon()}
                             </div>
 
-                            <div class="button-navigation button-navigation--next">
-                                <button
-                                    type="button"
-                                    aria-label="Go to next page"
-                                    onClick={this.handleNextClick.bind(this)} disabled={this.status.loading || this.isLast()}>
-                                    <div class="mdc-button__ripple"></div>
-                                    <div class="mdc-button__icon" innerHTML={iconChevronRight}></div>
-                                    <div class="mdc-button__touch"></div>
-                                </button>
-                            </div>
+                            <harmonized-button
+                                class="button-navigation--next"
+                                icon={iconChevronRight}
+                                iconSize="lg"
+                                title="Go to next page"
+                                aria-label="Go to next page"
+                                onClick={this.handleNextClick.bind(this)}
+                                disabled={this.status.loading || this.isLast()} />
 
                         </div>
 
@@ -160,7 +158,7 @@ export class ViewportComponent {
 
                     {
                         this.annotationsEnable &&
-                        <harmonized-drawer placement="right" toolbar={false} visible={true}>
+                        <harmonized-drawer placement="right" style={{ width: '300px' }} visible={true}>
                             <hv-annotations></hv-annotations>
                         </harmonized-drawer>
                     }

@@ -8,6 +8,7 @@ import i18next from 'i18next';
 import i18nextXHRBackend from 'i18next-xhr-backend';
 import i18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 import { EventEmitter } from 'events';
+import { id } from '../../utils/utils';
 
 @Component({
 	tag: 'harmonized-viewer',
@@ -56,13 +57,13 @@ export class ViewerComponent {
 	private i18n: EventEmitter
 
 	@Method()
-	async getPage() {
+	async getPage(): Promise<number> {
 		return this.page
 	}
 
 	@Method()
-	async addOverlay(x: number, y: number, width: number, height: number, body: Element) {
-		this.addOverlayState(x, y, width, height, body)
+	async addOverlay(x: number, y: number, width: number, height: number): Promise<void> {
+		this.addOverlayState(x, y, width, height)
 	}
 
 	@Watch('documentUrl')
@@ -86,7 +87,6 @@ export class ViewerComponent {
 
 	@Listen('languageChanged')
 	handleLanguageChange() {
-		console.log('lang chan')
 		this.setLocale(this.language)
 	}
 
@@ -153,7 +153,7 @@ export class ViewerComponent {
 			.init({
 				lng: 'en',
 				fallbackLng: 'en',
-				debug: true,
+				debug: false,
 				// ns: ['common'],
 				// defaultNS: 'common',
 				backend: {

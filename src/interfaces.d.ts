@@ -58,7 +58,7 @@ interface DocumentAnnotation {
     name: string
     label: DocumentLabel[]
     content: string
-    visible: boolean
+    collapsed?: boolean
 }
 
 interface DocumentAlternateFormat {
@@ -102,8 +102,7 @@ interface DocumentOverlay {
     y: number,
     width: number,
     height: number,
-    page?: number,
-    body: Element
+    page?: number
 }
 
 interface DocumentLabel {

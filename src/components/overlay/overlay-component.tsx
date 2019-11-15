@@ -32,7 +32,7 @@ export class OverlayComponent {
 
         return <Host class="overlay" onClick={this.handleClick.bind(this)}>
             <div class="overlay__content">
-                <slot />>
+                <slot />
             </div>
         </Host>
     }

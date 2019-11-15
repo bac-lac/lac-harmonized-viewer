@@ -51,6 +51,39 @@
 
     </harmonized-viewer>
 
+    <style type="text/css">
+        .local-tag {
+            width: 100%;
+            height: 100%;
+            display: inline-block;
+            box-sizing: border-box;
+
+            opacity: 0.3;
+            transition: opacity 200ms ease;
+
+            cursor: pointer;
+            display: inline-block;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            border-radius: 2px;
+            border: rgba(0, 0, 0, 0.25) 1px solid;
+            box-shadow: 0 0 7px 2px rgba(0, 0, 0, 0.2);
+            transition: background 200ms ease;
+        }
+
+        .local-tag:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .local-tag__content {
+            width: 100%;
+            height: 100%;
+            display: inline-block;
+            border: 4px solid #fff;
+        }
+    </style>
+
     <script type="text/javascript">
 
         var viewer = document.getElementById('hv');
@@ -59,7 +92,7 @@
         viewer.addEventListener('pageLoad', (event) => {
 
             if (event.detail === 0) {
-                //viewer.addOverlay(50, 80, 500, 500, 'hello world');
+                viewer.addOverlay(750, 780, 500, 500);
             }
         });
 

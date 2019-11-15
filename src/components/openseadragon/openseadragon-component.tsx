@@ -301,32 +301,24 @@ export class OpenSeadragonComponent {
         //     this.create()
         // }
 
-        const container = this.el.querySelector('.overlays')
-        if (!container) {
-            return undefined
-        }
-
         this.overlays.forEach((overlay) => {
 
-            const element = container.querySelector(`#overlay-${overlay.id}`)
+            const element = this.el.querySelector(`#overlay-${overlay.id}`) as HTMLElement
             if (element) {
 
                 const bounds = this.instance.viewport.imageToViewportRectangle(overlay.x, overlay.y, overlay.width, overlay.height)
                 this.instance.addOverlay(element, bounds, 'TOP_LEFT')
 
-                if (overlay.body) {
-
-                    tippy(element, {
-                        appendTo: 'parent',
-                        theme: 'harmonized-light',
-                        placement: 'bottom',
-                        animation: 'shift-toward',
-                        arrow: false,
-                        sticky: true,
-                        plugins: [sticky],
-                        content: overlay.body
-                    })
-                }
+                // tippy(element, {
+                //     appendTo: 'parent',
+                //     theme: 'harmonized-light',
+                //     placement: 'bottom',
+                //     animation: 'shift-toward',
+                //     arrow: false,
+                //     sticky: true,
+                //     plugins: [sticky],
+                //     content: overlay.
+                // })
 
                 // Required in order to prevent click propagation to OpenSeadragon
                 new openseadragon.MouseTracker({
@@ -343,7 +335,8 @@ export class OpenSeadragonComponent {
             <div class="openseadragon"></div>
             <div class="overlays">
                 {
-                    this.overlays.map((overlay) => <harmonized-overlay id={"overlay-" + overlay.id} tabindex="-1"><slot /></harmonized-overlay>)
+                    this.overlays.map((overlay) =>
+                        <harmonized-overlay id={"overlay-" + overlay.id} tabindex="-1">{overlay.id}</harmonized-overlay>)
                 }
             </div>
         </Host>

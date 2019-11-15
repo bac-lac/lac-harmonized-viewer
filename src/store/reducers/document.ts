@@ -1,5 +1,4 @@
 import { ActionTypes, TypeKeys } from "../actions/index";
-import { id } from "../../utils/utils";
 
 const getInitialState = (): DocumentState => {
 
@@ -95,7 +94,7 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
             return { ...state, supportedLocales: [...state.supportedLocales, action.locale] }
         }
         case TypeKeys.ADD_OVERLAY: {
-            return { ...state, overlays: [...state.overlays, { id: id(), x: action.x, y: action.y, width: action.width, height: action.height, body: action.body }] }
+            return { ...state, overlays: [...state.overlays, { id: action.id, x: action.x, y: action.y, width: action.width, height: action.height }] }
         }
         case TypeKeys.CLEAR_OVERLAYS: {
             return { ...state, overlays: [] }

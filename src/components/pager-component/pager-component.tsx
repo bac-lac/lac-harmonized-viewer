@@ -165,31 +165,23 @@ export class PagerComponent {
 
                 <div class="pager__controls">
 
-                    <div class="button-pager">
-                        <button
-                            type="button"
-                            aria-label="Go to first page"
-                            onClick={this.handleFirstClick.bind(this)} disabled={this.status.loading || this.isFirst()}>
-                            <div class="mdc-button__ripple"></div>
-                            <div class="mdc-button__icon" innerHTML={iconFirst}></div>
-                            <div class="mdc-button__touch"></div>
-                        </button>
-                    </div>
+                    <harmonized-button
+                        icon={iconFirst}
+                        title="Go to first page"
+                        aria-label="Go to first page"
+                        onClick={this.handleFirstClick.bind(this)}
+                        disabled={this.status.loading || this.isFirst()} />
 
-                    <div class="button-pager">
-                        <button
-                            type="button"
-                            aria-label="Go to previous page"
-                            onClick={this.handlePreviousClick.bind(this)} disabled={this.status.loading || this.isFirst()}>
-                            <div class="mdc-button__ripple"></div>
-                            <div class="mdc-button__icon" innerHTML={iconPrevious}></div>
-                            <div class="mdc-button__touch"></div>
-                        </button>
-                    </div>
+                    <harmonized-button
+                        icon={iconPrevious}
+                        title="Go to previous page"
+                        aria-label="Go to previous page"
+                        onClick={this.handlePreviousClick.bind(this)}
+                        disabled={this.status.loading || this.isFirst()} />
 
                     <div class="slider-control">
 
-                        <div class="mdc-slider"
+                        <div class={this.marker ? "mdc-slider mdc-slider--focus" : "mdc-slider"}
                             role="slider"
                             tabindex="0"
                             aria-label="Select Value">
@@ -206,27 +198,19 @@ export class PagerComponent {
 
                     </div>
 
-                    <div class="button-pager">
-                        <button
-                            type="button"
-                            aria-label="Go to next page"
-                            onClick={this.handleNextClick.bind(this)} disabled={this.status.loading || this.isLast()}>
-                            <div class="mdc-button__ripple"></div>
-                            <div class="mdc-button__icon" innerHTML={iconNext}></div>
-                            <div class="mdc-button__touch"></div>
-                        </button>
-                    </div>
+                    <harmonized-button
+                        icon={iconNext}
+                        title="Go to next page"
+                        aria-label="Go to next page"
+                        onClick={this.handleNextClick.bind(this)}
+                        disabled={this.status.loading || this.isLast()} />
 
-                    <div class="button-pager">
-                        <button
-                            type="button"
-                            aria-label="Go to last page"
-                            onClick={this.handleLastClick.bind(this)} disabled={this.status.loading || this.isLast()}>
-                            <div class="mdc-button__ripple"></div>
-                            <div class="mdc-button__icon" innerHTML={iconLast}></div>
-                            <div class="mdc-button__touch"></div>
-                        </button>
-                    </div>
+                    <harmonized-button
+                        icon={iconLast}
+                        title="Go to last page"
+                        aria-label="Go to last page"
+                        onClick={this.handleLastClick.bind(this)}
+                        disabled={this.status.loading || this.isLast()} />
 
                 </div>
 

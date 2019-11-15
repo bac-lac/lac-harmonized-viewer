@@ -56,7 +56,7 @@ export abstract class Resolver {
         const annotationState = loadSettings().annotations
             .find(item => item.id == this.getAnnotationId(annotation))
 
-        return (annotationState ? annotationState.visible : annotation.visible)
+        return (annotationState ? annotationState.visible : annotation.collapsed)
     }
 
     protected async httpGet(url: string) {

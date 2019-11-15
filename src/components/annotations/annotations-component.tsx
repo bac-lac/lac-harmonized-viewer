@@ -1,6 +1,7 @@
 import { Component, h, Element, State, Prop } from '@stencil/core';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { saveAnnotationVisibility } from '../../settings';
+import iconOpenNew from '../../assets/material-icons/ic_open_new_24px.svg'
 import iconExpand from '../../assets/material-design-icons/ic_add_24px.svg'
 import iconCollapse from '../../assets/material-design-icons/ic_remove_24px.svg'
 import { animate } from '../../utils/utils';
@@ -32,65 +33,74 @@ export class AnnotationsComponent {
         })
     }
 
+    componentDidLoad() {
+
+        const links = this.el.querySelectorAll('.mdc-list-item__secondary-text a')
+        if (links) {
+
+        }
+    }
+
     componentDidUnload() {
         this.storeUnsubscribe()
     }
 
-    handleClick(ev: MouseEvent) {
+    componentDidRender() {
 
-        const target = ev.currentTarget as HTMLElement
-        if (target) {
+        const links = Array.from(this.el.querySelectorAll('.mdc-list .mdc-list-item .mdc-list-item__secondary-text a'))
+        if (links) {
+            links.forEach((link) => {
 
-            //const collapsed = target.classList.contains('is-collapsed')
-            target.classList.toggle('is-collapsed')
-
-            // Persist state
-            // const visible = !panel.classList.contains('is-hidden')
-
-            // saveAnnotationVisibility(id, visible)
+                const svg = document.createElement('i')
+                svg.innerHTML = iconOpenNew
+                link.append(svg)
+            })
         }
+    }
 
-        const icons = Array.from(this.el.querySelectorAll('.annotation-icon'))
-        icons.forEach((icon) => {
+    handleExpandClick(ev: MouseEvent) {
 
-            target.setAttribute('aria-hidden',
-                icon.closest('.mdc-list-item').classList.contains('is-collapsed').toString())
-        })
+
     }
 
     render() {
 
-        return <nav class="mdc-list mdc-list--two-line mdc-list--dense">
+        return <nav class="mdc-list mdc-list--two-line mdc-list--dense mdc-list--non-interactive">
             {
-                this.annotations.map((annotation) => (
-                    <a
-                        class={this.renderAnnotationClass(annotation)}
-                        onClick={this.handleClick.bind(this)}
-                        data-id={annotation.id}
-                        tabindex="0">
-
+                this.annotations.map((annotation) => <div>
+                    <div
+                        tabindex="0"
+                        class={this.renderAnnotationClass(annotation)}>
                         <span class="mdc-list-item__text">
                             {
                                 annotation.label && <span class="mdc-list-item__primary-text">
-                                    <span>{label(annotation.label)}</span>
-                                    <span
-                                        class="annotation-icon annotation-icon--expand"
-                                        aria-hidden={true}
-                                        innerHTML={iconExpand}></span>
-                                    <span
-                                        class="annotation-icon annotation-icon--collapse"
-                                        aria-hidden={true}
-                                        innerHTML={iconCollapse}></span>
-                                </span>
+                                    {label(annotation.label)}</span>
                             }
-                            <span class="mdc-list-item__secondary-text" innerHTML={annotation.content}>
+                            <span
+                                class="mdc-list-item__secondary-text"
+                                innerHTML={annotation.content}>
                             </span>
                         </span>
+                    </div>
 
-                    </a>
-                ))
+                    {/* {
+                        this.isCollapsed(annotation) && <harmonized-button
+                            label="Show More"
+                            title="Show More"
+                            fullWidth={true}
+                            onClick={this.handleExpandClick.bind(this)} />
+                    } */}
+
+                </div>)
             }
         </nav>
+    }
+
+    isCollapsed(annotation: DocumentAnnotation) {
+        if (!annotation) {
+            return undefined
+        }
+        return annotation.content.length > 100
     }
 
     renderAnnotationClass(annotation: DocumentAnnotation) {
@@ -101,11 +111,7 @@ export class AnnotationsComponent {
 
         let className = 'mdc-list-item'
 
-        if (!annotation.name) {
-            className += ' mdc-list--non-interactive'
-        }
-
-        if (!annotation.visible) {
+        if (this.isCollapsed(annotation)) {
             className += ' is-collapsed'
         }
 

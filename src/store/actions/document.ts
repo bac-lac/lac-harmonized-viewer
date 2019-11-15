@@ -201,20 +201,20 @@ export const setViewport = (viewport: Viewport) => (dispatch, _getState) => {
 
 export interface AddOverlay {
     type: TypeKeys.ADD_OVERLAY
+    id: string,
     x: number,
     y: number,
     width: number,
-    height: number,
-    body: Element
+    height: number
 }
-export const addOverlay = (x: number, y: number, width: number, height: number, body: Element) => (dispatch, _getState) => {
+export const addOverlay = (x: number, y: number, width: number, height: number) => (dispatch, _getState) => {
     const action: AddOverlay = {
         type: TypeKeys.ADD_OVERLAY,
+        id: 'abc',
         x: x,
         y: y,
         width: width,
-        height: height,
-        body: body
+        height: height
     }
     dispatch(action)
 }
