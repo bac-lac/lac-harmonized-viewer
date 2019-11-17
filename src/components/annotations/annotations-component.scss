@@ -5,101 +5,124 @@
 hv-annotations {
     height: 100%;
     display: block;
+    margin-right: 15px;
     background-color: #181818;
 
-    .mdc-list {
-        &.mdc-list--two-line.mdc-list--dense {
-            .mdc-list-item {
-                height: auto !important;
-            }
-        }
+    dt {
+        color: #99ace5;
+        width: 100%;
+        display: block;
+        font-size: 14px;
+        align-items: center;
+        position: relative;
+        justify-content: space-between;
+        text-transform: uppercase;
+    }
 
-        .mdc-list-item {
-            margin: 0;
-            padding: 14px 16px;
-            animation-delay: 0 !important;
+    dd {
+        color: #fff;
+        font-size: 15px;
+        line-height: 1.5;
+        margin: 5px 0 20px 0;
 
-            .annotation-icon {
-                display: none;
-                &--collapse {
-                    display: inline;
-                }
-            }
+        a {
+            display: inline-flex;
+            align-items: center;
 
-            &.is-collapsed {
-                .annotation-icon {
-                    display: inline;
-                    &--collapse {
-                        display: none;
-                    }
-                }
-            }
-
-            &__text {
-                width: 100%;
-            }
-
-            &__primary-text,
-            &__secondary-text {
-                &::before,
-                &::after {
-                    display: none;
-                    vertical-align: initial;
-                }
-            }
-
-            &__primary-text {
-                color: #f6e0b5;
-                width: 100%;
-                display: flex;
-                margin-bottom: 3px;
-                align-items: center;
-                position: relative;
-                justify-content: space-between;
-                text-transform: uppercase;
-            }
-
-            &__secondary-text {
+            &:link {
                 color: #fff;
-                line-height: 1.5;
-
-                a {
-                    display: inline-flex;
-                    align-items: center;
-
-                    &:link {
-                        color: #fff;
-                    }
-                    &:visited {
-                        color: #aaa;
-                    }
-                    i {
-                        width: 15px;
-                        height: 15px;
-                        margin-left: 5px;
-                    }
-                    svg {
-                        width: 100%;
-                        height: 100%;
-                        fill: #a39193;
-                    }
-                }
             }
+            &:visited {
+                color: #aaa;
+            }
+        }
+    }
 
-            &:not(.is-collapsed) {
-                .mdc-list-item__secondary-text {
-                    text-overflow: initial;
-                    white-space: initial;
-                    overflow: visible;
+    .annotation-item {
+        margin: 0;
+        padding: 14px 16px;
+        animation-delay: 0 !important;
+
+        .annotation-icon {
+            display: none;
+            &--collapse {
+                display: inline;
+            }
+        }
+
+        // &.is-collapsed {
+        //     .annotation-icon {
+        //         display: inline;
+        //         &--collapse {
+        //             display: none;
+        //         }
+        //     }
+        // }
+
+        &__text {
+            width: 100%;
+        }
+
+        // &__primary-text,
+        // &__secondary-text {
+        //     &::before,
+        //     &::after {
+        //         display: none;
+        //         vertical-align: initial;
+        //     }
+        // }
+
+        &__primary-text {
+            color: #c8c1e9;
+            width: 100%;
+            display: flex;
+            margin-bottom: 3px;
+            align-items: center;
+            position: relative;
+            justify-content: space-between;
+            text-transform: uppercase;
+        }
+
+        &__secondary-text {
+            color: #fff;
+            line-height: 1.5;
+
+            a {
+                display: inline-flex;
+                align-items: center;
+
+                &:link {
+                    color: #fff;
+                }
+                &:visited {
+                    color: #aaa;
+                }
+                i {
+                    width: 15px;
+                    height: 15px;
+                    margin-left: 5px;
+                }
+                svg {
+                    width: 100%;
+                    height: 100%;
+                    fill: #a39193;
                 }
             }
         }
 
-        &--dense {
-            .mdc-list-item {
-                .mdc-list-item__primary-text {
-                    font-size: 12px;
-                }
+        &:not(.is-collapsed) {
+            .mdc-list-item__secondary-text {
+                text-overflow: initial;
+                white-space: initial;
+                overflow: visible;
+            }
+        }
+    }
+
+    &--dense {
+        .mdc-list-item {
+            .mdc-list-item__primary-text {
+                font-size: 12px;
             }
         }
     }

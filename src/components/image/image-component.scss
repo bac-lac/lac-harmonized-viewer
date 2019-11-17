@@ -1,6 +1,7 @@
 @import "../../global/variables";
 @import "../../global/mixins";
 @import "bulma/sass/utilities/_all.sass";
+@import "@material/elevation/mdc-elevation";
 
 harmonized-image {
     display: inline-block;
@@ -34,18 +35,18 @@ harmonized-image {
     }
 
     .mdc-image-list__image {
+        @extend .mdc-elevation--z6;
         padding: 0;
         border: #111 3px solid;
     }
 
     .mdc-image-list__supporting {
-        margin-top: 5px;
+        margin: 3px 0 10px 0;
         padding: 1px 10px;
         justify-content: center;
-        background-color: #111;
 
         .mdc-image-list__label {
-            color: #929292;
+            color: #686868;
             letter-spacing: 0;
             font-size: 12px;
             font-weight: 500;

@@ -97,7 +97,7 @@ export class ImageComponent {
 
             return this.tooltip = tippy(this.el, {
                 appendTo: 'parent',
-                theme: 'harmonized-light',
+                theme: 'harmonized-dark',
                 placement: 'bottom',
                 distance: -5,
                 animation: 'shift-toward',
@@ -136,7 +136,7 @@ export class ImageComponent {
             role="button"
             class={className}
             onClick={this.loaded && this.handleClick.bind(this)}
-            title={this.loaded && "Go to page " + (this.page + 1)}
+            title={this.loaded && this.caption && this.caption}
             tabindex={this.loaded && '0'}>
 
             <div class="mdc-image-list__image-aspect-container">

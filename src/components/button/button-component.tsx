@@ -12,15 +12,15 @@ export class ButtonComponent {
     //@Prop() className: string
     @Prop() disabled: boolean
     @Prop() icon: string
-    @Prop() iconSize: string
+    @Prop() size: string
     @Prop() fontSize: number
     @Prop() label: string
     @Prop() tooltip: string
     @Prop() fullWidth: boolean
-
-    @Event() click: EventEmitter
+    @Prop() raised: boolean
 
     componentDidLoad() {
+
         const button = new MDCRipple(this.el.querySelector('.mdc-icon-button'))
         if (button) button.unbounded = true
     }
@@ -33,12 +33,14 @@ export class ButtonComponent {
 
             className = 'mdc-icon-button'
 
-            if (this.iconSize === 'lg') className += ' mdc-icon-button--lg'
-            else if (this.iconSize === 'md') className += ' mdc-icon-button--md'
-            else if (this.iconSize === 'sm') className += ' mdc-icon-button--sm'
+            if (this.size === 'lg') className += ' mdc-icon-button--lg'
+            else if (this.size === 'md') className += ' mdc-icon-button--md'
+            else if (this.size === 'sm') className += ' mdc-icon-button--sm'
         }
         else
             className = 'mdc-button'
+
+        if (this.raised) className += ' mdc-button--raised'
 
         if (this.fullWidth) className += ' full-width'
 
@@ -48,8 +50,7 @@ export class ButtonComponent {
                 class={className}
                 disabled={this.disabled}
                 title={this.tooltip}
-                aria-label={this.tooltip}
-                onClick={(ev) => this.click.emit(ev)}>
+                aria-label={this.tooltip}>
 
                 <div class="mdc-button__ripple"></div>
 

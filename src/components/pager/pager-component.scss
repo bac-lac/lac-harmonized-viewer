@@ -1,0 +1,50 @@
+@import "../../global/variables";
+
+@import "@material/button/mdc-button";
+@import "@material/icon-button/mdc-icon-button";
+@import "@material/slider/mdc-slider";
+@import "@material/chips/mdc-chips";
+
+harmonized-pager {
+    display: flex;
+    margin: 15px 0;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    .slider-control {
+        width: 300px;
+        margin: 0 15px;
+
+        .mdc-slider {
+            @include mdc-slider-color-accessible(#99ace5);
+            @include mdc-slider-rail-color(#323232, 1);
+        }
+
+        // .mdc-slider:not(.mdc-slider--disabled) {
+        //     .mdc-slider__track-container {
+        //         background-color: #323232;
+        //         .mdc-slider__track {
+        //         }
+        //     }
+        // }
+    }
+
+    .pager__text {
+        color: #fff;
+        text-align: center;
+        margin-bottom: -20px;
+
+        .mdc-chip {
+            @include mdc-chip-fill-color-accessible(#323232);
+            margin: 0 10px;
+            border-radius: 2px;
+        }
+    }
+
+    .pager__controls {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+    }
+}

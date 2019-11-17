@@ -1,7 +1,7 @@
 import { Component, h, Element, State, Prop, Host, Method } from '@stencil/core';
 import { MDCDrawer } from "@material/drawer";
+import iconDockLeft from '../../assets/material-icons/ic_dock_left_24px.svg'
 import iconClose from '../../assets/material-design-icons/ic_close_18px.svg'
-import iconMaximize from '../../assets/material-design-icons/ic_crop_square_24px.svg'
 
 @Component({
     tag: 'harmonized-drawer',
@@ -9,7 +9,7 @@ import iconMaximize from '../../assets/material-design-icons/ic_crop_square_24px
 })
 export class DrawerComponent {
 
-    @Element() el: HTMLElement
+    @Element() el: Element
 
     @Prop() placement: string = 'left'
     @Prop() toolbar: boolean = false
@@ -18,16 +18,25 @@ export class DrawerComponent {
     private drawer: MDCDrawer
 
     componentDidLoad() {
-        this.drawer = MDCDrawer.attachTo(this.el)
+        this.drawer = new MDCDrawer(this.el)
     }
 
     componentDidUnload() {
-        this.drawer.destroy()
+        if (this.drawer) this.drawer.destroy()
     }
 
     @Method()
     async open() {
         this.drawer.open = true
+    }
+
+    @Method()
+    async close() {
+        this.drawer.open = false
+    }
+
+    handleClick() {
+        this.close()
     }
 
     render() {
@@ -46,22 +55,30 @@ export class DrawerComponent {
         }
 
         return <Host class={className}>
+
+            {
+                this.toolbar && <div class="mdc-drawer__toolbar" role="toolbar">
+
+                    <harmonized-button
+                        icon={iconDockLeft}
+                        size="sm"
+                        title="Dock"
+                        aria-label="Dock" />
+
+                    <harmonized-button
+                        icon={iconClose}
+                        size="sm"
+                        title="Close sidebar"
+                        aria-label="Close sidebar"
+                        onClick={this.handleClick.bind(this)} />
+
+                </div>
+            }
+
             <div class="mdc-drawer__content">
-                {
-                    this.toolbar && <div class="drawer-toolbar" role="toolbar">
-                        <div class="drawer-button drawer-button__close">
-                            <button
-                                type="button"
-                                aria-label="">
-                                <div class="mdc-button__ripple"></div>
-                                <div class="mdc-button__icon" innerHTML={iconClose}></div>
-                                <div class="mdc-button__touch"></div>
-                            </button>
-                        </div>
-                    </div>
-                }
                 <slot />
             </div>
+
         </Host>
     }
 

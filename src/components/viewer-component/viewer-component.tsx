@@ -8,7 +8,6 @@ import i18next from 'i18next';
 import i18nextXHRBackend from 'i18next-xhr-backend';
 import i18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 import { EventEmitter } from 'events';
-import { id } from '../../utils/utils';
 
 @Component({
 	tag: 'harmonized-viewer',
@@ -135,7 +134,6 @@ export class ViewerComponent {
 	}
 
 	componentDidLoad() {
-
 	}
 
 	componentDidUnload() {
@@ -173,17 +171,6 @@ export class ViewerComponent {
 		return <div class="harmonized-viewer" style={{ backgroundColor: this.backgroundColor }}>
 
 			<harmonized-topbar />
-
-			{
-				this.status.error &&
-				<harmonized-message type="error">
-					<p>
-						<strong>{this.status.error.code}</strong>
-						<span>&nbsp;&ndash;&nbsp;</span>
-						<span>{this.status.error.message}</span>
-					</p>
-				</harmonized-message>
-			}
 
 			<harmonized-viewport
 				navigation-enable={this.navigationEnable}

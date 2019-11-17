@@ -1,0 +1,14 @@
+harmonized-message {
+    display: block;
+
+    .message {
+        .message-header,
+        .message-body {
+            border-radius: 0;
+        }
+
+        &.is-danger {
+            background-color: #290000;
+        }
+    }
+}

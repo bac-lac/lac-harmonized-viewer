@@ -13,8 +13,6 @@ harmonized-viewport {
     position: relative;
 
     .button-navigation {
-        @extend .mdc-touch-target-wrapper;
-
         opacity: 0.1;
         transition: opacity 200ms ease;
 
@@ -22,43 +20,18 @@ harmonized-viewport {
         position: absolute;
 
         &--prev {
-            left: 5px;
+            left: 0;
         }
 
         &--next {
-            right: 5px;
-        }
-
-        &:focus,
-        &:hover,
-        &:active {
-            &::before,
-            &::after {
-                //background-color: transparent;
-            }
+            right: 0;
         }
 
         button {
-            @extend .mdc-icon-button;
-            @extend .mdc-button--touch;
-
-            @include mdc-icon-button-icon-size(40px, 40px);
-            @include mdc-icon-button-ink-color(#fff);
-            @include mdc-shape-radius(mdc-shape-resolve-percentage-radius(32px, 2px));
-
-            &[disabled] {
-                @include mdc-icon-button-ink-color(#383838);
+            &::before,
+            &::after {
+                border-radius: 2px;
             }
-        }
-    }
-
-    &:hover {
-        .button-navigation {
-            opacity: 1;
-        }
-
-        .overlay {
-            opacity: 1;
         }
     }
 
@@ -84,6 +57,24 @@ harmonized-viewport {
         }
     }
 
+    .paging__label {
+        color: #a8a8a8;
+        text-align: center;
+        margin: 15px 15px 0 15px;
+
+        &-value {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        &-spacer--left::before {
+            content: " ";
+        }
+        &-spacer--right::after {
+            content: " ";
+        }
+    }
+
     // .hv-overlay {
     //     opacity: 0;
     //     border: #fff 6px solid;
@@ -104,4 +95,18 @@ harmonized-viewport {
     // &:hover .hv-overlay {
     //     opacity: 1;
     // }
+
+    .hv-main__content {
+        margin: 0 30px;
+
+        &:hover {
+            .button-navigation {
+                opacity: 1;
+            }
+
+            .overlay {
+                opacity: 1;
+            }
+        }
+    }
 }

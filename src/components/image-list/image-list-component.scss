@@ -1,8 +1,8 @@
-@import "bulma/sass/utilities/_all.sass";
-@import "@material/image-list/mdc-image-list.scss";
+@import "bulma/sass/utilities/_all";
+@import "@material/image-list/mdc-image-list";
 
 harmonized-image-list {
-    $padding: 8px;
+    $padding: 2px;
 
     display: block;
 

@@ -1,41 +1,36 @@
 @import "@material/button/mdc-button";
 @import "@material/icon-button/mdc-icon-button";
-
 @import "@material/drawer/mdc-drawer";
 
 harmonized-drawer {
-}
+    width: 100%;
 
-.mdc-drawer {
-    background-color: transparent;
+    &.mdc-drawer {
+        width: inherit;
+        background-color: transparent;
 
-    &--left {
-        left: 0;
-        right: initial;
-    }
+        &--left {
+            left: 0;
+            right: initial;
+        }
 
-    &--right {
-        left: initial;
-        right: 0;
-    }
+        &--right {
+            left: initial;
+            right: 0;
 
-    .drawer-toolbar {
-        display: flex;
-        justify-content: flex-end;
+            &.mdc-drawer--closing {
+                transform: translateX(100%);
+            }
+        }
 
-        .drawer-button {
-            @extend .mdc-touch-target-wrapper;
+        .mdc-drawer__toolbar {
+            display: flex;
+            margin: 0 5px;
+            justify-content: flex-end;
+        }
 
+        harmonized-button {
             button {
-                @extend .mdc-icon-button;
-                @extend .mdc-button--touch;
-                @include mdc-button-shape-radius(2px);
-                @include mdc-icon-button-icon-size(14px, 14px);
-                @include mdc-icon-button-ink-color(#626262);
-
-                &.close {
-                }
-
                 &::before,
                 &::after {
                     border-radius: 2px;

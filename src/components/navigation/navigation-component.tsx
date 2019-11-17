@@ -2,12 +2,6 @@ import { Component, Prop, h, Element, Listen, State, Watch } from '@stencil/core
 import 'manifesto.js';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { setPage } from '../../store/actions/document';
-import { MDCRipple } from '@material/ripple';
-import { MDCTabBar } from '@material/tab-bar';
-import iconClose from '../../assets/material-design-icons/ic_close_18px.svg'
-import iconMaximize from '../../assets/material-design-icons/ic_crop_square_24px.svg'
-import iconList from '../../assets/material-icons/ic_list_24px.svg'
-import iconGrid from '../../assets/material-icons/ic_grid_24px.svg'
 import { label } from '../../services/i18n-service';
 
 @Component({
@@ -40,8 +34,6 @@ export class NavigationComponent {
 
     @State() loadedImageCount: number = 0
 
-    //private tabs: MDCTabBar
-
     componentWillLoad() {
 
         this.store.mapDispatchToProps(this, { setPage })
@@ -63,8 +55,6 @@ export class NavigationComponent {
     }
 
     componentDidLoad() {
-
-        //this.tabs = new MDCTabBar(this.el.querySelector('.mdc-tab-bar'))
         this.resize()
     }
 
@@ -86,6 +76,16 @@ export class NavigationComponent {
 
     handleThumbnailLoad(ev: Event) {
         this.resize()
+    }
+
+    @Watch('page')
+    handlePageChange() {
+        if (this.pages && this.pages.length > this.page) {
+            const image: HTMLElement = this.el.querySelector('harmonized-image[page="' + this.page + '"]')
+            if (image) {
+                image.scrollIntoView({ behavior: "smooth", block: "nearest" })
+            }
+        }
     }
 
     @Listen('resize', { target: 'window' })
@@ -172,8 +172,8 @@ export class NavigationComponent {
                             src={page.thumbnail}
                             page={index}
                             caption={label(page.label)}
-                            showCaption={true}
-                            showTooltip={false}
+                            show-caption={true}
+                            show-tooltip={false}
                             preload={index < 16}
                             onImageLoad={this.handleThumbnailLoad.bind(this)} />
                     )

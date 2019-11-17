@@ -1,7 +1,5 @@
 import { Component, h, Element, State, Prop } from '@stencil/core';
 import { Unsubscribe, Store } from '@stencil/redux';
-import { saveAnnotationVisibility } from '../../settings';
-import iconOpenNew from '../../assets/material-icons/ic_open_new_24px.svg'
 import iconExpand from '../../assets/material-design-icons/ic_add_24px.svg'
 import iconCollapse from '../../assets/material-design-icons/ic_remove_24px.svg'
 import { animate } from '../../utils/utils';
@@ -45,19 +43,6 @@ export class AnnotationsComponent {
         this.storeUnsubscribe()
     }
 
-    componentDidRender() {
-
-        const links = Array.from(this.el.querySelectorAll('.mdc-list .mdc-list-item .mdc-list-item__secondary-text a'))
-        if (links) {
-            links.forEach((link) => {
-
-                const svg = document.createElement('i')
-                svg.innerHTML = iconOpenNew
-                link.append(svg)
-            })
-        }
-    }
-
     handleExpandClick(ev: MouseEvent) {
 
 
@@ -65,35 +50,25 @@ export class AnnotationsComponent {
 
     render() {
 
-        return <nav class="mdc-list mdc-list--two-line mdc-list--dense mdc-list--non-interactive">
+        return <dl class="annotation-list">
             {
-                this.annotations.map((annotation) => <div>
-                    <div
+                this.annotations.map((annotation) => [
+                    <dt
                         tabindex="0"
                         class={this.renderAnnotationClass(annotation)}>
-                        <span class="mdc-list-item__text">
-                            {
-                                annotation.label && <span class="mdc-list-item__primary-text">
-                                    {label(annotation.label)}</span>
-                            }
-                            <span
-                                class="mdc-list-item__secondary-text"
-                                innerHTML={annotation.content}>
-                            </span>
+                        {
+                            annotation.label &&
+                            <span>{label(annotation.label)}</span>
+                        }
+                    </dt>,
+                    <dd>
+                        <span
+                            innerHTML={annotation.content}>
                         </span>
-                    </div>
-
-                    {/* {
-                        this.isCollapsed(annotation) && <harmonized-button
-                            label="Show More"
-                            title="Show More"
-                            fullWidth={true}
-                            onClick={this.handleExpandClick.bind(this)} />
-                    } */}
-
-                </div>)
+                    </dd>
+                ])
             }
-        </nav>
+        </dl>
     }
 
     isCollapsed(annotation: DocumentAnnotation) {
@@ -109,7 +84,7 @@ export class AnnotationsComponent {
             return undefined
         }
 
-        let className = 'mdc-list-item'
+        let className = ''
 
         if (this.isCollapsed(annotation)) {
             className += ' is-collapsed'
