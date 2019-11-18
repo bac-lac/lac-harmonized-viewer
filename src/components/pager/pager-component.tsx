@@ -154,6 +154,21 @@ export class PagerComponent {
 
         return <Host role="toolbar" aria-label="Toolbar navigation">
 
+            <div class="paging__label">
+                <span class="paging__label-spacer--right">
+                    Page
+                </span>
+                <span class="paging__label-value">
+                    {(this.page + 1)}
+                </span>
+                <span class="paging__label-spacer--left paging__label-spacer--right">
+                    of
+                </span>
+                <span class="paging__label-value">
+                    {this.pageCount}
+                </span>
+            </div>
+
             <div class="pager__controls">
 
                 <harmonized-button

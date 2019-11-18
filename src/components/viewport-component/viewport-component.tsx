@@ -134,17 +134,6 @@ export class ViewportComponent {
 
                 <main class="hv-main mdc-drawer-app-content">
 
-                    {
-                        this.status.error &&
-                        <harmonized-message type="error" class="mdc-drawer-app-content">
-                            <p>
-                                <strong>{this.status.error.code}</strong>
-                                <span>&nbsp;&ndash;&nbsp;</span>
-                                <span>{this.status.error.message}</span>
-                            </p>
-                        </harmonized-message>
-                    }
-
                     <div class="hv-main__content">
 
                         <harmonized-button
@@ -160,8 +149,6 @@ export class ViewportComponent {
                         <div class="viewport-content">
 
                             {this.renderOpenSeadragon()}
-
-                            {this.renderPaging()}
                             {this.renderLabel()}
 
                             <harmonized-pager />
@@ -259,24 +246,6 @@ export class ViewportComponent {
                 </harmonized-navigation>
             }
         }
-    }
-
-    renderPaging() {
-
-        return <div class="paging__label">
-            <span class="paging__label-spacer--right">
-                Page
-                                </span>
-            <span class="paging__label-value">
-                {(this.page + 1)}
-            </span>
-            <span class="paging__label-spacer--left paging__label-spacer--right">
-                of
-                                </span>
-            <span class="paging__label-value">
-                {this.pageCount}
-            </span>
-        </div>
     }
 
     renderLabel() {

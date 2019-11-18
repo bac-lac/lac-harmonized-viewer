@@ -26,7 +26,7 @@ export class NavigationComponent {
     storeUnsubscribe: Unsubscribe
 
     @State() loading: MyAppState["document"]["loading"]
-    @State() locale: MyAppState["document"]["locale"]
+    @State() locale: MyAppState["document"]["language"]
     @State() page: MyAppState["document"]["page"]
     @State() pages: MyAppState["document"]["pages"]
 
@@ -39,7 +39,7 @@ export class NavigationComponent {
         this.store.mapDispatchToProps(this, { setPage })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { locale: locale, loading: loading, page: page, pages: pages }
+                document: { language: locale, loading: loading, page: page, pages: pages }
             } = state
             return {
                 locale: locale,

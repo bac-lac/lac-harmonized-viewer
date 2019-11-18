@@ -2,7 +2,7 @@ import { Component, h, Element, State, Host, Method, Prop } from '@stencil/core'
 import { MDCDialog } from '@material/dialog';
 import { MDCMenu } from '@material/menu';
 import { Unsubscribe, Store } from '@stencil/redux';
-import { setLocale, addLocale } from '../../store/actions/document';
+import { setLanguage, addLanguage } from '../../store/actions/document';
 import i18next from 'i18next';
 import '../../services/i18n-service';
 
@@ -14,15 +14,13 @@ export class SettingsComponent {
 
     @Element() el: HTMLElement
 
-    @State() locale: MyAppState["document"]["locale"]
-    @State() supportedLocales: MyAppState["document"]["supportedLocales"]
-
-    @State() language: string
+    @State() language: MyAppState["document"]["language"]
+    @State() availableLanguages: MyAppState["document"]["availableLanguages"]
 
     @Prop({ context: "store" }) store: Store
 
-    addLocale: typeof addLocale
-    setLocale: typeof setLocale
+    addLanguage: typeof addLanguage
+    setLanguage: typeof setLanguage
 
     storeUnsubscribe: Unsubscribe
 
@@ -30,14 +28,14 @@ export class SettingsComponent {
 
     componentWillLoad() {
 
-        this.store.mapDispatchToProps(this, { addLocale, setLocale })
+        this.store.mapDispatchToProps(this, { addLanguage: addLanguage, setLanguage: setLanguage })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { locale: locale, supportedLocales: supportedLocales }
+                document: { language: language, availableLanguages: availableLanguages }
             } = state
             return {
-                locale: locale,
-                supportedLocales: supportedLocales
+                language: language,
+                availableLanguages: availableLanguages
             }
         })
     }
@@ -66,7 +64,9 @@ export class SettingsComponent {
     // }
 
     handleApplyClick() {
-        i18next.changeLanguage(this.language)
+        if (this.language) {
+            i18next.changeLanguage(this.language.code)
+        }
     }
 
     render() {
@@ -89,7 +89,7 @@ export class SettingsComponent {
 
                         <select class="form-control" name="language" onInput={(ev) => { this.language = (ev.target as any).value }}>
                             {
-                                this.supportedLocales.map(i => <option value={i}>{i}</option>)
+                                this.availableLanguages.map(i => <option value={i.code}>{i.name}</option>)
                             }
                         </select>
 

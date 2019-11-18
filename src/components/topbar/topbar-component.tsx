@@ -3,14 +3,15 @@ import { Store, Unsubscribe } from '@stencil/redux';
 import { MDCTopAppBar } from '@material/top-app-bar';
 import { MDCMenu, Corner } from '@material/menu';
 import iconMenu from '../../assets/material-design-icons/ic_menu_18px.svg'
+import iconLanguage from '../../assets/material-icons/ic_world_24px.svg';
 import iconMore from '../../assets/material-design-icons/navigation/ic_more_vert_18px.svg'
 import iconFullscreen from '../../assets/material-icons/ic_fullscreen_24px.svg';
 import iconFullscreenExit from '../../assets/material-icons/ic_fullscreen_exit_24px.svg';
 import iconDisplay from '../../assets/material-icons/ic_display_24px.svg';
 import iconDockLeft from '../../assets/material-icons/ic_dock_left_24px.svg';
 import iconDockBottom from '../../assets/material-icons/ic_dock_bottom_24px.svg';
-import { setViewport } from '../../store/actions/document';
-import { t } from 'i18next';
+import { setViewport, setLanguage } from '../../store/actions/document';
+import i18next, { t } from 'i18next';
 import { label } from '../../services/i18n-service';
 
 @Component({
@@ -25,27 +26,31 @@ export class TopbarComponent {
 
     @Prop({ context: "store" }) store: Store
 
-    @State() locale: MyAppState["document"]["locale"]
+    @State() language: MyAppState["document"]["language"]
+    @State() availableLanguages: MyAppState["document"]["availableLanguages"]
     @State() title: MyAppState["document"]["document"]["label"]
     @State() viewport: MyAppState["document"]["viewport"]
 
+    setLanguage: typeof setLanguage
     setViewport: typeof setViewport
 
     storeUnsubscribe: Unsubscribe
 
     private topAppBar?: MDCTopAppBar
     private menuDisplay?: MDCMenu
+    private menuLanguage?: MDCMenu
     private elemSettings?: HTMLHvSettingsElement
 
     componentWillLoad() {
 
-        this.store.mapDispatchToProps(this, { setViewport })
+        this.store.mapDispatchToProps(this, { setLanguage, setViewport })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { document: document, locale: locale, viewport: viewport }
+                document: { document: document, language: language, availableLanguages: availableLanguages, viewport: viewport }
             } = state
             return {
-                locale: locale,
+                language: language,
+                availableLanguages: availableLanguages,
                 title: (document ? document.label : null),
                 viewport: viewport
             }
@@ -56,12 +61,24 @@ export class TopbarComponent {
 
         this.topAppBar = new MDCTopAppBar(this.el.querySelector('.topbar'))
 
-        this.menuDisplay = new MDCMenu(this.el.querySelector('.mdc-menu'))
-        this.menuDisplay.setAnchorCorner(Corner.BOTTOM_LEFT)
+        // this.menuDisplay = new MDCMenu(this.el.querySelector('.mdc-menu'))
+        // this.menuDisplay.setAnchorCorner(Corner.BOTTOM_LEFT)
+
+        this.menuLanguage = new MDCMenu(this.el.querySelector('#menu-language'))
+        this.menuLanguage.setAnchorCorner(Corner.BOTTOM_LEFT)
+        this.menuLanguage.quickOpen = true
     }
 
     componentDidUnload() {
         this.storeUnsubscribe()
+    }
+
+    handleLanguageClick() {
+        this.menuLanguage.open = !this.menuLanguage.open
+    }
+
+    handleLanguageSelectionChange(selectedValue: string) {
+        this.setLanguage(selectedValue)
     }
 
     handleDisplayClick() {
@@ -92,6 +109,31 @@ export class TopbarComponent {
                     <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
                         {/* <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Download">file_download</button>
                             <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Print this page">print</button> */}
+
+                        <harmonized-button
+                            class="mdc-top-app-bar__action-item topbar__button mdc-menu-surface--anchor"
+                            icon={iconLanguage}
+                            size="sm"
+                            label={this.language && this.language.name}
+                            aria-label="Select a language"
+                            tooltip="Select a language"
+                            onClick={this.handleLanguageClick.bind(this)}>
+
+                            <div class="mdc-menu mdc-menu-surface" id="menu-language">
+                                <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
+                                    {this.availableLanguages.map((language) => <li
+                                        role="menuitem"
+                                        class={(this.language && this.language.code == language.code) ?
+                                            "mdc-list-item mdc-list-item--selected" : "mdc-list-item"}
+                                        onClick={(ev) => { this.handleLanguageSelectionChange(language.code) }}>
+                                        <span class="mdc-list-item__text">
+                                            {language.name}
+                                        </span>
+                                    </li>)}
+                                </ul>
+                            </div>
+
+                        </harmonized-button>
 
                         <div class="topbar__button button-fullscreen">
                             <button
@@ -201,6 +243,6 @@ export class TopbarComponent {
 
             <hv-settings
                 ref={el => this.elemSettings = el as HTMLHvSettingsElement}></hv-settings>
-        </Host>
+        </Host >
     }
 }

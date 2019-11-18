@@ -5,8 +5,8 @@ interface DocumentState {
     annotations: DocumentAnnotation[]
     contentType: string
     document: DocumentBase
-    locale: string
-    supportedLocales: string[]
+    language: Language
+    availableLanguages: Language[]
     options: Options[]
     overlays: DocumentOverlay[]
     page: number
@@ -32,6 +32,11 @@ interface Options {
     component: string
     name: string
     value: any
+}
+
+interface Language {
+    code: string
+    name: string
 }
 
 interface DocumentError {

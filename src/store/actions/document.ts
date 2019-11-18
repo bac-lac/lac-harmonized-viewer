@@ -51,26 +51,28 @@ export const setStatus = (code: StatusCode) => (dispatch, _getState) => {
 }
 
 
-export interface SetLocale {
-    type: TypeKeys.SET_LOCALE
-    locale: string
+export interface SetLanguage {
+    type: TypeKeys.SET_LANGUAGE
+    code: string
 }
-export const setLocale = (locale: string) => (dispatch, _getState) => {
-    const action: SetLocale = {
-        type: TypeKeys.SET_LOCALE,
-        locale: locale
+export const setLanguage = (code: string) => (dispatch, _getState) => {
+    const action: SetLanguage = {
+        type: TypeKeys.SET_LANGUAGE,
+        code: code
     }
     dispatch(action)
 }
 
-export interface AddLocale {
-    type: TypeKeys.ADD_LOCALE
-    locale: string
+export interface AddLanguage {
+    type: TypeKeys.ADD_LANGUAGE
+    code: string
+    name: string
 }
-export const addLocale = (locale: string) => (dispatch, _getState) => {
-    const action: AddLocale = {
-        type: TypeKeys.ADD_LOCALE,
-        locale: locale
+export const addLanguage = (code: string, name: string) => (dispatch, _getState) => {
+    const action: AddLanguage = {
+        type: TypeKeys.ADD_LANGUAGE,
+        code: code,
+        name: name
     }
     dispatch(action)
 }

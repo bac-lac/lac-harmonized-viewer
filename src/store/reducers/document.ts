@@ -9,8 +9,11 @@ const getInitialState = (): DocumentState => {
         document: null,
         error: null,
         loading: false,
-        locale: 'en',
-        supportedLocales: [],
+        language: {
+            code: 'en',
+            name: 'English'
+        },
+        availableLanguages: [],
         options: [],
         overlays: [],
         page: 0,
@@ -52,8 +55,8 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
         case TypeKeys.SET_STATUS: {
             return { ...state, status: { ...state.status, loading: (action.code == 'prefetching' || action.code == 'loading'), code: action.code } }
         }
-        case TypeKeys.SET_LOCALE: {
-            return { ...state, locale: action.locale }
+        case TypeKeys.SET_LANGUAGE: {
+            return { ...state, language: state.availableLanguages.find(i => i.code && i.code == action.code) }
         }
         case TypeKeys.SET_DOCUMENT_CONTENT_TYPE: {
             return { ...state, contentType: action.contentType }
@@ -90,8 +93,8 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
         case TypeKeys.SET_ZOOM_REQUEST: {
             return { ...state, zoomRequest: action.zoom }
         }
-        case TypeKeys.ADD_LOCALE: {
-            return { ...state, supportedLocales: [...state.supportedLocales, action.locale] }
+        case TypeKeys.ADD_LANGUAGE: {
+            return { ...state, availableLanguages: [...state.availableLanguages, { code: action.code, name: action.name }] }
         }
         case TypeKeys.ADD_OVERLAY: {
             return { ...state, overlays: [...state.overlays, { id: action.id, x: action.x, y: action.y, width: action.width, height: action.height }] }

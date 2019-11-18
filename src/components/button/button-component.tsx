@@ -1,4 +1,4 @@
-import { Component, h, Element, Host, Prop, Event, EventEmitter } from '@stencil/core';
+import { Component, h, Element, Host, Prop } from '@stencil/core';
 import { MDCRipple } from '@material/ripple';
 
 @Component({
@@ -21,27 +21,34 @@ export class ButtonComponent {
 
     componentDidLoad() {
 
-        const button = new MDCRipple(this.el.querySelector('.mdc-icon-button'))
-        if (button) button.unbounded = true
+        const button = this.el.querySelector('button')
+        if (button) {
+            const ripple = new MDCRipple(button)
+            if (ripple) {
+                ripple.unbounded = true
+            }
+        }
     }
 
     render() {
 
         let className = null
+        let iconClassName = null
 
-        if (this.icon) {
-
+        if (this.icon && !this.label) {
             className = 'mdc-icon-button'
-
-            if (this.size === 'lg') className += ' mdc-icon-button--lg'
-            else if (this.size === 'md') className += ' mdc-icon-button--md'
-            else if (this.size === 'sm') className += ' mdc-icon-button--sm'
+            iconClassName = 'mdc-button__icon'
         }
-        else
+        else {
             className = 'mdc-button'
+            iconClassName = 'mdc-icon-button__icon'
+        }
+
+        if (this.size === 'lg') className += ` ${className}--lg`
+        else if (this.size === 'md') className += ` ${className}--md`
+        else if (this.size === 'sm') className += ` ${className}--sm`
 
         if (this.raised) className += ' mdc-button--raised'
-
         if (this.fullWidth) className += ' full-width'
 
         return <Host>
@@ -54,12 +61,12 @@ export class ButtonComponent {
 
                 <div class="mdc-button__ripple"></div>
 
-                {this.icon && <i class="mdc-button__icon" aria-hidden={true} innerHTML={this.icon}></i>}
-
+                {this.icon && <i class={iconClassName} aria-hidden={true} innerHTML={this.icon}></i>}
                 {this.label && <span class="mdc-button__label" style={{ fontSize: `${this.fontSize}em` }}>{this.label}</span>}
 
                 <div class="mdc-button__touch"></div>
             </button>
+            <slot />
         </Host>
     }
 }

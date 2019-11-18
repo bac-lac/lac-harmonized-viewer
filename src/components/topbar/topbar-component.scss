@@ -41,17 +41,10 @@ harmonized-topbar {
         }
 
         .topbar__button {
-            @extend .mdc-touch-target-wrapper;
-
             button {
-                @extend .mdc-button;
-                @extend .mdc-button--touch;
-
                 @include mdc-button-filled-accessible(#181818);
                 @include mdc-button-ink-color(#fff);
-                @include mdc-button-shape-radius(2px);
-                //@include mdc-button-icon-size(30px, 30px);
-                //@include mdc-button-ink-color(#fff);
+
                 svg {
                     fill: #fff;
                     margin-right: 10px;
@@ -59,6 +52,15 @@ harmonized-topbar {
 
                 .mdc-button__label {
                     font-size: 12px;
+                }
+            }
+
+            .mdc-menu {
+                @include mdc-menu-surface-ink-color(#fff);
+                @include mdc-menu-surface-fill-color(#282828);
+
+                .mdc-list {
+                    @include mdc-list-item-primary-text-ink-color(#fff);
                 }
             }
         }

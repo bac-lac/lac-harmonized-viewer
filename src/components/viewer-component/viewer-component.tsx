@@ -3,11 +3,12 @@ import "@stencil/redux";
 import 'manifesto.js';
 import { Store, Unsubscribe } from "@stencil/redux";
 import { configureStore } from "../../store";
-import { setDocumentUrl, setDocumentContentType, setStatus, addOverlay, setOptions, setLocale, addLocale } from '../../store/actions/document';
+import { setDocumentUrl, setDocumentContentType, setStatus, addOverlay, setOptions, setLanguage, addLanguage } from '../../store/actions/document';
 import i18next from 'i18next';
 import i18nextXHRBackend from 'i18next-xhr-backend';
 import i18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 import { EventEmitter } from 'events';
+import iconError from '../../assets/material-icons/ic_error_24px.svg'
 
 @Component({
 	tag: 'harmonized-viewer',
@@ -20,7 +21,7 @@ export class ViewerComponent {
 
 	@Element() el: HTMLElement
 
-	@Prop() language: string
+	//@Prop() language: string
 
 	@Prop() navigationEnable: boolean
 	@Prop() navigationHeight?: number
@@ -35,25 +36,24 @@ export class ViewerComponent {
 
 	@Prop({ attribute: 'url' }) documentUrl: string
 
-	addLocale: typeof addLocale
+	addLanguage: typeof addLanguage
 	addOverlayState: typeof addOverlay
 	setDocumentContentType: typeof setDocumentContentType
 	setDocumentUrl: typeof setDocumentUrl
-	setLocale: typeof setLocale
+	setLanguage: typeof setLanguage
 	setStatus: typeof setStatus
 	setOptions: typeof setOptions
 
 	storeUnsubscribe: Unsubscribe
 
-	@State() locale: MyAppState["document"]["locale"]
+	@State() language: MyAppState["document"]["language"]
+	@State() availableLanguages: MyAppState["document"]["availableLanguages"]
 	@State() page: MyAppState["document"]["page"]
 	@State() url: MyAppState["document"]["url"]
 	@State() status: MyAppState["document"]["status"]
 	@State() viewport: MyAppState["document"]["viewport"]
 
 	@Prop({ context: "store" }) store: Store
-
-	private i18n: EventEmitter
 
 	@Method()
 	async getPage(): Promise<number> {
@@ -86,19 +86,20 @@ export class ViewerComponent {
 
 	@Listen('languageChanged')
 	handleLanguageChange() {
-		this.setLocale(this.language)
+		//this.setLanguage(this.language)
 	}
 
 	componentWillLoad() {
 
 		this.store.setStore(configureStore({}))
-		this.store.mapDispatchToProps(this, { addLocale, addOverlay, setDocumentContentType, setDocumentUrl, setLocale, setOptions, setStatus })
+		this.store.mapDispatchToProps(this, { addLanguage: addLanguage, addOverlay, setDocumentContentType, setDocumentUrl, setLanguage: setLanguage, setOptions, setStatus })
 		this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
-				document: { locale: locale, page: page, url: url, status: status, viewport: viewport }
+				document: { language: language, availableLanguages: availableLanguages, page: page, url: url, status: status, viewport: viewport }
 			} = state
 			return {
-				locale: locale,
+				language: language,
+				availableLanguages: availableLanguages,
 				page: page,
 				status: status,
 				url: url,
@@ -142,8 +143,8 @@ export class ViewerComponent {
 
 	configure() {
 
-		this.addLocale('en')
-		this.addLocale('fr')
+		this.addLanguage('en', 'English')
+		this.addLanguage('fr', 'Français')
 
 		i18next
 			.use(i18nextXHRBackend)
@@ -160,8 +161,10 @@ export class ViewerComponent {
 			}, (err, t) => {
 
 				i18next.on('languageChanged', (language: string) => {
-					console.log(language)
-					this.setLocale(language)
+					const availableLanguage = this.availableLanguages.find(i => i.code && i.code === language)
+					if (availableLanguage) {
+						this.setLanguage(availableLanguage.code)
+					}
 				})
 			})
 	}
@@ -170,13 +173,27 @@ export class ViewerComponent {
 
 		return <div class="harmonized-viewer" style={{ backgroundColor: this.backgroundColor }}>
 
-			<harmonized-topbar />
+			{
+				!this.status.error &&
+				<harmonized-topbar />
+			}
 
-			<harmonized-viewport
-				navigation-enable={this.navigationEnable}
-				navigation-placement={this.viewport.navigationPlacement}
-				annotations-enable={this.annotationsEnable}
-			/>
+			{
+				this.status.error &&
+				<div class="error-message">
+					<i innerHTML={iconError}></i>
+					<div class="error-message__text">{this.status.error.message}</div>
+				</div>
+			}
+
+			{
+				!this.status.error &&
+				<harmonized-viewport
+					navigation-enable={this.navigationEnable}
+					navigation-placement={this.viewport.navigationPlacement}
+					annotations-enable={this.annotationsEnable}
+				/>
+			}
 
 			<slot name="footer" />
 		</div>

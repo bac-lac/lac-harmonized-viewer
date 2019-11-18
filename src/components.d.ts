@@ -84,7 +84,6 @@ export namespace Components {
     'backgroundColor': string;
     'documentUrl': string;
     'getPage': () => Promise<number>;
-    'language': string;
     'navigationEnable': boolean;
     'navigationHeight'?: number;
     'navigationLocation': PlacementType;
@@ -326,7 +325,6 @@ declare namespace LocalJSX {
     'annotationsEnable'?: boolean;
     'backgroundColor'?: string;
     'documentUrl'?: string;
-    'language'?: string;
     'navigationEnable'?: boolean;
     'navigationHeight'?: number;
     'navigationLocation'?: PlacementType;
