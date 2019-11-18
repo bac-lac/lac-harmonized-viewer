@@ -24,6 +24,7 @@ export namespace Components {
   }
   interface HarmonizedContent {
     'placement': PlacementType;
+    'rows': number;
     'showMetadata': boolean;
     'showNavigation': boolean;
     'visible': boolean;
@@ -32,7 +33,7 @@ export namespace Components {
   interface HarmonizedDrawer {
     'close': () => Promise<void>;
     'open': () => Promise<void>;
-    'placement': string;
+    'placement': PlacementType;
     'toolbar': boolean;
     'visible': boolean;
   }
@@ -80,18 +81,15 @@ export namespace Components {
   }
   interface HarmonizedViewer {
     'addOverlay': (x: number, y: number, width: number, height: number) => Promise<void>;
-    'annotationsEnable': boolean;
     'backgroundColor': string;
     'documentUrl': string;
     'getPage': () => Promise<number>;
     'navigationEnable': boolean;
-    'navigationHeight'?: number;
-    'navigationLocation': PlacementType;
+    'navigationPlacement': PlacementType;
+    'pagingEnable': boolean;
   }
   interface HarmonizedViewport {
     'annotationsEnable': boolean;
-    'navigationEnable': boolean;
-    'navigationPlacement': PlacementType;
   }
   interface HarmonizedZoomSlider {}
   interface HvAnnotations {}
@@ -267,13 +265,14 @@ declare namespace LocalJSX {
   }
   interface HarmonizedContent {
     'placement'?: PlacementType;
+    'rows'?: number;
     'showMetadata'?: boolean;
     'showNavigation'?: boolean;
     'visible'?: boolean;
     'width'?: number;
   }
   interface HarmonizedDrawer {
-    'placement'?: string;
+    'placement'?: PlacementType;
     'toolbar'?: boolean;
     'visible'?: boolean;
   }
@@ -322,17 +321,14 @@ declare namespace LocalJSX {
     'backgroundColor'?: string;
   }
   interface HarmonizedViewer {
-    'annotationsEnable'?: boolean;
     'backgroundColor'?: string;
     'documentUrl'?: string;
     'navigationEnable'?: boolean;
-    'navigationHeight'?: number;
-    'navigationLocation'?: PlacementType;
+    'navigationPlacement'?: PlacementType;
+    'pagingEnable'?: boolean;
   }
   interface HarmonizedViewport {
     'annotationsEnable'?: boolean;
-    'navigationEnable'?: boolean;
-    'navigationPlacement'?: PlacementType;
   }
   interface HarmonizedZoomSlider {}
   interface HvAnnotations {}

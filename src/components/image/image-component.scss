@@ -1,7 +1,7 @@
-@import "../../global/variables";
-@import "../../global/mixins";
-@import "bulma/sass/utilities/_all.sass";
-@import "@material/elevation/mdc-elevation";
+@import '../../global/variables';
+@import '../../global/mixins';
+@import 'bulma/sass/utilities/_all.sass';
+@import '@material/elevation/mdc-elevation';
 
 harmonized-image {
     display: inline-block;
@@ -37,7 +37,7 @@ harmonized-image {
     .mdc-image-list__image {
         @extend .mdc-elevation--z6;
         padding: 0;
-        border: #111 3px solid;
+        border: #111 2px solid;
     }
 
     .mdc-image-list__supporting {
@@ -75,7 +75,7 @@ harmonized-image {
 
         &.is-active {
             .mdc-image-list__image-aspect-container {
-                outline: #e4e0ea 3px solid;
+                outline: #e4e0ea 2px solid;
                 .mdc-image-list__image {
                 }
             }

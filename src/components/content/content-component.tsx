@@ -1,4 +1,4 @@
-import { Component, Element, h, Prop, State, Host, Listen } from '@stencil/core'
+import { Component, Element, h, Prop, Host, Listen } from '@stencil/core'
 import '../../utils/manifest'
 import { Unsubscribe, Store } from '@stencil/redux'
 import iconGrid from '../../assets/material-icons/ic_grid_24px.svg'
@@ -14,7 +14,8 @@ export class ContentComponent {
 
     @Prop() placement: PlacementType = 'left'
     @Prop() showNavigation: boolean = false
-    @Prop() showMetadata: boolean = true
+    @Prop() showMetadata: boolean = false
+    @Prop() rows: number
     @Prop() width: number
     @Prop() visible: boolean = true
 
@@ -56,7 +57,7 @@ export class ContentComponent {
                 <harmonized-tab
                     label="Thumbnails"
                     icon={iconGrid}>
-                    <harmonized-navigation />
+                    <harmonized-navigation placement={this.placement} rows={this.rows} />
                 </harmonized-tab>
             }
             {

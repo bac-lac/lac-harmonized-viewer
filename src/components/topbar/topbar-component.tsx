@@ -91,9 +91,9 @@ export class TopbarComponent {
     }
 
     handleDisplaySelectionChange(placement: PlacementType, ev: any) {
-        this.setViewport({
-            navigationPlacement: placement
-        })
+        // this.setViewport({
+        //     navigationPlacement: placement
+        // })
     }
 
     openSettings() {

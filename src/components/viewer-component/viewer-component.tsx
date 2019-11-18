@@ -3,7 +3,7 @@ import "@stencil/redux";
 import 'manifesto.js';
 import { Store, Unsubscribe } from "@stencil/redux";
 import { configureStore } from "../../store";
-import { setDocumentUrl, setDocumentContentType, setStatus, addOverlay, setOptions, setLanguage, addLanguage } from '../../store/actions/document';
+import { setDocumentUrl, setDocumentContentType, setStatus, addOverlay, setOptions, setLanguage, addLanguage, setViewport } from '../../store/actions/document';
 import i18next from 'i18next';
 import i18nextXHRBackend from 'i18next-xhr-backend';
 import i18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
@@ -24,10 +24,9 @@ export class ViewerComponent {
 	//@Prop() language: string
 
 	@Prop() navigationEnable: boolean
-	@Prop() navigationHeight?: number
-	@Prop() navigationLocation: PlacementType
+	@Prop() navigationPlacement: PlacementType
 
-	@Prop() annotationsEnable: boolean
+	@Prop() pagingEnable: boolean
 
 	@Prop() backgroundColor: string = '#181818'
 
@@ -43,6 +42,7 @@ export class ViewerComponent {
 	setLanguage: typeof setLanguage
 	setStatus: typeof setStatus
 	setOptions: typeof setOptions
+	setViewport: typeof setViewport
 
 	storeUnsubscribe: Unsubscribe
 
@@ -51,7 +51,6 @@ export class ViewerComponent {
 	@State() page: MyAppState["document"]["page"]
 	@State() url: MyAppState["document"]["url"]
 	@State() status: MyAppState["document"]["status"]
-	@State() viewport: MyAppState["document"]["viewport"]
 
 	@Prop({ context: "store" }) store: Store
 
@@ -92,18 +91,17 @@ export class ViewerComponent {
 	componentWillLoad() {
 
 		this.store.setStore(configureStore({}))
-		this.store.mapDispatchToProps(this, { addLanguage: addLanguage, addOverlay, setDocumentContentType, setDocumentUrl, setLanguage: setLanguage, setOptions, setStatus })
+		this.store.mapDispatchToProps(this, { addLanguage, addOverlay, setDocumentContentType, setDocumentUrl, setLanguage, setOptions, setViewport, setStatus })
 		this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
-				document: { language: language, availableLanguages: availableLanguages, page: page, url: url, status: status, viewport: viewport }
+				document: { language: language, availableLanguages: availableLanguages, page: page, url: url, status: status }
 			} = state
 			return {
 				language: language,
 				availableLanguages: availableLanguages,
 				page: page,
 				status: status,
-				url: url,
-				viewport: viewport
+				url: url
 			}
 		})
 
@@ -135,6 +133,11 @@ export class ViewerComponent {
 	}
 
 	componentDidLoad() {
+		this.setViewport({
+			navigationEnable: this.navigationEnable,
+			navigationPlacement: this.navigationPlacement,
+			pagingEnable: this.pagingEnable
+		})
 	}
 
 	componentDidUnload() {
@@ -188,14 +191,12 @@ export class ViewerComponent {
 
 			{
 				!this.status.error &&
-				<harmonized-viewport
-					navigation-enable={this.navigationEnable}
-					navigation-placement={this.viewport.navigationPlacement}
-					annotations-enable={this.annotationsEnable}
-				/>
+				<harmonized-viewport />
 			}
 
 			<slot name="footer" />
+
+			<harmonized-navigation placement="bottom" rows={1} />
 		</div>
 	}
 }

@@ -27,7 +27,9 @@ const getInitialState = (): DocumentState => {
         },
         url: null,
         viewport: {
-            navigationPlacement: 'left'
+            navigationEnable: true,
+            navigationPlacement: 'left',
+            pagingEnable: true
         },
         zoom: {
             min: 0,

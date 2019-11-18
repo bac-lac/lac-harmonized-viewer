@@ -17,9 +17,6 @@ export class ViewportComponent {
 
     @Element() el: HTMLElement
 
-    @Prop() navigationEnable: boolean = true
-    @Prop() navigationPlacement: PlacementType = 'left'
-
     @Prop() annotationsEnable: boolean = false
 
     setLoading: typeof setLoading
@@ -37,6 +34,7 @@ export class ViewportComponent {
     @State() pages: MyAppState["document"]["pages"]
     @State() pageCount: MyAppState["document"]["pageCount"]
     @State() url: MyAppState["document"]["url"]
+    @State() viewport: MyAppState["document"]["viewport"]
 
     @Prop({ context: "store" }) store: Store
 
@@ -45,7 +43,7 @@ export class ViewportComponent {
         this.store.mapDispatchToProps(this, { setLoading, setError, setPage, setStatus, setDocumentContentType })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { contentType: contentType, document: document, status: status, page: page, pages: pages, pageCount: pageCount, url: url }
+                document: { contentType: contentType, document: document, status: status, page: page, pages: pages, pageCount: pageCount, url: url, viewport: viewport }
             } = state
             return {
                 contentType: contentType,
@@ -54,7 +52,8 @@ export class ViewportComponent {
                 page: page,
                 pages: pages,
                 pageCount: pageCount,
-                url: url
+                url: url,
+                viewport: viewport
             }
         })
     }
@@ -126,11 +125,15 @@ export class ViewportComponent {
 
             <div class="hv-content">
 
-                <harmonized-content
-                    width={250}
-                    placement="left"
-                    showNavigation={true}
-                    showMetadata={false} />
+                {
+                    (this.viewport.navigationPlacement == 'left') && (
+                        <harmonized-content
+                            width={250}
+                            placement="left"
+                            showNavigation={this.viewport.navigationEnable}
+                            showMetadata={false} />
+                    )
+                }
 
                 <main class="hv-main mdc-drawer-app-content">
 
@@ -151,7 +154,7 @@ export class ViewportComponent {
                             {this.renderOpenSeadragon()}
                             {this.renderLabel()}
 
-                            <harmonized-pager />
+                            {this.viewport.pagingEnable && <harmonized-pager />}
 
                         </div>
 
@@ -170,17 +173,21 @@ export class ViewportComponent {
                 </main>
 
                 <harmonized-content
-                    width={300}
+                    width={250}
                     placement="right"
                     showNavigation={false}
                     showMetadata={true} />
 
-                {this.renderNavigation('right')}
-
 
             </div>
 
-            {this.renderNavigation('bottom')}
+
+
+            {/* <harmonized-content
+                rows={2}
+                placement="bottom"
+                showNavigation={this.viewport.navigationEnable}
+                showMetadata={false} /> */}
 
         </Host>
     }
@@ -230,21 +237,9 @@ export class ViewportComponent {
 
     renderNavigation(placement: PlacementType) {
 
-        if (this.navigationEnable &&
-            this.navigationPlacement == placement) {
-
-            if (placement == 'left' || placement == 'right') {
-
-                return <harmonized-content width={300} placement={placement} />
-            }
-            else {
-
-                return <harmonized-navigation
-                    class={"navigation navigation--" + this.navigationPlacement}
-                    placement={placement}
-                    rows={1}>
-                </harmonized-navigation>
-            }
+        if (this.viewport.navigationPlacement == placement) {
+            const width: number = (placement == 'left' || placement == 'right') && 300
+            return <harmonized-content placement={placement} width={width} />
         }
     }
 

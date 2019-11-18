@@ -11,7 +11,7 @@ export class DrawerComponent {
 
     @Element() el: Element
 
-    @Prop() placement: string = 'left'
+    @Prop() placement: PlacementType = 'left'
     @Prop() toolbar: boolean = false
     @Prop() visible: boolean = false
 
@@ -41,14 +41,7 @@ export class DrawerComponent {
 
     render() {
 
-        let className = 'mdc-drawer mdc-drawer--dismissible'
-
-        if (this.placement === 'right') {
-            className += ' mdc-drawer--right'
-        }
-        else {
-            className += ' mdc-drawer--left'
-        }
+        let className = `mdc-drawer mdc-drawer--${this.placement} mdc-drawer--dismissible`
 
         if (this.visible) {
             className += ' mdc-drawer--open'

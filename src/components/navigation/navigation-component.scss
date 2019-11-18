@@ -1,14 +1,14 @@
-@import "../../global/variables";
-@import "../../global/mixins";
-@import "bulma/sass/utilities/_all.sass";
+@import '../../global/variables';
+@import '../../global/mixins';
+@import 'bulma/sass/utilities/_all.sass';
 
-@import "@material/tab-bar/mdc-tab-bar";
-@import "@material/tab-scroller/mdc-tab-scroller";
-@import "@material/tab-indicator/mdc-tab-indicator";
-@import "@material/tab/mdc-tab";
+@import '@material/tab-bar/mdc-tab-bar';
+@import '@material/tab-scroller/mdc-tab-scroller';
+@import '@material/tab-indicator/mdc-tab-indicator';
+@import '@material/tab/mdc-tab';
 
 harmonized-navigation {
-    height: 100%;
+    // height: 100%;
     display: block;
     flex: 0 0 auto;
     overflow-y: auto;

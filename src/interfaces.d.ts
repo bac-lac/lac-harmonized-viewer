@@ -21,7 +21,9 @@ interface DocumentState {
 }
 
 interface Viewport {
+    navigationEnable: boolean
     navigationPlacement: PlacementType
+    pagingEnable: boolean
 }
 
 interface DocumentBase {
