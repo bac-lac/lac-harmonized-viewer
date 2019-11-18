@@ -63,7 +63,8 @@ export class DrawerComponent {
                         icon={iconDockLeft}
                         size="sm"
                         title="Dock"
-                        aria-label="Dock" />
+                        aria-label="Dock"
+                        disabled={true} />
 
                     <harmonized-button
                         icon={iconClose}

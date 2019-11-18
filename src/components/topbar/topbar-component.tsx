@@ -11,7 +11,7 @@ import iconDisplay from '../../assets/material-icons/ic_display_24px.svg';
 import iconDockLeft from '../../assets/material-icons/ic_dock_left_24px.svg';
 import iconDockBottom from '../../assets/material-icons/ic_dock_bottom_24px.svg';
 import { setViewport, setLanguage } from '../../store/actions/document';
-import i18next, { t } from 'i18next';
+import i18next from 'i18next';
 import { label } from '../../services/i18n-service';
 
 @Component({
@@ -78,7 +78,12 @@ export class TopbarComponent {
     }
 
     handleLanguageSelectionChange(selectedValue: string) {
+        console.log(selectedValue);
         this.setLanguage(selectedValue)
+    }
+
+    handleFullscreenClick() {
+
     }
 
     handleDisplayClick() {
@@ -135,55 +140,16 @@ export class TopbarComponent {
 
                         </harmonized-button>
 
-                        <div class="topbar__button button-fullscreen">
-                            <button
-                                type="button"
-                                aria-label="Go to previous page">
-                                <div class="mdc-button__ripple"></div>
-                                <div innerHTML={iconFullscreen}></div>
-                                <div class="mdc-button__label">Fullscreen</div>
-                                <div class="mdc-button__touch"></div>
-                            </button>
-                        </div>
+                        <harmonized-button
+                            class="mdc-top-app-bar__action-item topbar__button mdc-menu-surface--anchor"
+                            icon={iconFullscreen}
+                            size="sm"
+                            label={i18next.t('fullscreen')}
+                            aria-label="Enter fullscreen"
+                            tooltip="Enter fullscreen"
+                            onClick={this.handleFullscreenClick.bind(this)}>
 
-                        <div class="topbar__button button-navigation">
-                            <button
-                                type="button"
-                                aria-label="Go to previous page"
-                                onClick={this.handleDisplayClick.bind(this)}>
-                                <div class="mdc-button__ripple"></div>
-                                <div innerHTML={iconDisplay}></div>
-                                <div class="mdc-button__label">Display</div>
-                                <div class="mdc-button__touch"></div>
-                            </button>
-                            <div class="mdc-menu mdc-menu-surface" id="demo-menu">
-                                <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
-                                    <li>
-                                        <ul class="mdc-menu__selection-group">
-                                            <li
-                                                role="menuitem"
-                                                class="mdc-list-item mdc-list-item--selected"
-                                                onClick={this.handleDisplaySelectionChange.bind(this, 'left')}>
-                                                <span
-                                                    class="mdc-list-item__graphic mdc-menu__selection-group-icon"
-                                                    innerHTML={iconDockLeft}>
-                                                </span>
-                                                <span class="mdc-list-item__text">Left</span>
-                                            </li>
-                                            <li
-                                                role="menuitem"
-                                                class="mdc-list-item"
-                                                onClick={this.handleDisplaySelectionChange.bind(this, 'bottom')}>
-                                                <span class="mdc-list-item__graphic mdc-menu__selection-group-icon"
-                                                    innerHTML={iconDockBottom}>
-                                                </span>
-                                                <span class="mdc-list-item__text">Bottom</span>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                        </harmonized-button>
 
                         <button type="button" class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Bookmark this page" onClick={this.openSettings.bind(this)}>
                             <i class="mdc-icon-button__icon" innerHTML={iconMore}></i>

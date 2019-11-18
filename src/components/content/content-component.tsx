@@ -34,35 +34,39 @@ export class ContentComponent {
             return undefined
         }
 
+        const tabCount = (this.showNavigation ? 1 : 0) + (this.showMetadata ? 1 : 0)
+        const showTabs = (tabCount > 0)
+
         return <Host style={{ width: `${this.width}px` }}>
+
             <harmonized-drawer placement={this.placement} toolbar={true} visible={true}>
-                <harmonized-tabs>
 
-                    {
-                        this.showNavigation &&
-                        <harmonized-tab
-                            label="Pages"
-                            icon={iconGrid}>
-                            <harmonized-navigation />
-                        </harmonized-tab>
-                    }
+                {showTabs && this.renderTabs()}
+                {showTabs === false && this.showMetadata && <hv-annotations />}
 
-                    {
-                        this.showMetadata &&
-                        <harmonized-tab
-                            label="Metadata"
-                            icon={iconInfo}>
-                            <hv-annotations />
-                        </harmonized-tab>
-                    }
-
-                    <harmonized-tab
-                        label="License"
-                        icon={iconInfo}>
-                    </harmonized-tab>
-
-                </harmonized-tabs>
             </harmonized-drawer>
         </Host>
+    }
+
+    renderTabs() {
+
+        return <harmonized-tabs>
+            {
+                this.showNavigation &&
+                <harmonized-tab
+                    label="Thumbnails"
+                    icon={iconGrid}>
+                    <harmonized-navigation />
+                </harmonized-tab>
+            }
+            {
+                this.showMetadata &&
+                <harmonized-tab
+                    label="Metadata"
+                    icon={iconInfo}>
+                    <hv-annotations />
+                </harmonized-tab>
+            }
+        </harmonized-tabs>
     }
 }
