@@ -1,11 +1,11 @@
-import { SetLoading, SetDocumentContentType, SetDocumentUrl, SetDocumentPages, SetDocumentTitle, SetDocumentAlternateFormats, SetPage, SetAnnotations, SetOptions, SetZoom, SetZoomRequest, SetError, SetStatus, AddOverlay, ClearOverlays, SetViewport, SetLanguage, AddLanguage } from "./document";
+import { SetLoading, SetDocumentContentType, SetDocumentUrl, SetDocumentPages, SetDocumentTitle, SetDocumentAlternateFormats, SetPage, SetAnnotations, SetOptions, SetZoom, SetZoomRequest, SetError, SetStatus, AddOverlay, ClearOverlays, SetViewport, SetLanguage, AddLanguage, EnterFullscreen, ExitFullscreen } from "./document";
 
 export interface NullAction {
     type: TypeKeys.NULL
 }
 
 // Keep this type updated with each known action
-export type ActionTypes = NullAction | SetError | SetLoading | SetStatus | AddLanguage | SetLanguage | SetDocumentContentType | SetDocumentUrl | SetDocumentPages | SetDocumentTitle | SetDocumentAlternateFormats | SetPage | SetAnnotations | SetOptions | SetZoom | SetZoomRequest | AddOverlay | ClearOverlays | SetViewport
+export type ActionTypes = NullAction | SetError | SetLoading | SetStatus | AddLanguage | SetLanguage | SetDocumentContentType | SetDocumentUrl | SetDocumentPages | SetDocumentTitle | SetDocumentAlternateFormats | SetPage | SetAnnotations | SetOptions | SetZoom | SetZoomRequest | AddOverlay | ClearOverlays | SetViewport | EnterFullscreen | ExitFullscreen
 
 export enum TypeKeys {
     // Won't match anything
@@ -28,5 +28,7 @@ export enum TypeKeys {
     SET_ZOOM_REQUEST = "SET_ZOOM_REQUEST",
     ADD_OVERLAY = "ADD_OVERLAY",
     CLEAR_OVERLAYS = "CLEAR_OVERLAYS",
-    SET_VIEWPORT = "SET_VIEWPORT"
+    SET_VIEWPORT = "SET_VIEWPORT",
+    ENTER_FULLSCREEN = "ENTER_FULLSCREEN",
+    EXIT_FULLSCREEN = "EXIT_FULLSCREEN"
 }

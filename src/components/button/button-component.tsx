@@ -17,7 +17,9 @@ export class ButtonComponent {
     @Prop() label: string
     @Prop() tooltip: string
     @Prop() fullWidth: boolean
+
     @Prop() raised: boolean
+    @Prop() outline: boolean
 
     componentDidLoad() {
 
@@ -44,11 +46,12 @@ export class ButtonComponent {
             iconClassName = 'mdc-icon-button__icon'
         }
 
-        if (this.size === 'lg') className += ` ${className}--lg`
-        else if (this.size === 'md') className += ` ${className}--md`
-        else if (this.size === 'sm') className += ` ${className}--sm`
+        if (this.size == 'lg') className += ` ${className}--lg`
+        else if (this.size == 'md') className += ` ${className}--md`
+        else if (this.size == 'sm') className += ` ${className}--sm`
 
         if (this.raised) className += ' mdc-button--raised'
+        if (this.outline) className += ' mdc-button--outlined'
         if (this.fullWidth) className += ' full-width'
 
         return <Host>

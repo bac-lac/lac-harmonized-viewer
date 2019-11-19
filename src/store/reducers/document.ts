@@ -14,6 +14,7 @@ const getInitialState = (): DocumentState => {
             name: 'English'
         },
         availableLanguages: [],
+        fullscreen: false,
         options: [],
         overlays: [],
         page: 0,
@@ -103,6 +104,12 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
         }
         case TypeKeys.CLEAR_OVERLAYS: {
             return { ...state, overlays: [] }
+        }
+        case TypeKeys.ENTER_FULLSCREEN: {
+            return { ...state, fullscreen: true }
+        }
+        case TypeKeys.EXIT_FULLSCREEN: {
+            return { ...state, fullscreen: false }
         }
         case TypeKeys.SET_VIEWPORT: {
             return { ...state, viewport: action.viewport }

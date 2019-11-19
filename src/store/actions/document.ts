@@ -223,11 +223,32 @@ export const addOverlay = (x: number, y: number, width: number, height: number) 
 
 export interface ClearOverlays {
     type: TypeKeys.CLEAR_OVERLAYS
-
 }
 export const clearOverlays = () => (dispatch, _getState) => {
     const action: ClearOverlays = {
         type: TypeKeys.CLEAR_OVERLAYS
+    }
+    dispatch(action)
+}
+
+export interface EnterFullscreen {
+    type: TypeKeys.ENTER_FULLSCREEN
+}
+export const enterFullscreen = (element: Element) => (dispatch, _getState) => {
+    element.requestFullscreen()
+    const action: EnterFullscreen = {
+        type: TypeKeys.ENTER_FULLSCREEN
+    }
+    dispatch(action)
+}
+
+export interface ExitFullscreen {
+    type: TypeKeys.EXIT_FULLSCREEN
+}
+export const exitFullscreen = () => (dispatch, _getState) => {
+    document.exitFullscreen()
+    const action: ExitFullscreen = {
+        type: TypeKeys.EXIT_FULLSCREEN
     }
     dispatch(action)
 }

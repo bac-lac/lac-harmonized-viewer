@@ -18,6 +18,7 @@ export namespace Components {
     'fullWidth': boolean;
     'icon': string;
     'label': string;
+    'outline': boolean;
     'raised': boolean;
     'size': string;
     'tooltip': string;
@@ -55,6 +56,7 @@ export namespace Components {
     'cols': number;
     'placement': PlacementType;
     'rows': number;
+    'theme': string;
   }
   interface HarmonizedOpenseadragon {
     'getOverlays': () => Promise<DocumentOverlay[]>;
@@ -83,6 +85,8 @@ export namespace Components {
     'addOverlay': (x: number, y: number, width: number, height: number) => Promise<void>;
     'backgroundColor': string;
     'documentUrl': string;
+    'exitFullscreen': () => Promise<void>;
+    'fullscreen': () => Promise<void>;
     'getPage': () => Promise<number>;
     'navigationEnable': boolean;
     'navigationPlacement': PlacementType;
@@ -93,9 +97,6 @@ export namespace Components {
   }
   interface HarmonizedZoomSlider {}
   interface HvAnnotations {}
-  interface HvSettings {
-    'open': () => Promise<void>;
-  }
   interface HvStatusbar {}
 }
 
@@ -216,12 +217,6 @@ declare global {
     new (): HTMLHvAnnotationsElement;
   };
 
-  interface HTMLHvSettingsElement extends Components.HvSettings, HTMLStencilElement {}
-  var HTMLHvSettingsElement: {
-    prototype: HTMLHvSettingsElement;
-    new (): HTMLHvSettingsElement;
-  };
-
   interface HTMLHvStatusbarElement extends Components.HvStatusbar, HTMLStencilElement {}
   var HTMLHvStatusbarElement: {
     prototype: HTMLHvStatusbarElement;
@@ -247,7 +242,6 @@ declare global {
     'harmonized-viewport': HTMLHarmonizedViewportElement;
     'harmonized-zoom-slider': HTMLHarmonizedZoomSliderElement;
     'hv-annotations': HTMLHvAnnotationsElement;
-    'hv-settings': HTMLHvSettingsElement;
     'hv-statusbar': HTMLHvStatusbarElement;
   }
 }
@@ -259,6 +253,7 @@ declare namespace LocalJSX {
     'fullWidth'?: boolean;
     'icon'?: string;
     'label'?: string;
+    'outline'?: boolean;
     'raised'?: boolean;
     'size'?: string;
     'tooltip'?: string;
@@ -296,6 +291,7 @@ declare namespace LocalJSX {
     'cols'?: number;
     'placement'?: PlacementType;
     'rows'?: number;
+    'theme'?: string;
   }
   interface HarmonizedOpenseadragon {
     'onOverlayClick'?: (event: CustomEvent<any>) => void;
@@ -332,7 +328,6 @@ declare namespace LocalJSX {
   }
   interface HarmonizedZoomSlider {}
   interface HvAnnotations {}
-  interface HvSettings {}
   interface HvStatusbar {}
 
   interface IntrinsicElements {
@@ -355,7 +350,6 @@ declare namespace LocalJSX {
     'harmonized-viewport': HarmonizedViewport;
     'harmonized-zoom-slider': HarmonizedZoomSlider;
     'hv-annotations': HvAnnotations;
-    'hv-settings': HvSettings;
     'hv-statusbar': HvStatusbar;
   }
 }
@@ -385,7 +379,6 @@ declare module "@stencil/core" {
       'harmonized-viewport': LocalJSX.HarmonizedViewport & JSXBase.HTMLAttributes<HTMLHarmonizedViewportElement>;
       'harmonized-zoom-slider': LocalJSX.HarmonizedZoomSlider & JSXBase.HTMLAttributes<HTMLHarmonizedZoomSliderElement>;
       'hv-annotations': LocalJSX.HvAnnotations & JSXBase.HTMLAttributes<HTMLHvAnnotationsElement>;
-      'hv-settings': LocalJSX.HvSettings & JSXBase.HTMLAttributes<HTMLHvSettingsElement>;
       'hv-statusbar': LocalJSX.HvStatusbar & JSXBase.HTMLAttributes<HTMLHvStatusbarElement>;
     }
   }

@@ -1,4 +1,4 @@
-import { Component, h, Element, Prop, Host, State } from '@stencil/core';
+import { Component, h, Element, Prop, Host, State, Listen } from '@stencil/core';
 import { Store, Unsubscribe } from '@stencil/redux';
 import { MDCTopAppBar } from '@material/top-app-bar';
 import { MDCMenu, Corner } from '@material/menu';
@@ -10,7 +10,7 @@ import iconFullscreenExit from '../../assets/material-icons/ic_fullscreen_exit_2
 import iconDisplay from '../../assets/material-icons/ic_display_24px.svg';
 import iconDockLeft from '../../assets/material-icons/ic_dock_left_24px.svg';
 import iconDockBottom from '../../assets/material-icons/ic_dock_bottom_24px.svg';
-import { setViewport, setLanguage } from '../../store/actions/document';
+import { setViewport, setLanguage, enterFullscreen, exitFullscreen } from '../../store/actions/document';
 import i18next from 'i18next';
 import { label } from '../../services/i18n-service';
 
@@ -24,6 +24,8 @@ export class TopbarComponent {
 
     @Prop() backgroundColor: string
 
+    @State() fullscreen: boolean = false
+
     @Prop({ context: "store" }) store: Store
 
     @State() language: MyAppState["document"]["language"]
@@ -32,6 +34,8 @@ export class TopbarComponent {
     @State() viewport: MyAppState["document"]["viewport"]
 
     setLanguage: typeof setLanguage
+    enterFullscreen: typeof enterFullscreen
+    exitFullscreen: typeof exitFullscreen
     setViewport: typeof setViewport
 
     storeUnsubscribe: Unsubscribe
@@ -39,20 +43,20 @@ export class TopbarComponent {
     private topAppBar?: MDCTopAppBar
     private menuDisplay?: MDCMenu
     private menuLanguage?: MDCMenu
-    private elemSettings?: HTMLHvSettingsElement
 
     componentWillLoad() {
 
-        this.store.mapDispatchToProps(this, { setLanguage, setViewport })
+        this.store.mapDispatchToProps(this, { setLanguage, enterFullscreen, exitFullscreen, setViewport })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { document: document, language: language, availableLanguages: availableLanguages, viewport: viewport }
+                document: { document, language, availableLanguages, fullscreen, viewport }
             } = state
             return {
-                language: language,
-                availableLanguages: availableLanguages,
+                language,
+                availableLanguages,
+                fullscreen: fullscreen,
                 title: (document ? document.label : null),
-                viewport: viewport
+                viewport
             }
         })
     }
@@ -73,17 +77,25 @@ export class TopbarComponent {
         this.storeUnsubscribe()
     }
 
+    @Listen('fullscreenchange', { target: 'document' })
+    handleFullScreenChange() {
+        this.fullscreen = (document.fullscreenElement ? true : false)
+    }
+
     handleLanguageClick() {
         this.menuLanguage.open = !this.menuLanguage.open
     }
 
     handleLanguageSelectionChange(selectedValue: string) {
-        console.log(selectedValue);
         this.setLanguage(selectedValue)
     }
 
-    handleFullscreenClick() {
+    handleEnterFullscreenClick() {
+        this.enterFullscreen(this.el.closest('.harmonized-viewer'))
+    }
 
+    handleExitFullscreenClick() {
+        this.exitFullscreen()
     }
 
     handleDisplayClick() {
@@ -94,10 +106,6 @@ export class TopbarComponent {
         // this.setViewport({
         //     navigationPlacement: placement
         // })
-    }
-
-    openSettings() {
-        this.elemSettings.open()
     }
 
     render() {
@@ -112,8 +120,6 @@ export class TopbarComponent {
                         <span class="mdc-top-app-bar__title">{label(this.title)}</span>
                     </section>
                     <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
-                        {/* <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Download">file_download</button>
-                            <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Print this page">print</button> */}
 
                         <harmonized-button
                             class="mdc-top-app-bar__action-item topbar__button mdc-menu-surface--anchor"
@@ -140,75 +146,38 @@ export class TopbarComponent {
 
                         </harmonized-button>
 
-                        <harmonized-button
-                            class="mdc-top-app-bar__action-item topbar__button mdc-menu-surface--anchor"
-                            icon={iconFullscreen}
-                            size="sm"
-                            label={i18next.t('fullscreen')}
-                            aria-label="Enter fullscreen"
-                            tooltip="Enter fullscreen"
-                            onClick={this.handleFullscreenClick.bind(this)}>
+                        {
+                            !this.fullscreen &&
+                            <harmonized-button
+                                class="mdc-top-app-bar__action-item"
+                                icon={iconFullscreen}
+                                size="sm"
+                                label={i18next.t('fullscreen')}
+                                aria-label="Enter fullscreen"
+                                tooltip="Enter fullscreen"
+                                onClick={this.handleEnterFullscreenClick.bind(this)}>
 
-                        </harmonized-button>
+                            </harmonized-button>
+                        }
 
-                        <button type="button" class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Bookmark this page" onClick={this.openSettings.bind(this)}>
-                            <i class="mdc-icon-button__icon" innerHTML={iconMore}></i>
-                        </button>
+                        {
+                            this.fullscreen &&
+                            <harmonized-button
+                                class="mdc-top-app-bar__action-item button-fullscreen-exit"
+                                icon={iconFullscreenExit}
+                                size="sm"
+                                label={i18next.t('Exit fullscreen')}
+                                aria-label="Exit fullscreen"
+                                tooltip="Exit fullscreen"
+                                outline={true}
+                                onClick={this.handleExitFullscreenClick.bind(this)}>
+
+                            </harmonized-button>
+                        }
 
                     </section>
                 </div>
             </header>
-
-            {/* <nav class="navbar is-primary" role="navigation" aria-label="Dropdown navigation">
-                    <div class="navbar-brand">
-
-                        <a class="navbar-item">
-                            <figure class="image is-48x48">
-                                <img src="https://bulma.io/images/placeholders/128x128.png" />
-                            </figure>
-                        </a>
-                        <div class="navbar-item">
-                            <h1 class="manifest-title">
-                                {this.title}
-                            </h1>
-                            <span class="manifest-type tag is-info">IIIF</span>
-                        </div>
-
-                        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="topbar-menu">
-                            <span aria-hidden="true"></span>
-                            <span aria-hidden="true"></span>
-                            <span aria-hidden="true"></span>
-                        </a>
-
-                    </div>
-                    <div id="topbar-menu" class="navbar-menu">
-
-                        <div class="navbar-start">
-
-
-
-                        </div>
-                        <div class="navbar-end">
-
-                            <a class="navbar-item" title="Settings" onClick={this.openSettings.bind(this)}>
-                                <span class="icon" innerHTML={icon({ prefix: "fas", iconName: "share-alt" }).html[0]}></span>
-                            </a>
-
-                            <a class="navbar-item" title="Settings" onClick={this.openSettings.bind(this)}>
-                                <span class="icon" innerHTML={icon({ prefix: "fas", iconName: "cog" }).html[0]}></span>
-                            </a>
-
-                            <a class="navbar-item button-fullscreen-exit" title="Exit fullscreen" onClick={this.openSettings.bind(this)}>
-                                <span class="icon" innerHTML={icon({ prefix: "fas", iconName: "compress" }).html[0]}></span>
-                                <span class="text">Exit fullscreen</span>
-                            </a>
-
-                        </div>
-                    </div>
-                </nav> */}
-
-            <hv-settings
-                ref={el => this.elemSettings = el as HTMLHvSettingsElement}></hv-settings>
-        </Host >
+        </Host>
     }
 }

@@ -1,27 +1,24 @@
-@import "../../global/variables.scss";
-@import "bulma/sass/utilities/_all.sass";
+@import '../../global/variables';
+@import 'bulma/sass/utilities/_all';
 
-@import "@material/button/mdc-button";
-@import "@material/icon-button/mdc-icon-button";
-@import "@material/list/mdc-list";
-@import "@material/menu/mdc-menu";
-@import "@material/menu-surface/mdc-menu-surface";
-@import "@material/top-app-bar/mdc-top-app-bar";
+@import '@material/button/mdc-button';
+@import '@material/icon-button/mdc-icon-button';
+@import '@material/list/mdc-list';
+@import '@material/menu/mdc-menu';
+@import '@material/menu-surface/mdc-menu-surface';
+@import '@material/top-app-bar/mdc-top-app-bar';
 
 harmonized-topbar {
     flex: 0 0 auto;
     position: relative;
     display: inline-block;
-    // box-shadow: 0 -2px 3px 5px rgba(0, 0, 0, 0.3);
 
     .topbar {
         @extend .mdc-top-app-bar;
-        @extend .mdc-top-app-bar--dense;
+        @extend .mdc-top-app-bar--fixed;
         z-index: 99999;
         top: 0 !important;
         position: absolute;
-        //box-shadow: 0 0 2px 3px rgba(0, 0, 0, 0.6);
-        //background-color: rgba(255, 255, 255, 0.075);
         background-color: transparent;
 
         &-row {
@@ -29,7 +26,8 @@ harmonized-topbar {
         }
 
         .mdc-top-app-bar__title {
-            color: #bbb;
+            color: #fff;
+            font-size: 16px;
         }
 
         .mdc-menu {
@@ -40,27 +38,36 @@ harmonized-topbar {
             }
         }
 
-        .topbar__button {
-            button {
-                @include mdc-button-filled-accessible(#181818);
-                @include mdc-button-ink-color(#fff);
+        button {
+            @include mdc-button-filled-accessible(#181818);
+            @include mdc-button-ink-color(#fff);
 
-                svg {
-                    fill: #fff;
-                    margin-right: 10px;
-                }
-
-                .mdc-button__label {
-                    font-size: 12px;
-                }
+            svg {
+                fill: #fff;
+                margin-right: 10px;
             }
 
-            .mdc-menu {
-                @include mdc-menu-surface-ink-color(#fff);
-                @include mdc-menu-surface-fill-color(#282828);
+            .mdc-button__label {
+                font-size: 12px;
+            }
+        }
 
-                .mdc-list {
-                    @include mdc-list-item-primary-text-ink-color(#fff);
+        .button-fullscreen-exit {
+            button {
+                @include mdc-button-filled-accessible(#bc3331);
+                @include mdc-button-outline-color(#bc3331);
+            }
+        }
+
+        .mdc-menu {
+            @include mdc-menu-surface-ink-color(#fff);
+            @include mdc-menu-surface-fill-color(#282828);
+
+            .mdc-list {
+                @include mdc-list-item-primary-text-ink-color(#fff);
+
+                .mdc-list-item__text {
+                    font-size: 14px;
                 }
             }
         }

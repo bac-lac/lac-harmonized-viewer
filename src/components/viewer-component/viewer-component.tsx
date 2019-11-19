@@ -3,7 +3,7 @@ import "@stencil/redux";
 import 'manifesto.js';
 import { Store, Unsubscribe } from "@stencil/redux";
 import { configureStore } from "../../store";
-import { setDocumentUrl, setDocumentContentType, setStatus, addOverlay, setOptions, setLanguage, addLanguage, setViewport } from '../../store/actions/document';
+import { setDocumentUrl, setDocumentContentType, setStatus, addOverlay, setOptions, setLanguage, addLanguage, setViewport, enterFullscreen, exitFullscreen } from '../../store/actions/document';
 import i18next from 'i18next';
 import i18nextXHRBackend from 'i18next-xhr-backend';
 import i18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
@@ -30,9 +30,6 @@ export class ViewerComponent {
 
 	@Prop() backgroundColor: string = '#181818'
 
-	// @Prop() page: number
-	// @Prop() totalPages: number
-
 	@Prop({ attribute: 'url' }) documentUrl: string
 
 	addLanguage: typeof addLanguage
@@ -40,6 +37,8 @@ export class ViewerComponent {
 	setDocumentContentType: typeof setDocumentContentType
 	setDocumentUrl: typeof setDocumentUrl
 	setLanguage: typeof setLanguage
+	enterFullscreen: typeof enterFullscreen
+	_exitFullscreen: typeof exitFullscreen
 	setStatus: typeof setStatus
 	setOptions: typeof setOptions
 	setViewport: typeof setViewport
@@ -57,6 +56,16 @@ export class ViewerComponent {
 	@Method()
 	async getPage(): Promise<number> {
 		return this.page
+	}
+
+	@Method()
+	async fullscreen() {
+		this.enterFullscreen(this.el)
+	}
+
+	@Method()
+	async exitFullscreen() {
+		this._exitFullscreen()
 	}
 
 	@Method()
@@ -91,7 +100,7 @@ export class ViewerComponent {
 	componentWillLoad() {
 
 		this.store.setStore(configureStore({}))
-		this.store.mapDispatchToProps(this, { addLanguage, addOverlay, setDocumentContentType, setDocumentUrl, setLanguage, setOptions, setViewport, setStatus })
+		this.store.mapDispatchToProps(this, { addLanguage, addOverlay, setDocumentContentType, enterFullscreen, exitFullscreen, setDocumentUrl, setLanguage, setOptions, setViewport, setStatus })
 		this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
 				document: { language: language, availableLanguages: availableLanguages, page: page, url: url, status: status }
@@ -195,8 +204,6 @@ export class ViewerComponent {
 			}
 
 			<slot name="footer" />
-
-			<harmonized-navigation placement="bottom" rows={1} />
 		</div>
 	}
 }

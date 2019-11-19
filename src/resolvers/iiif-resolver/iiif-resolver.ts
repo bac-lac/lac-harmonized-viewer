@@ -68,6 +68,7 @@ export class IIIFResolver extends Resolver {
 
                 const resource = image.getResource()
                 if (resource) {
+
                     return {
                         id: canvas.id,
                         label: this.mapLabels(canvas.getLabel()),
@@ -135,6 +136,8 @@ export class IIIFResolver extends Resolver {
             return undefined
         }
 
+        console.log(resource)
+
         const thumbnail = resource.getThumbnail()
         if (thumbnail) {
             return thumbnail.id
@@ -182,7 +185,10 @@ export class IIIFResolver extends Resolver {
         const infoFile = 'info.json'
         const service = this.resolveImageService(resource)
 
-        let serviceUri: string = (service ? service.getInfoUri() : resource.id)
+        //let serviceUri: string = (service ? service.getInfoUri() : resource.id)
+
+        console.log(service)
+        let serviceUri: string = (service ? service.id : resource.id)
 
         // Remove the info.json path from uri
         if (trimFileName && serviceUri.indexOf(infoFile) !== -1) {

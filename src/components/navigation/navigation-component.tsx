@@ -1,4 +1,4 @@
-import { Component, Prop, h, Element, Listen, State, Watch } from '@stencil/core';
+import { Component, Prop, h, Element, Listen, State, Watch, Host } from '@stencil/core';
 import 'manifesto.js';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { setPage } from '../../store/actions/document';
@@ -16,6 +16,7 @@ export class NavigationComponent {
     @Prop() cols: number = 2
     @Prop() rows: number = 1
     @Prop() placement: PlacementType = 'left'
+    @Prop() theme: string
 
     @Watch('rows')
     handleRowsChange() {
@@ -26,7 +27,7 @@ export class NavigationComponent {
     storeUnsubscribe: Unsubscribe
 
     @State() loading: MyAppState["document"]["loading"]
-    @State() locale: MyAppState["document"]["language"]
+    @State() language: MyAppState["document"]["language"]
     @State() page: MyAppState["document"]["page"]
     @State() pages: MyAppState["document"]["pages"]
 
@@ -39,13 +40,13 @@ export class NavigationComponent {
         this.store.mapDispatchToProps(this, { setPage })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { language: locale, loading: loading, page: page, pages: pages }
+                document: { language, loading, page, pages }
             } = state
             return {
-                locale: locale,
-                loading: loading,
-                page: page,
-                pages: pages
+                language,
+                loading,
+                page,
+                pages
             }
         })
     }
@@ -162,23 +163,25 @@ export class NavigationComponent {
             className += ' mdc-image-list--2col'
         }
 
-        return <div class="navigation-content">
+        return <Host class={this.theme}>
+            <div class="navigation-content">
 
-            <harmonized-image-list class={className}>
-                {
-                    this.pages.map((page, index) =>
+                <harmonized-image-list class={className}>
+                    {
+                        this.pages.map((page, index) =>
 
-                        <harmonized-image
-                            src={page.thumbnail}
-                            page={index}
-                            caption={label(page.label)}
-                            show-caption={true}
-                            show-tooltip={false}
-                            preload={index < 16}
-                            onImageLoad={this.handleThumbnailLoad.bind(this)} />
-                    )
-                }
-            </harmonized-image-list>
-        </div>
+                            <harmonized-image
+                                src={page.thumbnail}
+                                page={index}
+                                caption={label(page.label)}
+                                show-caption={true}
+                                show-tooltip={false}
+                                preload={index < 16}
+                                onImageLoad={this.handleThumbnailLoad.bind(this)} />
+                        )
+                    }
+                </harmonized-image-list>
+            </div>
+        </Host>
     }
 }
