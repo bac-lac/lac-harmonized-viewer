@@ -9,21 +9,14 @@
 @import '@material/top-app-bar/mdc-top-app-bar';
 
 harmonized-topbar {
-    flex: 0 0 auto;
     position: relative;
     display: inline-block;
 
-    .topbar {
-        @extend .mdc-top-app-bar;
-        @extend .mdc-top-app-bar--fixed;
+    .mdc-top-app-bar {
         z-index: 99999;
         top: 0 !important;
         position: absolute;
         background-color: transparent;
-
-        &-row {
-            @extend .mdc-top-app-bar__row;
-        }
 
         .mdc-top-app-bar__title {
             color: #fff;

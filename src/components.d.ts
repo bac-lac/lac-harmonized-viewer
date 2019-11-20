@@ -321,6 +321,7 @@ declare namespace LocalJSX {
     'documentUrl'?: string;
     'navigationEnable'?: boolean;
     'navigationPlacement'?: PlacementType;
+    'onStatusChanged'?: (event: CustomEvent<any>) => void;
     'pagingEnable'?: boolean;
   }
   interface HarmonizedViewport {

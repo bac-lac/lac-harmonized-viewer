@@ -51,8 +51,9 @@ interface DocumentStatus {
     code: StatusCode
     loading: boolean
     error: DocumentError
+    visible: boolean
 }
-type StatusCode = 'initial' | 'prefetching' | 'prefetched' | 'loading' | 'loaded' | 'failed'
+type StatusCode = 'initial' | 'prefetching' | 'prefetched' | 'loading' | 'loaded' | 'failed' | 'empty'
 
 interface DocumentPage {
     id: string

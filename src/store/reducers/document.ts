@@ -24,7 +24,8 @@ const getInitialState = (): DocumentState => {
         status: {
             code: 'initial',
             loading: false,
-            error: null
+            error: null,
+            visible: false
         },
         url: null,
         viewport: {

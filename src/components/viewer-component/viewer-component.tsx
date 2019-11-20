@@ -1,4 +1,4 @@
-import { Component, h, Element, Listen, Prop, Method, State, Watch } from '@stencil/core';
+import { Component, h, Element, Listen, Prop, Method, State, Watch, Event, EventEmitter } from '@stencil/core';
 import "@stencil/redux";
 import 'manifesto.js';
 import { Store, Unsubscribe } from "@stencil/redux";
@@ -7,7 +7,6 @@ import { setDocumentUrl, setDocumentContentType, setStatus, addOverlay, setOptio
 import i18next from 'i18next';
 import i18nextXHRBackend from 'i18next-xhr-backend';
 import i18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
-import { EventEmitter } from 'events';
 import iconError from '../../assets/material-icons/ic_error_24px.svg'
 
 @Component({
@@ -25,11 +24,8 @@ export class ViewerComponent {
 
 	@Prop() navigationEnable: boolean
 	@Prop() navigationPlacement: PlacementType
-
 	@Prop() pagingEnable: boolean
-
 	@Prop() backgroundColor: string = '#181818'
-
 	@Prop({ attribute: 'url' }) documentUrl: string
 
 	addLanguage: typeof addLanguage
@@ -50,11 +46,19 @@ export class ViewerComponent {
 	@State() page: MyAppState["document"]["page"]
 	@State() url: MyAppState["document"]["url"]
 	@State() status: MyAppState["document"]["status"]
+	@State() statusCode: MyAppState["document"]["status"]["code"]
 
 	@Prop({ context: "store" }) store: Store
 
+	@Event({ eventName: 'statusChanged' }) statusChanged: EventEmitter
+
+	@Watch('statusCode')
+	handleStatusChange(oldValue: StatusCode, newValue: StatusCode) {
+		this.statusChanged.emit(newValue)
+	}
+
 	@Method()
-	async getPage(): Promise<number> {
+	async getPage() {
 		return this.page
 	}
 
@@ -69,7 +73,7 @@ export class ViewerComponent {
 	}
 
 	@Method()
-	async addOverlay(x: number, y: number, width: number, height: number): Promise<void> {
+	async addOverlay(x: number, y: number, width: number, height: number) {
 		this.addOverlayState(x, y, width, height)
 	}
 
@@ -110,6 +114,7 @@ export class ViewerComponent {
 				availableLanguages: availableLanguages,
 				page: page,
 				status: status,
+				statusCode: status.code,
 				url: url
 			}
 		})
@@ -200,10 +205,13 @@ export class ViewerComponent {
 
 			{
 				!this.status.error &&
-				<harmonized-viewport />
+				<harmonized-viewport class="mdc-top-app-bar--fixed-adjust" />
 			}
 
 			<slot name="footer" />
+
+			<harmonized-navigation
+				placement="bottom" rows={1} />
 		</div>
 	}
 }

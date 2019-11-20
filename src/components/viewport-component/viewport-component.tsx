@@ -77,15 +77,16 @@ export class ViewportComponent {
             }
         }
         catch (e) {
-            const err: Error = e
-            this.setError(err.name, err.message)
-        }
 
-        // const buttons = Array.from(this.el.querySelectorAll('.mdc-icon-button'))
-        // buttons.forEach((button) => {
-        //     const b = new MDCRipple(button)
-        //     b.unbounded = true
-        // })
+            if (e.response && e.response.status === 404) {
+                this.setStatus('empty')
+            }
+
+            // To be investigated:
+            // Firefox throws a network exception (cors) even when cors is configured
+            // Had to comment out the line below
+            //this.setError(err.name, err.message)
+        }
     }
 
     componentDidUnload() {
@@ -114,6 +115,10 @@ export class ViewportComponent {
 
     render() {
 
+        if (this.status.code == 'empty') {
+            return undefined
+        }
+
         return <Host>
 
             {
@@ -136,7 +141,6 @@ export class ViewportComponent {
                 }
 
                 <main class="hv-main mdc-drawer-app-content">
-
                     <div class="hv-main__content">
 
                         <harmonized-button
@@ -153,7 +157,6 @@ export class ViewportComponent {
 
                             {this.renderOpenSeadragon()}
                             {this.renderLabel()}
-
                             {this.viewport.pagingEnable && <harmonized-pager />}
 
                         </div>
@@ -169,7 +172,6 @@ export class ViewportComponent {
                             disabled={this.status.loading || this.isLast()} />
 
                     </div>
-
                 </main>
 
                 <harmonized-content
@@ -178,16 +180,9 @@ export class ViewportComponent {
                     showNavigation={false}
                     showMetadata={true} />
 
+                <slot name="right" />
 
             </div>
-
-
-
-            {/* <harmonized-content
-                rows={2}
-                placement="bottom"
-                showNavigation={this.viewport.navigationEnable}
-                showMetadata={false} /> */}
 
         </Host>
     }

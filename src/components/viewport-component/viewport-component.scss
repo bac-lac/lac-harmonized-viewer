@@ -4,7 +4,6 @@
 @import '@material/top-app-bar/mdc-top-app-bar';
 
 harmonized-viewport {
-    @extend .mdc-top-app-bar--fixed-adjust;
     height: 100%;
     flex: auto;
     display: flex;

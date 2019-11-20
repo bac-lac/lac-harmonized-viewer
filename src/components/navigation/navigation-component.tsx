@@ -3,6 +3,7 @@ import 'manifesto.js';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { setPage } from '../../store/actions/document';
 import { label } from '../../services/i18n-service';
+import { configureStore } from '../../store';
 
 @Component({
     tag: 'harmonized-navigation',
@@ -27,7 +28,6 @@ export class NavigationComponent {
     storeUnsubscribe: Unsubscribe
 
     @State() loading: MyAppState["document"]["loading"]
-    @State() language: MyAppState["document"]["language"]
     @State() page: MyAppState["document"]["page"]
     @State() pages: MyAppState["document"]["pages"]
 
@@ -40,13 +40,12 @@ export class NavigationComponent {
         this.store.mapDispatchToProps(this, { setPage })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { language, loading, page, pages }
+                document: { loading: loading, page: page, pages: pages }
             } = state
             return {
-                language,
-                loading,
-                page,
-                pages
+                loading: loading,
+                page: page,
+                pages: pages
             }
         })
     }
@@ -168,7 +167,7 @@ export class NavigationComponent {
 
                 <harmonized-image-list class={className}>
                     {
-                        this.pages.map((page, index) =>
+                        this.pages && this.pages.map((page, index) =>
 
                             <harmonized-image
                                 src={page.thumbnail}

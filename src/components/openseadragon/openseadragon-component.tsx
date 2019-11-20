@@ -99,9 +99,9 @@ export class OpenSeadragonComponent {
 
         const options = this.options.filter(i => i.component && i.component === 'openseadragon')
 
-        const optionIgnoreImageService = options.find(i => i.name && i.name === 'ignoreimageservice')
-        if (optionIgnoreImageService) {
-            resolver.ignoreImageService = optionIgnoreImageService.value as boolean
+        const optionDisableDeepzoom = options.find(i => i.name && i.name === 'disabledeepzoom')
+        if (optionDisableDeepzoom) {
+            resolver.disableDeepzoom = optionDisableDeepzoom.value as boolean
         }
 
         this.resolver = resolver

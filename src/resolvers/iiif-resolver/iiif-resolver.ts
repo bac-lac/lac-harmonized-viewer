@@ -7,7 +7,7 @@ export class IIIFResolver extends Resolver {
     thumbnailDefaultExtension: string = 'jpg'
     thumbnailHeight: number = 150
 
-    ignoreImageService: boolean = false
+    disableDeepzoom: boolean = false
 
     private manifest: Manifesto.IManifest
     private manifestJson: string
@@ -136,8 +136,6 @@ export class IIIFResolver extends Resolver {
             return undefined
         }
 
-        console.log(resource)
-
         const thumbnail = resource.getThumbnail()
         if (thumbnail) {
             return thumbnail.id
@@ -186,8 +184,6 @@ export class IIIFResolver extends Resolver {
         const service = this.resolveImageService(resource)
 
         //let serviceUri: string = (service ? service.getInfoUri() : resource.id)
-
-        console.log(service)
         let serviceUri: string = (service ? service.id : resource.id)
 
         // Remove the info.json path from uri
@@ -209,10 +205,10 @@ export class IIIFResolver extends Resolver {
             return undefined
         }
 
-        if (this.ignoreImageService) {
+        if (this.disableDeepzoom) {
             return {
                 type: 'image',
-                url: image.getResource().id
+                url: this.resolveImageServiceUri(image.getResource(), false)
             }
         }
         else {
