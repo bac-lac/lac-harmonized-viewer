@@ -110,72 +110,74 @@ export class TopbarComponent {
 
     render() {
 
-        return <header class="mdc-top-app-bar mdc-top-app-bar--fixed" style={{ backgroundColor: this.backgroundColor }}>
-            <div class="mdc-top-app-bar__row">
-                <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-                    <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">
-                        <i class="mdc-icon-button__icon" innerHTML={iconMenu}></i>
-                    </button>
-                    <span class="mdc-top-app-bar__title">{label(this.title)}</span>
-                </section>
-                <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
+        return <Host class="topbar">
+            <header class="mdc-top-app-bar mdc-top-app-bar--fixed" style={{ backgroundColor: this.backgroundColor }}>
+                <div class="mdc-top-app-bar__row">
+                    <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+                        <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">
+                            <i class="mdc-icon-button__icon" innerHTML={iconMenu}></i>
+                        </button>
+                        <span class="mdc-top-app-bar__title">{label(this.title)}</span>
+                    </section>
+                    <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
 
-                    <harmonized-button
-                        class="mdc-top-app-bar__action-item topbar__button mdc-menu-surface--anchor"
-                        icon={iconLanguage}
-                        size="sm"
-                        label={this.language && this.language.name}
-                        aria-label="Select a language"
-                        tooltip="Select a language"
-                        onClick={this.handleLanguageClick.bind(this)}>
-
-                        <div class="mdc-menu mdc-menu-surface" id="menu-language">
-                            <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
-                                {this.availableLanguages.map((language) => <li
-                                    role="menuitem"
-                                    class={(this.language && this.language.code == language.code) ?
-                                        "mdc-list-item mdc-list-item--selected" : "mdc-list-item"}
-                                    onClick={(ev) => { this.handleLanguageSelectionChange(language.code) }}>
-                                    <span class="mdc-list-item__text">
-                                        {language.name}
-                                    </span>
-                                </li>)}
-                            </ul>
-                        </div>
-
-                    </harmonized-button>
-
-                    {
-                        !this.fullscreen &&
                         <harmonized-button
-                            class="mdc-top-app-bar__action-item"
-                            icon={iconFullscreen}
+                            class="mdc-top-app-bar__action-item topbar__button mdc-menu-surface--anchor"
+                            icon={iconLanguage}
                             size="sm"
-                            label={i18next.t('fullscreen')}
-                            aria-label="Enter fullscreen"
-                            tooltip="Enter fullscreen"
-                            onClick={this.handleEnterFullscreenClick.bind(this)}>
+                            label={this.language && this.language.name}
+                            aria-label={i18next.t('changeLanguage')}
+                            tooltip={i18next.t('changeLanguage')}
+                            onClick={this.handleLanguageClick.bind(this)}>
+
+                            <div class="mdc-menu mdc-menu-surface" id="menu-language">
+                                <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
+                                    {this.availableLanguages.map((language) => <li
+                                        role="menuitem"
+                                        class={(this.language && this.language.code == language.code) ?
+                                            "mdc-list-item mdc-list-item--selected" : "mdc-list-item"}
+                                        onClick={(ev) => { this.handleLanguageSelectionChange(language.code) }}>
+                                        <span class="mdc-list-item__text">
+                                            {language.name}
+                                        </span>
+                                    </li>)}
+                                </ul>
+                            </div>
 
                         </harmonized-button>
-                    }
 
-                    {
-                        this.fullscreen &&
-                        <harmonized-button
-                            class="mdc-top-app-bar__action-item button-fullscreen-exit"
-                            icon={iconFullscreenExit}
-                            size="sm"
-                            label={i18next.t('Exit fullscreen')}
-                            aria-label="Exit fullscreen"
-                            tooltip="Exit fullscreen"
-                            outline={true}
-                            onClick={this.handleExitFullscreenClick.bind(this)}>
+                        {
+                            !this.fullscreen &&
+                            <harmonized-button
+                                class="mdc-top-app-bar__action-item"
+                                icon={iconFullscreen}
+                                size="sm"
+                                label={i18next.t('fullscreen')}
+                                aria-label="Enter fullscreen"
+                                tooltip="Enter fullscreen"
+                                onClick={this.handleEnterFullscreenClick.bind(this)}>
 
-                        </harmonized-button>
-                    }
+                            </harmonized-button>
+                        }
 
-                </section>
-            </div>
-        </header>
+                        {
+                            this.fullscreen &&
+                            <harmonized-button
+                                class="mdc-top-app-bar__action-item button-fullscreen-exit"
+                                icon={iconFullscreenExit}
+                                size="sm"
+                                label={i18next.t('Exit fullscreen')}
+                                aria-label="Exit fullscreen"
+                                tooltip="Exit fullscreen"
+                                outline={true}
+                                onClick={this.handleExitFullscreenClick.bind(this)}>
+
+                            </harmonized-button>
+                        }
+
+                    </section>
+                </div>
+            </header>
+        </Host>
     }
 }

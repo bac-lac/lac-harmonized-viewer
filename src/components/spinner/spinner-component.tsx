@@ -9,7 +9,7 @@ export class SpinnerComponent {
     render() {
 
         return (
-            <div role="progressbar" class="progress-bar">
+            <div role="progressbar" class="progress-bar mdc-linear-progress__bar mdc-linear-progress--indeterminate">
                 <div class="mdc-linear-progress__buffering-dots"></div>
                 <div class="mdc-linear-progress__buffer"></div>
                 <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">

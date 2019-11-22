@@ -1,14 +1,8 @@
-@import '../../global/variables';
-@import 'bulma/sass/utilities/_all';
-
-@import '@material/button/mdc-button';
-@import '@material/icon-button/mdc-icon-button';
-@import '@material/list/mdc-list';
-@import '@material/menu/mdc-menu';
-@import '@material/menu-surface/mdc-menu-surface';
-@import '@material/top-app-bar/mdc-top-app-bar';
-
 harmonized-topbar {
+    @import '@material/button/mixins';
+    @import '@material/icon-button/mixins';
+    @import '@material/list/mixins';
+    @import '@material/menu-surface/mixins';
     position: relative;
     display: inline-block;
 

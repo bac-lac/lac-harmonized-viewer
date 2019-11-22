@@ -69,8 +69,11 @@ export class IIIFResolver extends Resolver {
                 const resource = image.getResource()
                 if (resource) {
 
+                    const format = resource.getFormat()
+
                     return {
                         id: canvas.id,
+                        contentType: format && format.value,
                         label: this.mapLabels(canvas.getLabel()),
                         image: this.getImageUri(resource, 1000),
                         thumbnail: this.getThumbnailUri(resource)

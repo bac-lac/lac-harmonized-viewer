@@ -1,7 +1,3 @@
-@import "../../global/variables";
-@import "@material/list/mdc-list";
-@import "@material/button/mdc-button";
-
 hv-annotations {
     height: 100%;
     display: block;
@@ -124,17 +120,6 @@ hv-annotations {
             .mdc-list-item__primary-text {
                 font-size: 12px;
             }
-        }
-    }
-
-    .button-expand {
-        .mdc-button {
-            //@include mdc-button-container-fill-color(#111);
-            @include mdc-button-ink-color(#666);
-
-            height: 26px;
-            font-size: 11px;
-            margin: 0;
         }
     }
 }

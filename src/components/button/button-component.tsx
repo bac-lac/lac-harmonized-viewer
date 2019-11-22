@@ -46,6 +46,8 @@ export class ButtonComponent {
             iconClassName = 'mdc-icon-button__icon'
         }
 
+        className += ' mdc-button--touch'
+
         if (this.size == 'lg') className += ` ${className}--lg`
         else if (this.size == 'md') className += ` ${className}--md`
         else if (this.size == 'sm') className += ` ${className}--sm`
@@ -54,7 +56,7 @@ export class ButtonComponent {
         if (this.outline) className += ' mdc-button--outlined'
         if (this.fullWidth) className += ' full-width'
 
-        return <Host>
+        return <Host class="mdc-touch-target-wrapper">
             <button
                 type="button"
                 class={className}

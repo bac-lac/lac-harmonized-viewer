@@ -1,9 +1,4 @@
-@import '../../global/variables';
-@import '@material/button/mdc-button';
-@import '@material/icon-button/mdc-icon-button';
-@import '@material/top-app-bar/mdc-top-app-bar';
-
-harmonized-viewport {
+.viewport {
     height: 100%;
     flex: auto;
     display: flex;
@@ -34,17 +29,7 @@ harmonized-viewport {
         }
     }
 
-    // .hv-navigation__prev {
-    //     border-top-left-radius: 2px;
-    //     border-bottom-left-radius: 2px;
-    // }
-
-    // .hv-navigation__next {
-    //     border-top-right-radius: 2px;
-    //     border-bottom-right-radius: 2px;
-    // }
-
-    .viewport-content {
+    &__content {
         width: 100%;
         height: 100%;
         flex: auto;
@@ -53,6 +38,12 @@ harmonized-viewport {
 
         &--loading {
             opacity: 0.3;
+        }
+
+        .viewport__content-inner {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
     }
 

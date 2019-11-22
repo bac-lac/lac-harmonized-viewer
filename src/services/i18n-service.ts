@@ -1,6 +1,7 @@
 import i18next from 'i18next';
 import i18nextXHRBackend from 'i18next-xhr-backend';
 import i18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
+import { loadPersistedState } from './persisted-state-service';
 
 export function label(items: DocumentLabel[]): string {
 

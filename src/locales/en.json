@@ -1,4 +1,10 @@
 {
+    "code": "en",
     "name": "English",
-    "fullscreen": "Fullscreen"
+    "changeLanguage": "Change language",
+    "fullscreen": "Fullscreen",
+    "errors": {
+        "e-document-notfound": "Document could not be found",
+        "e-contenttype-unmapped": "Content type is missing or not supported"
+    }
 }

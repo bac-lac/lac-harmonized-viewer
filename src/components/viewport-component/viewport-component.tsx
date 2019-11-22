@@ -8,6 +8,8 @@ import iconChevronRight from '../../assets/material-design-icons/ic_chevron_righ
 import iconInfo from '../../assets/material-icons/ic_info_24px.svg'
 import { setDocumentContentType, setStatus, setPage, setLoading, setError } from '../../store/actions/document';
 import { label } from '../../services/i18n-service';
+import i18next from 'i18next';
+import { AppConfig } from '../../app.config';
 
 @Component({
     tag: 'harmonized-viewport',
@@ -67,7 +69,7 @@ export class ViewportComponent {
 
             this.setStatus('prefetching')
 
-            const response = await axios.head(this.url)
+            const response = await axios.get(this.url)
 
             this.setStatus('prefetched')
 
@@ -78,14 +80,12 @@ export class ViewportComponent {
         }
         catch (e) {
 
-            if (e.response && e.response.status === 404) {
-                this.setStatus('empty')
+            if (e.response.status && e.response.status == 404) {
+                this.setError('e-document-notfound', this.url)
             }
-
-            // To be investigated:
-            // Firefox throws a network exception (cors) even when cors is configured
-            // Had to comment out the line below
-            //this.setError(err.name, err.message)
+            else {
+                this.setError(e.name, e.message)
+            }
         }
     }
 
@@ -119,7 +119,7 @@ export class ViewportComponent {
             return undefined
         }
 
-        return <Host>
+        return <Host class="viewport">
 
             {
                 this.status.code == 'loading' &&
@@ -128,7 +128,7 @@ export class ViewportComponent {
 
             {this.renderNavigation('top')}
 
-            <div class="hv-content">
+            <div class="viewport__content">
 
                 {
                     (this.viewport.navigationPlacement == 'left') && (
@@ -153,9 +153,9 @@ export class ViewportComponent {
                             onClick={this.handlePreviousClick.bind(this)}
                             disabled={this.status.loading || this.isFirst()} />
 
-                        <div class="viewport-content">
+                        <div class="viewport__content-inner">
 
-                            {this.renderOpenSeadragon()}
+                            {this.renderViewport()}
                             {this.renderLabel()}
                             {this.viewport.pagingEnable && <harmonized-pager />}
 
@@ -250,26 +250,89 @@ export class ViewportComponent {
 
     renderViewport() {
 
-        let element = null
+        let component = null
 
-        switch (this.contentType) {
-            case 'application/json':
-                element = this.renderOpenSeadragon()
-                break
-            case 'application/pdf':
-                element = this.renderPDF()
-                break
+        let componentName: string = null
+        let contentType: string = null
+
+        const page = this.pages[this.page]
+        contentType = page && page.contentType
+
+        if (!contentType) {
+            contentType = this.contentType
         }
 
-        return element
+        // temporary
+        contentType = 'video/mp4'
+
+        // Resolve component from content type
+        const mappings: ContentTypeMapping[] = AppConfig.contentTypes
+
+        // const customResolvers: HTMLElement[] =
+        //     Array.from(this.el.querySelectorAll('harmonized-custom-resolver'))
+
+        // customResolvers.forEach((resolver: HTMLHarmonizedCustomResolverElement) => {
+
+        //     // Existing resolver with the same content type will be overwritten
+        //     const existingIndex = mappings.findIndex(i => i.contentType && i.contentType == resolver.contentType)
+        //     if (existingIndex !== -1) {
+        //         mappings.slice(existingIndex, 1)
+        //     }
+
+        //     mappings.push({
+        //         contentType: resolver.contentType,
+        //         component: 'custom-resolver'
+        //     })
+        // })
+
+
+        if (mappings) {
+            const resolved = mappings.find(i => i.contentType && i.contentType == contentType)
+            componentName = resolved && resolved.component
+        }
+
+        if (componentName) {
+
+            switch (componentName.toLowerCase()) {
+                case 'openseadragon':
+                    component = <harmonized-openseadragon />
+                    break
+                case 'embed':
+                    component = <harmonized-embed />
+                    break
+                case 'video':
+                    component = <harmonized-video url={this.url} />
+                    break
+                // case 'custom-resolver':
+                //     component = this.renderCustomResolver(contentType, this.url)
+                //     break
+                default:
+                    this.setError('e-contenttype-unmapped', contentType)
+                    break
+            }
+        }
+
+        return component
     }
 
-    renderOpenSeadragon() {
-        //return <harmonized-openseadragon />
-        return <harmonized-openseadragon />
+    renderCustomResolver(contentType: string, url: string): HTMLHarmonizedCustomResolverElement {
+
+        if (!contentType || !url) {
+            return undefined
+        }
+
+        const customResolvers: HTMLHarmonizedCustomResolverElement[] =
+            Array.from(document.querySelectorAll('harmonized-custom-resolver'))
+
+        const customResolver = customResolvers.find(i => i.contentType && i.contentType == contentType)
+        return customResolver && customResolver.cloneNode(true) as HTMLHarmonizedCustomResolverElement
     }
 
-    renderPDF() {
-        return <harmonized-pdf />
-    }
+    // renderOpenSeadragon() {
+    //     return <harmonized-openseadragon />
+    // }
+
+    // renderPDF() {
+    //     return <harmonized-pdf />
+    // }
 }

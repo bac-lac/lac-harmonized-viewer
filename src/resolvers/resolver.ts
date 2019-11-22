@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { Md5 } from 'ts-md5/dist/md5'
-import { loadSettings } from '../settings'
+import { loadPersistedState } from '../services/persisted-state-service'
 import { IIIFResolver } from './iiif-resolver/iiif-resolver'
 
 export abstract class Resolver {
@@ -53,10 +53,7 @@ export abstract class Resolver {
             return undefined
         }
 
-        const annotationState = loadSettings().annotations
-            .find(item => item.id == this.getAnnotationId(annotation))
-
-        return (annotationState ? annotationState.visible : annotation.collapsed)
+        return true
     }
 
     protected async httpGet(url: string) {

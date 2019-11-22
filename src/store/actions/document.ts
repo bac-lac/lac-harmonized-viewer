@@ -1,17 +1,26 @@
 import { TypeKeys } from "./index"
+import i18next from "i18next"
+import { loadPersistedState, savePersistedState } from "../../services/persisted-state-service"
+import { AppConfig } from "../../app.config"
 
 export interface SetError {
     type: TypeKeys.SET_ERROR
-    code: string
-    message: string
+    errorCode: ErrorCode
+    severity: ErrorSeverity,
+    optionalParams: any[]
 }
-export const setError = (code: string, message: string) => (dispatch, _getState) => {
-    const action: SetError = {
-        type: TypeKeys.SET_ERROR,
-        code: code,
-        message: message
+export const setError = (errorCode: ErrorCode, ...optionalParams: any[]) => (dispatch, _getState) => {
+
+    const error = AppConfig.errors.find(i => i.code && i.code == errorCode)
+    if (error) {
+        const action: SetError = {
+            type: TypeKeys.SET_ERROR,
+            errorCode: error.code,
+            severity: error.severity,
+            optionalParams: optionalParams
+        }
+        dispatch(action)
     }
-    dispatch(action)
 }
 
 export interface SetDocumentContentType {
@@ -53,14 +62,29 @@ export const setStatus = (code: StatusCode) => (dispatch, _getState) => {
 
 export interface SetLanguage {
     type: TypeKeys.SET_LANGUAGE
-    code: string
+    language: string
 }
-export const setLanguage = (code: string) => (dispatch, _getState) => {
-    const action: SetLanguage = {
-        type: TypeKeys.SET_LANGUAGE,
-        code: code
-    }
-    dispatch(action)
+export const setLanguage = (language: string) => (dispatch, _getState) => {
+
+    i18next.changeLanguage(language, (err, t) => {
+        if (err) {
+            console.error(err)
+        }
+        else {
+
+            // Update persisted state
+            const persistedState = loadPersistedState()
+            persistedState.language = language
+            savePersistedState(persistedState)
+
+            // Dispatch store command
+            const action: SetLanguage = {
+                type: TypeKeys.SET_LANGUAGE,
+                language: language
+            }
+            dispatch(action)
+        }
+    })
 }
 
 export interface AddLanguage {
@@ -249,6 +273,18 @@ export const exitFullscreen = () => (dispatch, _getState) => {
     document.exitFullscreen()
     const action: ExitFullscreen = {
         type: TypeKeys.EXIT_FULLSCREEN
+    }
+    dispatch(action)
+}
+
+export interface AddCustomResolver {
+    type: TypeKeys.ADD_CUSTOM_RESOLVER
+    id: string
+}
+export const addCustomResolver = (id: string) => (dispatch, _getState) => {
+    const action: AddCustomResolver = {
+        type: TypeKeys.ADD_CUSTOM_RESOLVER,
+        id: id
     }
     dispatch(action)
 }

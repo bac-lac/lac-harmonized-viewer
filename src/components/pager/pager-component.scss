@@ -1,11 +1,6 @@
-@import "../../global/variables";
-
-@import "@material/button/mdc-button";
-@import "@material/icon-button/mdc-icon-button";
-@import "@material/slider/mdc-slider";
-@import "@material/chips/mdc-chips";
-
 harmonized-pager {
+    @import '@material/chips/mixins';
+    @import '@material/slider/mixins';
     display: flex;
     margin: 15px 0;
     align-items: center;

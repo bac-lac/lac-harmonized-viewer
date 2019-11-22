@@ -1,3 +1,14 @@
+interface AppConfig {
+    errors?: DocumentError[]
+    languages?: Language[]
+    contentTypes?: ContentTypeMapping[]
+}
+
+interface ContentTypeMapping {
+    contentType: string
+    component: string
+}
+
 interface DocumentState {
     error: DocumentError
     loading: boolean
@@ -13,6 +24,7 @@ interface DocumentState {
     page: number
     pageCount: number
     pages: DocumentPage[]
+    customResolvers: string[]
     tags: DocumentTag[]
     status: DocumentStatus
     url: string
@@ -20,6 +32,9 @@ interface DocumentState {
     zoom: DocumentZoom
     zoomRequest: DocumentZoom
 }
+
+type ErrorCode = 'e-document-notfound' | 'e-contenttype-unmapped'
+type ErrorSeverity = 'fatal' | 'error' | 'warning'
 
 interface Viewport {
     navigationEnable: boolean
@@ -43,8 +58,9 @@ interface Language {
 }
 
 interface DocumentError {
-    code: string
-    message: string
+    code: ErrorCode
+    severity: ErrorSeverity
+    parameters?: any[]
 }
 
 interface DocumentStatus {
@@ -57,6 +73,7 @@ type StatusCode = 'initial' | 'prefetching' | 'prefetched' | 'loading' | 'loaded
 
 interface DocumentPage {
     id: string
+    contentType: string
     label: DocumentLabel[]
     image: string
     thumbnail: string
@@ -95,9 +112,8 @@ interface MyAppState {
     document: DocumentState
 }
 
-interface ViewerSettings {
-    locale: string
-    annotations: AnnotationState[]
+interface HVPersistedState {
+    language: string
 }
 
 interface AnnotationState {

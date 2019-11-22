@@ -27,6 +27,11 @@
         }
     </style>
 
+    <script type="text/javascript" src="//amp.azure.net/libs/amp/latest/azuremediaplayer.min.js">
+    </script>
+    <link type="text/css" href="//amp.azure.net/libs/amp/latest/skins/amp-default/azuremediaplayer.min.css"
+        rel="stylesheet" />
+
 </head>
 
 <body>
@@ -43,7 +48,7 @@
     <!-- https://iiif.bodleian.ox.ac.uk/iiif/manifest/e32a277e-91e2-4a6d-8ba6-cc4bad230410.json -->
 
     <harmonized-viewer id="hv" class="harmonized-viewer" navigation-placement="left" annotations-enable="true"
-        style="height:100%" url="https://damsssl.llgc.org.uk/iiif/2.0/4389767/manifest.json">
+        style="height:100%" url="//central-d.dev.bac-lac.gc.ca/.item/?id=4313&app=fse&op=video">
 
         <!-- <div slot="overlays">
             <harmonized-overlay x="50" y="80" width="500" height="500"></harmonized-overlay>
@@ -52,9 +57,7 @@
     </harmonized-viewer>
 
     <script type="text/javascript">
-
         var viewer = document.getElementById('hv');
-
 
         viewer.addEventListener('pageLoad', (event) => {
 
@@ -66,7 +69,6 @@
         viewer.addEventListener('overlayClick', (event) => {
             console.log('overlayClick external listener', event)
         });
-
     </script>
 
 </body>

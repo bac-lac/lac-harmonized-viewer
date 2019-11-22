@@ -45,7 +45,7 @@ export const config: Config = {
   nodeResolve: {
     browser: true
   },
-  globalStyle: 'src/global/variables.scss',
+  globalStyle: 'src/global/style.scss',
   plugins: [
     sass({ includePaths: ['node_modules'] }),
     nodePolyfills(),

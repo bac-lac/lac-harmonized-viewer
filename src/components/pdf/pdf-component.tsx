@@ -3,7 +3,7 @@ import "../../utils/icon-library";
 import { Unsubscribe, Store } from '@stencil/redux';
 
 @Component({
-    tag: 'harmonized-pdf',
+    tag: 'harmonized-embed',
     styleUrl: 'pdf-component.scss'
 })
 export class PdfComponent {

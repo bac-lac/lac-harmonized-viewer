@@ -3,16 +3,20 @@ import "@stencil/redux";
 import 'manifesto.js';
 import { Store, Unsubscribe } from "@stencil/redux";
 import { configureStore } from "../../store";
-import { setDocumentUrl, setDocumentContentType, setStatus, addOverlay, setOptions, setLanguage, addLanguage, setViewport, enterFullscreen, exitFullscreen } from '../../store/actions/document';
+import { setDocumentUrl, setDocumentContentType, setStatus, addOverlay, setOptions, setLanguage, addLanguage, setViewport, enterFullscreen, exitFullscreen, addCustomResolver } from '../../store/actions/document';
 import i18next from 'i18next';
 import i18nextXHRBackend from 'i18next-xhr-backend';
 import i18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 import iconError from '../../assets/material-icons/ic_error_24px.svg'
+import { loadPersistedState } from '../../services/persisted-state-service';
+import { AppConfig } from '../../app.config';
+import { id } from '../../utils/utils';
 
 @Component({
 	tag: 'harmonized-viewer',
 	styleUrls: [
-		'viewer-component.scss'
+		'viewer-component.scss',
+		'../../themes/all.scss'
 	],
 	shadow: true
 })
@@ -25,9 +29,12 @@ export class ViewerComponent {
 	@Prop() navigationEnable: boolean
 	@Prop() navigationPlacement: PlacementType
 	@Prop() pagingEnable: boolean
-	@Prop() backgroundColor: string = '#181818'
 	@Prop({ attribute: 'url' }) documentUrl: string
 
+	@Prop({ attribute: 'language' }) defaultLanguage: string = 'en'
+	@Prop() theme: string = 'dark'
+
+	addCustomResolver: typeof addCustomResolver
 	addLanguage: typeof addLanguage
 	addOverlayState: typeof addOverlay
 	setDocumentContentType: typeof setDocumentContentType
@@ -53,7 +60,7 @@ export class ViewerComponent {
 	@Event({ eventName: 'statusChanged' }) statusChanged: EventEmitter
 
 	@Watch('statusCode')
-	handleStatusChange(oldValue: StatusCode, newValue: StatusCode) {
+	handleStatusChange(newValue: StatusCode, oldValue: StatusCode) {
 		this.statusChanged.emit(newValue)
 	}
 
@@ -77,34 +84,35 @@ export class ViewerComponent {
 		this.addOverlayState(x, y, width, height)
 	}
 
+	@Method()
+	async addResolver() {
+		const resolverId = id()
+		this.addCustomResolver(resolverId)
+	}
+
 	@Watch('documentUrl')
 	handleUrlChange() {
 		this.setDocumentUrl(this.documentUrl)
 	}
 
-	@Listen('click', { target: 'document' })
-	handleDocumentClick() {
+	// @Listen('click', { target: 'document' })
+	// handleDocumentClick() {
 
-		// On any click inside the document, close all active dropdowns
-		// Events responsible to open dropdowns must stop propagation
+	// 	// On any click inside the document, close all active dropdowns
+	// 	// Events responsible to open dropdowns must stop propagation
 
-		const dropdowns = Array.from(this.el.shadowRoot.querySelectorAll(
-			'.dropdown.is-active, .navbar-item.has-dropdown.is-active'))
+	// 	const dropdowns = Array.from(this.el.shadowRoot.querySelectorAll(
+	// 		'.dropdown.is-active, .navbar-item.has-dropdown.is-active'))
 
-		if (dropdowns) {
-			dropdowns.forEach((dropdown) => dropdown.classList.remove('is-active'))
-		}
-	}
-
-	@Listen('languageChanged')
-	handleLanguageChange() {
-		//this.setLanguage(this.language)
-	}
+	// 	if (dropdowns) {
+	// 		dropdowns.forEach((dropdown) => dropdown.classList.remove('is-active'))
+	// 	}
+	// }
 
 	componentWillLoad() {
 
 		this.store.setStore(configureStore({}))
-		this.store.mapDispatchToProps(this, { addLanguage, addOverlay, setDocumentContentType, enterFullscreen, exitFullscreen, setDocumentUrl, setLanguage, setOptions, setViewport, setStatus })
+		this.store.mapDispatchToProps(this, { addCustomResolver, addLanguage, addOverlay, setDocumentContentType, enterFullscreen, exitFullscreen, setDocumentUrl, setLanguage, setOptions, setViewport, setStatus })
 		this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
 				document: { language: language, availableLanguages: availableLanguages, page: page, url: url, status: status }
@@ -160,58 +168,90 @@ export class ViewerComponent {
 
 	configure() {
 
-		this.addLanguage('en', 'English')
-		this.addLanguage('fr', 'Français')
-
 		i18next
-			.use(i18nextXHRBackend)
 			.use(i18nextBrowserLanguageDetector)
 			.init({
-				lng: 'en',
 				fallbackLng: 'en',
 				debug: false,
-				// ns: ['common'],
-				// defaultNS: 'common',
-				backend: {
-					loadPath: './locales/{{lng}}.json?ns={{ns}}'
-				}
+				//ns: ['common'],
+				// defaultNS: 'common'
 			}, (err, t) => {
 
-				i18next.on('languageChanged', (language: string) => {
-					const availableLanguage = this.availableLanguages.find(i => i.code && i.code === language)
-					if (availableLanguage) {
-						this.setLanguage(availableLanguage.code)
-					}
-				})
+				const language = this.resolveLanguage()
+				this.setLanguage(language.code)
+
+				// i18next.on('languageChanged', (language: string) => {
+				// 	const availableLanguage = this.availableLanguages.find(i => i.code && i.code === language)
+				// 	if (availableLanguage) {
+				// 		this.setLanguage(availableLanguage.code)
+				// 	}
+				// })
 			})
+
+		AppConfig.languages.forEach((language) => {
+			this.addLanguage(language.code, language.name)
+			i18next.addResourceBundle(language.code, 'translation', language, true, true)
+		})
+
+	}
+
+	resolveLanguage(): Language {
+
+		let resolved = null
+
+		const persistedState = loadPersistedState()
+
+		if (persistedState && persistedState.language) {
+			resolved = persistedState.language
+		}
+		else if (this.defaultLanguage) {
+			resolved = this.defaultLanguage
+		}
+		else {
+			resolved = 'en'
+		}
+
+		return this.availableLanguages.find(i => i.code && i.code == resolved)
 	}
 
 	render() {
 
-		return <div class="harmonized-viewer" style={{ backgroundColor: this.backgroundColor }}>
+		let className = 'harmonized-viewer'
 
-			{
-				!this.status.error &&
-				<harmonized-topbar />
-			}
+		if (this.theme) {
+			className += ' harmonized-viewer__theme--' + this.theme
+		}
 
-			{
-				this.status.error &&
-				<div class="error-message">
-					<i innerHTML={iconError}></i>
-					<div class="error-message__text">{this.status.error.message}</div>
-				</div>
-			}
+		return <div class={className}>
 
-			{
-				!this.status.error &&
-				<harmonized-viewport class="mdc-top-app-bar--fixed-adjust" />
-			}
+			<harmonized-topbar />
+
+			<div class="viewer__content mdc-top-app-bar--fixed-adjust full-height">
+
+				{
+					this.status.error ? (
+						<div class="error-message">
+							<i innerHTML={iconError}></i>
+							<div class="error-message__text">
+								<strong>
+									{i18next.t(`errors.${this.status.error.code}`)}
+								</strong>
+								{this.status.error.parameters.map((param) => (
+									<div>
+										{param}
+									</div>
+								))}
+
+							</div>
+						</div>
+					) : <harmonized-viewport />
+				}
+			</div>
 
 			<slot name="footer" />
 
-			<harmonized-navigation
-				placement="bottom" rows={1} />
+			{/* <harmonized-navigation
+				placement="bottom" rows={1} /> */}
 		</div>
 	}
 }

@@ -1,4 +1,10 @@
 {
+    "code": "fr",
     "name": "Français",
-    "fullscreen": "Plein écran"
+    "changeLanguage": "Changer la langue",
+    "fullscreen": "Plein écran",
+    "errors": {
+        "e-document-notfound": "Le document est introuvable",
+        "e-contenttype-unmapped": "Type de contenu introuvable ou non-supporté"
+    }
 }

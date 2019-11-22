@@ -9,10 +9,7 @@ const getInitialState = (): DocumentState => {
         document: null,
         error: null,
         loading: false,
-        language: {
-            code: 'en',
-            name: 'English'
-        },
+        language: null,
         availableLanguages: [],
         fullscreen: false,
         options: [],
@@ -20,6 +17,7 @@ const getInitialState = (): DocumentState => {
         page: 0,
         pageCount: 0,
         pages: [],
+        customResolvers: [],
         tags: [],
         status: {
             code: 'initial',
@@ -51,7 +49,7 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
 
     switch (action.type) {
         case TypeKeys.SET_ERROR: {
-            return { ...state, status: { ...state.status, code: 'failed', loading: false, error: { code: action.code, message: action.message } } }
+            return { ...state, status: { ...state.status, code: 'failed', loading: false, error: { code: action.errorCode, severity: action.severity, parameters: action.optionalParams } } }
         }
         case TypeKeys.SET_LOADING: {
             return { ...state, status: { ...state.status, loading: action.loading } }
@@ -60,7 +58,7 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
             return { ...state, status: { ...state.status, loading: (action.code == 'prefetching' || action.code == 'loading'), code: action.code } }
         }
         case TypeKeys.SET_LANGUAGE: {
-            return { ...state, language: state.availableLanguages.find(i => i.code && i.code == action.code) }
+            return { ...state, language: state.availableLanguages.find(i => i.code && i.code == action.language) }
         }
         case TypeKeys.SET_DOCUMENT_CONTENT_TYPE: {
             return { ...state, contentType: action.contentType }
@@ -114,6 +112,9 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
         }
         case TypeKeys.SET_VIEWPORT: {
             return { ...state, viewport: action.viewport }
+        }
+        case TypeKeys.ADD_CUSTOM_RESOLVER: {
+            return { ...state, customResolvers: [...state.customResolvers, action.id] }
         }
     }
     return state

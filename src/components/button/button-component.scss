@@ -1,13 +1,10 @@
-@import "@material/button/mdc-button";
-@import "@material/icon-button/mdc-icon-button";
-
 harmonized-button {
-    @extend .mdc-touch-target-wrapper;
+    @import '@material/button/mixins';
+    @import '@material/icon-button/mixins';
+
     display: flex;
 
     button {
-        @extend .mdc-button--touch;
-
         //@include mdc-button-shape-radius(2px);
         @include mdc-button-ink-color(#fff);
 

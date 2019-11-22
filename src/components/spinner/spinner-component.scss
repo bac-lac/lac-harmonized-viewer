@@ -1,12 +1,8 @@
-@import "../../global/variables.scss";
-@import "@material/linear-progress/mdc-linear-progress";
-
 harmonized-spinner {
+    @import '@material/linear-progress/mixins';
     display: inline-block;
 
     .progress-bar {
-        @extend .mdc-linear-progress__bar;
-        @extend .mdc-linear-progress--indeterminate;
         @include mdc-linear-progress-bar-color(#5772ff);
         @include mdc-linear-progress-buffer-color(transparent);
 
