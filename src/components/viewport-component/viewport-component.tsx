@@ -1,15 +1,12 @@
 import { Component, Element, h, Prop, State, Host } from '@stencil/core';
 import '../../utils/manifest';
 import { Unsubscribe, Store } from '@stencil/redux';
-import { parseContentType } from '../../utils/utils';
 import axios from 'axios';
-import iconChevronLeft from '../../assets/material-design-icons/ic_chevron_left_48px.svg'
-import iconChevronRight from '../../assets/material-design-icons/ic_chevron_right_48px.svg'
 import iconInfo from '../../assets/material-icons/ic_info_24px.svg'
 import { setDocumentContentType, setStatus, setPage, setLoading, setError } from '../../store/actions/document';
-import { label } from '../../services/i18n-service';
-import i18next from 'i18next';
+import { translate } from '../../services/i18n-service';
 import { AppConfig } from '../../app.config';
+import contentTypeParser from "content-type-parser";
 
 @Component({
     tag: 'harmonized-viewport',
@@ -21,6 +18,8 @@ export class ViewportComponent {
 
     @Prop() annotationsEnable: boolean = false
 
+    @State() component: string
+
     setLoading: typeof setLoading
     setError: typeof setError
     setPage: typeof setPage
@@ -29,8 +28,10 @@ export class ViewportComponent {
 
     storeUnsubscribe: Unsubscribe
 
+    @State() annotations: MyAppState["document"]["annotations"]
     @State() contentType: MyAppState["document"]["contentType"]
     @State() document: MyAppState["document"]["document"]
+    @State() language: MyAppState["document"]["language"]
     @State() status: MyAppState["document"]["status"]
     @State() page: MyAppState["document"]["page"]
     @State() pages: MyAppState["document"]["pages"]
@@ -45,11 +46,13 @@ export class ViewportComponent {
         this.store.mapDispatchToProps(this, { setLoading, setError, setPage, setStatus, setDocumentContentType })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { contentType: contentType, document: document, status: status, page: page, pages: pages, pageCount: pageCount, url: url, viewport: viewport }
+                document: { annotations: annotations, contentType: contentType, document: document, language: language, status: status, page: page, pages: pages, pageCount: pageCount, url: url, viewport: viewport }
             } = state
             return {
+                annotations: annotations,
                 contentType: contentType,
                 document: document,
+                language: language,
                 status: status,
                 page: page,
                 pages: pages,
@@ -73,18 +76,28 @@ export class ViewportComponent {
 
             this.setStatus('prefetched')
 
-            const contentType = parseContentType(response.headers['content-type'])
-            if (contentType) {
-                this.setDocumentContentType(contentType)
+            const parser = contentTypeParser(response.headers['content-type'])
+            if (parser) {
+
+                const contentType = `${parser.type}/${parser.subtype}`
+                if (contentType) {
+
+                    this.setDocumentContentType(contentType)
+
+                    this.component = this.resolveComponent(contentType)
+                    if (!this.component) {
+                        this.setError('contenttype-unsupported', { key: 'contentType', value: contentType })
+                    }
+                }
             }
         }
         catch (e) {
 
-            if (e.response.status && e.response.status == 404) {
-                this.setError('e-document-notfound', this.url)
+            if (e.response && e.response.status && e.response.status == 404) {
+                this.setError('request-failed-notfound', { key: 'url', value: this.url })
             }
             else {
-                this.setError(e.name, e.message)
+                this.setError('request-failed', { key: 'url', value: this.url })
             }
         }
     }
@@ -94,23 +107,28 @@ export class ViewportComponent {
     }
 
     componentDidRender() {
-        //this.setContentMargins()
+        this.setContentMargins()
     }
 
-    isFirst() {
-        return (this.page <= 0)
-    }
+    resolveComponent(contentType: string): string {
 
-    isLast() {
-        return (this.page >= (this.pageCount - 1))
-    }
+        if (!contentType) {
+            return undefined
+        }
 
-    handlePreviousClick() {
-        this.setPage(this.page - 1)
-    }
+        if (!AppConfig.contentTypes) {
+            return undefined
+        }
 
-    handleNextClick() {
-        this.setPage(this.page + 1)
+        const mapping = AppConfig.contentTypes
+            .find(i => i.formats && i.formats.includes(contentType))
+
+        if (mapping && mapping.component) {
+            return mapping.component.toLowerCase()
+        }
+        else {
+            return null
+        }
     }
 
     render() {
@@ -131,54 +149,41 @@ export class ViewportComponent {
             <div class="viewport__content">
 
                 {
-                    (this.viewport.navigationPlacement == 'left') && (
-                        <harmonized-content
-                            width={250}
-                            placement="left"
-                            showNavigation={this.viewport.navigationEnable}
-                            showMetadata={false} />
+                    this.pages && this.pages.length > 0 && this.viewport.navigationPlacement == 'left' && (
+                        <harmonized-drawer
+                            placement="left" toolbar={true} visible={true} width={250}>
+                            <harmonized-navigation></harmonized-navigation>
+                        </harmonized-drawer>
                     )
                 }
 
                 <main class="hv-main mdc-drawer-app-content">
                     <div class="hv-main__content">
 
-                        <harmonized-button
-                            class="button-navigation button-navigation--prev"
-                            icon={iconChevronLeft}
-                            size="lg"
-                            raised={true}
-                            title="Go to previous page"
-                            aria-label="Go to previous page"
-                            onClick={this.handlePreviousClick.bind(this)}
-                            disabled={this.status.loading || this.isFirst()} />
-
                         <div class="viewport__content-inner">
 
                             {this.renderViewport()}
                             {this.renderLabel()}
-                            {this.viewport.pagingEnable && <harmonized-pager />}
+
+                            {this.pages && this.pages.length > 0 && <harmonized-pager />}
 
                         </div>
-
-                        <harmonized-button
-                            class="button-navigation button-navigation--next"
-                            icon={iconChevronRight}
-                            size="lg"
-                            raised={true}
-                            title="Go to next page"
-                            aria-label="Go to next page"
-                            onClick={this.handleNextClick.bind(this)}
-                            disabled={this.status.loading || this.isLast()} />
 
                     </div>
                 </main>
 
-                <harmonized-content
-                    width={250}
-                    placement="right"
-                    showNavigation={false}
-                    showMetadata={true} />
+                {
+                    this.annotations && this.annotations.length > 0 && (
+                        <harmonized-drawer
+                            placement="right" toolbar={true} visible={true} width={300}>
+                            <harmonized-tabs>
+                                <harmonized-tab icon={iconInfo} label={translate('details')}>
+                                    <harmonized-annotations></harmonized-annotations>
+                                </harmonized-tab>
+                            </harmonized-tabs>
+                        </harmonized-drawer>
+                    )
+                }
 
                 <slot name="right" />
 
@@ -192,8 +197,8 @@ export class ViewportComponent {
         const content = this.el.querySelector('.mdc-drawer-app-content') as HTMLElement
         if (content) {
 
-            const previousSibling = this.findPreviousSibling(content, 'harmonized-content')
-            const nextSibling = this.findNextSibling(content, 'harmonized-content')
+            const previousSibling = this.findPreviousSibling(content, 'harmonized-drawer')
+            const nextSibling = this.findNextSibling(content, 'harmonized-drawer')
 
             content.style.marginLeft = `${(previousSibling && previousSibling.clientWidth) || 0}px`
             content.style.marginRight = `${(nextSibling && nextSibling.clientWidth) || 0}px`
@@ -243,76 +248,28 @@ export class ViewportComponent {
         if (this.pages && this.pages[this.page]) {
 
             return <div class="paging__label">
-                {label(this.pages[this.page].label)}
+                {translate(this.pages[this.page].label)}
             </div>
         }
     }
 
     renderViewport() {
 
-        let component = null
+        let element = null
 
-        let componentName: string = null
-        let contentType: string = null
-
-        const page = this.pages[this.page]
-        contentType = page && page.contentType
-
-        if (!contentType) {
-            contentType = this.contentType
+        switch (this.component) {
+            case 'openseadragon':
+                element = <harmonized-openseadragon />
+                break
+            case 'embed':
+                element = <harmonized-embed />
+                break
+            case 'video':
+                element = <harmonized-video url={this.url} />
+                break
         }
 
-        // temporary
-        contentType = 'video/mp4'
-
-        // Resolve component from content type
-        const mappings: ContentTypeMapping[] = AppConfig.contentTypes
-
-        // const customResolvers: HTMLElement[] =
-        //     Array.from(this.el.querySelectorAll('harmonized-custom-resolver'))
-
-        // customResolvers.forEach((resolver: HTMLHarmonizedCustomResolverElement) => {
-
-        //     // Existing resolver with the same content type will be overwritten
-        //     const existingIndex = mappings.findIndex(i => i.contentType && i.contentType == resolver.contentType)
-        //     if (existingIndex !== -1) {
-        //         mappings.slice(existingIndex, 1)
-        //     }
-
-        //     mappings.push({
-        //         contentType: resolver.contentType,
-        //         component: 'custom-resolver'
-        //     })
-        // })
-
-
-        if (mappings) {
-            const resolved = mappings.find(i => i.contentType && i.contentType == contentType)
-            componentName = resolved && resolved.component
-        }
-
-        if (componentName) {
-
-            switch (componentName.toLowerCase()) {
-                case 'openseadragon':
-                    component = <harmonized-openseadragon />
-                    break
-                case 'embed':
-                    component = <harmonized-embed />
-                    break
-                case 'video':
-                    component = <harmonized-video url={this.url} />
-                    break
-                // case 'custom-resolver':
-                //     component = this.renderCustomResolver(contentType, this.url)
-                //     break
-                default:
-                    this.setError('e-contenttype-unmapped', contentType)
-                    break
-            }
-        }
-
-        return component
+        return element
     }
 
     renderCustomResolver(contentType: string, url: string): HTMLHarmonizedCustomResolverElement {

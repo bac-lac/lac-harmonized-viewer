@@ -3,8 +3,10 @@
     "name": "English",
     "changeLanguage": "Change language",
     "fullscreen": "Fullscreen",
+    "details": "Details",
     "errors": {
-        "e-document-notfound": "Document could not be found",
-        "e-contenttype-unmapped": "Content type is missing or not supported"
+        "request-failed": "Document request failed",
+        "request-failed-404": "Document could not be found",
+        "contenttype-unsupported": "Content type {{contentType}} is not supported"
     }
 }

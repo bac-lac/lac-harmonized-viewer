@@ -3,10 +3,10 @@ import { Unsubscribe, Store } from '@stencil/redux';
 import iconExpand from '../../assets/material-design-icons/ic_add_24px.svg'
 import iconCollapse from '../../assets/material-design-icons/ic_remove_24px.svg'
 import { animate } from '../../utils/utils';
-import { label } from '../../services/i18n-service';
+import { translate } from '../../services/i18n-service';
 
 @Component({
-    tag: 'hv-annotations',
+    tag: 'harmonized-annotations',
     styleUrl: 'annotations-component.scss'
 })
 export class AnnotationsComponent {
@@ -53,17 +53,14 @@ export class AnnotationsComponent {
         return <dl class="annotation-list">
             {
                 this.annotations.map((annotation) => [
-                    <dt
-                        tabindex="0"
-                        class={this.renderAnnotationClass(annotation)}>
+                    <dt tabindex="0" class={this.renderAnnotationClass(annotation)}>
                         {
                             annotation.label &&
-                            <span>{label(annotation.label)}</span>
+                            <span>{translate(annotation.label)}</span>
                         }
                     </dt>,
                     <dd>
-                        <span
-                            innerHTML={annotation.content}>
+                        <span innerHTML={annotation.content}>
                         </span>
                     </dd>
                 ])

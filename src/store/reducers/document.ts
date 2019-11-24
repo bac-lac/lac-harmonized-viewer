@@ -49,7 +49,7 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
 
     switch (action.type) {
         case TypeKeys.SET_ERROR: {
-            return { ...state, status: { ...state.status, code: 'failed', loading: false, error: { code: action.errorCode, severity: action.severity, parameters: action.optionalParams } } }
+            return { ...state, status: { ...state.status, code: 'failed', loading: false, error: { code: action.errorCode, severity: action.severity, optionalParameters: action.optionalParameters } } }
         }
         case TypeKeys.SET_LOADING: {
             return { ...state, status: { ...state.status, loading: action.loading } }

@@ -7,9 +7,9 @@ export interface SetError {
     type: TypeKeys.SET_ERROR
     errorCode: ErrorCode
     severity: ErrorSeverity,
-    optionalParams: any[]
+    optionalParameters: DocumentErrorParameter[]
 }
-export const setError = (errorCode: ErrorCode, ...optionalParams: any[]) => (dispatch, _getState) => {
+export const setError = (errorCode: ErrorCode, ...optionalParameters: DocumentErrorParameter[]) => (dispatch, _getState) => {
 
     const error = AppConfig.errors.find(i => i.code && i.code == errorCode)
     if (error) {
@@ -17,7 +17,7 @@ export const setError = (errorCode: ErrorCode, ...optionalParams: any[]) => (dis
             type: TypeKeys.SET_ERROR,
             errorCode: error.code,
             severity: error.severity,
-            optionalParams: optionalParams
+            optionalParameters: optionalParameters
         }
         dispatch(action)
     }

@@ -75,8 +75,9 @@ export class IIIFResolver extends Resolver {
                         id: canvas.id,
                         contentType: format && format.value,
                         label: this.mapLabels(canvas.getLabel()),
-                        image: this.getImageUri(resource, 1000),
-                        thumbnail: this.getThumbnailUri(resource)
+                        image: resource.id,
+                        //image: this.getImageUri(resource, 1000),
+                        thumbnail: this.getThumbnailUri(canvas)
                     }
                 }
             }))
@@ -133,48 +134,58 @@ export class IIIFResolver extends Resolver {
         return 0
     }
 
-    getThumbnailUri(resource: Manifesto.IResource): string {
+    getThumbnailUri(canvas: Manifesto.ICanvas): string {
 
-        if (!resource) {
+        if (!canvas) {
             return undefined
         }
 
-        const thumbnail = resource.getThumbnail()
+        const thumbnail = canvas.getThumbnail()
         if (thumbnail) {
             return thumbnail.id
         }
         else {
-            return this.getImageUri(resource, this.thumbnailHeight)
+            return this.getImageUri(canvas, this.thumbnailHeight)
         }
     }
 
-    getImageUri(resource: Manifesto.IResource, height: number): string {
+    getImageUri(canvas: Manifesto.ICanvas, height: number): string {
 
-        if (!resource) {
+        if (!canvas) {
             return undefined
         }
 
-        const infoUri = this.resolveImageServiceUri(resource, true)
-        if (infoUri.indexOf('/') != -1) {
+        let width: number = null
 
-            let extension = null
+        const aspectRatio: number = canvas.getWidth() / canvas.getHeight()
 
-            if (infoUri.lastIndexOf('/') != -1) {
-                const fileName = infoUri.substr(infoUri.lastIndexOf('/') + 1)
-                if (fileName) {
-
-                    if (fileName.lastIndexOf('.') != -1) {
-                        extension = fileName.substr(fileName.lastIndexOf('.') + 1)
-                    }
-                }
-            }
-
-            if (!extension) {
-                extension = this.thumbnailDefaultExtension
-            }
-
-            return `${infoUri}/full/${height},/0/default.${extension}`
+        if (aspectRatio) {
+            width = Math.floor(height * aspectRatio)
         }
+
+        return canvas.getCanonicalImageUri(width)
+
+        // const infoUri = this.resolveImageServiceUri(resource, true)
+        // if (infoUri.indexOf('/') != -1) {
+
+        //     let extension = null
+
+        //     if (infoUri.lastIndexOf('/') != -1) {
+        //         const fileName = infoUri.substr(infoUri.lastIndexOf('/') + 1)
+        //         if (fileName) {
+
+        //             if (fileName.lastIndexOf('.') != -1) {
+        //                 extension = fileName.substr(fileName.lastIndexOf('.') + 1)
+        //             }
+        //         }
+        //     }
+
+        //     if (!extension) {
+        //         extension = this.thumbnailDefaultExtension
+        //     }
+
+        //     return `${infoUri}/full/${height},/0/default.${extension}`
+        // }
     }
 
     resolveImageServiceUri(resource: Manifesto.IResource, trimFileName: boolean = false): string {
@@ -183,23 +194,28 @@ export class IIIFResolver extends Resolver {
             return undefined
         }
 
-        const infoFile = 'info.json'
+        // const serviceLevel1 = resource.getService('http://iiif.io/api/image/2/level1.json')
+        // if (serviceLevel1) {
+        //     return serviceLevel1.getInfoUri()
+        // }
+
         const service = this.resolveImageService(resource)
+        return service && service.getInfoUri()
 
-        //let serviceUri: string = (service ? service.getInfoUri() : resource.id)
-        let serviceUri: string = (service ? service.id : resource.id)
 
-        // Remove the info.json path from uri
-        if (trimFileName && serviceUri.indexOf(infoFile) !== -1) {
-            serviceUri = serviceUri.substr(0, serviceUri.lastIndexOf(infoFile))
-        }
+        // let serviceUri: string = (service ? service.id : resource.id)
 
-        // Trim last slash from uri
-        if (serviceUri.endsWith('/')) {
-            serviceUri = serviceUri.substr(0, serviceUri.length - 1)
-        }
+        // // Remove the info.json path from uri
+        // if (trimFileName && serviceUri.indexOf(infoFile) !== -1) {
+        //     serviceUri = serviceUri.substr(0, serviceUri.lastIndexOf(infoFile))
+        // }
 
-        return serviceUri
+        // // Trim last slash from uri
+        // if (serviceUri.endsWith('/')) {
+        //     serviceUri = serviceUri.substr(0, serviceUri.length - 1)
+        // }
+
+        // return serviceUri
     }
 
     resolveTileSource(image: Manifesto.IAnnotation): any {
@@ -211,7 +227,8 @@ export class IIIFResolver extends Resolver {
         if (this.disableDeepzoom) {
             return {
                 type: 'image',
-                url: this.resolveImageServiceUri(image.getResource(), false)
+                url: image.getResource().id
+                //url: this.resolveImageServiceUri(image.getResource(), false)
             }
         }
         else {

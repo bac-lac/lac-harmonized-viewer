@@ -6,29 +6,6 @@
     justify-content: center;
     position: relative;
 
-    .button-navigation {
-        opacity: 0.1;
-        transition: opacity 200ms ease;
-
-        z-index: 1;
-        position: absolute;
-
-        &--prev {
-            left: 0;
-        }
-
-        &--next {
-            right: 0;
-        }
-
-        button {
-            &::before,
-            &::after {
-                border-radius: 2px;
-            }
-        }
-    }
-
     &__content {
         width: 100%;
         height: 100%;
@@ -43,7 +20,8 @@
         .viewport__content-inner {
             width: 100%;
             height: 100%;
-            display: block;
+            display: flex;
+            flex-direction: column;
         }
     }
 
@@ -58,10 +36,10 @@
         }
 
         &-spacer--left::before {
-            content: ' ';
+            content: " ";
         }
         &-spacer--right::after {
-            content: ' ';
+            content: " ";
         }
     }
 
@@ -87,7 +65,7 @@
     // }
 
     .hv-main__content {
-        margin: 0 30px;
+        // margin: 0 30px;
 
         &:hover {
             .button-navigation {

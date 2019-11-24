@@ -1,4 +1,4 @@
-import { Component, h, Element, Prop, State, Host, Watch } from '@stencil/core';
+import { Component, h, Element, Prop, State, Host, Watch, Listen } from '@stencil/core';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { setPage } from '../../store/actions/document';
 import { MDCRipple } from '@material/ripple';
@@ -51,30 +51,42 @@ export class PagerComponent {
     }
 
     componentDidLoad() {
-        this.slider = this.createSlider()
+        this.createSlider()
     }
 
     componentDidUnload() {
-
-        this.slider.destroy()
-        this.slider = null
-
+        this.destroySlider()
         this.storeUnsubscribe()
     }
 
     componentDidRender() {
-        //console.log(this.slider && this.slider.value)
-        //this.updateSlider()
 
+        // MDCSlider must be resized manually when an MDCDrawer is present on the page
+        // https://github.com/material-components/material-components-web/issues/4365
+
+        if (this.slider) {
+            this.slider.layout()
+        }
     }
 
     handleSliderInput() {
-        this.marker = this.slider.value
+
+        if (this.slider) {
+
+            this.marker = this.slider.value
+
+            const element = this.getSliderElement()
+            if (element) {
+                element.classList.add('mdc-slider--active')
+            }
+        }
     }
 
     handleSliderChange() {
         this.marker = null
-        this.setPage(this.slider.value ? this.slider.value : 0)
+        if (this.slider) {
+            this.setPage(this.slider.value ? this.slider.value : 0)
+        }
     }
 
     isFirst() {
@@ -101,14 +113,20 @@ export class PagerComponent {
         this.setPage(this.pageCount - 1)
     }
 
+    getSliderElement(): HTMLElement {
+        return this.el.querySelector('.mdc-slider')
+    }
+
     createSlider() {
 
-        if (this.slider) {
-            this.slider.destroy()
-            this.slider = null
+        this.destroySlider()
+
+        const element = this.getSliderElement()
+        if (!element) {
+            return undefined
         }
 
-        this.slider = new MDCSlider(this.el.querySelector('.mdc-slider'))
+        this.slider = new MDCSlider(element)
 
         this.slider.step = 1
         this.slider.min = 0
@@ -123,9 +141,21 @@ export class PagerComponent {
             this.handleSliderChange()
         })
 
-        this.updateSlider()
+        this.slider.listen('focus', () => {
+            const element = this.getSliderElement()
+            if (element) {
+                element.classList.add('mdc-slider--focus')
+            }
+        })
 
-        return this.slider
+        this.updateSlider()
+    }
+
+    destroySlider() {
+        if (this.slider) {
+            this.slider.destroy()
+            this.slider = null
+        }
     }
 
     @Watch('page')
@@ -144,13 +174,17 @@ export class PagerComponent {
         }
 
         this.slider.disabled = this.status.loading
-
         this.slider.value = (isNumber(this.page) ? this.page : 0)
+
+        this.slider.layout()
     }
 
     render() {
 
-        const page = isNullOrUndefined(this.marker) ? (this.page + 1) : (this.marker + 1)
+        console.log('slider render')
+
+        const page = isNullOrUndefined(this.marker) ?
+            (this.page + 1) : (this.marker + 1)
 
         return <Host role="toolbar" aria-label="Toolbar navigation">
 
@@ -159,7 +193,7 @@ export class PagerComponent {
                     Page
                 </span>
                 <span class="paging__label-value">
-                    {(this.page + 1)}
+                    {page}
                 </span>
                 <span class="paging__label-spacer--left paging__label-spacer--right">
                     of
@@ -186,9 +220,13 @@ export class PagerComponent {
                     disabled={this.status.loading || this.isFirst()} />
 
                 <div class="slider-control">
-                    <div class={this.marker ? "mdc-slider mdc-slider--focus" : "mdc-slider"}
+                    <div class="mdc-slider"
                         role="slider"
                         tabindex="0"
+                        aria-valuemin={0}
+                        aria-valuemax={(this.pageCount ? (this.pageCount - 1) : 1)}
+                        aria-valuenow={(isNumber(this.page) ? this.page : 0)}
+                        aria-disabled={this.status.loading}
                         aria-label="Select Value">
                         <div class="mdc-slider__track-container">
                             <div class="mdc-slider__track"></div>

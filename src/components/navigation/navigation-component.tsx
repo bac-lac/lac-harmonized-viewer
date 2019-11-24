@@ -2,7 +2,7 @@ import { Component, Prop, h, Element, Listen, State, Watch, Host } from '@stenci
 import 'manifesto.js';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { setPage } from '../../store/actions/document';
-import { label } from '../../services/i18n-service';
+import { translate } from '../../services/i18n-service';
 import { configureStore } from '../../store';
 
 @Component({
@@ -17,7 +17,6 @@ export class NavigationComponent {
     @Prop() cols: number = 2
     @Prop() rows: number = 1
     @Prop() placement: PlacementType = 'left'
-    @Prop() theme: string
 
     @Watch('rows')
     handleRowsChange() {
@@ -162,7 +161,7 @@ export class NavigationComponent {
             className += ' mdc-image-list--2col'
         }
 
-        return <Host class={this.theme}>
+        return <Host>
             <div class="navigation-content">
 
                 <harmonized-image-list class={className}>
@@ -172,7 +171,7 @@ export class NavigationComponent {
                             <harmonized-image
                                 src={page.thumbnail}
                                 page={index}
-                                caption={label(page.label)}
+                                caption={translate(page.label)}
                                 show-caption={true}
                                 show-tooltip={false}
                                 preload={index < 16}

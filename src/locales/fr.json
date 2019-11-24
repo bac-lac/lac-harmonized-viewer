@@ -3,8 +3,10 @@
     "name": "Français",
     "changeLanguage": "Changer la langue",
     "fullscreen": "Plein écran",
+    "details": "Détails",
     "errors": {
-        "e-document-notfound": "Le document est introuvable",
-        "e-contenttype-unmapped": "Type de contenu introuvable ou non-supporté"
+        "request-failed": "La requête au document a échoué",
+        "request-failed-notfound": "Document introuvable",
+        "contenttype-unsupported": "Type de contenu {{contentType}} incompatible"
     }
 }

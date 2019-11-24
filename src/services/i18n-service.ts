@@ -1,17 +1,34 @@
 import i18next from 'i18next';
-import i18nextXHRBackend from 'i18next-xhr-backend';
-import i18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
-import { loadPersistedState } from './persisted-state-service';
 
-export function label(items: DocumentLabel[]): string {
+export function translate(value: string | DocumentLabel[]): string {
 
-    if (!items) {
+    if (!value) {
         return undefined
     }
 
-    const item = items.find(i => i.locale && parseLanguage(i.locale) === i18next.language)
-    if (item) {
-        return item.value
+    if (typeof value === 'string') {
+        return i18next.t(value)
+    }
+    else {
+
+        const label = value.find(i => i.locale && parseLanguage(i.locale) === i18next.language)
+        if (label) {
+            return label.value
+        }
+        else if (i18next.languages && i18next.languages.length > 0) {
+
+            // Language fallback
+
+            const fallback = i18next.languages[i18next.languages.length - 1]
+            const fallbackLabel = value.find(i => i.locale && parseLanguage(i.locale) === fallback)
+
+            if (fallbackLabel) {
+                return fallbackLabel.value
+            }
+            else {
+                return undefined
+            }
+        }
     }
 }
 

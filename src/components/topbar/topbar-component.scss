@@ -1,8 +1,8 @@
 harmonized-topbar {
-    @import '@material/button/mixins';
-    @import '@material/icon-button/mixins';
-    @import '@material/list/mixins';
-    @import '@material/menu-surface/mixins';
+    @import "@material/button/mixins";
+    @import "@material/icon-button/mixins";
+    @import "@material/list/mixins";
+    @import "@material/menu-surface/mixins";
     position: relative;
     display: inline-block;
 
@@ -14,7 +14,8 @@ harmonized-topbar {
 
         .mdc-top-app-bar__title {
             color: #fff;
-            font-size: 16px;
+            font-weight: normal;
+            //font-size: 16px;
         }
 
         .mdc-menu {
@@ -32,10 +33,6 @@ harmonized-topbar {
             svg {
                 fill: #fff;
                 margin-right: 10px;
-            }
-
-            .mdc-button__label {
-                font-size: 12px;
             }
         }
 

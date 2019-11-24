@@ -1,8 +1,27 @@
 harmonized-openseadragon {
     height: 100%;
-    display: block;
+    display: flex;
+    margin: 0 30px;
+    align-items: center;
+
+    .button-navigation {
+        opacity: 0;
+        transition: opacity 200ms ease;
+
+        z-index: 1;
+        position: absolute;
+
+        &--prev {
+            left: 30px;
+        }
+
+        &--next {
+            right: 30px;
+        }
+    }
 
     .openseadragon {
+        width: 100%;
         height: 100%;
     }
 }

@@ -1,35 +1,45 @@
-hv-annotations {
+harmonized-annotations {
+    @import "@material/animation/functions";
+
     height: 100%;
     display: block;
     margin-right: 15px;
     background-color: #181818;
 
-    dt {
-        color: #99ace5;
-        width: 100%;
-        display: block;
-        font-size: 14px;
-        align-items: center;
-        position: relative;
-        justify-content: space-between;
-        text-transform: uppercase;
-    }
-
-    dd {
-        color: #fff;
-        font-size: 15px;
+    dl {
         line-height: 1.5;
-        margin: 5px 0 20px 0;
 
-        a {
-            display: inline-flex;
+        dt {
+            color: #f6e0b5;
+            width: 100%;
+            font-size: 14px;
+            display: block;
             align-items: center;
+            position: relative;
+            justify-content: space-between;
+            text-transform: uppercase;
+        }
 
-            &:link {
-                color: #fff;
-            }
-            &:visited {
-                color: #aaa;
+        dd {
+            color: #d9d9d9;
+            line-height: 1.5;
+            margin: 5px 0 20px 0;
+
+            a {
+                display: inline-flex;
+                align-items: center;
+                text-decoration: none;
+
+                &:link {
+                    color: #d9d9d9;
+                }
+                &:visited {
+                    color: #999;
+                }
+                &:hover {
+                    color: #d9d9d9;
+                    transition: color 175ms $mdc-animation-sharp-curve-timing-function;
+                }
             }
         }
     }

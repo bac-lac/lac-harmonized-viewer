@@ -9,10 +9,11 @@ import iconClose from '../../assets/material-design-icons/ic_close_18px.svg'
 })
 export class DrawerComponent {
 
-    @Element() el: Element
+    @Element() el: HTMLElement
 
     @Prop() placement: PlacementType = 'left'
     @Prop() toolbar: boolean = false
+    @Prop() width: number = 300
     @Prop() visible: boolean = false
 
     private drawer: MDCDrawer
@@ -47,7 +48,7 @@ export class DrawerComponent {
             className += ' mdc-drawer--open'
         }
 
-        return <Host class={className}>
+        return <Host class={className} style={{ width: `${this.width}px` }}>
 
             {
                 this.toolbar && <div class="mdc-drawer__toolbar" role="toolbar">

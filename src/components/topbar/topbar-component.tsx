@@ -4,15 +4,11 @@ import { MDCTopAppBar } from '@material/top-app-bar';
 import { MDCMenu, Corner } from '@material/menu';
 import iconMenu from '../../assets/material-design-icons/ic_menu_18px.svg'
 import iconLanguage from '../../assets/material-icons/ic_world_24px.svg';
-import iconMore from '../../assets/material-design-icons/navigation/ic_more_vert_18px.svg'
 import iconFullscreen from '../../assets/material-icons/ic_fullscreen_24px.svg';
 import iconFullscreenExit from '../../assets/material-icons/ic_fullscreen_exit_24px.svg';
-import iconDisplay from '../../assets/material-icons/ic_display_24px.svg';
-import iconDockLeft from '../../assets/material-icons/ic_dock_left_24px.svg';
-import iconDockBottom from '../../assets/material-icons/ic_dock_bottom_24px.svg';
 import { setViewport, setLanguage, enterFullscreen, exitFullscreen } from '../../store/actions/document';
 import i18next from 'i18next';
-import { label } from '../../services/i18n-service';
+import { translate } from '../../services/i18n-service';
 
 @Component({
     tag: 'harmonized-topbar',
@@ -21,8 +17,6 @@ import { label } from '../../services/i18n-service';
 export class TopbarComponent {
 
     @Element() el: HTMLElement
-
-    @Prop() backgroundColor: string
 
     @State() fullscreen: boolean = false
 
@@ -110,20 +104,21 @@ export class TopbarComponent {
 
     render() {
 
-        return <Host class="topbar">
-            <header class="mdc-top-app-bar mdc-top-app-bar--fixed" style={{ backgroundColor: this.backgroundColor }}>
+        return <Host>
+            <header class="mdc-top-app-bar mdc-top-app-bar--fixed">
                 <div class="mdc-top-app-bar__row">
                     <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-                        <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">
+                        <button class="mdc-top-app-bar__navigation-icon mdc-icon-button">
                             <i class="mdc-icon-button__icon" innerHTML={iconMenu}></i>
                         </button>
-                        <span class="mdc-top-app-bar__title">{label(this.title)}</span>
+                        <span class="mdc-top-app-bar__title">{translate(this.title)}</span>
                     </section>
                     <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
 
                         <harmonized-button
-                            class="mdc-top-app-bar__action-item topbar__button mdc-menu-surface--anchor"
+                            class="mdc-top-app-bar__action-item mdc-menu-surface--anchor"
                             icon={iconLanguage}
+                            dropdown={true}
                             size="sm"
                             label={this.language && this.language.name}
                             aria-label={i18next.t('changeLanguage')}
@@ -169,7 +164,6 @@ export class TopbarComponent {
                                 label={i18next.t('Exit fullscreen')}
                                 aria-label="Exit fullscreen"
                                 tooltip="Exit fullscreen"
-                                outline={true}
                                 onClick={this.handleExitFullscreenClick.bind(this)}>
 
                             </harmonized-button>

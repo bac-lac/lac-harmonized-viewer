@@ -1,15 +1,15 @@
 harmonized-image {
-    @import '../../global/mixins';
+    @import "../../global/mixins";
 
     display: inline-block;
     position: relative;
+    box-sizing: border-box;
 
-    &.is-ghost,
-    &.is-loading {
-        .mdc-image-list__image-aspect-container,
-        .mdc-image-list__supporting {
-            @include ghost();
-        }
+    &.is-ghost .mdc-image-list__image-aspect-container,
+    &.is-loading .mdc-image-list__image-aspect-container,
+    &.is-ghost .mdc-image-list__supporting,
+    &.is-loading .mdc-image-list__supporting {
+        @include ghost();
     }
 
     &.is-loaded {
@@ -17,7 +17,7 @@ harmonized-image {
     }
 
     .mdc-image-list__image-aspect-container {
-        opacity: 0.5;
+        opacity: 0.7;
         filter: grayscale(50%);
         align-content: center;
         transition: all 200ms ease;
@@ -33,18 +33,18 @@ harmonized-image {
 
     .mdc-image-list__image {
         padding: 0;
-        border: #111 2px solid;
+        border: #000 2px solid;
     }
 
     .mdc-image-list__supporting {
-        margin: 3px 0 10px 0;
+        margin: 7px 0 0 0;
         padding: 1px 10px;
         justify-content: center;
 
         .mdc-image-list__label {
             color: #686868;
             letter-spacing: 0;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 500;
             line-height: 20px;
             letter-spacing: 1px;
@@ -62,17 +62,10 @@ harmonized-image {
             filter: grayscale(0%);
         }
 
-        // &:focus {
-        //     outline: none;
-        //     .mdc-image-list__image-aspect-container {
-        //         outline: $active 3px solid;
-        //     }
-        // }
-
         &.is-active {
             .mdc-image-list__image-aspect-container {
-                outline: #e4e0ea 2px solid;
                 .mdc-image-list__image {
+                    outline: #e4e0ea 3px solid;
                 }
             }
             .mdc-image-list__supporting {

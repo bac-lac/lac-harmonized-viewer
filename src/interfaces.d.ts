@@ -5,7 +5,7 @@ interface AppConfig {
 }
 
 interface ContentTypeMapping {
-    contentType: string
+    formats: string[]
     component: string
 }
 
@@ -33,7 +33,7 @@ interface DocumentState {
     zoomRequest: DocumentZoom
 }
 
-type ErrorCode = 'e-document-notfound' | 'e-contenttype-unmapped'
+type ErrorCode = 'request-failed' | 'request-failed-notfound' | 'contenttype-unsupported'
 type ErrorSeverity = 'fatal' | 'error' | 'warning'
 
 interface Viewport {
@@ -60,7 +60,12 @@ interface Language {
 interface DocumentError {
     code: ErrorCode
     severity: ErrorSeverity
-    parameters?: any[]
+    optionalParameters?: DocumentErrorParameter[]
+}
+
+interface DocumentErrorParameter {
+    key: string
+    value: any
 }
 
 interface DocumentStatus {

@@ -8,13 +8,14 @@ export const AppConfig: AppConfig = {
     ],
 
     contentTypes: [
-        { contentType: 'image/jpeg', component: 'openseadragon' },
-        { contentType: 'application/pdf', component: 'embed' },
-        { contentType: 'video/mp4', component: 'video' }
+        { formats: ['application/json', 'application/ld+json', 'image/jpeg'], component: 'openseadragon' },
+        { formats: ['application/pdf'], component: 'embed' },
+        { formats: ['video/mp4', 'application/vnd.ms-sstr+xml'], component: 'video' }
     ],
 
     errors: [
-        { code: 'e-document-notfound', severity: 'fatal' },
-        { code: 'e-contenttype-unmapped', severity: 'fatal' }
+        { code: 'request-failed', severity: 'fatal' },
+        { code: 'request-failed-notfound', severity: 'fatal' },
+        { code: 'contenttype-unsupported', severity: 'fatal' }
     ]
 }

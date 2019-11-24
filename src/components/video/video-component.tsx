@@ -19,23 +19,26 @@ export class VideoComponent {
 
     async init() {
 
-        const centralResponse = await fetch(this.url)
+        try {
+            const response = await Axios.get(this.url)
 
-        const serviceUrl = await centralResponse.text()
-        const authorization = centralResponse.headers.get('Authorization')
+            //const serviceUrl = await centralResponse.text()
+            const authorization = response.headers.get('Authorization')
 
+            const cloudResponse = await Axios.get(
+                response.data, { headers: { 'Authorization': authorization } })
 
+            // If successfull, render video player
+            if (cloudResponse.status >= 200 && cloudResponse.status < 400) {
 
-        const cloudResponse = await Axios.get(
-            serviceUrl, { headers: { 'Authorization': authorization } })
+                this.sourceUrl = cloudResponse.data.url && cloudResponse.data.url
+                this.authorization = cloudResponse.data.token && cloudResponse.data.token
 
-        // If successfull, render video player
-        if (cloudResponse.status >= 200 && cloudResponse.status < 400) {
-
-            this.sourceUrl = cloudResponse.data.url && cloudResponse.data.url
-            this.authorization = cloudResponse.data.token && cloudResponse.data.token
-
-            this.renderVideoPlayer()
+                this.renderVideoPlayer()
+            }
+        }
+        catch (e) {
+            console.error(e)
         }
     }
 

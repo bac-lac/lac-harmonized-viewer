@@ -227,24 +227,10 @@ export class ViewerComponent {
 			<harmonized-topbar />
 
 			<div class="viewer__content mdc-top-app-bar--fixed-adjust full-height">
-
 				{
-					this.status.error ? (
-						<div class="error-message">
-							<i innerHTML={iconError}></i>
-							<div class="error-message__text">
-								<strong>
-									{i18next.t(`errors.${this.status.error.code}`)}
-								</strong>
-								{this.status.error.parameters.map((param) => (
-									<div>
-										{param}
-									</div>
-								))}
-
-							</div>
-						</div>
-					) : <harmonized-viewport />
+					this.status.error ?
+						this.renderError(this.status.error) :
+						<harmonized-viewport />
 				}
 			</div>
 
@@ -252,6 +238,32 @@ export class ViewerComponent {
 
 			{/* <harmonized-navigation
 				placement="bottom" rows={1} /> */}
+		</div>
+	}
+
+	renderError(error: DocumentError) {
+
+		if (!error) {
+			return undefined
+		}
+
+		let errorParameters = {}
+
+		if (error && error.optionalParameters) {
+			error.optionalParameters.forEach((parameter) => {
+				errorParameters[parameter.key] = parameter.value
+			})
+		}
+
+		return <div class="error-message">
+			<div innerHTML={iconError}></div>
+			<div class="error-message__text">
+
+				<strong>
+					{i18next.t(`errors.${error.code}`, { ...errorParameters, errorParameters, interpolation: { escapeValue: false } })}
+				</strong>
+
+			</div>
 		</div>
 	}
 }

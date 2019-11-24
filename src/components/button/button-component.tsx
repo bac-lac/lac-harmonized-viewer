@@ -1,4 +1,5 @@
 import { Component, h, Element, Host, Prop } from '@stencil/core';
+import iconChevronDown from "../../assets/material-icons/chevron-down.svg";
 import { MDCRipple } from '@material/ripple';
 
 @Component({
@@ -9,11 +10,11 @@ export class ButtonComponent {
 
     @Element() el: HTMLElement
 
-    //@Prop() className: string
     @Prop() disabled: boolean
+    @Prop() dropdown: boolean
     @Prop() icon: string
+    @Prop() iconClassName: string
     @Prop() size: string
-    @Prop() fontSize: number
     @Prop() label: string
     @Prop() tooltip: string
     @Prop() fullWidth: boolean
@@ -23,9 +24,9 @@ export class ButtonComponent {
 
     componentDidLoad() {
 
-        const button = this.el.querySelector('button')
-        if (button) {
-            const ripple = new MDCRipple(button)
+        const element = this.el.querySelector("button")
+        if (element) {
+            const ripple = new MDCRipple(element)
             if (ripple) {
                 ripple.unbounded = true
             }
@@ -35,39 +36,44 @@ export class ButtonComponent {
     render() {
 
         let className = null
-        let iconClassName = null
+        let buttonClassName = null
+
+        className = "mdc-touch-target-wrapper"
 
         if (this.icon && !this.label) {
-            className = 'mdc-icon-button'
-            iconClassName = 'mdc-button__icon'
+            buttonClassName = 'mdc-icon-button'
         }
         else {
-            className = 'mdc-button'
-            iconClassName = 'mdc-icon-button__icon'
+            buttonClassName = 'mdc-button'
         }
 
-        className += ' mdc-button--touch'
+        if (this.size == 'lg') buttonClassName += ` ${buttonClassName}--lg`
+        else if (this.size == 'md') buttonClassName += ` ${buttonClassName}--md`
+        else if (this.size == 'sm') buttonClassName += ` ${buttonClassName}--sm`
 
-        if (this.size == 'lg') className += ` ${className}--lg`
-        else if (this.size == 'md') className += ` ${className}--md`
-        else if (this.size == 'sm') className += ` ${className}--sm`
+        buttonClassName += " mdc-button--touch"
 
-        if (this.raised) className += ' mdc-button--raised'
-        if (this.outline) className += ' mdc-button--outlined'
+        if (this.raised) buttonClassName += ' mdc-button--raised'
+        if (this.outline) buttonClassName += ' mdc-button--outlined'
+
         if (this.fullWidth) className += ' full-width'
 
-        return <Host class="mdc-touch-target-wrapper">
+        return <Host class={className}>
+
             <button
                 type="button"
-                class={className}
+                class={buttonClassName}
                 disabled={this.disabled}
                 title={this.tooltip}
                 aria-label={this.tooltip}>
 
+
                 <div class="mdc-button__ripple"></div>
 
-                {this.icon && <i class={iconClassName} aria-hidden={true} innerHTML={this.icon}></i>}
-                {this.label && <span class="mdc-button__label" style={{ fontSize: `${this.fontSize}em` }}>{this.label}</span>}
+                {this.icon && <span class={this.iconClassName} aria-hidden={true} innerHTML={this.icon}></span>}
+                {this.label && <span class="mdc-button__label">{this.label}</span>}
+
+                {this.dropdown && <span class="dropdown-arrow" innerHTML={iconChevronDown}></span>}
 
                 <div class="mdc-button__touch"></div>
             </button>

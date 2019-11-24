@@ -5,7 +5,8 @@ import openseadragon from 'openseadragon';
 import { Resolver } from '../../resolvers/resolver';
 import { IIIFResolver } from '../../resolvers/iiif-resolver/iiif-resolver';
 import { IIIFDocument } from '../../resolvers/iiif-resolver/iiif-document';
-import tippy, { sticky } from 'tippy.js';
+import iconChevronLeft from '../../assets/material-design-icons/ic_chevron_left_48px.svg'
+import iconChevronRight from '../../assets/material-design-icons/ic_chevron_right_48px.svg'
 
 @Component({
     tag: 'harmonized-openseadragon',
@@ -43,6 +44,7 @@ export class OpenSeadragonComponent {
     @State() overlays: MyAppState["document"]["overlays"]
     @State() page: MyAppState["document"]["page"]
     @State() pages: MyAppState["document"]["pages"]
+    @State() status: MyAppState["document"]["status"]
     @State() zoomRequest: MyAppState["document"]["zoomRequest"]
 
     @Prop({ context: "store" }) store: Store
@@ -78,7 +80,7 @@ export class OpenSeadragonComponent {
         this.store.mapDispatchToProps(this, { setError, setStatus, setDocumentUrl, setDocumentPages, setDocumentTitle, setDocumentAlternateFormats, setAnnotations, setPage, setZoom, clearOverlays })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { document: document, error: error, options: options, overlays: overlays, page: page, pages: pages, url: url, zoomRequest: zoomRequest }
+                document: { document: document, error: error, options: options, overlays: overlays, page: page, pages: pages, status: status, url: url, zoomRequest: zoomRequest }
             } = state
             return {
                 document: document,
@@ -87,6 +89,7 @@ export class OpenSeadragonComponent {
                 overlays: overlays,
                 page: page,
                 pages: pages,
+                status: status,
                 url: url,
                 zoomRequest: zoomRequest
             }
@@ -165,6 +168,27 @@ export class OpenSeadragonComponent {
             tiledImage.addOnceHandler('fully-loaded-change', function () {
                 callback() // Calling it this way keeps the arguments consistent (if we passed callback into addOnceHandler it would get an event on this path but not on the setTimeout path above)
             })
+        }
+    }
+
+    handlePreviousClick() {
+        this.setPage(this.page - 1)
+    }
+
+    handleNextClick() {
+        this.setPage(this.page + 1)
+    }
+
+    isFirst() {
+        return (this.page <= 0)
+    }
+
+    isLast() {
+        if (!this.pages || this.pages.length == 0) {
+            return true
+        }
+        else {
+            return (this.page >= (this.pages.length - 1))
         }
     }
 
@@ -261,31 +285,6 @@ export class OpenSeadragonComponent {
         })
     }
 
-    drawShadow() {
-
-        // const canvas = this.el.querySelector('.openseadragon .openseadragon-canvas > canvas') as HTMLCanvasElement
-        // if (canvas) {
-
-        //     this.context = canvas.getContext('2d')
-        //     if (this.context) {
-
-        //         this.context.rect(188, 40, 200, 100)
-        //         this.context.shadowColor = '#777'
-        //         this.context.shadowBlur = 20
-        //         this.context.shadowOffsetX = 5
-        //         this.context.shadowOffsetY = 5
-        //         this.context.fill()
-        //         this.context.clearRect(188, 40, 200, 100)
-
-        //         const image = this.openseadragonInstance.world.getItemAt(0)
-
-        //         let bounds = image.getBounds(true)
-        //         bounds = this.openseadragonInstance.viewport.viewportToViewerElementRectangle(bounds)
-        //     }
-        // }
-
-    }
-
     // clearOverlays() {
 
     //     this.clearOverlays()
@@ -332,7 +331,27 @@ export class OpenSeadragonComponent {
 
     render() {
         return <Host>
+
+            <harmonized-button
+                class="button-navigation button-navigation--prev"
+                icon={iconChevronLeft}
+                size="lg"
+                title="Go to previous page"
+                aria-label="Go to previous page"
+                onClick={this.handlePreviousClick.bind(this)}
+                disabled={this.status.loading || this.isFirst()} />
+
             <div class="openseadragon"></div>
+
+            <harmonized-button
+                class="button-navigation button-navigation--next"
+                icon={iconChevronRight}
+                size="lg"
+                title="Go to next page"
+                aria-label="Go to next page"
+                onClick={this.handleNextClick.bind(this)}
+                disabled={this.status.loading || this.isLast()} />
+
             <div class="overlays">
                 {
                     this.overlays.map((overlay) =>
