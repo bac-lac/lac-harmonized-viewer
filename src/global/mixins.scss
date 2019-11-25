@@ -1,5 +1,5 @@
 @mixin ghost {
-    background: linear-gradient(90deg, rgba(0, 0, 0, 0.1) 25%, rgba(0, 0, 0, 0.2) 37%, rgba(0, 0, 0, 0.1) 63%);
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.05) 25%, rgba(0, 0, 0, 0.1) 37%, rgba(0, 0, 0, 0.05) 63%);
     background-size: 400% 100%;
     animation: ghost-loading 1.4s ease infinite;
 }

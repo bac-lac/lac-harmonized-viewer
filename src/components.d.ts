@@ -97,6 +97,7 @@ export namespace Components {
     'exitFullscreen': () => Promise<void>;
     'fullscreen': () => Promise<void>;
     'getPage': () => Promise<number>;
+    'getUrl': () => Promise<string>;
     'navigationEnable': boolean;
     'navigationPlacement': PlacementType;
     'pagingEnable': boolean;

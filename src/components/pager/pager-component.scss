@@ -1,5 +1,5 @@
 harmonized-pager {
-    @import "@material/slider/mixins";
+    @import '@material/slider/mixins';
 
     margin: 0;
     display: flex;
@@ -10,18 +10,26 @@ harmonized-pager {
     .slider-control {
         width: 300px;
         margin: 0 15px;
-
-        .mdc-slider {
-            @include mdc-slider-color-accessible(#f6e0b5);
-            @include mdc-slider-rail-color(#323232, 1);
-            @include mdc-slider-focus-halo-color(#f6e0b5);
-        }
     }
 
-    .pager__text {
-        color: #fff;
+    .mdc-slider {
+        @include mdc-slider-color-accessible(#f6e0b5);
+        @include mdc-slider-rail-color(#323232, 1);
+        @include mdc-slider-focus-halo-color(#f6e0b5);
+    }
+
+    .paging-status {
         text-align: center;
-        margin-bottom: -20px;
+        margin-bottom: -10px;
+
+        &__value {
+            font-weight: 500;
+        }
+
+        &__spacer--left::before,
+        &__spacer--right::after {
+            content: ' ';
+        }
     }
 
     .pager__controls {

@@ -181,24 +181,22 @@ export class PagerComponent {
 
     render() {
 
-        console.log('slider render')
-
         const page = isNullOrUndefined(this.marker) ?
             (this.page + 1) : (this.marker + 1)
 
         return <Host role="toolbar" aria-label="Toolbar navigation">
 
-            <div class="paging__label">
-                <span class="paging__label-spacer--right">
+            <div class="paging-status">
+                <span class="paging-status__spacer--right">
                     Page
                 </span>
-                <span class="paging__label-value">
+                <span class="paging-status__value">
                     {page}
                 </span>
-                <span class="paging__label-spacer--left paging__label-spacer--right">
+                <span class="paging-status__spacer--left paging-status__spacer--right">
                     of
                 </span>
-                <span class="paging__label-value">
+                <span class="paging-status__value">
                     {this.pageCount}
                 </span>
             </div>

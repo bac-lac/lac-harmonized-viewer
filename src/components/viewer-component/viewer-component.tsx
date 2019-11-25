@@ -49,6 +49,7 @@ export class ViewerComponent {
 	@State() language: MyAppState["document"]["language"]
 	@State() availableLanguages: MyAppState["document"]["availableLanguages"]
 	@State() page: MyAppState["document"]["page"]
+	@State() pages: MyAppState["document"]["pages"]
 	@State() url: MyAppState["document"]["url"]
 	@State() status: MyAppState["document"]["status"]
 	@State() statusCode: MyAppState["document"]["status"]["code"]
@@ -64,7 +65,18 @@ export class ViewerComponent {
 	}
 
 	@Method()
-	async getPage() {
+	async getUrl(): Promise<string> {
+
+		if (this.pages.length > this.page) {
+			return this.pages[this.page].image
+		}
+		else {
+			return null
+		}
+	}
+
+	@Method()
+	async getPage(): Promise<number> {
 		return this.page
 	}
 
@@ -114,12 +126,13 @@ export class ViewerComponent {
 		this.store.mapDispatchToProps(this, { addCustomResolver, addLanguage, addOverlay, setDocumentContentType, enterFullscreen, exitFullscreen, setDocumentUrl, setLanguage, setOptions, setViewport, setStatus })
 		this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
-				document: { language: language, availableLanguages: availableLanguages, page: page, url: url, status: status, theme: theme }
+				document: { language: language, availableLanguages: availableLanguages, page: page, pages: pages, url: url, status: status, theme: theme }
 			} = state
 			return {
 				language: language,
 				availableLanguages: availableLanguages,
 				page: page,
+				pages: pages,
 				status: status,
 				statusCode: status.code,
 				theme: theme,
@@ -228,8 +241,6 @@ export class ViewerComponent {
 		let className = 'harmonized-viewer'
 
 		const theme = this.resolveTheme()
-		console.log(theme)
-
 		if (theme) {
 			className += ` harmonized-viewer-theme--${theme}`
 		}
@@ -270,11 +281,7 @@ export class ViewerComponent {
 		return <div class="error-message">
 			<div innerHTML={iconError}></div>
 			<div class="error-message__text">
-
-				<strong>
-					{i18next.t(`errors.${error.code}`, { ...errorParameters, errorParameters, interpolation: { escapeValue: false } })}
-				</strong>
-
+				{i18next.t(`errors.${error.code}`, { ...errorParameters, errorParameters, interpolation: { escapeValue: false } })}
 			</div>
 		</div>
 	}

@@ -247,7 +247,7 @@ export class ViewportComponent {
 
         if (this.pages && this.pages[this.page]) {
 
-            return <div class="paging__label">
+            return <div class="paging-label">
                 {t(this.pages[this.page].label)}
             </div>
         }

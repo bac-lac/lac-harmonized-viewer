@@ -1,5 +1,5 @@
 harmonized-image {
-    @import "../../global/mixins";
+    @import '../../global/mixins';
 
     display: inline-block;
     position: relative;
@@ -33,7 +33,7 @@ harmonized-image {
 
     .mdc-image-list__image {
         padding: 0;
-        border: #000 2px solid;
+        border: #000 4px solid;
     }
 
     .mdc-image-list__supporting {
@@ -42,10 +42,9 @@ harmonized-image {
         justify-content: center;
 
         .mdc-image-list__label {
-            color: #686868;
             letter-spacing: 0;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: normal;
             line-height: 20px;
             letter-spacing: 1px;
             margin: 0;

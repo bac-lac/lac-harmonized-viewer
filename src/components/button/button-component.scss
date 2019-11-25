@@ -1,10 +1,10 @@
 harmonized-button {
-    @import "@material/button/mixins";
-    @import "@material/icon-button/mixins";
+    @import '@material/button/mixins';
+    @import '@material/icon-button/mixins';
 
     display: flex;
 
-    button {
+    .mdc-button {
         @include mdc-button-ink-color(#fff);
 
         .mdc-button__label {

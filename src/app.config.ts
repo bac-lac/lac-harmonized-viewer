@@ -8,7 +8,7 @@ export const AppConfig: AppConfig = {
     ],
 
     contentTypes: [
-        { formats: ['application/json', 'application/ld+json', 'image/jpeg'], component: 'openseadragon' },
+        { formats: ['application/json', 'application/ld+json', 'text/plain', 'image/jpeg'], component: 'openseadragon' },
         { formats: ['application/pdf'], component: 'embed' },
         { formats: ['video/mp4', 'application/vnd.ms-sstr+xml'], component: 'video' }
     ],

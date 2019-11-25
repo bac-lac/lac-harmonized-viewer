@@ -25,22 +25,8 @@
         }
     }
 
-    .paging__label {
-        color: #a8a8a8;
+    .paging-label {
         text-align: center;
-        margin: 15px 15px 0 15px;
-
-        &-value {
-            color: #fff;
-            font-weight: bold;
-        }
-
-        &-spacer--left::before {
-            content: " ";
-        }
-        &-spacer--right::after {
-            content: " ";
-        }
     }
 
     // .hv-overlay {

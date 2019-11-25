@@ -10,7 +10,7 @@
     "ok": "OK",
     "errors": {
         "request-failed": "Document request failed",
-        "request-failed-404": "Document could not be found",
+        "request-failed-notfound": "Document could not be found",
         "contenttype-unsupported": "Content type {{contentType}} is not supported"
     }
 }

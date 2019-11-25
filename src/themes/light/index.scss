@@ -1,22 +1,58 @@
 .harmonized-viewer-theme--light {
-    @import "@material/button/mixins";
-    @import "@material/icon-button/mixins";
+    @import '@material/button/mixins';
+    @import '@material/icon-button/mixins';
+
+    @import '@material/slider/mixins';
+
+    @import '@material/tab-bar/mixins';
+    @import '@material/tab-scroller/mixins';
+    @import '@material/tab-indicator/mixins';
+    @import '@material/tab/mixins';
 
     background-color: #ece8e8;
 
-    .mdc-top-app-bar {
-        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
-        background-color: #181818;
+    harmonized-topbar {
+        .mdc-top-app-bar {
+            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),
+                0 1px 10px 0 rgba(0, 0, 0, 0.12);
+            background-color: #46494c;
+
+            button {
+                @include mdc-button-filled-accessible(#46494c);
+                @include mdc-button-ink-color(#fff);
+
+                .mdc-button__label {
+                    font-size: 12px;
+                }
+            }
+        }
     }
 
-    .mdc-drawer {
-        .mdc-drawer__toolbar {
-            harmonized-button {
-                button {
-                    @include mdc-button-ink-color(#c7c7c7);
-                }
-                .mdc-icon-button {
-                    @include mdc-icon-button-ink-color(#c7c7c7);
+    harmonized-button {
+        .mdc-button {
+            @include mdc-button-ink-color(#46494c);
+            &[disabled] {
+                @include mdc-button-ink-color(#c5c3c6);
+            }
+        }
+        .mdc-icon-button {
+            @include mdc-icon-button-ink-color(#46494c);
+            &[disabled] {
+                @include mdc-icon-button-ink-color(#c5c3c6);
+            }
+        }
+    }
+
+    harmonized-drawer {
+        .mdc-drawer {
+            .mdc-drawer__toolbar {
+                harmonized-button {
+                    button {
+                        @include mdc-button-ink-color(#c7c7c7);
+                    }
+                    .mdc-icon-button {
+                        @include mdc-icon-button-ink-color(#c7c7c7);
+                    }
                 }
             }
         }
@@ -47,6 +83,56 @@
                     }
                 }
             }
+        }
+    }
+
+    harmonized-tabs {
+        .mdc-tab-bar {
+            .mdc-tab {
+                @include mdc-tab-height(40px);
+
+                @include mdc-tab-ink-color(#686868);
+                @include mdc-tab-icon-color(#dcdcdd);
+                @include mdc-tab-states-color(#686868);
+
+                @include mdc-tab-active-icon-color(#46494c);
+                @include mdc-tab-active-text-label-color(#46494c);
+                @include mdc-tab-indicator-underline-color(#5772ff);
+            }
+        }
+    }
+
+    harmonized-annotations {
+        dl {
+            dt {
+                color: #4c5c68;
+            }
+            dd {
+                color: #46494c;
+                a:link {
+                    color: #46494c;
+                }
+                a:visited {
+                    color: #46494c;
+                }
+            }
+        }
+    }
+
+    harmonized-pager {
+        .mdc-slider {
+            @include mdc-slider-color-accessible(#5772ff);
+            @include mdc-slider-rail-color(#c5c3c6, 1);
+            @include mdc-slider-focus-halo-color(#5772ff);
+        }
+    }
+
+    .error-message {
+        svg {
+            fill: #ef5350;
+        }
+        &__text {
+            color: #46494c;
         }
     }
 }
