@@ -4,7 +4,7 @@ import { Unsubscribe, Store } from '@stencil/redux';
 import axios from 'axios';
 import iconInfo from '../../assets/material-icons/ic_info_24px.svg'
 import { setDocumentContentType, setStatus, setPage, setLoading, setError } from '../../store/actions/document';
-import { translate } from '../../services/i18n-service';
+import { t } from '../../services/i18n-service';
 import { AppConfig } from '../../app.config';
 import contentTypeParser from "content-type-parser";
 
@@ -177,7 +177,7 @@ export class ViewportComponent {
                         <harmonized-drawer
                             placement="right" toolbar={true} visible={true} width={300}>
                             <harmonized-tabs>
-                                <harmonized-tab icon={iconInfo} label={translate('details')}>
+                                <harmonized-tab icon={iconInfo} label={t('details')}>
                                     <harmonized-annotations></harmonized-annotations>
                                 </harmonized-tab>
                             </harmonized-tabs>
@@ -248,7 +248,7 @@ export class ViewportComponent {
         if (this.pages && this.pages[this.page]) {
 
             return <div class="paging__label">
-                {translate(this.pages[this.page].label)}
+                {t(this.pages[this.page].label)}
             </div>
         }
     }

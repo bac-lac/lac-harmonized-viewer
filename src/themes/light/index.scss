@@ -1,7 +1,52 @@
-.harmonized-viewer__theme--light {
-    background-color: #eee;
+.harmonized-viewer-theme--light {
+    @import "@material/button/mixins";
+    @import "@material/icon-button/mixins";
 
-    .topbar {
+    background-color: #ece8e8;
+
+    .mdc-top-app-bar {
+        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
         background-color: #181818;
+    }
+
+    .mdc-drawer {
+        .mdc-drawer__toolbar {
+            harmonized-button {
+                button {
+                    @include mdc-button-ink-color(#c7c7c7);
+                }
+                .mdc-icon-button {
+                    @include mdc-icon-button-ink-color(#c7c7c7);
+                }
+            }
+        }
+
+        harmonized-image {
+            .mdc-image-list__image {
+                border: #fff 2px solid;
+            }
+
+            .mdc-image-list__supporting {
+                .mdc-image-list__label {
+                    color: #9f9f9f;
+                    letter-spacing: 0;
+                }
+            }
+
+            &:hover,
+            &.is-active {
+                .mdc-image-list__image-aspect-container {
+                    .mdc-image-list__image {
+                        outline-color: #5772ff;
+                    }
+                }
+
+                .mdc-image-list__supporting {
+                    .mdc-image-list__label {
+                        color: #181818;
+                    }
+                }
+            }
+        }
     }
 }

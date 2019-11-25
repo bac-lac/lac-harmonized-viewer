@@ -2,8 +2,12 @@
     "code": "fr",
     "name": "Français",
     "changeLanguage": "Changer la langue",
+    "language_changed": "La langue d'affichage est maintenant ''{{language}}''.",
     "fullscreen": "Plein écran",
+    "enterFullscreen": "Ouvrir en mode plein écran",
+    "exitFullscreen": "Quitter le mode plein écran",
     "details": "Détails",
+    "ok": "OK",
     "errors": {
         "request-failed": "La requête au document a échoué",
         "request-failed-notfound": "Document introuvable",

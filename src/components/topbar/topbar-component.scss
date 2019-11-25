@@ -14,8 +14,8 @@ harmonized-topbar {
 
         .mdc-top-app-bar__title {
             color: #fff;
+            font-size: 16px;
             font-weight: normal;
-            //font-size: 16px;
         }
 
         .mdc-menu {
@@ -38,8 +38,16 @@ harmonized-topbar {
 
         .button-fullscreen-exit {
             button {
-                @include mdc-button-filled-accessible(#bc3331);
-                @include mdc-button-outline-color(#bc3331);
+                @include mdc-button-filled-accessible(#e1514e);
+                @include mdc-button-outline-color(#e1514e);
+            }
+        }
+
+        .mdc-top-app-bar__action-item {
+            margin-right: 10px;
+
+            &:last-child {
+                margin-right: 0;
             }
         }
 
@@ -50,8 +58,20 @@ harmonized-topbar {
             .mdc-list {
                 @include mdc-list-item-primary-text-ink-color(#fff);
 
-                .mdc-list-item__text {
-                    font-size: 14px;
+                .mdc-list-item {
+                    &--selected {
+                        color: #fff;
+                        background-color: #484848;
+
+                        &::before,
+                        &::after {
+                            background-color: #484848;
+                        }
+                    }
+
+                    &:hover {
+                        background-color: #222;
+                    }
                 }
             }
         }

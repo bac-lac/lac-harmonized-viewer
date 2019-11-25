@@ -19,6 +19,8 @@ const getInitialState = (): DocumentState => {
         pages: [],
         customResolvers: [],
         tags: [],
+        theme: 'light',
+        themes: ['light', 'dark'],
         status: {
             code: 'initial',
             loading: false,
@@ -59,6 +61,9 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
         }
         case TypeKeys.SET_LANGUAGE: {
             return { ...state, language: state.availableLanguages.find(i => i.code && i.code == action.language) }
+        }
+        case TypeKeys.SET_THEME: {
+            return { ...state, theme: action.theme }
         }
         case TypeKeys.SET_DOCUMENT_CONTENT_TYPE: {
             return { ...state, contentType: action.contentType }

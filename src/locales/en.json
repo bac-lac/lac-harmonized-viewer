@@ -2,8 +2,12 @@
     "code": "en",
     "name": "English",
     "changeLanguage": "Change language",
+    "language_changed": "Language changed to ''{{language}}''.",
     "fullscreen": "Fullscreen",
+    "enterFullscreen": "Enter fullscreen",
+    "exitFullscreen": "Exit fullscreen",
     "details": "Details",
+    "ok": "OK",
     "errors": {
         "request-failed": "Document request failed",
         "request-failed-404": "Document could not be found",

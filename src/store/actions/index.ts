@@ -1,11 +1,11 @@
-import { SetLoading, SetDocumentContentType, SetDocumentUrl, SetDocumentPages, SetDocumentTitle, SetDocumentAlternateFormats, SetPage, SetAnnotations, SetOptions, SetZoom, SetZoomRequest, SetError, SetStatus, AddOverlay, ClearOverlays, SetViewport, SetLanguage, AddLanguage, EnterFullscreen, ExitFullscreen, AddCustomResolver } from "./document";
+import { SetLoading, SetDocumentContentType, SetDocumentUrl, SetDocumentPages, SetDocumentTitle, SetDocumentAlternateFormats, SetPage, SetAnnotations, SetOptions, SetZoom, SetZoomRequest, SetError, SetStatus, AddOverlay, ClearOverlays, SetViewport, SetLanguage, SetTheme, AddLanguage, EnterFullscreen, ExitFullscreen, AddCustomResolver } from "./document";
 
 export interface NullAction {
     type: TypeKeys.NULL
 }
 
 // Keep this type updated with each known action
-export type ActionTypes = NullAction | SetError | SetLoading | SetStatus | AddLanguage | SetLanguage | SetDocumentContentType | SetDocumentUrl | SetDocumentPages | SetDocumentTitle | SetDocumentAlternateFormats | SetPage | SetAnnotations | SetOptions | SetZoom | SetZoomRequest | AddOverlay | ClearOverlays | SetViewport | EnterFullscreen | ExitFullscreen | AddCustomResolver
+export type ActionTypes = NullAction | SetError | SetLoading | SetStatus | AddLanguage | SetLanguage | SetTheme | SetDocumentContentType | SetDocumentUrl | SetDocumentPages | SetDocumentTitle | SetDocumentAlternateFormats | SetPage | SetAnnotations | SetOptions | SetZoom | SetZoomRequest | AddOverlay | ClearOverlays | SetViewport | EnterFullscreen | ExitFullscreen | AddCustomResolver
 
 export enum TypeKeys {
     // Won't match anything
@@ -16,6 +16,7 @@ export enum TypeKeys {
     SET_STATUS = "SET_STATUS",
     ADD_LANGUAGE = "ADD_LANGUAGE",
     SET_LANGUAGE = "SET_LANGUAGE",
+    SET_THEME = "SET_THEME",
     SET_DOCUMENT_CONTENT_TYPE = "SET_DOCUMENT_CONTENT_TYPE",
     SET_DOCUMENT_URL = "SET_DOCUMENT_URL",
     SET_DOCUMENT_PAGES = "SET_DOCUMENT_PAGES",

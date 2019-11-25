@@ -1,13 +1,13 @@
 import i18next from 'i18next';
 
-export function translate(value: string | DocumentLabel[]): string {
+export function t(value: string | DocumentLabel[], options?: string | i18next.TOptions<i18next.StringMap>): string {
 
     if (!value) {
         return undefined
     }
 
     if (typeof value === 'string') {
-        return i18next.t(value)
+        return i18next.t(value, options)
     }
     else {
 

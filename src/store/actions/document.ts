@@ -59,6 +59,25 @@ export const setStatus = (code: StatusCode) => (dispatch, _getState) => {
     dispatch(action)
 }
 
+export interface SetTheme {
+    type: TypeKeys.SET_THEME
+    theme: string
+}
+export const setTheme = (theme: string) => (dispatch, _getState) => {
+
+    // Update persisted state
+    const persistedState = loadPersistedState()
+    persistedState.theme = theme
+    savePersistedState(persistedState)
+
+    // Dispatch store command
+    const action: SetTheme = {
+        type: TypeKeys.SET_THEME,
+        theme: theme
+    }
+    dispatch(action)
+}
+
 
 export interface SetLanguage {
     type: TypeKeys.SET_LANGUAGE

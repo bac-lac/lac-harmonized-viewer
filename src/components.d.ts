@@ -92,6 +92,7 @@ export namespace Components {
     'addOverlay': (x: number, y: number, width: number, height: number) => Promise<void>;
     'addResolver': () => Promise<void>;
     'defaultLanguage': string;
+    'defaultTheme': string;
     'documentUrl': string;
     'exitFullscreen': () => Promise<void>;
     'fullscreen': () => Promise<void>;
@@ -99,7 +100,6 @@ export namespace Components {
     'navigationEnable': boolean;
     'navigationPlacement': PlacementType;
     'pagingEnable': boolean;
-    'theme': string;
   }
   interface HarmonizedViewport {
     'annotationsEnable': boolean;
@@ -339,12 +339,12 @@ declare namespace LocalJSX {
   }
   interface HarmonizedViewer {
     'defaultLanguage'?: string;
+    'defaultTheme'?: string;
     'documentUrl'?: string;
     'navigationEnable'?: boolean;
     'navigationPlacement'?: PlacementType;
     'onStatusChanged'?: (event: CustomEvent<any>) => void;
     'pagingEnable'?: boolean;
-    'theme'?: string;
   }
   interface HarmonizedViewport {
     'annotationsEnable'?: boolean;

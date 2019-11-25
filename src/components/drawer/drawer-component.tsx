@@ -50,6 +50,8 @@ export class DrawerComponent {
 
         return <Host class={className} style={{ width: `${this.width}px` }}>
 
+
+
             {
                 this.toolbar && <div class="mdc-drawer__toolbar" role="toolbar">
 

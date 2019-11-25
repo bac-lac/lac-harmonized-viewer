@@ -26,6 +26,8 @@ interface DocumentState {
     pages: DocumentPage[]
     customResolvers: string[]
     tags: DocumentTag[]
+    theme: string,
+    themes: string[],
     status: DocumentStatus
     url: string
     viewport: Viewport
@@ -119,6 +121,7 @@ interface MyAppState {
 
 interface HVPersistedState {
     language: string
+    theme: string
 }
 
 interface AnnotationState {

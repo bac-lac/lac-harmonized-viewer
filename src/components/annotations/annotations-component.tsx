@@ -3,7 +3,7 @@ import { Unsubscribe, Store } from '@stencil/redux';
 import iconExpand from '../../assets/material-design-icons/ic_add_24px.svg'
 import iconCollapse from '../../assets/material-design-icons/ic_remove_24px.svg'
 import { animate } from '../../utils/utils';
-import { translate } from '../../services/i18n-service';
+import { t } from '../../services/i18n-service';
 
 @Component({
     tag: 'harmonized-annotations',
@@ -56,7 +56,7 @@ export class AnnotationsComponent {
                     <dt tabindex="0" class={this.renderAnnotationClass(annotation)}>
                         {
                             annotation.label &&
-                            <span>{translate(annotation.label)}</span>
+                            <span>{t(annotation.label)}</span>
                         }
                     </dt>,
                     <dd>

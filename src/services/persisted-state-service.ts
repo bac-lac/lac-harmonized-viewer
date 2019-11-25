@@ -1,7 +1,8 @@
 const HV_PERSISTED_STATE_STORAGE_KEY = 'harmonized-viewer'
 
 const defaultSettings: HVPersistedState = {
-    language: 'en'
+    language: 'en',
+    theme: 'light'
 }
 
 export function loadPersistedState(): HVPersistedState {

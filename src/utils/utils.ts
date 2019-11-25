@@ -50,8 +50,6 @@ export function animate(element: Element, animation: string, callback?: () => vo
         element.classList.remove('animated', animation)
         element.removeEventListener('animationend', handleAnimationEnd)
 
-        console.log('anim end')
-
         if (callback) callback()
     }
 

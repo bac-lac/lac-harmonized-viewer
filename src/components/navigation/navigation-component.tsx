@@ -2,7 +2,7 @@ import { Component, Prop, h, Element, Listen, State, Watch, Host } from '@stenci
 import 'manifesto.js';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { setPage } from '../../store/actions/document';
-import { translate } from '../../services/i18n-service';
+import { t } from '../../services/i18n-service';
 import { configureStore } from '../../store';
 
 @Component({
@@ -171,7 +171,7 @@ export class NavigationComponent {
                             <harmonized-image
                                 src={page.thumbnail}
                                 page={index}
-                                caption={translate(page.label)}
+                                caption={t(page.label)}
                                 show-caption={true}
                                 show-tooltip={false}
                                 preload={index < 16}

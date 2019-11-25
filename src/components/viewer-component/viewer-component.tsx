@@ -5,8 +5,6 @@ import { Store, Unsubscribe } from "@stencil/redux";
 import { configureStore } from "../../store";
 import { setDocumentUrl, setDocumentContentType, setStatus, addOverlay, setOptions, setLanguage, addLanguage, setViewport, enterFullscreen, exitFullscreen, addCustomResolver } from '../../store/actions/document';
 import i18next from 'i18next';
-import i18nextXHRBackend from 'i18next-xhr-backend';
-import i18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 import iconError from '../../assets/material-icons/ic_error_24px.svg'
 import { loadPersistedState } from '../../services/persisted-state-service';
 import { AppConfig } from '../../app.config';
@@ -16,7 +14,7 @@ import { id } from '../../utils/utils';
 	tag: 'harmonized-viewer',
 	styleUrls: [
 		'viewer-component.scss',
-		'../../themes/all.scss'
+		'../../themes/index.scss'
 	],
 	shadow: true
 })
@@ -31,8 +29,8 @@ export class ViewerComponent {
 	@Prop() pagingEnable: boolean
 	@Prop({ attribute: 'url' }) documentUrl: string
 
-	@Prop({ attribute: 'language' }) defaultLanguage: string = 'en'
-	@Prop() theme: string = 'dark'
+	@Prop({ attribute: 'language' }) defaultLanguage: string
+	@Prop({ attribute: 'theme' }) defaultTheme: string
 
 	addCustomResolver: typeof addCustomResolver
 	addLanguage: typeof addLanguage
@@ -54,6 +52,7 @@ export class ViewerComponent {
 	@State() url: MyAppState["document"]["url"]
 	@State() status: MyAppState["document"]["status"]
 	@State() statusCode: MyAppState["document"]["status"]["code"]
+	@State() theme: MyAppState["document"]["theme"]
 
 	@Prop({ context: "store" }) store: Store
 
@@ -115,7 +114,7 @@ export class ViewerComponent {
 		this.store.mapDispatchToProps(this, { addCustomResolver, addLanguage, addOverlay, setDocumentContentType, enterFullscreen, exitFullscreen, setDocumentUrl, setLanguage, setOptions, setViewport, setStatus })
 		this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
-				document: { language: language, availableLanguages: availableLanguages, page: page, url: url, status: status }
+				document: { language: language, availableLanguages: availableLanguages, page: page, url: url, status: status, theme: theme }
 			} = state
 			return {
 				language: language,
@@ -123,33 +122,14 @@ export class ViewerComponent {
 				page: page,
 				status: status,
 				statusCode: status.code,
+				theme: theme,
 				url: url
 			}
 		})
 
-		//let options: Options[] = []
-		Array.from(this.el.attributes).forEach((attr) => {
+		this.initCustomFlags()
 
-			const matches = attr.name.match(
-				/data\-options\-([a-zA-Z0-9]+)\-([a-zA-Z0-9]+)/gi)
-
-			if (matches) {
-				matches.forEach((match) => {
-
-					//const namePath = `{${matches.groups[1]}: { component: '${matches.groups[2]}' }}`
-					// const option: Options = {
-					// 	component: matches.groups[1],
-					// 	name: matches.groups[2],
-					// 	value: JSON.parse(attr.value)
-					// }
-
-					const nodes = match.toLowerCase().split('-')
-					this.setOptions(nodes[2], nodes[3], JSON.parse(attr.value))
-				})
-			}
-		})
-
-		this.configure()
+		this.initLanguage()
 
 		this.setDocumentUrl(this.documentUrl)
 	}
@@ -166,10 +146,10 @@ export class ViewerComponent {
 		this.storeUnsubscribe()
 	}
 
-	configure() {
+	initLanguage() {
 
 		i18next
-			.use(i18nextBrowserLanguageDetector)
+			//.use(i18nextBrowserLanguageDetector)
 			.init({
 				fallbackLng: 'en',
 				debug: false,
@@ -179,13 +159,6 @@ export class ViewerComponent {
 
 				const language = this.resolveLanguage()
 				this.setLanguage(language.code)
-
-				// i18next.on('languageChanged', (language: string) => {
-				// 	const availableLanguage = this.availableLanguages.find(i => i.code && i.code === language)
-				// 	if (availableLanguage) {
-				// 		this.setLanguage(availableLanguage.code)
-				// 	}
-				// })
 			})
 
 		AppConfig.languages.forEach((language) => {
@@ -193,6 +166,23 @@ export class ViewerComponent {
 			i18next.addResourceBundle(language.code, 'translation', language, true, true)
 		})
 
+	}
+
+	initCustomFlags() {
+
+		Array.from(this.el.attributes).forEach((attr) => {
+
+			const matches = attr.name.match(
+				/data\-options\-([a-zA-Z0-9]+)\-([a-zA-Z0-9]+)/gi)
+
+			if (matches) {
+				matches.forEach((match) => {
+
+					const nodes = match.toLowerCase().split('-')
+					this.setOptions(nodes[2], nodes[3], JSON.parse(attr.value))
+				})
+			}
+		})
 	}
 
 	resolveLanguage(): Language {
@@ -214,19 +204,41 @@ export class ViewerComponent {
 		return this.availableLanguages.find(i => i.code && i.code == resolved)
 	}
 
+	resolveTheme(): string {
+
+		let resolved = null
+
+		const persistedState = loadPersistedState()
+
+		if (persistedState && persistedState.theme) {
+			resolved = persistedState.theme
+		}
+		else if (this.defaultTheme) {
+			resolved = this.defaultTheme
+		}
+		else {
+			resolved = 'light'
+		}
+
+		return resolved
+	}
+
 	render() {
 
 		let className = 'harmonized-viewer'
 
-		if (this.theme) {
-			className += ' harmonized-viewer__theme--' + this.theme
+		const theme = this.resolveTheme()
+		console.log(theme)
+
+		if (theme) {
+			className += ` harmonized-viewer-theme--${theme}`
 		}
 
 		return <div class={className}>
 
 			<harmonized-topbar />
 
-			<div class="viewer__content mdc-top-app-bar--fixed-adjust full-height">
+			<div class="viewer__content mdc-top-app-bar--dense-fixed-adjust full-height">
 				{
 					this.status.error ?
 						this.renderError(this.status.error) :
