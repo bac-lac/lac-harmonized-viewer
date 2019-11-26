@@ -92,6 +92,7 @@ export class ViewerComponent {
 
 	@Method()
 	async addOverlay(x: number, y: number, width: number, height: number) {
+		console.log('aded')
 		this.addOverlayState(x, y, width, height)
 	}
 

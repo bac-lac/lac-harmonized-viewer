@@ -355,7 +355,9 @@ export class OpenSeadragonComponent {
             <div class="overlays">
                 {
                     this.overlays.map((overlay) =>
-                        <harmonized-overlay id={"overlay-" + overlay.id} tabindex="-1">{overlay.id}</harmonized-overlay>)
+                        <harmonized-overlay id={"overlay-" + overlay.id} tabindex="-1">
+                            {overlay.id}
+                        </harmonized-overlay>)
                 }
             </div>
         </Host>

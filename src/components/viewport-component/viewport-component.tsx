@@ -267,6 +267,9 @@ export class ViewportComponent {
             case 'video':
                 element = <harmonized-video url={this.url} />
                 break
+            // case 'custom-resolver':
+            //     element = <slot name="custom-resolver" />
+            //     break
         }
 
         return element
@@ -282,7 +285,9 @@ export class ViewportComponent {
             Array.from(document.querySelectorAll('harmonized-custom-resolver'))
 
         const customResolver = customResolvers.find(i => i.contentType && i.contentType == contentType)
-        return customResolver && customResolver.cloneNode(true) as HTMLHarmonizedCustomResolverElement
+        if (customResolver) {
+            return <slot name="custom-resolver"></slot>
+        }
     }
 
     // renderOpenSeadragon() {

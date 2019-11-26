@@ -51,9 +51,9 @@
 
     <!-- //central-d.dev.bac-lac.gc.ca/.item/?id=4313&app=fse&op=video -->
 
-    <harmonized-viewer id="hv" class="harmonized-viewer"
-        url="https://stdigitalmanifests.blob.core.windows.net/manifest/1/195/manifest.json" navigation-placement="left"
-        data-options-openseadragon-disabledeepzoom="true" annotations-enable="true" style="height:100%">
+    <harmonized-viewer id="hv" class="harmonized-viewer" url="https://purl.stanford.edu/jr903ng8662/iiif/manifest"
+        navigation-placement="left" data-options-openseadragon-disabledeepzoom="false" annotations-enable="true"
+        style="height:100%">
 
         <!-- <div slot="overlays">
             <harmonized-overlay x="50" y="80" width="500" height="500"></harmonized-overlay>
@@ -62,7 +62,7 @@
     </harmonized-viewer>
 
     <script type="text/javascript">
-        var viewer = document.getElementById('hv');
+        var viewer = document.querySelector('#hv');
 
         viewer.addEventListener('pageLoad', (event) => {
 
