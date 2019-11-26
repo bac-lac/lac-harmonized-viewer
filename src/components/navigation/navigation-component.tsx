@@ -3,7 +3,6 @@ import 'manifesto.js';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { setPage } from '../../store/actions/document';
 import { t } from '../../services/i18n-service';
-import { configureStore } from '../../store';
 
 @Component({
     tag: 'harmonized-navigation',
@@ -15,7 +14,7 @@ export class NavigationComponent {
     @Element() el: HTMLElement
 
     @Prop() cols: number = 2
-    @Prop() rows: number = 1
+    @Prop() rows: number
     @Prop() placement: PlacementType = 'left'
 
     @Watch('rows')
@@ -155,10 +154,13 @@ export class NavigationComponent {
 
     render() {
 
-        let className = 'mdc-image-list'
+        let className = "mdc-image-list"
 
-        if (this.placement == 'left' || this.placement == 'right') {
-            className += ' mdc-image-list--2col'
+        if (this.placement == "left" || this.placement == "right") {
+            className += ` mdc-image-list--${this.cols}col`
+        }
+        else {
+            className += ` mdc-image-list--16col`
         }
 
         return <Host>

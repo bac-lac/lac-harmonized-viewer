@@ -47,6 +47,20 @@ export const setLoading = (loading: boolean) => (dispatch, _getState) => {
     dispatch(action)
 }
 
+export interface AddTheme {
+    type: TypeKeys.ADD_THEME
+    name: string
+    stylesheetUrl: string
+}
+export const addTheme = (name: string, stylesheetUrl: string) => (dispatch, _getState) => {
+    const action: AddTheme = {
+        type: TypeKeys.ADD_THEME,
+        name: name,
+        stylesheetUrl: stylesheetUrl
+    }
+    dispatch(action)
+}
+
 export interface SetStatus {
     type: TypeKeys.SET_STATUS
     code: StatusCode

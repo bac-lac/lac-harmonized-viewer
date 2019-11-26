@@ -1,4 +1,4 @@
-import { Component, Element, h, Prop, State, Host } from '@stencil/core';
+import { Component, Element, h, Prop, State, Host, Listen } from '@stencil/core';
 import '../../utils/manifest';
 import { Unsubscribe, Store } from '@stencil/redux';
 import axios from 'axios';
@@ -19,6 +19,7 @@ export class ViewportComponent {
     @Prop() annotationsEnable: boolean = false
 
     @State() component: string
+    @State() drawerToggle: number = 0
 
     setLoading: typeof setLoading
     setError: typeof setError
@@ -110,6 +111,12 @@ export class ViewportComponent {
         this.setContentMargins()
     }
 
+    @Listen('MDCDrawer:opened')
+    @Listen('MDCDrawer:closed')
+    handleDrawerToggle() {
+        this.drawerToggle++
+    }
+
     resolveComponent(contentType: string): string {
 
         if (!contentType) {
@@ -144,18 +151,7 @@ export class ViewportComponent {
                 <harmonized-spinner />
             }
 
-            {this.renderNavigation('top')}
-
             <div class="viewport__content">
-
-                {
-                    this.pages && this.pages.length > 0 && this.viewport.navigationPlacement == 'left' && (
-                        <harmonized-drawer
-                            placement="left" toolbar={true} visible={true} width={250}>
-                            <harmonized-navigation></harmonized-navigation>
-                        </harmonized-drawer>
-                    )
-                }
 
                 <main class="hv-main mdc-drawer-app-content">
                     <div class="hv-main__content">
@@ -184,8 +180,6 @@ export class ViewportComponent {
                         </harmonized-drawer>
                     )
                 }
-
-                <slot name="right" />
 
             </div>
 
@@ -232,14 +226,6 @@ export class ViewportComponent {
         }
         else {
             return this.findNextSibling(element.nextElementSibling, selector)
-        }
-    }
-
-    renderNavigation(placement: PlacementType) {
-
-        if (this.viewport.navigationPlacement == placement) {
-            const width: number = (placement == 'left' || placement == 'right') && 300
-            return <harmonized-content placement={placement} width={width} />
         }
     }
 

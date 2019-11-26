@@ -1,34 +1,29 @@
-harmonized-image-list {
-    @import "@material/image-list/mixins";
-    $padding: 7px;
+@import '@material/image-list/mixins';
+//@import '@material/image-list/mdc-image-list';
 
+harmonized-image-list {
+    $padding: 12px;
     display: block;
 
     @include mdc-image-list-aspect(5/6);
 
-    @media (min-width: 1200px) {
-        @include mdc-image-list-standard-columns(16, $padding);
-        max-width: 1600px;
-    }
-    @media (max-width: 1199px) {
-        @include mdc-image-list-standard-columns(12, $padding);
-    }
-    @media (max-width: 959px) {
-        @include mdc-image-list-standard-columns(8, $padding);
-    }
-    @media (max-width: 599px) {
-        @include mdc-image-list-standard-columns(4, $padding);
-    }
+    // @media (min-width: 1200px) {
+    //     @include mdc-image-list-standard-columns(16);
+    //     max-width: 1600px;
+    // }
+    // @media (max-width: 1199px) {
+    //     @include mdc-image-list-standard-columns(12);
+    // }
+    // @media (max-width: 959px) {
+    //     @include mdc-image-list-standard-columns(8);
+    // }
+    // @media (max-width: 599px) {
+    //     @include mdc-image-list-standard-columns(4);
+    // }
 
-    &.mdc-image-list--1col {
-        @include mdc-image-list-standard-columns(1, $padding);
-    }
-
-    &.mdc-image-list--2col {
-        @include mdc-image-list-standard-columns(2, $padding);
-    }
-
-    &.mdc-image-list--16col {
-        @include mdc-image-list-standard-columns(16, $padding);
+    @for $i from 1 through 16 {
+        &.mdc-image-list--#{$i}col {
+            @include mdc-image-list-standard-columns($i, $padding);
+        }
     }
 }

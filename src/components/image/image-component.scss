@@ -1,9 +1,8 @@
-harmonized-image {
-    @import '../../global/mixins';
+@import '../../global/mixins';
 
+harmonized-image {
     display: inline-block;
     position: relative;
-    box-sizing: border-box;
 
     &.is-ghost .mdc-image-list__image-aspect-container,
     &.is-loading .mdc-image-list__image-aspect-container,
@@ -21,6 +20,10 @@ harmonized-image {
         filter: grayscale(50%);
         align-content: center;
         transition: all 200ms ease;
+
+        .mdc-image-list__image {
+            border: #fff 1px solid;
+        }
     }
 
     &:hover,
@@ -29,11 +32,6 @@ harmonized-image {
             opacity: 1;
             filter: grayscale(0%);
         }
-    }
-
-    .mdc-image-list__image {
-        padding: 0;
-        border: #000 4px solid;
     }
 
     .mdc-image-list__supporting {
@@ -59,19 +57,6 @@ harmonized-image {
         .mdc-image-list__image {
             opacity: 1;
             filter: grayscale(0%);
-        }
-
-        &.is-active {
-            .mdc-image-list__image-aspect-container {
-                .mdc-image-list__image {
-                    outline: #e4e0ea 3px solid;
-                }
-            }
-            .mdc-image-list__supporting {
-                .mdc-image-list__label {
-                    color: #fff;
-                }
-            }
         }
     }
 

@@ -56,10 +56,13 @@
                 }
             }
         }
+    }
 
+    harmonized-navigation {
         harmonized-image {
             .mdc-image-list__image {
-                border: #fff 2px solid;
+                padding: 0;
+                background: #181818;
             }
 
             .mdc-image-list__supporting {
@@ -73,7 +76,7 @@
             &.is-active {
                 .mdc-image-list__image-aspect-container {
                     .mdc-image-list__image {
-                        outline-color: #5772ff;
+                        box-shadow: 0 0 2px 3px #5772ff;
                     }
                 }
 

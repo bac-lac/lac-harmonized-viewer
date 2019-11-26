@@ -98,6 +98,8 @@ export namespace Components {
     'fullscreen': () => Promise<void>;
     'getPage': () => Promise<number>;
     'getUrl': () => Promise<string>;
+    'navigationBackgroundColor': string;
+    'navigationCols': number;
     'navigationEnable': boolean;
     'navigationPlacement': PlacementType;
     'pagingEnable': boolean;
@@ -342,6 +344,8 @@ declare namespace LocalJSX {
     'defaultLanguage'?: string;
     'defaultTheme'?: string;
     'documentUrl'?: string;
+    'navigationBackgroundColor'?: string;
+    'navigationCols'?: number;
     'navigationEnable'?: boolean;
     'navigationPlacement'?: PlacementType;
     'onStatusChanged'?: (event: CustomEvent<any>) => void;

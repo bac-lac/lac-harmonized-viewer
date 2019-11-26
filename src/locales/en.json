@@ -2,15 +2,15 @@
     "code": "en",
     "name": "English",
     "changeLanguage": "Change language",
-    "language_changed": "Language changed to ''{{language}}''.",
+    "language_changed": "Language changed to <b>{{language}}</b>.",
     "fullscreen": "Fullscreen",
     "enterFullscreen": "Enter fullscreen",
     "exitFullscreen": "Exit fullscreen",
     "details": "Details",
     "ok": "OK",
     "errors": {
-        "request-failed": "Document request failed",
-        "request-failed-notfound": "Document could not be found",
+        "request-failed": "Document request failed<br />{{url}}",
+        "request-failed-notfound": "Document could not be found {{url}}",
         "contenttype-unsupported": "Content type {{contentType}} is not supported"
     }
 }

@@ -145,7 +145,7 @@ export class ImageComponent {
                     src={(this.preload && this.src)}
                     data-src={this.src}
                     //srcset={(this.preload && this.srcset)}
-                    class="mdc-image-list__image mdc-elevation--z3"
+                    class="mdc-image-list__image mdc-elevation--z2"
                     onLoad={this.handleLoad.bind(this)}
                     onError={this.handleError.bind(this)}
                     aria-labelledby={labelId}

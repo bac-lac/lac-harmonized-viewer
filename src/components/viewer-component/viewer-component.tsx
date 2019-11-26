@@ -3,7 +3,7 @@ import "@stencil/redux";
 import 'manifesto.js';
 import { Store, Unsubscribe } from "@stencil/redux";
 import { configureStore } from "../../store";
-import { setDocumentUrl, setDocumentContentType, setStatus, addOverlay, setOptions, setLanguage, addLanguage, setViewport, enterFullscreen, exitFullscreen, addCustomResolver } from '../../store/actions/document';
+import { addTheme, setDocumentUrl, setDocumentContentType, setStatus, addOverlay, setOptions, setLanguage, addLanguage, setViewport, enterFullscreen, exitFullscreen, addCustomResolver } from '../../store/actions/document';
 import i18next from 'i18next';
 import iconError from '../../assets/material-icons/ic_error_24px.svg'
 import { loadPersistedState } from '../../services/persisted-state-service';
@@ -25,7 +25,9 @@ export class ViewerComponent {
 	//@Prop() language: string
 
 	@Prop() navigationEnable: boolean
-	@Prop() navigationPlacement: PlacementType
+	@Prop() navigationPlacement: PlacementType = "left"
+	@Prop() navigationCols: number = 16
+	@Prop() navigationBackgroundColor: string
 	@Prop() pagingEnable: boolean
 	@Prop({ attribute: 'url' }) documentUrl: string
 
@@ -125,7 +127,7 @@ export class ViewerComponent {
 
 		this.store.setStore(configureStore({}))
 		this.store.mapDispatchToProps(this, { addCustomResolver, addLanguage, addOverlay, setDocumentContentType, enterFullscreen, exitFullscreen, setDocumentUrl, setLanguage, setOptions, setViewport, setStatus })
-		this.store.mapStateToProps(this, (state: MyAppState) => {
+		this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
 				document: { language: language, availableLanguages: availableLanguages, page: page, pages: pages, url: url, status: status, theme: theme }
 			} = state
@@ -149,11 +151,11 @@ export class ViewerComponent {
 	}
 
 	componentDidLoad() {
-		this.setViewport({
-			navigationEnable: this.navigationEnable,
-			navigationPlacement: this.navigationPlacement,
-			pagingEnable: this.pagingEnable
-		})
+		// this.setViewport({
+		// 	navigationEnable: this.navigationEnable,
+		// 	navigationPlacement: this.navigationPlacement,
+		// 	pagingEnable: this.pagingEnable
+		// })
 	}
 
 	componentDidUnload() {
@@ -251,18 +253,38 @@ export class ViewerComponent {
 			<harmonized-topbar />
 
 			<div class="viewer__content mdc-top-app-bar--dense-fixed-adjust full-height">
+
 				{
 					this.status.error ?
-						this.renderError(this.status.error) :
-						<harmonized-viewport />
+						this.renderError(this.status.error) : <harmonized-viewport />
 				}
+
 			</div>
 
 			<slot name="footer" />
 
-			{/* <harmonized-navigation
-				placement="bottom" rows={1} /> */}
+			{this.renderNavigation("bottom")}
+
 		</div>
+	}
+
+	renderNavigation(placement: PlacementType) {
+
+		const conditions = (this.pages && this.pages.length > 0) && (this.navigationPlacement == placement)
+
+		if (conditions) {
+
+			if (placement == "left" || placement == "right") {
+
+				return <harmonized-drawer
+					placement={placement} toolbar={true} visible={true} width={250}>
+					<harmonized-navigation style={{ backgroundColor: this.navigationBackgroundColor }}></harmonized-navigation>
+				</harmonized-drawer>
+			}
+			else {
+				return <harmonized-navigation cols={this.navigationCols} style={{ backgroundColor: this.navigationBackgroundColor }}></harmonized-navigation>
+			}
+		}
 	}
 
 	renderError(error: DocumentError) {

@@ -1,8 +1,8 @@
 harmonized-tabs {
-    @import "@material/tab-bar/mixins";
-    @import "@material/tab-scroller/mixins";
-    @import "@material/tab-indicator/mixins";
-    @import "@material/tab/mixins";
+    @import '@material/tab-bar/mixins';
+    @import '@material/tab-scroller/mixins';
+    @import '@material/tab-indicator/mixins';
+    @import '@material/tab/mixins';
 
     height: 100%;
     display: flex;
@@ -27,6 +27,10 @@ harmonized-tabs {
             @include mdc-tab-active-icon-color(#fff);
             @include mdc-tab-active-text-label-color(#fff);
             @include mdc-tab-indicator-underline-color(#8cb7b8);
+
+            &__text-label {
+                font-size: 12px;
+            }
         }
     }
 

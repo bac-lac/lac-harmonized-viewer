@@ -1,16 +1,19 @@
 harmonized-navigation {
-    height: 100%;
     display: block;
     flex: 0 0 auto;
     overflow-y: auto;
 
     harmonized-image-list {
         &.mdc-image-list {
-            padding: 15px 15px 0 15px;
+            padding: 15px;
         }
 
         harmonized-image {
             position: relative;
         }
     }
+}
+
+harmonized-drawer harmonized-navigation {
+    height: 100%;
 }
