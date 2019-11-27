@@ -1,13 +1,13 @@
 .harmonized-viewer-theme--light {
-    @import '@material/button/mixins';
-    @import '@material/icon-button/mixins';
+    @import "@material/button/mixins";
+    @import "@material/icon-button/mixins";
 
-    @import '@material/slider/mixins';
+    @import "@material/slider/mixins";
 
-    @import '@material/tab-bar/mixins';
-    @import '@material/tab-scroller/mixins';
-    @import '@material/tab-indicator/mixins';
-    @import '@material/tab/mixins';
+    @import "@material/tab-bar/mixins";
+    @import "@material/tab-scroller/mixins";
+    @import "@material/tab-indicator/mixins";
+    @import "@material/tab/mixins";
 
     background-color: #ece8e8;
 
@@ -108,7 +108,7 @@
     harmonized-annotations {
         dl {
             dt {
-                color: #4c5c68;
+                color: #424242;
             }
             dd {
                 color: #46494c;

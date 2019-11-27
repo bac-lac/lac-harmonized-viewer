@@ -252,6 +252,8 @@ export class ViewerComponent {
 
 			<harmonized-topbar />
 
+			{this.renderNavigation("left")}
+
 			<div class="viewer__content mdc-top-app-bar--dense-fixed-adjust full-height">
 
 				{
