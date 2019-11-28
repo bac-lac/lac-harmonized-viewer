@@ -206,6 +206,20 @@ export const setAnnotations = (annotations: DocumentAnnotation[]) => (dispatch, 
     dispatch(action)
 }
 
+export interface AddAnnotation {
+    type: TypeKeys.ADD_ANNOTATION
+    annotation: DocumentAnnotation
+    index?: number
+}
+export const addAnnotation = (annotation: DocumentAnnotation, index?: number) => (dispatch, _getState) => {
+    const action: AddAnnotation = {
+        type: TypeKeys.ADD_ANNOTATION,
+        annotation: annotation,
+        index: index
+    }
+    dispatch(action)
+}
+
 export interface SetOptions {
     type: TypeKeys.SET_OPTIONS
     component: string
@@ -246,14 +260,14 @@ export const setZoomRequest = (zoom: DocumentZoom) => (dispatch, _getState) => {
     dispatch(action)
 }
 
-export interface SetViewport {
-    type: TypeKeys.SET_VIEWPORT,
-    viewport: Viewport
+export interface SetConfiguration {
+    type: TypeKeys.SET_CONFIGURATION,
+    configuration: Configuration
 }
-export const setViewport = (viewport: Viewport) => (dispatch, _getState) => {
-    const action: SetViewport = {
-        type: TypeKeys.SET_VIEWPORT,
-        viewport: viewport
+export const setConfiguration = (configuration: Configuration) => (dispatch, _getState) => {
+    const action: SetConfiguration = {
+        type: TypeKeys.SET_CONFIGURATION,
+        configuration: configuration
     }
     dispatch(action)
 }

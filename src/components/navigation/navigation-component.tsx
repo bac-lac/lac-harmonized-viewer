@@ -15,7 +15,8 @@ export class NavigationComponent {
 
     @Prop() cols: number = 2
     @Prop() rows: number
-    @Prop() placement: PlacementType = 'left'
+
+    @Prop() autoResize: boolean = false
 
     @Watch('rows')
     handleRowsChange() {
@@ -73,7 +74,9 @@ export class NavigationComponent {
     }
 
     handleThumbnailLoad(ev: Event) {
-        this.resize()
+        if (this.autoResize) {
+            this.resize()
+        }
     }
 
     @Watch('page')
@@ -88,14 +91,12 @@ export class NavigationComponent {
 
     @Listen('resize', { target: 'window' })
     handleResize() {
-        this.resize()
+        if (this.autoResize) {
+            this.resize()
+        }
     }
 
     resize() {
-
-        if (this.placement != 'top' && this.placement != 'bottom') {
-            return undefined
-        }
 
         // Adjust the height of the navigation to show a specific number of rows
         const item = this.el.querySelector('harmonized-image-list > .is-loaded')
@@ -154,14 +155,7 @@ export class NavigationComponent {
 
     render() {
 
-        let className = "mdc-image-list"
-
-        if (this.placement == "left" || this.placement == "right") {
-            className += ` mdc-image-list--${this.cols}col`
-        }
-        else {
-            className += ` mdc-image-list--16col`
-        }
+        const className = `mdc-image-list mdc-image-list--${this.cols}col`
 
         return <Host>
             <div class="navigation-content">

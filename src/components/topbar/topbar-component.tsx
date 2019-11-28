@@ -9,7 +9,7 @@ import iconFullscreen from '../../assets/material-icons/ic_fullscreen_24px.svg';
 import iconFullscreenExit from '../../assets/material-icons/ic_fullscreen_exit_24px.svg';
 import iconThemeLight from "../../assets/material-icons/theme-light.svg"
 import iconThemeDark from "../../assets/material-icons/theme-dark.svg"
-import { setViewport, setLanguage, setTheme, enterFullscreen, exitFullscreen } from '../../store/actions/document';
+import { setLanguage, setTheme, enterFullscreen, exitFullscreen } from '../../store/actions/document';
 import { t } from '../../services/i18n-service';
 
 @Component({
@@ -25,6 +25,7 @@ export class TopbarComponent {
     @Prop({ context: "store" }) store: Store
 
     @State() language: MyAppState["document"]["language"]
+    @State() languageEnabled: MyAppState["document"]["configuration"]["language"]["enable"]
     @State() availableLanguages: MyAppState["document"]["availableLanguages"]
     @State() title: MyAppState["document"]["document"]["label"]
     @State() theme: MyAppState["document"]["theme"]
@@ -35,7 +36,6 @@ export class TopbarComponent {
     setTheme: typeof setTheme
     enterFullscreen: typeof enterFullscreen
     exitFullscreen: typeof exitFullscreen
-    setViewport: typeof setViewport
 
     storeUnsubscribe: Unsubscribe
 
@@ -46,19 +46,19 @@ export class TopbarComponent {
 
     componentWillLoad() {
 
-        this.store.mapDispatchToProps(this, { setLanguage, setTheme, enterFullscreen, exitFullscreen, setViewport })
+        this.store.mapDispatchToProps(this, { setLanguage, setTheme, enterFullscreen, exitFullscreen })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { document, language, availableLanguages, fullscreen, theme, themes, viewport }
+                document: { configuration, document, language, availableLanguages, fullscreen, theme, themes }
             } = state
             return {
                 language,
+                languageEnabled: configuration && configuration.language && configuration.language.enable,
                 availableLanguages,
                 fullscreen: fullscreen,
                 title: (document ? document.label : null),
-                theme: theme,
-                themes: themes,
-                viewport
+                theme,
+                themes
             }
         })
     }
@@ -70,9 +70,13 @@ export class TopbarComponent {
         // this.menuDisplay = new MDCMenu(this.el.querySelector('.mdc-menu'))
         // this.menuDisplay.setAnchorCorner(Corner.BOTTOM_LEFT)
 
-        this.menuLanguage = new MDCMenu(this.el.querySelector('#menu-language'))
-        this.menuLanguage.setAnchorCorner(Corner.BOTTOM_LEFT)
-        this.menuLanguage.quickOpen = true
+        const languageElem = this.el.querySelector('#menu-language')
+        if (languageElem) {
+
+            this.menuLanguage = new MDCMenu(languageElem)
+            this.menuLanguage.setAnchorCorner(Corner.BOTTOM_LEFT)
+            this.menuLanguage.quickOpen = true
+        }
 
         const snackBarElem = this.el.querySelector(".mdc-snackbar")
         if (snackBarElem) {
@@ -113,7 +117,7 @@ export class TopbarComponent {
     }
 
     handleEnterFullscreenClick() {
-        this.enterFullscreen(this.el.closest('.harmonized-viewer'))
+        this.enterFullscreen(this.el.closest(".harmonized-viewer"))
     }
 
     handleExitFullscreenClick() {
@@ -125,7 +129,6 @@ export class TopbarComponent {
     }
 
     handleThemeToggleClick() {
-        console.log(this.theme)
         const theme = this.theme == "light" ? "dark" : "light"
         this.setTheme(theme)
     }
@@ -155,34 +158,36 @@ export class TopbarComponent {
 
                         </harmonized-button>
 
-                        <harmonized-button
-                            class="mdc-top-app-bar__action-item mdc-menu-surface--anchor"
-                            icon={iconLanguage}
-                            dropdown={true}
-                            size="sm"
-                            label={this.language && this.language.name}
-                            aria-label={t('changeLanguage')}
-                            tooltip={t('changeLanguage')}
-                            onClick={this.handleLanguageClick.bind(this)}>
+                        {
+                            this.languageEnabled && <harmonized-button
+                                class="mdc-top-app-bar__action-item mdc-menu-surface--anchor"
+                                icon={iconLanguage}
+                                dropdown={true}
+                                size="sm"
+                                label={this.language && this.language.name}
+                                aria-label={t('changeLanguage')}
+                                tooltip={t('changeLanguage')}
+                                onClick={this.handleLanguageClick.bind(this)}>
 
-                            <div class="mdc-menu mdc-menu-surface" id="menu-language">
-                                <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
-                                    {this.availableLanguages.map((language) => {
-                                        const selected = (this.language && this.language.code == language.code)
-                                        return <li
-                                            role="menuitem"
-                                            class={selected ? "mdc-list-item mdc-list-item--selected" : "mdc-list-item"}
-                                            tabIndex={selected ? 0 : undefined}
-                                            onClick={(ev) => { this.handleLanguageSelectionChange(language.code) }}>
-                                            <span class="mdc-list-item__text">
-                                                {language.name}
-                                            </span>
-                                        </li>
-                                    })}
-                                </ul>
-                            </div>
+                                <div class="mdc-menu mdc-menu-surface" id="menu-language">
+                                    <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
+                                        {this.availableLanguages.map((language) => {
+                                            const selected = (this.language && this.language.code == language.code)
+                                            return <li
+                                                role="menuitem"
+                                                class={selected ? "mdc-list-item mdc-list-item--selected" : "mdc-list-item"}
+                                                tabIndex={selected ? 0 : undefined}
+                                                onClick={(ev) => { this.handleLanguageSelectionChange(language.code) }}>
+                                                <span class="mdc-list-item__text">
+                                                    {language.name}
+                                                </span>
+                                            </li>
+                                        })}
+                                    </ul>
+                                </div>
 
-                        </harmonized-button>
+                            </harmonized-button>
+                        }
 
                         {
                             !this.fullscreen &&

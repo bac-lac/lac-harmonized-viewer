@@ -53,14 +53,6 @@ export class ContentComponent {
 
         return <harmonized-tabs>
             {
-                this.showNavigation &&
-                <harmonized-tab
-                    label="Thumbnails"
-                    icon={iconGrid}>
-                    <harmonized-navigation placement={this.placement} rows={this.rows} />
-                </harmonized-tab>
-            }
-            {
                 this.showMetadata &&
                 <harmonized-tab
                     label="Metadata"

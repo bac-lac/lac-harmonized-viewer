@@ -1,9 +1,9 @@
-import { Component, h, Element, Listen, Prop, Method, State, Watch, Event, EventEmitter } from '@stencil/core';
+import { Component, h, Element, Prop, Method, State, Watch, Event, EventEmitter } from '@stencil/core';
 import "@stencil/redux";
 import 'manifesto.js';
 import { Store, Unsubscribe } from "@stencil/redux";
 import { configureStore } from "../../store";
-import { addTheme, setDocumentUrl, setDocumentContentType, setStatus, addOverlay, setOptions, setLanguage, addLanguage, setViewport, enterFullscreen, exitFullscreen, addCustomResolver } from '../../store/actions/document';
+import { setDocumentUrl, setDocumentContentType, setStatus, addOverlay, setOptions, setLanguage, addLanguage, enterFullscreen, exitFullscreen, addCustomResolver, setConfiguration } from '../../store/actions/document';
 import i18next from 'i18next';
 import iconError from '../../assets/material-icons/ic_error_24px.svg'
 import { loadPersistedState } from '../../services/persisted-state-service';
@@ -27,7 +27,11 @@ export class ViewerComponent {
 	@Prop() navigationEnable: boolean
 	@Prop() navigationPlacement: PlacementType = "left"
 	@Prop() navigationCols: number = 16
+	@Prop() navigationRows: number = 1
 	@Prop() navigationBackgroundColor: string
+
+	@Prop() languageEnable: boolean
+
 	@Prop() pagingEnable: boolean
 	@Prop({ attribute: 'url' }) documentUrl: string
 
@@ -37,6 +41,7 @@ export class ViewerComponent {
 	addCustomResolver: typeof addCustomResolver
 	addLanguage: typeof addLanguage
 	addOverlayState: typeof addOverlay
+	setConfiguration: typeof setConfiguration
 	setDocumentContentType: typeof setDocumentContentType
 	setDocumentUrl: typeof setDocumentUrl
 	setLanguage: typeof setLanguage
@@ -44,10 +49,10 @@ export class ViewerComponent {
 	_exitFullscreen: typeof exitFullscreen
 	setStatus: typeof setStatus
 	setOptions: typeof setOptions
-	setViewport: typeof setViewport
 
 	storeUnsubscribe: Unsubscribe
 
+	@State() configuration: MyAppState["document"]["configuration"]
 	@State() language: MyAppState["document"]["language"]
 	@State() availableLanguages: MyAppState["document"]["availableLanguages"]
 	@State() page: MyAppState["document"]["page"]
@@ -126,12 +131,13 @@ export class ViewerComponent {
 	componentWillLoad() {
 
 		this.store.setStore(configureStore({}))
-		this.store.mapDispatchToProps(this, { addCustomResolver, addLanguage, addOverlay, setDocumentContentType, enterFullscreen, exitFullscreen, setDocumentUrl, setLanguage, setOptions, setViewport, setStatus })
+		this.store.mapDispatchToProps(this, { setConfiguration, addCustomResolver, addLanguage, addOverlay, setDocumentContentType, enterFullscreen, exitFullscreen, setDocumentUrl, setLanguage, setOptions, setStatus })
 		this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
-				document: { language: language, availableLanguages: availableLanguages, page: page, pages: pages, url: url, status: status, theme: theme }
+				document: { configuration: configuration, language: language, availableLanguages: availableLanguages, page: page, pages: pages, url: url, status: status, theme: theme }
 			} = state
 			return {
+				configuration: configuration,
 				language: language,
 				availableLanguages: availableLanguages,
 				page: page,
@@ -147,15 +153,16 @@ export class ViewerComponent {
 
 		this.initLanguage()
 
+		this.setConfiguration({
+			language: {
+				enable: this.languageEnable
+			}
+		})
+
 		this.setDocumentUrl(this.documentUrl)
 	}
 
 	componentDidLoad() {
-		// this.setViewport({
-		// 	navigationEnable: this.navigationEnable,
-		// 	navigationPlacement: this.navigationPlacement,
-		// 	pagingEnable: this.pagingEnable
-		// })
 	}
 
 	componentDidUnload() {
@@ -280,11 +287,11 @@ export class ViewerComponent {
 
 				return <harmonized-drawer
 					placement={placement} toolbar={true} visible={true} width={250}>
-					<harmonized-navigation style={{ backgroundColor: this.navigationBackgroundColor }}></harmonized-navigation>
+					<harmonized-navigation cols={this.navigationCols} style={{ backgroundColor: this.navigationBackgroundColor }}></harmonized-navigation>
 				</harmonized-drawer>
 			}
 			else {
-				return <harmonized-navigation cols={this.navigationCols} style={{ backgroundColor: this.navigationBackgroundColor }}></harmonized-navigation>
+				return <harmonized-navigation cols={this.navigationCols} rows={this.navigationRows} auto-resize={true} style={{ backgroundColor: this.navigationBackgroundColor }}></harmonized-navigation>
 			}
 		}
 	}

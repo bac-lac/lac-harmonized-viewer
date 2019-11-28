@@ -11,6 +11,7 @@ interface ContentTypeMapping {
 
 interface DocumentState {
     error: DocumentError
+    configuration: Configuration,
     loading: boolean
     alternateFormats: DocumentAlternateFormat[]
     annotations: DocumentAnnotation[]
@@ -141,4 +142,12 @@ interface DocumentOverlay {
 interface DocumentLabel {
     locale: string
     value: string
+}
+
+interface Configuration {
+    language: LanguageConfiguration
+}
+
+interface LanguageConfiguration {
+    enable: boolean
 }

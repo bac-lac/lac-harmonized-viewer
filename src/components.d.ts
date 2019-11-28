@@ -61,8 +61,8 @@ export namespace Components {
     'type': MessageType;
   }
   interface HarmonizedNavigation {
+    'autoResize': boolean;
     'cols': number;
-    'placement': PlacementType;
     'rows': number;
   }
   interface HarmonizedOpenseadragon {
@@ -98,10 +98,12 @@ export namespace Components {
     'fullscreen': () => Promise<void>;
     'getPage': () => Promise<number>;
     'getUrl': () => Promise<string>;
+    'languageEnable': boolean;
     'navigationBackgroundColor': string;
     'navigationCols': number;
     'navigationEnable': boolean;
     'navigationPlacement': PlacementType;
+    'navigationRows': number;
     'pagingEnable': boolean;
   }
   interface HarmonizedViewport {
@@ -313,8 +315,8 @@ declare namespace LocalJSX {
     'type'?: MessageType;
   }
   interface HarmonizedNavigation {
+    'autoResize'?: boolean;
     'cols'?: number;
-    'placement'?: PlacementType;
     'rows'?: number;
   }
   interface HarmonizedOpenseadragon {
@@ -344,10 +346,12 @@ declare namespace LocalJSX {
     'defaultLanguage'?: string;
     'defaultTheme'?: string;
     'documentUrl'?: string;
+    'languageEnable'?: boolean;
     'navigationBackgroundColor'?: string;
     'navigationCols'?: number;
     'navigationEnable'?: boolean;
     'navigationPlacement'?: PlacementType;
+    'navigationRows'?: number;
     'onStatusChanged'?: (event: CustomEvent<any>) => void;
     'pagingEnable'?: boolean;
   }

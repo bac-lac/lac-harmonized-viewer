@@ -1,5 +1,6 @@
 import { Resolver } from "../resolver"
 import { IIIFDocument } from "./iiif-document"
+import { t } from "../../services/i18n-service"
 
 export class IIIFResolver extends Resolver {
 
@@ -94,6 +95,13 @@ export class IIIFResolver extends Resolver {
         if (!this.manifest) {
             return undefined
         }
+
+        // const title: DocumentAnnotation = {
+        //     id: null,
+        //     name: "Title",
+        //     label: [{ locale: "en", value: "Title" }],
+        //     content: t(this.getTitle())
+        // }
 
         return this.manifest.getMetadata().map((annotation) => ({
             id: null,

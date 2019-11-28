@@ -6,6 +6,7 @@ const getInitialState = (): DocumentState => {
         alternateFormats: [],
         annotations: [],
         contentType: null,
+        configuration: null,
         document: null,
         error: null,
         loading: false,
@@ -50,6 +51,9 @@ const getInitialState = (): DocumentState => {
 const document = (state = getInitialState(), action: ActionTypes): DocumentState => {
 
     switch (action.type) {
+        case TypeKeys.SET_CONFIGURATION: {
+            return { ...state, configuration: action.configuration }
+        }
         case TypeKeys.SET_ERROR: {
             return { ...state, status: { ...state.status, code: 'failed', loading: false, error: { code: action.errorCode, severity: action.severity, optionalParameters: action.optionalParameters } } }
         }
@@ -91,6 +95,9 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
         case TypeKeys.SET_ANNOTATIONS: {
             return { ...state, annotations: action.annotations }
         }
+        case TypeKeys.ADD_ANNOTATION: {
+            return { ...state, annotations: state.annotations.splice(action.index, 0, action.annotation) }
+        }
         case TypeKeys.SET_OPTIONS: {
             return { ...state, options: [...state.options, { component: action.component, name: action.name, value: action.value }] }
         }
@@ -114,9 +121,6 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
         }
         case TypeKeys.EXIT_FULLSCREEN: {
             return { ...state, fullscreen: false }
-        }
-        case TypeKeys.SET_VIEWPORT: {
-            return { ...state, viewport: action.viewport }
         }
         case TypeKeys.ADD_CUSTOM_RESOLVER: {
             return { ...state, customResolvers: [...state.customResolvers, action.id] }

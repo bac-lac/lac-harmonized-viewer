@@ -1,6 +1,7 @@
 @import '../../global/mixins';
 
 harmonized-image {
+    @import '@material/animation/functions';
     display: inline-block;
     position: relative;
 
@@ -23,6 +24,7 @@ harmonized-image {
 
         .mdc-image-list__image {
             border: #fff 1px solid;
+            transition: boxShadow 175ms $mdc-animation-standard-curve-timing-function;
         }
     }
 

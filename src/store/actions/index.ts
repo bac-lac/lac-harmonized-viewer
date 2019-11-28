@@ -1,11 +1,11 @@
-import { SetLoading, SetDocumentContentType, SetDocumentUrl, SetDocumentPages, SetDocumentTitle, SetDocumentAlternateFormats, SetPage, SetAnnotations, SetOptions, SetZoom, SetZoomRequest, SetError, SetStatus, AddOverlay, ClearOverlays, SetViewport, SetLanguage, SetTheme, AddLanguage, EnterFullscreen, ExitFullscreen, AddCustomResolver } from "./document";
+import { SetLoading, SetDocumentContentType, SetDocumentUrl, SetDocumentPages, SetDocumentTitle, SetDocumentAlternateFormats, SetPage, SetAnnotations, AddAnnotation, SetOptions, SetZoom, SetZoomRequest, SetError, SetStatus, AddOverlay, ClearOverlays, SetConfiguration, SetLanguage, SetTheme, AddLanguage, EnterFullscreen, ExitFullscreen, AddCustomResolver } from "./document";
 
 export interface NullAction {
     type: TypeKeys.NULL
 }
 
 // Keep this type updated with each known action
-export type ActionTypes = NullAction | SetError | SetLoading | SetStatus | AddLanguage | SetLanguage | SetTheme | SetDocumentContentType | SetDocumentUrl | SetDocumentPages | SetDocumentTitle | SetDocumentAlternateFormats | SetPage | SetAnnotations | SetOptions | SetZoom | SetZoomRequest | AddOverlay | ClearOverlays | SetViewport | EnterFullscreen | ExitFullscreen | AddCustomResolver
+export type ActionTypes = NullAction | SetError | SetLoading | SetStatus | AddLanguage | SetLanguage | SetTheme | SetDocumentContentType | SetDocumentUrl | SetDocumentPages | SetDocumentTitle | SetDocumentAlternateFormats | SetPage | SetAnnotations | AddAnnotation | SetOptions | SetZoom | SetZoomRequest | AddOverlay | ClearOverlays | SetConfiguration | EnterFullscreen | ExitFullscreen | AddCustomResolver
 
 export enum TypeKeys {
     // Won't match anything
@@ -25,12 +25,13 @@ export enum TypeKeys {
     SET_DOCUMENT_ALTERNATE_FORMATS = "SET_DOCUMENT_ALTERNATE_FORMATS",
     SET_PAGE = "SET_PAGE",
     SET_ANNOTATIONS = "SET_ANNOTATIONS",
+    ADD_ANNOTATION = "ADD_ANNOTATION",
     SET_OPTIONS = "SET_OPTIONS",
     SET_ZOOM = "SET_ZOOM",
     SET_ZOOM_REQUEST = "SET_ZOOM_REQUEST",
     ADD_OVERLAY = "ADD_OVERLAY",
     CLEAR_OVERLAYS = "CLEAR_OVERLAYS",
-    SET_VIEWPORT = "SET_VIEWPORT",
+    SET_CONFIGURATION = "SET_CONFIGURATION",
     ENTER_FULLSCREEN = "ENTER_FULLSCREEN",
     EXIT_FULLSCREEN = "EXIT_FULLSCREEN",
     ADD_CUSTOM_RESOLVER = "ADD_CUSTOM_RESOLVER"

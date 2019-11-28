@@ -1,12 +1,13 @@
 import { Component, h, Element, Event, EventEmitter, Method, Listen, State, Prop, Watch, Host } from '@stencil/core';
 import { Store, Unsubscribe } from "@stencil/redux";
-import { setDocumentUrl, setDocumentPages, setDocumentTitle, setAnnotations, setZoom, setPage, setDocumentAlternateFormats, setError, setStatus, clearOverlays } from "../../store/actions/document";
+import { setDocumentUrl, setDocumentPages, setDocumentTitle, setAnnotations, setZoom, setPage, setDocumentAlternateFormats, setError, setStatus, clearOverlays, addAnnotation } from "../../store/actions/document";
 import openseadragon from 'openseadragon';
 import { Resolver } from '../../resolvers/resolver';
 import { IIIFResolver } from '../../resolvers/iiif-resolver/iiif-resolver';
 import { IIIFDocument } from '../../resolvers/iiif-resolver/iiif-document';
 import iconChevronLeft from '../../assets/material-design-icons/ic_chevron_left_48px.svg'
 import iconChevronRight from '../../assets/material-design-icons/ic_chevron_right_48px.svg'
+import { t } from '../../services/i18n-service';
 
 @Component({
     tag: 'harmonized-openseadragon',
@@ -31,6 +32,7 @@ export class OpenSeadragonComponent {
     setDocumentTitle: typeof setDocumentTitle
     setDocumentAlternateFormats: typeof setDocumentAlternateFormats
     setAnnotations: typeof setAnnotations
+    addAnnotation: typeof addAnnotation
     setPage: typeof setPage
     setZoom: typeof setZoom
     clearOverlays: typeof clearOverlays
@@ -228,7 +230,7 @@ export class OpenSeadragonComponent {
             animationTime: 0.1,
             springStiffness: 10.0,
             showNavigator: true,
-            navigatorPosition: "BOTTOM_RIGHT",
+            navigatorPosition: "TOP_LEFT",
             showNavigationControl: false,
             showSequenceControl: false,
             sequenceMode: true,

@@ -44,7 +44,7 @@ export abstract class Resolver {
         if (!annotation) {
             return undefined
         }
-        return new Md5().appendStr(annotation.name || '').end().toString()
+        return new Md5().appendStr(annotation.name || "").end().toString()
     }
 
     isAnnotationVisible(annotation: DocumentAnnotation): boolean {
