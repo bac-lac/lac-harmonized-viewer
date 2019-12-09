@@ -141,14 +141,14 @@ export class TopbarComponent {
             <header class="mdc-top-app-bar mdc-top-app-bar--dense">
                 <div class="mdc-top-app-bar__row">
                     <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-                        <button class="mdc-top-app-bar__navigation-icon mdc-icon-button">
+                        {/*<button class="mdc-top-app-bar__navigation-icon mdc-icon-button">
                             <i class="mdc-icon-button__icon" innerHTML={iconMenu}></i>
-                        </button>
+                        </button>*/}
                         <span class="mdc-top-app-bar__title">{t(this.title)}</span>
                     </section>
                     <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
 
-                        <harmonized-button
+                        {/*<harmonized-button
                             class="mdc-top-app-bar__action-item"
                             icon={iconTheme}
                             size="sm"
@@ -156,7 +156,7 @@ export class TopbarComponent {
                             tooltip={t('change_theme')}
                             onClick={this.handleThemeToggleClick.bind(this)}>
 
-                        </harmonized-button>
+                        </harmonized-button>*/}
 
                         {
                             this.languageEnabled && <harmonized-button
