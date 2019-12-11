@@ -136,8 +136,7 @@ export class ImageComponent {
             role="button"
             class={className}
             onClick={this.loaded && this.handleClick.bind(this)}
-            title={this.loaded && this.caption && this.caption}
-            tabindex={this.loaded && '0'}>
+            title={this.loaded && this.caption && this.caption}>
 
             <div class="mdc-image-list__image-aspect-container">
                 <img

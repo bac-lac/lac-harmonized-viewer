@@ -157,7 +157,7 @@ export class NavigationComponent {
 
         const className = `mdc-image-list mdc-image-list--${this.cols}col`
 
-        return  <harmonized-image-list class={className}>
+        return  <harmonized-image-list class={className} tabindex={0}>
                     {
                         this.pages && this.pages.map((page, index) =>
 
@@ -165,7 +165,7 @@ export class NavigationComponent {
                                 src={page.thumbnail}
                                 page={index}
                                 caption={t(page.label)}
-                                show-caption={true}
+                                show-caption={false}
                                 show-tooltip={false}
                                 preload={index < 16}
                                 onImageLoad={this.handleThumbnailLoad.bind(this)} />

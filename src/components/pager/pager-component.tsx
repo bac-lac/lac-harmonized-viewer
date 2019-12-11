@@ -1,13 +1,14 @@
 import { Component, h, Element, Prop, State, Host, Watch, Listen } from '@stencil/core';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { setPage } from '../../store/actions/document';
-import { MDCRipple } from '@material/ripple';
+//import { MDCRipple } from '@material/ripple';
 import { MDCSlider } from '@material/slider';
-import iconFirst from '../../assets/material-icons/ic_page_first_24px.svg'
-import iconPrevious from '../../assets/material-icons/ic_page_previous_24px.svg'
-import iconNext from '../../assets/material-icons/ic_page_next_24px.svg'
-import iconLast from '../../assets/material-icons/ic_page_last_24px.svg'
+//import iconFirst from '../../assets/material-icons/ic_page_first_24px.svg'
+//import iconPrevious from '../../assets/material-icons/ic_page_previous_24px.svg'
+//import iconNext from '../../assets/material-icons/ic_page_next_24px.svg'
+//import iconLast from '../../assets/material-icons/ic_page_last_24px.svg'
 import { isNullOrUndefined, isNumber } from 'util';
+import { t } from '../../services/i18n-service';
 
 @Component({
     tag: 'harmonized-pager',
@@ -187,7 +188,8 @@ export class PagerComponent {
         return <div role="toolbar" aria-label="Toolbar navigation">
 
             <div class="paging-status">
-                <span class="paging-status__spacer--right">
+                <div innerHTML={t('pager', { page: this.page, pageCount: this.pageCount })}></div>
+                {/*<span class="paging-status__spacer--right">
                     Page
                 </span>
                 <span class="paging-status__value">
@@ -198,7 +200,7 @@ export class PagerComponent {
                 </span>
                 <span class="paging-status__value">
                     {this.pageCount}
-                </span>
+                </span>*/}
             </div>
 
             {/*<div class="pager__controls">

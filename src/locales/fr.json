@@ -9,6 +9,7 @@
     "showInfo": "Afficher les détails",
     "hideInfo": "Cacher les détails",
     "details": "Détails",
+    "pager": "Article <b>{{page}}</b> de <b>{{pageCount}}</b>",
     "ok": "OK",
     "errors": {
         "request-failed": "La requête au document a échoué {{url}}",
