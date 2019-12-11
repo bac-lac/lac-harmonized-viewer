@@ -13,14 +13,14 @@
 
     harmonized-topbar {
         .mdc-top-app-bar {
-            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),
+            /*box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),
                 0 1px 10px 0 rgba(0, 0, 0, 0.12);
-            background-color: #46494c;
+            background-color: #46494c;*/
 
             .mdc-button {
                 @include mdc-button-filled-accessible(#46494c);
-                @include mdc-button-ink-color(#fff);
-                @include mdc-button-icon-color(#fff);
+                @include mdc-button-ink-color(#46494c);
+                @include mdc-button-icon-color(#46494c);
                 //@include mdc-icon-button-ink-color(#fff);
 
                 .mdc-button__label {
@@ -29,7 +29,7 @@
             }
 
             .mdc-icon-button {
-                @include mdc-icon-button-ink-color(#fff);
+                @include mdc-icon-button-ink-color(#46494c);
             }
         }
     }
@@ -60,6 +60,9 @@
                         @include mdc-icon-button-ink-color(#c7c7c7);
                     }
                 }
+            }
+            .mdc-drawer__content {
+                border-color: #424242;
             }
         }
     }

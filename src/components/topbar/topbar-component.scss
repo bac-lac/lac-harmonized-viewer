@@ -4,13 +4,14 @@ harmonized-topbar {
     @import '@material/list/mixins';
     @import '@material/menu-surface/mixins';
     position: relative;
-    display: inline-block;
+    display: -inline-block;
 
     .mdc-top-app-bar {
         z-index: 99999;
         top: 0 !important;
         position: absolute;
-        background-color: transparent;
+        background-color: transparent !important;
+        box-shadow: none !important;
 
         .mdc-top-app-bar__title {
             color: #fff;
@@ -27,10 +28,10 @@ harmonized-topbar {
         }
 
         .button-fullscreen-exit {
-            button {
+            /*button {
                 @include mdc-button-filled-accessible(#e1514e);
                 @include mdc-button-outline-color(#e1514e);
-            }
+            }*/
         }
 
         .mdc-top-app-bar__action-item {
@@ -42,8 +43,10 @@ harmonized-topbar {
         }
 
         .mdc-menu {
-            @include mdc-menu-surface-ink-color(#fff);
-            @include mdc-menu-surface-fill-color(#282828);
+            /*@include mdc-menu-surface-ink-color(#fff);/
+            /*@include mdc-menu-surface-fill-color(#282828);*/
+            
+            background-color: transparent;
 
             .mdc-list {
                 @include mdc-list-item-primary-text-ink-color(#fff);

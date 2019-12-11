@@ -184,7 +184,7 @@ export class PagerComponent {
         const page = isNullOrUndefined(this.marker) ?
             (this.page + 1) : (this.marker + 1)
 
-        return <Host role="toolbar" aria-label="Toolbar navigation">
+        return <div role="toolbar" aria-label="Toolbar navigation">
 
             <div class="paging-status">
                 <span class="paging-status__spacer--right">
@@ -201,7 +201,7 @@ export class PagerComponent {
                 </span>
             </div>
 
-            <div class="pager__controls">
+            {/*<div class="pager__controls">
 
                 <harmonized-button
                     icon={iconFirst}
@@ -252,8 +252,8 @@ export class PagerComponent {
                     onClick={this.handleLastClick.bind(this)}
                     disabled={this.status.loading || this.isLast()} />
 
-            </div>
+                </div>*/}
 
-        </Host>
+        </div>
     }
 }

@@ -2,7 +2,7 @@ import { Component, Element, h, Prop, State, Host, Listen } from '@stencil/core'
 import '../../utils/manifest';
 import { Unsubscribe, Store } from '@stencil/redux';
 import axios from 'axios';
-import iconInfo from '../../assets/material-icons/ic_info_24px.svg'
+//import iconInfo from '../../assets/material-icons/ic_info_24px.svg'
 import { setDocumentContentType, setStatus, setPage, setLoading, setError } from '../../store/actions/document';
 import { t } from '../../services/i18n-service';
 import { AppConfig } from '../../app.config';
@@ -40,6 +40,8 @@ export class ViewportComponent {
     @State() url: MyAppState["document"]["url"]
     @State() viewport: MyAppState["document"]["viewport"]
 
+    @State() infoShown: MyAppState["document"]["infoShown"];
+
     @Prop({ context: "store" }) store: Store
 
     componentWillLoad() {
@@ -47,7 +49,7 @@ export class ViewportComponent {
         this.store.mapDispatchToProps(this, { setLoading, setError, setPage, setStatus, setDocumentContentType })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { annotations: annotations, contentType: contentType, document: document, language: language, status: status, page: page, pages: pages, pageCount: pageCount, url: url, viewport: viewport }
+                document: { annotations, contentType, document, language, status, page, pages, pageCount, url, viewport,  infoShown }
             } = state
             return {
                 annotations: annotations,
@@ -59,7 +61,9 @@ export class ViewportComponent {
                 pages: pages,
                 pageCount: pageCount,
                 url: url,
-                viewport: viewport
+                viewport: viewport,
+
+                infoShown: infoShown
             }
         })
     }
@@ -144,7 +148,7 @@ export class ViewportComponent {
             return undefined
         }
 
-        return <Host class="viewport">
+        return <Host class="viewport viewport--bottom-nav">
 
             {
                 this.status.code == 'loading' &&
@@ -169,16 +173,18 @@ export class ViewportComponent {
                 </main>
 
                 {
-                    this.annotations && this.annotations.length > 0 && (
-                        <harmonized-drawer
-                            placement="right" toolbar={true} visible={true} width={300}>
+                    
+                        <harmonized-drawer style={{marginTop: "48px"}}
+                                           placement="right"
+                                           visible={this.infoShown}
+                                           width={300}>
                             <harmonized-tabs>
-                                <harmonized-tab icon={iconInfo} label={t('details')}>
+                                <harmonized-tab icon={''} label={t('details')}>
                                     <harmonized-annotations></harmonized-annotations>
                                 </harmonized-tab>
                             </harmonized-tabs>
                         </harmonized-drawer>
-                    )
+                    
                 }
 
             </div>

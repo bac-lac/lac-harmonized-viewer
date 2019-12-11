@@ -6,6 +6,7 @@ harmonized-pager {
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    padding-bottom: 1rem;
 
     .slider-control {
         width: 300px;
@@ -20,7 +21,7 @@ harmonized-pager {
 
     .paging-status {
         text-align: center;
-        margin-bottom: -10px;
+        /*margin-bottom: -10px;*/
 
         &__value {
             font-weight: 500;

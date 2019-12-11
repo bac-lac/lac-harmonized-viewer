@@ -6,6 +6,8 @@
     "fullscreen": "Plein écran",
     "enterFullscreen": "Ouvrir en mode plein écran",
     "exitFullscreen": "Quitter le mode plein écran",
+    "showInfo": "Afficher les détails",
+    "hideInfo": "Cacher les détails",
     "details": "Détails",
     "ok": "OK",
     "errors": {

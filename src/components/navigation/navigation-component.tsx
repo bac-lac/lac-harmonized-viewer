@@ -157,10 +157,7 @@ export class NavigationComponent {
 
         const className = `mdc-image-list mdc-image-list--${this.cols}col`
 
-        return <Host>
-            <div class="navigation-content">
-
-                <harmonized-image-list class={className}>
+        return  <harmonized-image-list class={className}>
                     {
                         this.pages && this.pages.map((page, index) =>
 
@@ -175,7 +172,12 @@ export class NavigationComponent {
                         )
                     }
                 </harmonized-image-list>
+        
+        {/*<Host>
+            <div class="navigation-content">
+
+                
             </div>
-        </Host>
+        </Host>*/}
     }
 }

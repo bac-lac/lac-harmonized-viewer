@@ -324,6 +324,26 @@ export const exitFullscreen = () => (dispatch, _getState) => {
     dispatch(action)
 }
 
+export interface ShowInfo {
+    type: TypeKeys.SHOW_INFO
+}
+export const showInfo = () => (dispatch, _getState) => {
+    const action: ShowInfo = {
+        type: TypeKeys.SHOW_INFO
+    }
+    dispatch(action);
+}
+
+export interface HideInfo {
+    type: TypeKeys.HIDE_INFO
+}
+export const hideInfo = () => (dispatch, _getState) => {
+    const action: HideInfo = {
+        type: TypeKeys.HIDE_INFO
+    }
+    dispatch(action);
+}
+
 export interface AddCustomResolver {
     type: TypeKeys.ADD_CUSTOM_RESOLVER
     id: string

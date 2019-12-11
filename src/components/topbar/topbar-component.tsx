@@ -3,13 +3,15 @@ import { Store, Unsubscribe } from '@stencil/redux';
 import { MDCTopAppBar } from '@material/top-app-bar';
 import { MDCMenu, Corner } from '@material/menu';
 import { MDCSnackbar } from '@material/snackbar';
-import iconMenu from '../../assets/material-design-icons/ic_menu_18px.svg'
-import iconLanguage from '../../assets/material-icons/translate.svg';
+//import iconMenu from '../../assets/material-design-icons/ic_menu_18px.svg'
+//import iconLanguage from '../../assets/material-icons/translate.svg';
+import iconInfo from '../../assets/material-icons/ic_info_24px.svg';
+import iconInfoFull from '../../assets/material-icons/ic_info_full_24px.svg';
 import iconFullscreen from '../../assets/material-icons/ic_fullscreen_24px.svg';
 import iconFullscreenExit from '../../assets/material-icons/ic_fullscreen_exit_24px.svg';
 import iconThemeLight from "../../assets/material-icons/theme-light.svg"
 import iconThemeDark from "../../assets/material-icons/theme-dark.svg"
-import { setLanguage, setTheme, enterFullscreen, exitFullscreen } from '../../store/actions/document';
+import { setLanguage, setTheme, enterFullscreen, exitFullscreen, showInfo, hideInfo } from '../../store/actions/document';
 import { t } from '../../services/i18n-service';
 
 @Component({
@@ -20,10 +22,10 @@ export class TopbarComponent {
 
     @Element() el: HTMLElement
 
-    @State() fullscreen: boolean = false
-
     @Prop({ context: "store" }) store: Store
 
+    @State() fullscreen: boolean = false
+    @State() infoShown: boolean = false
     @State() language: MyAppState["document"]["language"]
     @State() languageEnabled: MyAppState["document"]["configuration"]["language"]["enable"]
     @State() availableLanguages: MyAppState["document"]["availableLanguages"]
@@ -36,6 +38,8 @@ export class TopbarComponent {
     setTheme: typeof setTheme
     enterFullscreen: typeof enterFullscreen
     exitFullscreen: typeof exitFullscreen
+    showInfo: typeof showInfo
+    hideInfo: typeof hideInfo
 
     storeUnsubscribe: Unsubscribe
 
@@ -46,16 +50,17 @@ export class TopbarComponent {
 
     componentWillLoad() {
 
-        this.store.mapDispatchToProps(this, { setLanguage, setTheme, enterFullscreen, exitFullscreen })
+        this.store.mapDispatchToProps(this, { setLanguage, setTheme, enterFullscreen, exitFullscreen, showInfo, hideInfo })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { configuration, document, language, availableLanguages, fullscreen, theme, themes }
+                document: { configuration, document, language, availableLanguages, fullscreen, infoShown, theme, themes }
             } = state
             return {
                 language,
                 languageEnabled: configuration && configuration.language && configuration.language.enable,
                 availableLanguages,
                 fullscreen: fullscreen,
+                infoShown: infoShown,
                 title: (document ? document.label : null),
                 theme,
                 themes
@@ -124,6 +129,15 @@ export class TopbarComponent {
         this.exitFullscreen()
     }
 
+    handleShowInfoClick() {
+        this.showInfo();
+    }
+
+    handleHideInfoClick() {
+        this.hideInfo();
+    }
+
+
     handleDisplayClick() {
         this.menuDisplay.open = !this.menuDisplay.open
     }
@@ -138,13 +152,13 @@ export class TopbarComponent {
         const iconTheme = (this.theme == "light" ? iconThemeDark : iconThemeLight)
 
         return <Host>
-            <header class="mdc-top-app-bar mdc-top-app-bar--dense">
+            <div class="mdc-top-app-bar mdc-top-app-bar--dense">
                 <div class="mdc-top-app-bar__row">
                     <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
                         {/*<button class="mdc-top-app-bar__navigation-icon mdc-icon-button">
                             <i class="mdc-icon-button__icon" innerHTML={iconMenu}></i>
-                        </button>*/}
-                        <span class="mdc-top-app-bar__title">{t(this.title)}</span>
+                        </button>
+                        <span class="mdc-top-app-bar__title">{t(this.title)}</span>*/}
                     </section>
                     <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
 
@@ -157,9 +171,9 @@ export class TopbarComponent {
                             onClick={this.handleThemeToggleClick.bind(this)}>
 
                         </harmonized-button>*/}
-
-                        {
-                            this.languageEnabled && <harmonized-button
+                        {/*
+                            this.languageEnabled &&
+                            <harmonized-button
                                 class="mdc-top-app-bar__action-item mdc-menu-surface--anchor"
                                 icon={iconLanguage}
                                 dropdown={true}
@@ -186,16 +200,39 @@ export class TopbarComponent {
                                     </ul>
                                 </div>
 
-                            </harmonized-button>
+                            </harmonized-button>*/
                         }
 
-                        {
+                        {<harmonized-button
+                            class="mdc-top-app-bar__action-item"
+                            icon={this.infoShown ? iconInfoFull : iconInfo}
+                            size="sm"
+                            label={''}
+                            aria-label={this.infoShown ? t('hideInfo') : t('showInfo')}
+                            tooltip={this.infoShown ? t('hideInfo') : t('showInfo')}
+                            onClick={this.infoShown ? this.handleHideInfoClick.bind(this) : this.handleShowInfoClick.bind(this) }>
+
+                        </harmonized-button>}
+
+                        <harmonized-button
+                                class={`mdc-top-app-bar__action-item ${this.fullscreen && 'button-fullscreen-exit'}`}
+                                icon={this.fullscreen ? iconFullscreenExit : iconFullscreen}
+                                size="sm"
+                                label={''}
+                                aria-label={this.fullscreen ? t('exitFullscreen') : t('enterFullscreen')}
+                                tooltip={this.fullscreen ? t('exitFullscreen') : t('enterFullscreen')}
+                                onClick={this.fullscreen
+                                            ? this.handleExitFullscreenClick.bind(this)
+                                            : this.handleEnterFullscreenClick.bind(this)}>
+
+                        </harmonized-button>
+                        {/*
                             !this.fullscreen &&
                             <harmonized-button
                                 class="mdc-top-app-bar__action-item"
                                 icon={iconFullscreen}
                                 size="sm"
-                                label={t('fullscreen')}
+                                label={''}
                                 aria-label={t('enterFullscreen')}
                                 tooltip={t('enterFullscreen')}
                                 onClick={this.handleEnterFullscreenClick.bind(this)}>
@@ -209,18 +246,18 @@ export class TopbarComponent {
                                 class="mdc-top-app-bar__action-item button-fullscreen-exit"
                                 icon={iconFullscreenExit}
                                 size="sm"
-                                label={t('exitFullscreen')}
+                                label={''}
                                 aria-label={t('exitFullscreen')}
                                 tooltip={t('exitFullscreen')}
                                 onClick={this.handleExitFullscreenClick.bind(this)}>
 
                             </harmonized-button>
-                        }
+                        */}
 
                     </section>
                 </div>
-            </header>
-            <div class="mdc-snackbar">
+            </div>
+            {/*<div class="mdc-snackbar">
                 <div class="mdc-snackbar__surface">
                     <div class="mdc-snackbar__label"
                         role="status"
@@ -232,7 +269,7 @@ export class TopbarComponent {
                         </button>
                     </div>
                 </div>
-            </div>
+            </div>*/}
         </Host>
     }
 }

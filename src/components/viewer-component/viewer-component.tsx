@@ -1,4 +1,4 @@
-import { Component, h, Element, Prop, Method, State, Watch, Event, EventEmitter } from '@stencil/core';
+import { Component, Host, h, Element, Prop, Method, State, Watch, Event, EventEmitter } from '@stencil/core';
 import "@stencil/redux";
 import 'manifesto.js';
 import { Store, Unsubscribe } from "@stencil/redux";
@@ -25,7 +25,7 @@ export class ViewerComponent {
 	//@Prop() language: string
 
 	@Prop() navigationEnable: boolean
-	@Prop() navigationPlacement: PlacementType = "left"
+	@Prop() navigationPlacement: PlacementType = "bottom"
 	@Prop() navigationCols: number = 16
 	@Prop() navigationRows: number = 1
 	@Prop() navigationBackgroundColor: string
@@ -255,29 +255,27 @@ export class ViewerComponent {
 			className += ` harmonized-viewer-theme--${theme}`
 		}
 
-		return <div class={className}>
-
-			<harmonized-topbar />
-
-			{this.renderNavigation("left")}
-
-			<div class="viewer__content mdc-top-app-bar--dense-fixed-adjust full-height">
-
-				{
-					this.status.error ?
-						this.renderError(this.status.error) : <harmonized-viewport />
-				}
-
-			</div>
-
-			<slot name="footer" />
-
-			{this.renderNavigation("bottom")}
-
-		</div>
+		return  <div class={className}>
+					{/*this.renderNavigation("left")*/}
+					<harmonized-topbar />
+					<div class="viewer__content full-height">
+						{
+						this.status.error
+						?	this.renderError(this.status.error)
+						:	<harmonized-viewport />
+						}
+					</div>
+					<slot name="footer" />
+					{this.pages && this.pages.length > 0 &&
+						<harmonized-navigation cols={this.navigationCols}
+											   rows={this.navigationRows}
+											   auto-resize={true}
+											   style={{ backgroundColor: this.navigationBackgroundColor }} />
+					}
+				</div>
 	}
 
-	renderNavigation(placement: PlacementType) {
+	/*renderNavigation(placement: PlacementType) {
 
 		const conditions = (this.pages && this.pages.length > 0) && (this.navigationPlacement == placement)
 
@@ -285,16 +283,16 @@ export class ViewerComponent {
 
 			if (placement == "left" || placement == "right") {
 
-				return <harmonized-drawer
-					placement={placement} toolbar={true} visible={true} width={250}>
-					<harmonized-navigation cols={this.navigationCols} style={{ backgroundColor: this.navigationBackgroundColor }}></harmonized-navigation>
-				</harmonized-drawer>
+				return  <harmonized-drawer placement={placement} toolbar={true} visible={true} width={250}>
+							<harmonized-navigation 	cols={this.navigationCols}
+													style={{ backgroundColor: this.navigationBackgroundColor }} />
+					    </harmonized-drawer>
 			}
 			else {
-				return <harmonized-navigation cols={this.navigationCols} rows={this.navigationRows} auto-resize={true} style={{ backgroundColor: this.navigationBackgroundColor }}></harmonized-navigation>
+				return 
 			}
 		}
-	}
+	}*/
 
 	renderError(error: DocumentError) {
 

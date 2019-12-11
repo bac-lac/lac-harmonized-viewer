@@ -6,6 +6,8 @@
     "fullscreen": "Fullscreen",
     "enterFullscreen": "Enter fullscreen",
     "exitFullscreen": "Exit fullscreen",
+    "showInfo": "Show details",
+    "hideInfo": "Hide details",
     "details": "Details",
     "ok": "OK",
     "errors": {

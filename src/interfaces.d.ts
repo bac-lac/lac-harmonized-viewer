@@ -17,7 +17,8 @@ interface DocumentState {
     annotations: DocumentAnnotation[]
     contentType: string
     document: DocumentBase
-    fullscreen: boolean
+    fullscreen: boolean,
+    infoShown: boolean,
     language: Language
     availableLanguages: Language[]
     options: Options[]
