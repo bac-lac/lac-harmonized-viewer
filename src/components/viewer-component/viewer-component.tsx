@@ -265,13 +265,14 @@ export class ViewerComponent {
 						:	<harmonized-viewport />
 						}
 					</div>
-					<slot name="footer" />
 					{this.pages && this.pages.length > 0 &&
 						<harmonized-navigation cols={this.navigationCols}
 											   rows={this.navigationRows}
 											   auto-resize={true}
 											   style={{ backgroundColor: this.navigationBackgroundColor }} />
 					}
+					
+					<slot name="footer" />
 				</div>
 	}
 
