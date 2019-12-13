@@ -13,8 +13,8 @@ export class NavigationComponent {
 
     @Element() el: HTMLElement
 
-    @Prop() cols: number = 2
-    @Prop() rows: number
+    @Prop() cols: number = 10
+    @Prop() rows: number = 1
 
     @Prop() autoResize: boolean = false
 
@@ -34,6 +34,8 @@ export class NavigationComponent {
 
     @State() loadedImageCount: number = 0
 
+    private imageList: HTMLElement
+
     componentWillLoad() {
 
         this.store.mapDispatchToProps(this, { setPage })
@@ -49,12 +51,15 @@ export class NavigationComponent {
         })
     }
 
-    componentDidUnload() {
-        this.storeUnsubscribe()
+    componentDidLoad() {
+        this.imageList = this.el.querySelector('harmonized-image-list')
+
+        this.resize()
+        this.scaleScroll();
     }
 
-    componentDidLoad() {
-        this.resize()
+    componentDidUnload() {
+        this.storeUnsubscribe()
     }
 
     @Listen('keydown', { target: 'window' })
@@ -82,9 +87,10 @@ export class NavigationComponent {
     @Watch('page')
     handlePageChange() {
         if (this.pages && this.pages.length > this.page) {
-            const image: HTMLElement = this.el.querySelector('harmonized-image[page="' + this.page + '"]')
+            const image: HTMLElement = this.el.querySelector(`harmonized-image[page="${this.page}"]`);
             if (image) {
-                image.scrollIntoView({ behavior: "smooth", block: "nearest" })
+                this.scaleScroll()
+                //image.scrollIntoView({ behavior: "smooth", block: "nearest" })
             }
         }
     }
@@ -96,27 +102,32 @@ export class NavigationComponent {
         }
     }
 
+    // Keeps the select item visible as a user goes through the thumbnail list
+    scaleScroll() {
+        console.log("Scale scroll called");
+
+        const currentItem = (this.el.querySelector(`harmonized-image[page="${this.page}"]`) as HTMLElement);
+        if (this.imageList && currentItem) {
+            console.log("old: " + this.imageList.scrollLeft);
+            // The value 4 in calculations is the margin
+
+            // Image is past the left border of the overflow
+            if (currentItem.offsetLeft < this.imageList.scrollLeft) {
+                this.imageList.scrollLeft = this.imageList.scrollLeft - currentItem.clientWidth - 4;
+            }
+            // Image is past the right border of the overflow
+            else if (currentItem.offsetLeft + currentItem.clientWidth > this.imageList.scrollLeft + this.imageList.clientWidth) {
+                this.imageList.scrollLeft += currentItem.clientWidth + 4;
+            }
+            console.log("new: " + this.imageList.scrollLeft);
+        }
+    }
+
     resize() {
 
         // Adjust the height of the navigation to show a specific number of rows
-        const item = this.el.querySelector('harmonized-image-list > .is-loaded')
-        if (item) {
-
-            const paddingTop = this.getComputedStyle(item, 'padding-top')
-            const paddingBottom = this.getComputedStyle(item, 'padding-bottom')
-
-            const marginTop = this.getComputedStyle(item, 'margin-top')
-            const marginBottom = this.getComputedStyle(item, 'margin-bottom')
-
-            const paddingY = paddingTop + paddingBottom
-            const marginY = marginTop + marginBottom
-
-            // Padding already included in clientHeight
-            const rowHeight = (item.clientHeight + marginY)
-
-            const height = (rowHeight * this.rows) + this.getListTopOffset()
-
-            this.el.style.height = `${height}px`
+        if (this.imageList) {
+            this.el.style.height = `${this.imageList.offsetHeight}px`
         }
     }
 
@@ -155,7 +166,7 @@ export class NavigationComponent {
 
     render() {
 
-        const className = `mdc-image-list mdc-image-list--${this.cols}col`
+        const className = `mdc-image-list mdc-image-list--horizontal mdc-image-list--${this.cols}col`
 
         return  <harmonized-image-list class={className} tabindex={0}>
                     {
@@ -172,12 +183,5 @@ export class NavigationComponent {
                         )
                     }
                 </harmonized-image-list>
-        
-        {/*<Host>
-            <div class="navigation-content">
-
-                
-            </div>
-        </Host>*/}
     }
 }

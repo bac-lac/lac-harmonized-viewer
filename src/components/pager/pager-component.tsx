@@ -188,7 +188,7 @@ export class PagerComponent {
         return <div role="toolbar" aria-label="Toolbar navigation">
 
             <div class="paging-status">
-                <div innerHTML={t('pager', { page: this.page, pageCount: this.pageCount })}></div>
+                <div innerHTML={t('pager', { page: this.page + 1, pageCount: this.pageCount })}></div>
                 {/*<span class="paging-status__spacer--right">
                     Page
                 </span>

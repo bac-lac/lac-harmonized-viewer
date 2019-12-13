@@ -10,6 +10,7 @@
     "hideInfo": "Cacher les détails",
     "details": "Détails",
     "pager": "Article <b>{{page}}</b> de <b>{{pageCount}}</b>",
+    "untitled": "Sans titre",
     "ok": "OK",
     "errors": {
         "request-failed": "La requête au document a échoué {{url}}",

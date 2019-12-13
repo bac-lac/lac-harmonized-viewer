@@ -10,6 +10,7 @@
     "hideInfo": "Hide details",
     "details": "Details",
     "pager": "Item <b>{{page}}</b> of <b>{{pageCount}}</b>",
+    "untitled": "Untitled",
     "ok": "OK",
     "errors": {
         "request-failed": "Document request failed<br />{{url}}",

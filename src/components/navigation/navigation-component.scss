@@ -1,11 +1,10 @@
 harmonized-navigation {
     display: block;
     flex: 0 0 auto;
-    overflow-y: auto;
+    overflow-y: hidden;
 
     harmonized-image-list {
         &.mdc-image-list {
-            padding: 0;
         }
 
         harmonized-image {

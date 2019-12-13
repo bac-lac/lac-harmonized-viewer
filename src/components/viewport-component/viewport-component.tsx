@@ -174,8 +174,7 @@ export class ViewportComponent {
 
                 {
                     
-                        <harmonized-drawer style={{marginTop: "48px"}}
-                                           placement="right"
+                        <harmonized-drawer placement="right"
                                            visible={this.infoShown}
                                            width={300}>
                             <harmonized-tabs>
@@ -236,12 +235,8 @@ export class ViewportComponent {
     }
 
     renderLabel() {
-
         if (this.pages && this.pages[this.page]) {
-
-            return <div class="paging-label">
-                {t(this.pages[this.page].label)}
-            </div>
+            return <div class="paging-label">{t(this.pages[this.page].label)}</div>
         }
     }
 

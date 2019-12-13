@@ -90,7 +90,6 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
                 return state
             }
             else {
-                console.log('State:' + state.page + ', new: ' + action.page)
                 return { ...state, page: action.page }
             }
         }

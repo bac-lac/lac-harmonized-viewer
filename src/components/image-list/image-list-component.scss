@@ -2,28 +2,19 @@
 //@import '@material/image-list/mdc-image-list';
 
 harmonized-image-list {
-    $padding: 12px;
-    display: block;
+    @include mdc-image-list-standard-columns(10);
 
-    @include mdc-image-list-aspect(5/6);
+    &.mdc-image-list {
+        padding: 5px;
+    }
 
-    // @media (min-width: 1200px) {
-    //     @include mdc-image-list-standard-columns(16);
-    //     max-width: 1600px;
-    // }
-    // @media (max-width: 1199px) {
-    //     @include mdc-image-list-standard-columns(12);
-    // }
-    // @media (max-width: 959px) {
-    //     @include mdc-image-list-standard-columns(8);
-    // }
-    // @media (max-width: 599px) {
-    //     @include mdc-image-list-standard-columns(4);
-    // }
+    &.mdc-image-list--horizontal {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: scroll;
 
-    @for $i from 1 through 16 {
-        &.mdc-image-list--#{$i}col {
-            @include mdc-image-list-standard-columns($i, $padding);
+        .mdc-image-list__item {
+            min-width: calc(100% / 10 - 4.2px);
         }
     }
 }
