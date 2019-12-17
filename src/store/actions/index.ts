@@ -1,11 +1,12 @@
 import { SetLoading, SetDocumentContentType, SetDocumentUrl, SetDocumentPages, SetDocumentTitle, SetDocumentAlternateFormats, SetPage, SetAnnotations, AddAnnotation, SetOptions, SetZoom, SetZoomRequest, SetError, SetStatus, AddOverlay, ClearOverlays, SetConfiguration, SetLanguage, SetTheme, AddLanguage, EnterFullscreen, ExitFullscreen, ShowInfo, HideInfo, AddCustomResolver } from "./document";
+import { SetManifest } from "./manifest";
 
 export interface NullAction {
     type: TypeKeys.NULL
 }
 
 // Keep this type updated with each known action
-export type ActionTypes = NullAction | SetError | SetLoading | SetStatus | AddLanguage | SetLanguage | SetTheme | SetDocumentContentType | SetDocumentUrl | SetDocumentPages | SetDocumentTitle | SetDocumentAlternateFormats | SetPage | SetAnnotations | AddAnnotation | SetOptions | SetZoom | SetZoomRequest | AddOverlay | ClearOverlays | SetConfiguration | EnterFullscreen | ExitFullscreen | ShowInfo | HideInfo | AddCustomResolver
+export type ActionTypes = NullAction | SetError | SetLoading | SetStatus | AddLanguage | SetLanguage | SetTheme | SetDocumentContentType | SetDocumentUrl | SetDocumentPages | SetDocumentTitle | SetDocumentAlternateFormats | SetPage | SetAnnotations | AddAnnotation | SetOptions | SetZoom | SetZoomRequest | AddOverlay | ClearOverlays | SetConfiguration | EnterFullscreen | ExitFullscreen | ShowInfo | HideInfo | AddCustomResolver | SetManifest
 
 export enum TypeKeys {
     // Won't match anything
@@ -36,5 +37,6 @@ export enum TypeKeys {
     EXIT_FULLSCREEN = "EXIT_FULLSCREEN",
     SHOW_INFO = "SHOW_INFO",
     HIDE_INFO = "HIDE_INFO",
-    ADD_CUSTOM_RESOLVER = "ADD_CUSTOM_RESOLVER"
+    ADD_CUSTOM_RESOLVER = "ADD_CUSTOM_RESOLVER",
+    SET_MANIFEST = "SET_MANIFEST"
 }

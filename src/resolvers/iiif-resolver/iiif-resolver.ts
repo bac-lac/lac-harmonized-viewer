@@ -21,9 +21,12 @@ export class IIIFResolver extends Resolver {
 
         const response = await this.httpGet(url)
 
-        this.manifestJson = response.data as string
-        if (this.manifestJson) {
-            this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
+        if(response.status == 200) {
+            this.manifestJson = response.data as string
+            if (this.manifestJson) {
+                console.log("In IIIFResolver.Init()")
+                this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
+            }
         }
 
         return this
@@ -155,6 +158,10 @@ export class IIIFResolver extends Resolver {
         else {
             return this.getImageUri(canvas, this.thumbnailHeight)
         }
+    }
+
+    getManifest(): Manifesto.IManifest {
+        return this.manifest
     }
 
     getImageUri(canvas: Manifesto.ICanvas, height: number): string {

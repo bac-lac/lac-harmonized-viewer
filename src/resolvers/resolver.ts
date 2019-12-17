@@ -15,6 +15,8 @@ export abstract class Resolver {
     document(): DocumentBase { return this.getDocument() }
     abstract getDocument(): DocumentBase
 
+    abstract getManifest(): Manifesto.IManifest
+
     pages(): DocumentPage[] {
         if (!this._pages) {
             this._pages = this.getPages()

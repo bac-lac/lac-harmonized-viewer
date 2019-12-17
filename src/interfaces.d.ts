@@ -37,6 +37,8 @@ interface DocumentState {
     zoomRequest: DocumentZoom
 }
 
+interface ManifestState extends Manifesto.IManifest {}
+
 type ErrorCode = 'request-failed' | 'request-failed-notfound' | 'contenttype-unsupported'
 type ErrorSeverity = 'fatal' | 'error' | 'warning'
 
@@ -118,7 +120,8 @@ interface DocumentTag {
 //type DocumentContentType = 'IIIF' | 'application/pdf';
 
 interface MyAppState {
-    document: DocumentState
+    document: DocumentState,
+    manifest: ManifestState
 }
 
 interface HVPersistedState {

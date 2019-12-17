@@ -9,6 +9,9 @@ import iconError from '../../assets/material-icons/ic_error_24px.svg'
 import { loadPersistedState } from '../../services/persisted-state-service';
 import { AppConfig } from '../../app.config';
 import { id } from '../../utils/utils';
+import { IIIFResolver } from '../../resolvers/iiif-resolver/iiif-resolver';
+import { Resolver } from '../../resolvers/resolver';
+import { setManifest } from '../../store/actions/manifest';
 
 @Component({
 	tag: 'harmonized-viewer',
@@ -19,6 +22,8 @@ import { id } from '../../utils/utils';
 	shadow: true
 })
 export class ViewerComponent {
+
+    private resolver: Resolver
 
 	@Element() el: HTMLElement
 
@@ -49,6 +54,7 @@ export class ViewerComponent {
 	_exitFullscreen: typeof exitFullscreen
 	setStatus: typeof setStatus
 	setOptions: typeof setOptions
+	setManifest: typeof setManifest
 
 	storeUnsubscribe: Unsubscribe
 
@@ -131,7 +137,7 @@ export class ViewerComponent {
 	componentWillLoad() {
 
 		this.store.setStore(configureStore({}))
-		this.store.mapDispatchToProps(this, { setConfiguration, addCustomResolver, addLanguage, addOverlay, setDocumentContentType, enterFullscreen, exitFullscreen, setDocumentUrl, setLanguage, setOptions, setStatus })
+		this.store.mapDispatchToProps(this, { setConfiguration, addCustomResolver, addLanguage, addOverlay, setDocumentContentType, enterFullscreen, exitFullscreen, setDocumentUrl, setLanguage, setOptions, setStatus, setManifest })
 		this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
 				document: { configuration: configuration, language: language, availableLanguages: availableLanguages, page: page, pages: pages, url: url, status: status, theme: theme }
@@ -162,7 +168,18 @@ export class ViewerComponent {
 		this.setDocumentUrl(this.documentUrl)
 	}
 
-	componentDidLoad() {
+	async componentDidLoad() {
+		const resolver = new IIIFResolver()
+		this.resolver = resolver
+		console.log("Am I first?")
+		await this.resolver.init(this.url)
+		
+		this.setManifest(this.resolver.getManifest())
+
+		console.log("Media type is ")
+		console.log(this.resolver.getManifest().getSequenceByIndex(0).getCanvasByIndex(0).getImages()[0].getResource().getFormat().value)
+
+		//this.setDocumentContentType(this.resolver.getManifest().getSequenceByIndex(0).getCanvasByIndex(0).getImages()[0].getResource().getFormat().value)
 	}
 
 	componentDidUnload() {

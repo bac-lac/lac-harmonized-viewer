@@ -1,8 +1,9 @@
 import document from "./document";
+import manifest from "./manifest";
 import { combineReducers } from "redux";
 
 export const rootReducer = combineReducers({
-    document: document
+    document, manifest
 })
 
 export default rootReducer
