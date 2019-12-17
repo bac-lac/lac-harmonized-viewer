@@ -2,7 +2,16 @@
 //@import '@material/image-list/mdc-image-list';
 
 harmonized-image-list {
-    @include mdc-image-list-standard-columns(10);
+    @include mdc-image-list-standard-columns(4);
+
+    @media (min-width: 480px) {
+        @include mdc-image-list-standard-columns(8);
+    }
+
+    @media (min-width: 1280px) {
+        @include mdc-image-list-standard-columns(16);
+    }
+    
 
     &.mdc-image-list {
         padding: 5px;
@@ -14,7 +23,14 @@ harmonized-image-list {
         overflow-x: scroll;
 
         .mdc-image-list__item {
-            min-width: calc(100% / 10 - 4.2px);
+            min-width: calc(100% / 4 - 4.2px);
+
+            @media (min-width: 480px) {
+                min-width: calc(100% / 8 - 4.2px);
+            }
+            @media (min-width: 1280px) {
+                min-width: calc(100% / 16 - 4.2px);
+            }
         }
     }
 }
