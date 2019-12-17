@@ -174,15 +174,15 @@ export class ViewportComponent {
 
                 {
                     
-                        <harmonized-drawer placement="right"
-                                           visible={this.infoShown}
-                                           width={300}>
-                            <harmonized-tabs>
-                                <harmonized-tab icon={''} label={t('details')}>
-                                    <harmonized-annotations></harmonized-annotations>
-                                </harmonized-tab>
-                            </harmonized-tabs>
-                        </harmonized-drawer>
+                    <harmonized-drawer placement="right"
+                                        visible={this.infoShown}
+                                        width={300}>
+                        <harmonized-tabs>
+                            <harmonized-tab icon={''} label={t('details')}>
+                                <harmonized-annotations></harmonized-annotations>
+                            </harmonized-tab>
+                        </harmonized-tabs>
+                    </harmonized-drawer>
                     
                 }
 

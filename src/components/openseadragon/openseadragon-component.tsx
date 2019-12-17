@@ -234,6 +234,7 @@ export class OpenSeadragonComponent {
             showNavigationControl: false,
             showSequenceControl: false,
             sequenceMode: true,
+            maxZoomPixelRatio: 300,
             tileSources: resolver.tileSources(),
             initialPage: resolver.startPageIndex()
         })
