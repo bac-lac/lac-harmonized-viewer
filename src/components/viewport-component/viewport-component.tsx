@@ -40,8 +40,6 @@ export class ViewportComponent {
     @State() url: MyAppState["document"]["url"]
     @State() viewport: MyAppState["document"]["viewport"]
 
-    @State() manifest: MyAppState["manifest"]
-
     @State() infoShown: MyAppState["document"]["infoShown"];
 
     @Prop({ context: "store" }) store: Store
@@ -51,11 +49,9 @@ export class ViewportComponent {
         this.store.mapDispatchToProps(this, { setLoading, setError, setPage, setStatus, setDocumentContentType })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                manifest,
                 document: { annotations, contentType, document, language, status, page, pages, pageCount, url, viewport,  infoShown }
             } = state
             return {
-                manifest: manifest,
                 annotations: annotations,
                 contentType: contentType,
                 document: document,
@@ -74,7 +70,42 @@ export class ViewportComponent {
 
     async componentDidLoad() {
 
-     }
+        try {
+
+            // Pre-fetch document
+            // Use response content-type to resolve viewer
+
+            this.setStatus('prefetching')
+
+            const response = await axios.get(this.url)
+
+            this.setStatus('prefetched')
+
+            const parser = contentTypeParser(response.headers['content-type'])
+            if (parser) {
+
+                const contentType = `${parser.type}/${parser.subtype}`
+                if (contentType) {
+
+                    this.setDocumentContentType(contentType)
+
+                    this.component = this.resolveComponent(contentType)
+                    if (!this.component) {
+                        this.setError('contenttype-unsupported', { key: 'contentType', value: contentType })
+                    }
+                }
+            }
+        }
+        catch (e) {
+
+            if (e.response && e.response.status && e.response.status == 404) {
+                this.setError('request-failed-notfound', { key: 'url', value: this.url })
+            }
+            else {
+                this.setError('request-failed', { key: 'url', value: this.url })
+            }
+        }
+    }
 
     componentDidUnload() {
         this.storeUnsubscribe()
@@ -210,27 +241,6 @@ export class ViewportComponent {
     }
 
     renderViewport() {
-
-        try {
-            if (this.contentType) {
-                console.log(this.contentType)
-                this.setDocumentContentType(this.contentType)
-
-                this.component = this.resolveComponent(this.contentType)
-                if (!this.component) {
-                    this.setError('contenttype-unsupported', { key: 'contentType', value: this.contentType })
-                }
-            }
-        }
-        catch (e) {
-
-            if (e.response && e.response.status && e.response.status == 404) {
-                this.setError('request-failed-notfound', { key: 'url', value: this.url })
-            }
-            else {
-                this.setError('request-failed', { key: 'url', value: this.url })
-            }
-        }
 
         let element = null
 

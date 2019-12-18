@@ -24,6 +24,7 @@ export class IIIFResolver extends Resolver {
         if(response.status == 200) {
             this.manifestJson = response.data as string
             if (this.manifestJson) {
+                console.log("In IIIFResolver.Init()")
                 this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
             }
         }
