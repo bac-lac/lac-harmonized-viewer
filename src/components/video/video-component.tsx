@@ -23,7 +23,7 @@ export class VideoComponent {
             const response = await Axios.get(this.url)
 
             //const serviceUrl = await centralResponse.text()
-            const authorization = response.headers.get('Authorization')
+            const authorization = response.headers['authorization']
 
             const cloudResponse = await Axios.get(
                 response.data, { headers: { 'Authorization': authorization } })

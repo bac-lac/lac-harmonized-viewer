@@ -171,15 +171,12 @@ export class ViewerComponent {
 	async componentDidLoad() {
 		const resolver = new IIIFResolver()
 		this.resolver = resolver
-		console.log("Am I first?")
 		await this.resolver.init(this.url)
 		
 		this.setManifest(this.resolver.getManifest())
 
-		console.log("Media type is ")
-		console.log(this.resolver.getManifest().getSequenceByIndex(0).getCanvasByIndex(0).getImages()[0].getResource().getFormat().value)
-
-		//this.setDocumentContentType(this.resolver.getManifest().getSequenceByIndex(0).getCanvasByIndex(0).getImages()[0].getResource().getFormat().value)
+		this.setDocumentContentType(this.resolver.getManifest().getSequenceByIndex(0).getCanvasByIndex(0).getImages()[0].getResource().getFormat().value)
+		this.setDocumentUrl(this.resolver.getManifest().getSequenceByIndex(0).getCanvasByIndex(0).getImages()[0].getResource().id)
 	}
 
 	componentDidUnload() {
