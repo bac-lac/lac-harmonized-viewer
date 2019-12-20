@@ -48,6 +48,7 @@ export class OpenSeadragonComponent {
     @State() pages: MyAppState["document"]["pages"]
     @State() status: MyAppState["document"]["status"]
     @State() zoomRequest: MyAppState["document"]["zoomRequest"]
+    @State() manifest: MyAppState["manifest"]
 
     @Prop({ context: "store" }) store: Store
 
@@ -73,7 +74,8 @@ export class OpenSeadragonComponent {
     }
 
     async resolve() {
-        await this.resolver.init(this.url)
+        console.log(this.manifest.id)
+        await this.resolver.init(this.manifest.id)
         this.create()
     }
 
@@ -82,9 +84,11 @@ export class OpenSeadragonComponent {
         this.store.mapDispatchToProps(this, { setError, setStatus, setDocumentUrl, setDocumentPages, setDocumentTitle, setDocumentAlternateFormats, setAnnotations, setPage, setZoom, clearOverlays })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
+                manifest,
                 document: { document: document, error: error, options: options, overlays: overlays, page: page, pages: pages, status: status, url: url, zoomRequest: zoomRequest }
             } = state
             return {
+                manifest: manifest,
                 document: document,
                 error: error,
                 options: options,

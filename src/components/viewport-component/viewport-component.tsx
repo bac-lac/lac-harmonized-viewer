@@ -3,7 +3,7 @@ import '../../utils/manifest';
 import { Unsubscribe, Store } from '@stencil/redux';
 import axios from 'axios';
 //import iconInfo from '../../assets/material-icons/ic_info_24px.svg'
-import { setDocumentContentType, setStatus, setPage, setLoading, setError } from '../../store/actions/document';
+import { setStatus, setPage, setLoading, setError } from '../../store/actions/document';
 import { t } from '../../services/i18n-service';
 import { AppConfig } from '../../app.config';
 import contentTypeParser from "content-type-parser";
@@ -25,7 +25,6 @@ export class ViewportComponent {
     setError: typeof setError
     setPage: typeof setPage
     setStatus: typeof setStatus
-    setDocumentContentType: typeof setDocumentContentType
 
     storeUnsubscribe: Unsubscribe
 
@@ -46,7 +45,7 @@ export class ViewportComponent {
 
     componentWillLoad() {
 
-        this.store.mapDispatchToProps(this, { setLoading, setError, setPage, setStatus, setDocumentContentType })
+        this.store.mapDispatchToProps(this, { setLoading, setError, setPage, setStatus })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
                 document: { annotations, contentType, document, language, status, page, pages, pageCount, url, viewport,  infoShown }
@@ -68,43 +67,7 @@ export class ViewportComponent {
         })
     }
 
-    async componentDidLoad() {
-
-        try {
-
-            // Pre-fetch document
-            // Use response content-type to resolve viewer
-
-            this.setStatus('prefetching')
-
-            const response = await axios.get(this.url)
-
-            this.setStatus('prefetched')
-
-            const parser = contentTypeParser(response.headers['content-type'])
-            if (parser) {
-
-                const contentType = `${parser.type}/${parser.subtype}`
-                if (contentType) {
-
-                    this.setDocumentContentType(contentType)
-
-                    this.component = this.resolveComponent(contentType)
-                    if (!this.component) {
-                        this.setError('contenttype-unsupported', { key: 'contentType', value: contentType })
-                    }
-                }
-            }
-        }
-        catch (e) {
-
-            if (e.response && e.response.status && e.response.status == 404) {
-                this.setError('request-failed-notfound', { key: 'url', value: this.url })
-            }
-            else {
-                this.setError('request-failed', { key: 'url', value: this.url })
-            }
-        }
+    componentDidLoad() {
     }
 
     componentDidUnload() {
@@ -241,8 +204,24 @@ export class ViewportComponent {
     }
 
     renderViewport() {
-
         let element = null
+
+        try {
+            if (this.contentType) {
+                this.component = this.resolveComponent(this.contentType)
+                if (!this.component) {
+                    this.setError('contenttype-unsupported', { key: 'contentType', value: this.contentType })
+                }
+            }
+        }
+        catch (e) {
+            if (e.response && e.response.status && e.response.status == 404) {
+                this.setError('request-failed-notfound', { key: 'url', value: this.url })
+            }
+            else {
+                this.setError('request-failed', { key: 'url', value: this.url })
+            }
+        }
 
         switch (this.component) {
             case 'openseadragon':

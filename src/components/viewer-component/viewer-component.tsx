@@ -3,7 +3,7 @@ import "@stencil/redux";
 import 'manifesto.js';
 import { Store, Unsubscribe } from "@stencil/redux";
 import { configureStore } from "../../store";
-import { setDocumentUrl, setDocumentContentType, setStatus, addOverlay, setOptions, setLanguage, addLanguage, enterFullscreen, exitFullscreen, addCustomResolver, setConfiguration } from '../../store/actions/document';
+import { setDocumentUrl, setDocumentContentType, setDocumentTitle, setDocumentAlternateFormats, setAnnotations, setStatus, addOverlay, setOptions, setLanguage, addLanguage, enterFullscreen, exitFullscreen, addCustomResolver, setConfiguration, setDocumentPages } from '../../store/actions/document';
 import i18next from 'i18next';
 import iconError from '../../assets/material-icons/ic_error_24px.svg'
 import { loadPersistedState } from '../../services/persisted-state-service';
@@ -49,6 +49,10 @@ export class ViewerComponent {
 	setConfiguration: typeof setConfiguration
 	setDocumentContentType: typeof setDocumentContentType
 	setDocumentUrl: typeof setDocumentUrl
+    setDocumentPages: typeof setDocumentPages
+    setDocumentTitle: typeof setDocumentTitle
+    setDocumentAlternateFormats: typeof setDocumentAlternateFormats
+    setAnnotations: typeof setAnnotations
 	setLanguage: typeof setLanguage
 	enterFullscreen: typeof enterFullscreen
 	_exitFullscreen: typeof exitFullscreen
@@ -137,7 +141,7 @@ export class ViewerComponent {
 	componentWillLoad() {
 
 		this.store.setStore(configureStore({}))
-		this.store.mapDispatchToProps(this, { setConfiguration, addCustomResolver, addLanguage, addOverlay, setDocumentContentType, enterFullscreen, exitFullscreen, setDocumentUrl, setLanguage, setOptions, setStatus, setManifest })
+		this.store.mapDispatchToProps(this, { setConfiguration, setDocumentPages, setDocumentTitle, setDocumentAlternateFormats, setAnnotations, addCustomResolver, addLanguage, addOverlay, setDocumentContentType, enterFullscreen, exitFullscreen, setDocumentUrl, setLanguage, setOptions, setStatus, setManifest })
 		this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
 				document: { configuration: configuration, language: language, availableLanguages: availableLanguages, page: page, pages: pages, url: url, status: status, theme: theme }
@@ -171,15 +175,28 @@ export class ViewerComponent {
 	async componentDidLoad() {
 		const resolver = new IIIFResolver()
 		this.resolver = resolver
-		console.log("Am I first?")
 		await this.resolver.init(this.url)
 		
 		this.setManifest(this.resolver.getManifest())
 
-		console.log("Media type is ")
-		console.log(this.resolver.getManifest().getSequenceByIndex(0).getCanvasByIndex(0).getImages()[0].getResource().getFormat().value)
+		this.setDocumentContentType(this.resolver.getManifest().getSequenceByIndex(0).getCanvasByIndex(this.page).getImages()[0].getResource().getFormat().value)
+		
+		const url = this.resolver.getManifest().getSequences()[0].getCanvasByIndex(this.page).getImages()[0].getResource().id
+		
+		this.setDocumentUrl(url)
 
-		//this.setDocumentContentType(this.resolver.getManifest().getSequenceByIndex(0).getCanvasByIndex(0).getImages()[0].getResource().getFormat().value)
+		this.setDocumentTitle(this.resolver.getTitle())
+
+		const iiifResolver = this.resolver as IIIFResolver
+
+        this.setDocumentPages(iiifResolver.getPages())
+
+        // Annotations
+        this.setAnnotations(this.resolver.annotations())
+
+        // Alternate formats
+        this.setDocumentAlternateFormats(this.resolver.alternateFormats())
+
 	}
 
 	componentDidUnload() {

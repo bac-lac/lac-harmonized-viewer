@@ -23,19 +23,11 @@ export class VideoComponent {
             const response = await Axios.get(this.url)
 
             //const serviceUrl = await centralResponse.text()
-            const authorization = response.headers.get('Authorization')
+            this.authorization = response.headers['authorization'].replace("Bearer ", "")
 
-            const cloudResponse = await Axios.get(
-                response.data, { headers: { 'Authorization': authorization } })
+            this.sourceUrl = response.data
 
-            // If successfull, render video player
-            if (cloudResponse.status >= 200 && cloudResponse.status < 400) {
-
-                this.sourceUrl = cloudResponse.data.url && cloudResponse.data.url
-                this.authorization = cloudResponse.data.token && cloudResponse.data.token
-
-                this.renderVideoPlayer()
-            }
+            this.renderVideoPlayer()
         }
         catch (e) {
             console.error(e)
@@ -56,8 +48,8 @@ export class VideoComponent {
 
         return <Host class="video">
 
-            {/* <link type="text/css" href="//amp.azure.net/libs/amp/latest/skins/amp-default/azuremediaplayer.min.css"
-                rel="stylesheet" /> */}
+            { <link type="text/css" href="//amp.azure.net/libs/amp/latest/skins/amp-default/azuremediaplayer.min.css"
+                rel="stylesheet" /> }
             <script type="text/javascript" src="//amp.azure.net/libs/amp/latest/azuremediaplayer.min.js"
                 onLoad={this.handlePlayerLoad.bind(this)}>
             </script>

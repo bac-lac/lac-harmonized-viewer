@@ -12,6 +12,5 @@ export const setManifest = (manifest: Manifesto.IManifest) => (dispatch, _getSta
         manifest: manifest
     }
 
-    console.log("In setManifest")
     dispatch(action)
 }
