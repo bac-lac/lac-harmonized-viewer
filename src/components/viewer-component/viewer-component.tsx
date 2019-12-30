@@ -124,6 +124,14 @@ export class ViewerComponent {
 		this.setDocumentUrl(this.documentUrl)
 	}
 
+	@Watch('page')
+	handlePageChange() {
+		if(this.page > -1 && this.page < this.pages.length)
+		{
+			this.setDocumentContentType(this.resolver.getManifest().getSequenceByIndex(0).getCanvasByIndex(this.page).getImages()[0].getResource().getFormat().value)
+		}
+	}
+
 	// @Listen('click', { target: 'document' })
 	// handleDocumentClick() {
 

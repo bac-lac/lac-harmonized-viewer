@@ -7,7 +7,6 @@ import { IIIFResolver } from '../../resolvers/iiif-resolver/iiif-resolver';
 import { IIIFDocument } from '../../resolvers/iiif-resolver/iiif-document';
 import iconChevronLeft from '../../assets/material-design-icons/ic_chevron_left_48px.svg'
 import iconChevronRight from '../../assets/material-design-icons/ic_chevron_right_48px.svg'
-import { t } from '../../services/i18n-service';
 
 @Component({
     tag: 'harmonized-openseadragon',
