@@ -1,9 +1,7 @@
 import { Component, Element, h, Prop, State, Host, Listen } from '@stencil/core';
 import '../../utils/manifest';
 import { Unsubscribe, Store } from '@stencil/redux';
-import axios from 'axios';
-//import iconInfo from '../../assets/material-icons/ic_info_24px.svg'
-import { setStatus, setPage, setLoading, setError } from '../../store/actions/document';
+import { setStatus, setPage, setLoading, setError, toggleDrawer } from '../../store/actions/document';
 import { t } from '../../services/i18n-service';
 import { AppConfig } from '../../app.config';
 import contentTypeParser from "content-type-parser";
@@ -25,6 +23,7 @@ export class ViewportComponent {
     setError: typeof setError
     setPage: typeof setPage
     setStatus: typeof setStatus
+    toggleDrawer: typeof toggleDrawer
 
     storeUnsubscribe: Unsubscribe
 
@@ -45,10 +44,10 @@ export class ViewportComponent {
 
     componentWillLoad() {
 
-        this.store.mapDispatchToProps(this, { setLoading, setError, setPage, setStatus })
+        this.store.mapDispatchToProps(this, { setLoading, setError, setPage, setStatus, toggleDrawer })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { annotations, contentType, document, language, status, page, pages, pageCount, url, viewport,  infoShown }
+                document: { annotations, contentType, document, language, status, page, pages, pageCount, url, viewport, infoShown }
             } = state
             return {
                 annotations: annotations,
@@ -78,10 +77,9 @@ export class ViewportComponent {
         this.setContentMargins()
     }
 
-    @Listen('MDCDrawer:opened')
-    @Listen('MDCDrawer:closed')
+    @Listen('viewerDrawerToggle')
     handleDrawerToggle() {
-        this.drawerToggle++
+        this.toggleDrawer()
     }
 
     resolveComponent(contentType: string): string {
@@ -120,33 +118,27 @@ export class ViewportComponent {
 
             <div class="viewport__content">
 
-                <main class="hv-main mdc-drawer-app-content">
+                <main class="hv-main">
                     <div class="hv-main__content">
 
                         <div class="viewport__content-inner">
 
                             {this.renderViewport()}
-                            {this.renderLabel()}
-
-                            {this.pages && this.pages.length > 0 && <harmonized-pager />}
+                            <div class="viewport__content-pager">
+                                {this.renderLabel()}
+                                {this.pages && this.pages.length > 0 && <harmonized-pager />}
+                            </div>
+                            
 
                         </div>
 
                     </div>
                 </main>
 
-                {
-                    
-                    <harmonized-drawer placement="right"
-                                        visible={this.infoShown}
-                                        width={300}>
-                        <harmonized-tabs>
-                            <harmonized-tab icon={''} label={t('details')}>
-                                <harmonized-annotations></harmonized-annotations>
-                            </harmonized-tab>
-                        </harmonized-tabs>
+                {this.infoShown &&
+                    <harmonized-drawer headerTitle="Details" placement="right">
+                        <harmonized-annotations></harmonized-annotations>
                     </harmonized-drawer>
-                    
                 }
 
             </div>

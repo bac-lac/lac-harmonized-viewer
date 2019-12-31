@@ -104,13 +104,9 @@ export class NavigationComponent {
 
     // Keeps the select item visible as a user goes through the thumbnail list
     scaleScroll() {
-        console.log("Scale scroll called");
-
         const currentItem = (this.el.querySelector(`harmonized-image[page="${this.page}"]`) as HTMLElement);
         if (this.imageList && currentItem) {
-            console.log("old: " + this.imageList.scrollLeft);
             // The value 4 in calculations is the margin
-
             // Image is past the left border of the overflow
             if (currentItem.offsetLeft < this.imageList.scrollLeft) {
                 this.imageList.scrollLeft = this.imageList.scrollLeft - currentItem.clientWidth - 4;
@@ -119,7 +115,6 @@ export class NavigationComponent {
             else if (currentItem.offsetLeft + currentItem.clientWidth > this.imageList.scrollLeft + this.imageList.clientWidth) {
                 this.imageList.scrollLeft += currentItem.clientWidth + 4;
             }
-            console.log("new: " + this.imageList.scrollLeft);
         }
     }
 
@@ -174,6 +169,7 @@ export class NavigationComponent {
 
                             <harmonized-image
                                 src={page.thumbnail}
+                                contentType={page.contentType}
                                 page={index}
                                 caption={t(page.label)}
                                 show-caption={false}

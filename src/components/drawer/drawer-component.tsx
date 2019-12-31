@@ -1,6 +1,5 @@
-import { Component, h, Element, State, Prop, Host, Method } from '@stencil/core';
+import { Component, h, Element, State, Prop, Host, Event, EventEmitter } from '@stencil/core';
 import { MDCDrawer } from "@material/drawer";
-import iconDockLeft from '../../assets/material-icons/ic_dock_left_24px.svg'
 import iconClose from '../../assets/material-design-icons/ic_close_18px.svg'
 
 @Component({
@@ -11,10 +10,11 @@ export class DrawerComponent {
 
     @Element() el: HTMLElement
 
+    @Prop() headerTitle: string
     @Prop() placement: PlacementType = 'left'
-    @Prop() toolbar: boolean = false
     @Prop() width: number = 300
-    @Prop() visible: boolean = false
+
+    @Event() viewerDrawerToggle: EventEmitter;
 
     private drawer: MDCDrawer
 
@@ -26,57 +26,33 @@ export class DrawerComponent {
         if (this.drawer) this.drawer.destroy()
     }
 
-    @Method()
-    async open() {
-        this.drawer.open = true
-    }
-
-    @Method()
-    async close() {
-        this.drawer.open = false
-    }
-
-    handleClick() {
-        this.close()
+    handleClose() {
+        this.drawer.open = false;
+        this.viewerDrawerToggle.emit();
     }
 
     render() {
 
-        let className = `mdc-drawer mdc-drawer--${this.placement} mdc-drawer--dismissible`
-
-        if (this.visible) {
-            className += ' mdc-drawer--open'
-        }
+        let className = `mdc-drawer mdc-drawer--${this.placement} mdc-drawer--dismissible mdc-drawer--open`;
 
         return <Host class={className} style={{ width: `${this.width}px` }}>
-
-
-
-            {
-                this.toolbar && <div class="mdc-drawer__toolbar" role="toolbar">
-
-                    <harmonized-button
-                        icon={iconDockLeft}
-                        size="sm"
-                        title="Dock"
-                        aria-label="Dock"
-                        disabled={true} />
-
-                    <harmonized-button
-                        icon={iconClose}
-                        size="sm"
-                        title="Close sidebar"
-                        aria-label="Close sidebar"
-                        onClick={this.handleClick.bind(this)} />
-
-                </div>
-            }
-
-            <div class="mdc-drawer__content">
-                <slot />
-            </div>
-
-        </Host>
+                    <div class="mdc-drawer__header">
+                        <div class="mdc-drawer__title">
+                            {this.headerTitle}
+                        </div>
+                        <div class="mdc-drawer__close">
+                            <harmonized-button
+                            icon={iconClose}
+                            size="sm"
+                            title="Close sidebar"
+                            aria-label="Close sidebar"
+                            onClick={this.handleClose.bind(this)} />
+                        </div>
+                    </div>
+                    <div class="mdc-drawer__content">
+                        <slot />
+                    </div>
+                </Host>;
     }
 
 }

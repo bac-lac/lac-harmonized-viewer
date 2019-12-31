@@ -25,29 +25,19 @@ export namespace Components {
     'size': string;
     'tooltip': string;
   }
-  interface HarmonizedContent {
-    'placement': PlacementType;
-    'rows': number;
-    'showMetadata': boolean;
-    'showNavigation': boolean;
-    'visible': boolean;
-    'width': number;
-  }
   interface HarmonizedCustomResolver {
     'contentType': string;
     'url': string;
   }
   interface HarmonizedDrawer {
-    'close': () => Promise<void>;
-    'open': () => Promise<void>;
+    'headerTitle': string;
     'placement': PlacementType;
-    'toolbar': boolean;
-    'visible': boolean;
     'width': number;
   }
   interface HarmonizedEmbed {}
   interface HarmonizedImage {
     'caption': string;
+    'contentType': string;
     'page': number;
     'preload': boolean;
     'showCaption': boolean;
@@ -125,12 +115,6 @@ declare global {
   var HTMLHarmonizedButtonElement: {
     prototype: HTMLHarmonizedButtonElement;
     new (): HTMLHarmonizedButtonElement;
-  };
-
-  interface HTMLHarmonizedContentElement extends Components.HarmonizedContent, HTMLStencilElement {}
-  var HTMLHarmonizedContentElement: {
-    prototype: HTMLHarmonizedContentElement;
-    new (): HTMLHarmonizedContentElement;
   };
 
   interface HTMLHarmonizedCustomResolverElement extends Components.HarmonizedCustomResolver, HTMLStencilElement {}
@@ -243,7 +227,6 @@ declare global {
   interface HTMLElementTagNameMap {
     'harmonized-annotations': HTMLHarmonizedAnnotationsElement;
     'harmonized-button': HTMLHarmonizedButtonElement;
-    'harmonized-content': HTMLHarmonizedContentElement;
     'harmonized-custom-resolver': HTMLHarmonizedCustomResolverElement;
     'harmonized-drawer': HTMLHarmonizedDrawerElement;
     'harmonized-embed': HTMLHarmonizedEmbedElement;
@@ -279,27 +262,20 @@ declare namespace LocalJSX {
     'size'?: string;
     'tooltip'?: string;
   }
-  interface HarmonizedContent {
-    'placement'?: PlacementType;
-    'rows'?: number;
-    'showMetadata'?: boolean;
-    'showNavigation'?: boolean;
-    'visible'?: boolean;
-    'width'?: number;
-  }
   interface HarmonizedCustomResolver {
     'contentType'?: string;
     'url'?: string;
   }
   interface HarmonizedDrawer {
+    'headerTitle'?: string;
+    'onViewerDrawerToggle'?: (event: CustomEvent<any>) => void;
     'placement'?: PlacementType;
-    'toolbar'?: boolean;
-    'visible'?: boolean;
     'width'?: number;
   }
   interface HarmonizedEmbed {}
   interface HarmonizedImage {
     'caption'?: string;
+    'contentType'?: string;
     'onImageAdded'?: (event: CustomEvent<any>) => void;
     'onImageLoad'?: (event: CustomEvent<any>) => void;
     'page'?: number;
@@ -363,7 +339,6 @@ declare namespace LocalJSX {
   interface IntrinsicElements {
     'harmonized-annotations': HarmonizedAnnotations;
     'harmonized-button': HarmonizedButton;
-    'harmonized-content': HarmonizedContent;
     'harmonized-custom-resolver': HarmonizedCustomResolver;
     'harmonized-drawer': HarmonizedDrawer;
     'harmonized-embed': HarmonizedEmbed;
@@ -393,7 +368,6 @@ declare module "@stencil/core" {
     interface IntrinsicElements {
       'harmonized-annotations': LocalJSX.HarmonizedAnnotations & JSXBase.HTMLAttributes<HTMLHarmonizedAnnotationsElement>;
       'harmonized-button': LocalJSX.HarmonizedButton & JSXBase.HTMLAttributes<HTMLHarmonizedButtonElement>;
-      'harmonized-content': LocalJSX.HarmonizedContent & JSXBase.HTMLAttributes<HTMLHarmonizedContentElement>;
       'harmonized-custom-resolver': LocalJSX.HarmonizedCustomResolver & JSXBase.HTMLAttributes<HTMLHarmonizedCustomResolverElement>;
       'harmonized-drawer': LocalJSX.HarmonizedDrawer & JSXBase.HTMLAttributes<HTMLHarmonizedDrawerElement>;
       'harmonized-embed': LocalJSX.HarmonizedEmbed & JSXBase.HTMLAttributes<HTMLHarmonizedEmbedElement>;

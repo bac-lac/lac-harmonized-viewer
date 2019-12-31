@@ -123,11 +123,8 @@ const document = (state = getInitialState(), action: ActionTypes): DocumentState
         case TypeKeys.EXIT_FULLSCREEN: {
             return { ...state, fullscreen: false }
         }
-        case TypeKeys.SHOW_INFO: {
-            return { ...state, infoShown: true };
-        }
-        case TypeKeys.HIDE_INFO: {
-            return { ...state, infoShown: false };
+        case TypeKeys.TOGGLE_DRAWER: {
+            return { ...state, infoShown: !state.infoShown };
         }
         case TypeKeys.ADD_CUSTOM_RESOLVER: {
             return { ...state, customResolvers: [...state.customResolvers, action.id] }

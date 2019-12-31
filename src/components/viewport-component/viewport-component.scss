@@ -24,6 +24,10 @@
             display: flex;
             flex-direction: column;
         }
+
+        .viewport__content-pager {
+            padding: 0.5rem 0;
+        }
     }
 
     .paging-label {
@@ -63,9 +67,5 @@
                 opacity: 1;
             }
         }
-    }
-
-    harmonized-drawer > .mdc-drawer__content {
-        margin-top: 48px;
     }
 }

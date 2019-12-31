@@ -1,4 +1,7 @@
 harmonized-drawer {
+    top: 48px;
+    height: calc(100% - 48px) !important;
+
     &.mdc-drawer {
         width: inherit;
         background-color: transparent;
@@ -36,5 +39,45 @@ harmonized-drawer {
                 }
             }
         }
+    }
+
+    .mdc-drawer__header {
+        position: relative;
+        display: flex;
+        padding: 0;
+        border-bottom: 2px solid #ccc;
+
+        > .mdc-drawer__title {
+            flex: 1;
+            text-align: center;
+        }
+
+        > .mdc-drawer__close {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+
+            > * {
+                display: flex;
+                align-items: center;
+                height: 100%;
+            }
+        }
+    }
+
+    .mdc-drawer__title {
+        font-family: Roboto, sans-serif;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-font-smoothing: antialiased;
+        font-size: 0.875rem;
+        line-height: 2.25rem;
+        font-weight: 500;
+        letter-spacing: 0.0892857143em;
+        text-decoration: none;
+        text-transform: uppercase;
+    }
+
+    .mdc-drawer__content {
     }
 }

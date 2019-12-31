@@ -13,6 +13,7 @@ export class ImageComponent {
     @Element() el: HTMLElement
 
     @Prop() src: string
+    @Prop() contentType: string
     @Prop() srcset: string
     @Prop() preload: boolean = false
     @Prop({ reflect: true }) page: number
@@ -109,6 +110,38 @@ export class ImageComponent {
         }
     }
 
+    // Temporary thumbnail placeholder solution for pdf, audio and video content types.
+    determineThumbnail() {
+        // Replace links with CDN hosted images pre-prod
+
+        //console.log(`Rendering thumbnail for page ${this.page} with content type=${this.contentType} and src=${this.src}`);
+
+        // No thumbnail placeholders
+        if (this.src === null || this.src === '')
+            return 'https://imgplaceholder.com/112x150/cccccc/757575/glyphicon-remove';
+
+        switch (this.contentType) {
+            case 'application/json':
+            case 'application/ld+json': 
+            case 'text/plain':
+            case 'image/jpeg':
+                return this.src;
+
+            case 'application/pdf':
+                return 'https://imgplaceholder.com/112x150/cccccc/757575/fa-file-pdf-o';
+
+            case 'video/mp4':
+            case 'application/vnd.ms-sstr+xml':
+                return 'https://imgplaceholder.com/112x150/cccccc/757575/glyphicon-play';
+
+            // Audio
+            //https://imgplaceholder.com/112x150/cccccc/757575/glyphicon-volume-up
+
+            default:
+                return 'https://imgplaceholder.com/112x150/cccccc/757575/glyphicon-remove';
+        }
+    }
+
     render() {
 
         let className = 'mdc-image-list__item'
@@ -132,6 +165,8 @@ export class ImageComponent {
 
         const labelId = `label-page-${this.page}`
 
+        const thumbnailSrc = this.determineThumbnail();
+
         return <Host
             role="button"
             class={className}
@@ -141,8 +176,8 @@ export class ImageComponent {
             <div class="mdc-image-list__image-aspect-container">
                 <img
                     data-lazy-load
-                    src={(this.preload && this.src)}
-                    data-src={this.src}
+                    src={(this.preload && thumbnailSrc)}
+                    data-src={thumbnailSrc}
                     //srcset={(this.preload && this.srcset)}
                     class="mdc-image-list__image mdc-elevation--z2"
                     onLoad={this.handleLoad.bind(this)}

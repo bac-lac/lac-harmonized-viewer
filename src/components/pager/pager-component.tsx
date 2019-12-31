@@ -2,7 +2,7 @@ import { Component, h, Element, Prop, State, Host, Watch, Listen } from '@stenci
 import { Unsubscribe, Store } from '@stencil/redux';
 import { setPage } from '../../store/actions/document';
 //import { MDCRipple } from '@material/ripple';
-import { MDCSlider } from '@material/slider';
+//import { MDCSlider } from '@material/slider';
 //import iconFirst from '../../assets/material-icons/ic_page_first_24px.svg'
 //import iconPrevious from '../../assets/material-icons/ic_page_previous_24px.svg'
 //import iconNext from '../../assets/material-icons/ic_page_next_24px.svg'
@@ -33,30 +33,30 @@ export class PagerComponent {
 
     @Prop({ context: "store" }) store: Store
 
-    private slider: MDCSlider
+    //private slider: MDCSlider
 
     componentWillLoad() {
 
         this.store.mapDispatchToProps(this, { setPage })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { loading: loading, page: page, pageCount: pageCount, status: status }
+                document: { loading, page, pageCount, status }
             } = state
             return {
-                loading: loading,
-                page: page,
-                pageCount: pageCount,
-                status: status
+                loading,
+                page,
+                pageCount,
+                status
             }
         })
     }
 
     componentDidLoad() {
-        this.createSlider()
+        //this.createSlider()
     }
 
     componentDidUnload() {
-        this.destroySlider()
+        //this.destroySlider()
         this.storeUnsubscribe()
     }
 
@@ -65,12 +65,12 @@ export class PagerComponent {
         // MDCSlider must be resized manually when an MDCDrawer is present on the page
         // https://github.com/material-components/material-components-web/issues/4365
 
-        if (this.slider) {
+        /*if (this.slider) {
             this.slider.layout()
-        }
+        }*/
     }
 
-    handleSliderInput() {
+    /*handleSliderInput() {
 
         if (this.slider) {
 
@@ -88,7 +88,7 @@ export class PagerComponent {
         if (this.slider) {
             this.setPage(this.slider.value ? this.slider.value : 0)
         }
-    }
+    }*/
 
     isFirst() {
         return (this.page <= 0)
@@ -114,7 +114,7 @@ export class PagerComponent {
         this.setPage(this.pageCount - 1)
     }
 
-    getSliderElement(): HTMLElement {
+    /*getSliderElement(): HTMLElement {
         return this.el.querySelector('.mdc-slider')
     }
 
@@ -157,9 +157,9 @@ export class PagerComponent {
             this.slider.destroy()
             this.slider = null
         }
-    }
+    }*/
 
-    @Watch('page')
+    /*@Watch('page')
     @Watch('pageCount')
     @Watch('status')
     updateSlider() {
@@ -178,7 +178,7 @@ export class PagerComponent {
         this.slider.value = (isNumber(this.page) ? this.page : 0)
 
         this.slider.layout()
-    }
+    }*/
 
     render() {
 
@@ -188,7 +188,8 @@ export class PagerComponent {
         return <div role="toolbar" aria-label="Toolbar navigation">
 
             <div class="paging-status">
-                <div innerHTML={t('pager', { page: this.page + 1, pageCount: this.pageCount })}></div>
+                <div innerHTML={t('pager', { page: this.page + 1, pageCount: this.pageCount })}>  
+                </div>
                 {/*<span class="paging-status__spacer--right">
                     Page
                 </span>

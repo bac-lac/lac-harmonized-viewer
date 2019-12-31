@@ -4,12 +4,12 @@ harmonized-tabs {
     @import '@material/tab-indicator/mixins';
     @import '@material/tab/mixins';
 
-    height: 100%;
     display: flex;
     flex-direction: column;
+    height: 100%;
 
     .mdc-tab-bar {
-        //@include mdc-tab-icon-color(#5f6b7f);
+        flex: 0;
 
         .mdc-tab-scroller__scroll-area--scroll {
             overflow-x: auto;
@@ -35,7 +35,8 @@ harmonized-tabs {
     }
 
     .tabs__panels {
-        height: 100%;
         display: flex;
+        flex: 1;
+        overflow-y: auto;
     }
 }

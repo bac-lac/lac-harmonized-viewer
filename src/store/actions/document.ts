@@ -47,20 +47,6 @@ export const setLoading = (loading: boolean) => (dispatch, _getState) => {
     dispatch(action)
 }
 
-export interface AddTheme {
-    type: TypeKeys.ADD_THEME
-    name: string
-    stylesheetUrl: string
-}
-export const addTheme = (name: string, stylesheetUrl: string) => (dispatch, _getState) => {
-    const action: AddTheme = {
-        type: TypeKeys.ADD_THEME,
-        name: name,
-        stylesheetUrl: stylesheetUrl
-    }
-    dispatch(action)
-}
-
 export interface SetStatus {
     type: TypeKeys.SET_STATUS
     code: StatusCode
@@ -91,7 +77,6 @@ export const setTheme = (theme: string) => (dispatch, _getState) => {
     }
     dispatch(action)
 }
-
 
 export interface SetLanguage {
     type: TypeKeys.SET_LANGUAGE
@@ -324,23 +309,11 @@ export const exitFullscreen = () => (dispatch, _getState) => {
     dispatch(action)
 }
 
-export interface ShowInfo {
-    type: TypeKeys.SHOW_INFO
-}
-export const showInfo = () => (dispatch, _getState) => {
-    const action: ShowInfo = {
-        type: TypeKeys.SHOW_INFO
-    }
-    dispatch(action);
-}
-
-export interface HideInfo {
-    type: TypeKeys.HIDE_INFO
-}
-export const hideInfo = () => (dispatch, _getState) => {
-    const action: HideInfo = {
-        type: TypeKeys.HIDE_INFO
-    }
+export interface ToggleDrawer {
+    type: TypeKeys.TOGGLE_DRAWER
+};
+export const toggleDrawer = () => (dispatch, _getState) => {
+    const action: ToggleDrawer = { type: TypeKeys.TOGGLE_DRAWER };
     dispatch(action);
 }
 
