@@ -1,11 +1,10 @@
 harmonized-embed {
-    width: 100%;
+    position: relative;
+    display: block;
     height: 100%;
-    display: inline-block;
+    width: 100%;
 
     embed {
-        width: 100%;
-        height: 100%;
-        display: inline-block;
+        position: absolute;
     }
 }

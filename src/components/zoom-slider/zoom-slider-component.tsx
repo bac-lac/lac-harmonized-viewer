@@ -1,4 +1,4 @@
-import { Component, h, Element, Prop, State } from '@stencil/core';
+/*import { Component, h, Element, Prop, State } from '@stencil/core';
 import "../../utils/icon-library";
 import { Unsubscribe, Store } from '@stencil/redux';
 import { setZoomRequest } from '../../store/actions/document';
@@ -126,3 +126,4 @@ export class ZoomSliderComponent {
         )
     }
 }
+*/

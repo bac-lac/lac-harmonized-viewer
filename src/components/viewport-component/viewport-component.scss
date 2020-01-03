@@ -1,11 +1,16 @@
 .viewport {
     width: 100%;
     height: 100%;
+    min-height: 500px;
     flex: 3;
     display: flex;
     flex-direction: column;
     justify-content: center;
     position: relative;
+
+    &-video {
+        min-height: auto;
+    }
 
     &__content {
         width: 100%;
@@ -18,15 +23,25 @@
             opacity: 0.3;
         }
 
-        .viewport__content-inner {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
+        > harmonized-embed {
+            flex: 1
+        }
+        > harmonized-pager { 
+            flex: 0;
         }
 
         .viewport__content-pager {
             padding: 0.5rem 0;
+        }
+    }
+
+    &:hover {
+        .button-navigation {
+            opacity: 1;
+        }
+
+        .overlay {
+            opacity: 1;
         }
     }
 
@@ -54,18 +69,4 @@
     // &:hover .hv-overlay {
     //     opacity: 1;
     // }
-
-    .hv-main__content {
-        // margin: 0 30px;
-
-        &:hover {
-            .button-navigation {
-                opacity: 1;
-            }
-
-            .overlay {
-                opacity: 1;
-            }
-        }
-    }
 }

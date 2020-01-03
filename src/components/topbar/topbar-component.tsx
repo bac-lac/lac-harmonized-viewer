@@ -1,4 +1,4 @@
-import { Component, h, Element, Prop, Host, State, Listen } from '@stencil/core';
+import { Component, h, Element, Prop, Host, State, Listen, Watch } from '@stencil/core';
 import { Store, Unsubscribe } from '@stencil/redux';
 import { MDCTopAppBar } from '@material/top-app-bar';
 import { MDCMenu, Corner } from '@material/menu';
@@ -9,10 +9,10 @@ import iconInfo from '../../assets/material-icons/ic_info_24px.svg';
 import iconInfoFull from '../../assets/material-icons/ic_info_full_24px.svg';
 import iconFullscreen from '../../assets/material-icons/ic_fullscreen_24px.svg';
 import iconFullscreenExit from '../../assets/material-icons/ic_fullscreen_exit_24px.svg';
-import iconThemeLight from "../../assets/material-icons/theme-light.svg"
-import iconThemeDark from "../../assets/material-icons/theme-dark.svg"
-import { enterFullscreen, exitFullscreen, toggleDrawer } from '../../store/actions/document';
+import { toggleFullscreen, toggleDrawer } from '../../store/actions/viewport';
 import { t } from '../../services/i18n-service';
+import { resolveViewportType } from '../../utils/viewport';
+import viewport from '../../store/reducers/viewport';
 
 @Component({
     tag: 'harmonized-topbar',
@@ -24,15 +24,15 @@ export class TopbarComponent {
 
     @Prop({ context: "store" }) store: Store
 
-    @State() fullscreen: boolean = false
-    @State() infoShown: boolean = false
-    @State() availableLanguages: MyAppState["document"]["availableLanguages"]
-    @State() title: MyAppState["document"]["document"]["label"]
-    @State() theme: MyAppState["document"]["theme"]
-    @State() viewport: MyAppState["document"]["viewport"]
+    @State() title: MyAppState["viewport"]["title"]
+    @State() fullscreen: MyAppState["viewport"]["fullscreen"]
+    @State() infoShown: MyAppState["viewport"]["infoShown"]
+    @State() currentItemIndex: MyAppState['viewport']['itemIndex']
+    @State() items: MyAppState['viewport']['items']
 
-    enterFullscreen: typeof enterFullscreen
-    exitFullscreen: typeof exitFullscreen
+    @State() theme: MyAppState["document"]["theme"]
+
+    toggleFullscreen: typeof toggleFullscreen
     toggleDrawer: typeof toggleDrawer
 
     storeUnsubscribe: Unsubscribe
@@ -44,18 +44,21 @@ export class TopbarComponent {
 
     componentWillLoad() {
 
-        this.store.mapDispatchToProps(this, { enterFullscreen, exitFullscreen, toggleDrawer })
+        this.store.mapDispatchToProps(this, { toggleFullscreen, toggleDrawer })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { document, fullscreen, infoShown, theme }
+                document: { theme },
+                viewport: { title, itemIndex, items, fullscreen, infoShown }
             } = state
             return {
-                fullscreen: fullscreen,
-                infoShown: infoShown,
-                title: (document ? document.label : null),
+                title,
+                currentItemIndex: itemIndex,
+                items,
+                fullscreen,
+                infoShown,
                 theme
             }
-        })
+        });
     }
 
     componentDidLoad() {
@@ -83,17 +86,20 @@ export class TopbarComponent {
         this.storeUnsubscribe()
     }
 
-    @Listen('fullscreenchange', { target: 'document' })
-    handleFullScreenChange() {
+    @Listen('fullscreenchange')
+    handleFullscreenChange() {
         this.fullscreen = (document.fullscreenElement ? true : false)
     }
 
-    handleEnterFullscreenClick() {
-        this.enterFullscreen(this.el.closest(".harmonized-viewer"))
-    }
-
-    handleExitFullscreenClick() {
-        this.exitFullscreen()
+    handleFullscreenToggle() {
+        if (!this.fullscreen) {
+            const viewer = this.el.closest(".harmonized-viewer");
+            if (viewer) {
+                viewer.requestFullscreen();
+            }
+        } else {
+            document.exitFullscreen();
+        }
     }
 
     handleDisplayClick() {
@@ -101,11 +107,13 @@ export class TopbarComponent {
     }
 
     render() {
-
-        const iconTheme = (this.theme == "light" ? iconThemeDark : iconThemeLight)
+        // Top bar is fixed for PDFs & Video/Audio - for now
+        const currentItem = this.items[this.currentItemIndex] as DocumentPage;
+        const viewportType = currentItem ? resolveViewportType(currentItem.contentType) : undefined;
+        const hasFixedTopbar = viewportType !== 'image';
 
         return <Host>
-            <div class="mdc-top-app-bar mdc-top-app-bar--dense">
+            <div class={`mdc-top-app-bar ${hasFixedTopbar && 'mdc-top-app-bar--fixed'} mdc-top-app-bar--dense`}>
                 <div class="mdc-top-app-bar__row">
                     <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
 
@@ -127,9 +135,7 @@ export class TopbarComponent {
                                 label={''}
                                 aria-label={this.fullscreen ? t('exitFullscreen') : t('enterFullscreen')}
                                 tooltip={this.fullscreen ? t('exitFullscreen') : t('enterFullscreen')}
-                                onClick={this.fullscreen
-                                            ? this.handleExitFullscreenClick.bind(this)
-                                            : this.handleEnterFullscreenClick.bind(this)}>
+                                onClick={this.handleFullscreenToggle.bind(this)}>
 
                         </harmonized-button>
                     </section>

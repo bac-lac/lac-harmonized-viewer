@@ -4,7 +4,7 @@ harmonized-topbar {
     @import '@material/list/mixins';
     @import '@material/menu-surface/mixins';
     position: relative;
-    display: -inline-block;
+    display: inline-block;
 
     .mdc-top-app-bar {
         z-index: 99999;
@@ -12,6 +12,11 @@ harmonized-topbar {
         position: absolute;
         background-color: transparent !important;
         box-shadow: none !important;
+
+        &--fixed {
+            position: relative;
+            z-index: 1;
+        }
 
         .mdc-top-app-bar__title {
             color: #fff;

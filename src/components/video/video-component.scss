@@ -1,10 +1,6 @@
 harmonized-video {
-    height: 100%;
     display: block;
-
-    video {
-        width: 100%;
-        height: 100%;
-        display: inline-block;
-    }
+    overflow: hidden;
 }
+
+@import url('//amp.azure.net/libs/amp/2.3.3/skins/amp-default/azuremediaplayer.min.css');

@@ -1,19 +1,25 @@
 import { ActionTypes, TypeKeys } from "../actions/index";
-import "manifesto.js";
 
 const getInitialState = (): ManifestState => {
-    return null
+    return {
+        fetching: false,
+        fetched: false,
+        manifest: null
+    };
 }
 
 const manifest = (state = getInitialState(), action: ActionTypes): ManifestState => {
 
     switch (action.type) {
+        case TypeKeys.FETCHING_MANIFEST: {
+            return { ...state, fetching: true };
+        }
         case TypeKeys.SET_MANIFEST: {
-            return { ...getInitialState(), ...action.manifest }
+            return { ...state, fetching: false, fetched: true, manifest: action.manifest };
         }
     }
 
-    return state
+    return state;
 }
 
 export default manifest

@@ -12,41 +12,35 @@ interface ContentTypeMapping {
 interface DocumentState {
     error: DocumentError
     configuration: Configuration,
-    loading: boolean
-    alternateFormats: DocumentAlternateFormat[]
-    annotations: DocumentAnnotation[]
-    contentType: string
-    document: DocumentBase
-    fullscreen: boolean,
-    infoShown: boolean,
     language: Language
     availableLanguages: Language[]
     options: Options[]
     overlays: DocumentOverlay[]
-    page: number
-    pageCount: number
-    pages: DocumentPage[]
-    customResolvers: string[]
     tags: DocumentTag[]
     theme: string,
-    themes: string[],
-    status: DocumentStatus
-    url: string
-    viewport: Viewport
-    zoom: DocumentZoom
-    zoomRequest: DocumentZoom
+    themes: string[]
 }
 
-interface ManifestState extends Manifesto.IManifest {}
+interface ManifestState {
+    fetching: boolean,
+    fetched: boolean,
+    manifest: Manifesto.IManifest
+}
+
+interface ViewportState {
+    title: string,
+    annotations: DocumentAnnotation[],
+    itemIndex: number,
+    items: DocumentPage[]
+    fullscreen: boolean,
+    infoShown: boolean
+}
+
+// Used in viewport, topbar, etc.
+type ViewportType = 'image' | 'pdf' | 'video' | 'audio';
 
 type ErrorCode = 'request-failed' | 'request-failed-notfound' | 'contenttype-unsupported'
 type ErrorSeverity = 'fatal' | 'error' | 'warning'
-
-interface Viewport {
-    navigationEnable: boolean
-    navigationPlacement: PlacementType
-    pagingEnable: boolean
-}
 
 interface DocumentBase {
     label: DocumentLabel[]
@@ -88,6 +82,7 @@ interface DocumentPage {
     label: DocumentLabel[]
     image: string
     thumbnail: string
+    tileSources: string[]
 }
 
 interface DocumentAnnotation {
@@ -117,11 +112,10 @@ interface DocumentTag {
     text: string
 }
 
-//type DocumentContentType = 'IIIF' | 'application/pdf';
-
 interface MyAppState {
     document: DocumentState,
-    manifest: ManifestState
+    manifest: ManifestState,
+    viewport: ViewportState
 }
 
 interface HVPersistedState {
@@ -150,6 +144,7 @@ interface DocumentLabel {
 
 interface Configuration {
     language: LanguageConfiguration
+    deepzoom: boolean
 }
 
 interface LanguageConfiguration {

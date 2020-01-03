@@ -1,6 +1,5 @@
 import { Component, h, Element, Prop, State, Host, Watch, Listen } from '@stencil/core';
 import { Unsubscribe, Store } from '@stencil/redux';
-import { setPage } from '../../store/actions/document';
 //import { MDCRipple } from '@material/ripple';
 //import { MDCSlider } from '@material/slider';
 //import iconFirst from '../../assets/material-icons/ic_page_first_24px.svg'
@@ -16,18 +15,16 @@ import { t } from '../../services/i18n-service';
         'pager-component.scss'
     ]
 })
+
+// Item number display + Slider (removed for now)
 export class PagerComponent {
 
     @Element() el: HTMLElement
 
-    setPage: typeof setPage
-
     storeUnsubscribe: Unsubscribe
 
-    @State() loading: MyAppState["document"]["loading"]
-    @State() page: MyAppState["document"]["page"]
-    @State() pageCount: MyAppState["document"]["pageCount"]
-    @State() status: MyAppState["document"]["status"]
+    @State() currentItemIndex: number
+    @State() itemCount: number
 
     @State() marker: number
 
@@ -36,17 +33,13 @@ export class PagerComponent {
     //private slider: MDCSlider
 
     componentWillLoad() {
-
-        this.store.mapDispatchToProps(this, { setPage })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { loading, page, pageCount, status }
+                viewport: { itemIndex, items }
             } = state
             return {
-                loading,
-                page,
-                pageCount,
-                status
+                currentItemIndex: itemIndex,
+                itemCount: items.length
             }
         })
     }
@@ -90,12 +83,12 @@ export class PagerComponent {
         }
     }*/
 
-    isFirst() {
-        return (this.page <= 0)
+    /*isFirst() {
+        return (this.currentItemIndex <= 0)
     }
 
     isLast() {
-        return (this.page >= (this.pageCount - 1))
+        return (this.currentItemIndex >= (this.itemCount - 1))
     }
 
     handleFirstClick() {
@@ -103,16 +96,16 @@ export class PagerComponent {
     }
 
     handlePreviousClick() {
-        this.setPage(this.page - 1)
+        this.setPage(this.currentItemIndex - 1)
     }
 
     handleNextClick() {
-        this.setPage(this.page + 1)
+        this.setPage(this.currentItemIndex + 1)
     }
 
     handleLastClick() {
-        this.setPage(this.pageCount - 1)
-    }
+        this.setPage(this.itemCount - 1)
+    }*/
 
     /*getSliderElement(): HTMLElement {
         return this.el.querySelector('.mdc-slider')
@@ -181,14 +174,13 @@ export class PagerComponent {
     }*/
 
     render() {
-
-        const page = isNullOrUndefined(this.marker) ?
-            (this.page + 1) : (this.marker + 1)
+        /*const page = isNullOrUndefined(this.marker) ?
+            (this.page + 1) : (this.marker + 1)*/
 
         return <div role="toolbar" aria-label="Toolbar navigation">
 
             <div class="paging-status">
-                <div innerHTML={t('pager', { page: this.page + 1, pageCount: this.pageCount })}>  
+                <div innerHTML={t('pager', { page: this.currentItemIndex + 1, pageCount: this.itemCount })}>  
                 </div>
                 {/*<span class="paging-status__spacer--right">
                     Page

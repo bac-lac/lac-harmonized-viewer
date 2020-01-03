@@ -23,42 +23,6 @@ export const setError = (errorCode: ErrorCode, ...optionalParameters: DocumentEr
     }
 }
 
-export interface SetDocumentContentType {
-    type: TypeKeys.SET_DOCUMENT_CONTENT_TYPE
-    contentType: string
-}
-export const setDocumentContentType = (contentType: string) => (dispatch, _getState) => {
-    const action: SetDocumentContentType = {
-        type: TypeKeys.SET_DOCUMENT_CONTENT_TYPE,
-        contentType: contentType
-    }
-    dispatch(action)
-}
-
-export interface SetLoading {
-    type: TypeKeys.SET_LOADING
-    loading: boolean
-}
-export const setLoading = (loading: boolean) => (dispatch, _getState) => {
-    const action: SetLoading = {
-        type: TypeKeys.SET_LOADING,
-        loading: loading
-    }
-    dispatch(action)
-}
-
-export interface SetStatus {
-    type: TypeKeys.SET_STATUS
-    code: StatusCode
-}
-export const setStatus = (code: StatusCode) => (dispatch, _getState) => {
-    const action: SetStatus = {
-        type: TypeKeys.SET_STATUS,
-        code: code
-    }
-    dispatch(action)
-}
-
 export interface SetTheme {
     type: TypeKeys.SET_THEME
     theme: string
@@ -119,91 +83,6 @@ export const addLanguage = (code: string, name: string) => (dispatch, _getState)
     dispatch(action)
 }
 
-export interface SetDocumentUrl {
-    type: TypeKeys.SET_DOCUMENT_URL
-    url: string
-}
-export const setDocumentUrl = (url: string) => (dispatch, _getState) => {
-    const action: SetDocumentUrl = {
-        type: TypeKeys.SET_DOCUMENT_URL,
-        url: url
-    }
-    dispatch(action)
-}
-
-export interface SetDocumentPages {
-    type: TypeKeys.SET_DOCUMENT_PAGES
-    pages: DocumentPage[]
-}
-export const setDocumentPages = (pages: DocumentPage[]) => (dispatch, _getState) => {
-    const action: SetDocumentPages = {
-        type: TypeKeys.SET_DOCUMENT_PAGES,
-        pages: pages
-    }
-    dispatch(action)
-}
-
-export interface SetDocumentTitle {
-    type: TypeKeys.SET_DOCUMENT_TITLE
-    label: DocumentLabel[]
-}
-export const setDocumentTitle = (label: DocumentLabel[]) => (dispatch, _getState) => {
-    const action: SetDocumentTitle = {
-        type: TypeKeys.SET_DOCUMENT_TITLE,
-        label: label
-    }
-    dispatch(action)
-}
-
-export interface SetDocumentAlternateFormats {
-    type: TypeKeys.SET_DOCUMENT_ALTERNATE_FORMATS
-    alternateFormats: DocumentAlternateFormat[]
-}
-export const setDocumentAlternateFormats = (alternateFormats: DocumentAlternateFormat[]) => (dispatch, _getState) => {
-    const action: SetDocumentAlternateFormats = {
-        type: TypeKeys.SET_DOCUMENT_ALTERNATE_FORMATS,
-        alternateFormats: alternateFormats
-    }
-    dispatch(action)
-}
-
-export interface SetPage {
-    type: TypeKeys.SET_PAGE
-    page: number
-}
-export const setPage = (page: number) => (dispatch, _getState) => {
-    const action: SetPage = {
-        type: TypeKeys.SET_PAGE,
-        page: page
-    }
-    dispatch(action)
-}
-
-export interface SetAnnotations {
-    type: TypeKeys.SET_ANNOTATIONS
-    annotations: DocumentAnnotation[]
-}
-export const setAnnotations = (annotations: DocumentAnnotation[]) => (dispatch, _getState) => {
-    const action: SetAnnotations = {
-        type: TypeKeys.SET_ANNOTATIONS,
-        annotations: annotations
-    }
-    dispatch(action)
-}
-
-export interface AddAnnotation {
-    type: TypeKeys.ADD_ANNOTATION
-    annotation: DocumentAnnotation
-    index?: number
-}
-export const addAnnotation = (annotation: DocumentAnnotation, index?: number) => (dispatch, _getState) => {
-    const action: AddAnnotation = {
-        type: TypeKeys.ADD_ANNOTATION,
-        annotation: annotation,
-        index: index
-    }
-    dispatch(action)
-}
 
 export interface SetOptions {
     type: TypeKeys.SET_OPTIONS
@@ -283,48 +162,6 @@ export interface ClearOverlays {
 export const clearOverlays = () => (dispatch, _getState) => {
     const action: ClearOverlays = {
         type: TypeKeys.CLEAR_OVERLAYS
-    }
-    dispatch(action)
-}
-
-export interface EnterFullscreen {
-    type: TypeKeys.ENTER_FULLSCREEN
-}
-export const enterFullscreen = (element: Element) => (dispatch, _getState) => {
-    element.requestFullscreen()
-    const action: EnterFullscreen = {
-        type: TypeKeys.ENTER_FULLSCREEN
-    }
-    dispatch(action)
-}
-
-export interface ExitFullscreen {
-    type: TypeKeys.EXIT_FULLSCREEN
-}
-export const exitFullscreen = () => (dispatch, _getState) => {
-    document.exitFullscreen()
-    const action: ExitFullscreen = {
-        type: TypeKeys.EXIT_FULLSCREEN
-    }
-    dispatch(action)
-}
-
-export interface ToggleDrawer {
-    type: TypeKeys.TOGGLE_DRAWER
-};
-export const toggleDrawer = () => (dispatch, _getState) => {
-    const action: ToggleDrawer = { type: TypeKeys.TOGGLE_DRAWER };
-    dispatch(action);
-}
-
-export interface AddCustomResolver {
-    type: TypeKeys.ADD_CUSTOM_RESOLVER
-    id: string
-}
-export const addCustomResolver = (id: string) => (dispatch, _getState) => {
-    const action: AddCustomResolver = {
-        type: TypeKeys.ADD_CUSTOM_RESOLVER,
-        id: id
     }
     dispatch(action)
 }

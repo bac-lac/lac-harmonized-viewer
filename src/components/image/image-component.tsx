@@ -1,6 +1,6 @@
 import { Component, Prop, h, Element, Event, EventEmitter, Host, State, Listen } from '@stencil/core';
 import { Unsubscribe, Store } from '@stencil/redux';
-import { setPage } from '../../store/actions/document';
+import { viewItem } from '../../store/actions/viewport';
 import { isNumber } from 'util';
 import tippy, { sticky, Props, Instance } from 'tippy.js';
 
@@ -25,10 +25,10 @@ export class ImageComponent {
     @State() loaded: boolean = false
     @State() failed: boolean = false
 
-    setPage: typeof setPage
+    viewItem: typeof viewItem
     storeUnsubscribe: Unsubscribe
 
-    @State() currentPage: MyAppState["document"]["page"]
+    @State() currentItemIndex: number
 
     @Prop({ context: "store" }) store: Store
 
@@ -39,13 +39,13 @@ export class ImageComponent {
 
     componentWillLoad() {
 
-        this.store.mapDispatchToProps(this, { setPage })
+        this.store.mapDispatchToProps(this, { viewItem })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { page: page }
+                viewport: { itemIndex }
             } = state
             return {
-                currentPage: page
+                currentItemIndex: itemIndex
             }
         })
     }
@@ -73,9 +73,8 @@ export class ImageComponent {
     }
 
     handleClick() {
-
         if (isNumber(this.page)) {
-            this.setPage(this.page)
+            this.viewItem(this.page)
         }
     }
 
@@ -118,7 +117,7 @@ export class ImageComponent {
 
         // No thumbnail placeholders
         if (this.src === null || this.src === '')
-            return 'https://imgplaceholder.com/112x150/cccccc/757575/glyphicon-remove';
+            return 'https://baclac.blob.core.windows.net/cdn/assets/placeholder-unavailable.jpeg';
 
         switch (this.contentType) {
             case 'application/json':
@@ -128,17 +127,17 @@ export class ImageComponent {
                 return this.src;
 
             case 'application/pdf':
-                return 'https://imgplaceholder.com/112x150/cccccc/757575/fa-file-pdf-o';
+                return 'https://baclac.blob.core.windows.net/cdn/assets/placeholder-pdf.jpeg';
 
             case 'video/mp4':
             case 'application/vnd.ms-sstr+xml':
-                return 'https://imgplaceholder.com/112x150/cccccc/757575/glyphicon-play';
+                return 'https://baclac.blob.core.windows.net/cdn/assets/placeholder-video.jpeg';
 
             // Audio
-            //https://imgplaceholder.com/112x150/cccccc/757575/glyphicon-volume-up
+            //https://baclac.blob.core.windows.net/cdn/assets/placeholder-audio.jpeg
 
             default:
-                return 'https://imgplaceholder.com/112x150/cccccc/757575/glyphicon-remove';
+                return 'https://baclac.blob.core.windows.net/cdn/assets/placeholder-unavailable.jpeg';
         }
     }
 
@@ -159,7 +158,7 @@ export class ImageComponent {
             className += ' is-ghost'
         }
 
-        if (this.page === this.currentPage) {
+        if (this.page === this.currentItemIndex) {
             className += ' is-active'
         }
 

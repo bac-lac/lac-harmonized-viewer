@@ -25,16 +25,14 @@ export namespace Components {
     'size': string;
     'tooltip': string;
   }
-  interface HarmonizedCustomResolver {
-    'contentType': string;
-    'url': string;
-  }
   interface HarmonizedDrawer {
     'headerTitle': string;
     'placement': PlacementType;
     'width': number;
   }
-  interface HarmonizedEmbed {}
+  interface HarmonizedEmbed {
+    'url': string;
+  }
   interface HarmonizedImage {
     'caption': string;
     'contentType': string;
@@ -76,16 +74,14 @@ export namespace Components {
   interface HarmonizedTabs {}
   interface HarmonizedTopbar {}
   interface HarmonizedVideo {
+    'contentType': string;
     'url': string;
   }
   interface HarmonizedViewer {
     'addOverlay': (x: number, y: number, width: number, height: number) => Promise<void>;
-    'addResolver': () => Promise<void>;
+    'deepzoomEnabled': boolean;
     'defaultLanguage': string;
     'defaultTheme': string;
-    'documentUrl': string;
-    'exitFullscreen': () => Promise<void>;
-    'fullscreen': () => Promise<void>;
     'getPage': () => Promise<number>;
     'getUrl': () => Promise<string>;
     'languageEnable': boolean;
@@ -94,12 +90,9 @@ export namespace Components {
     'navigationEnable': boolean;
     'navigationPlacement': PlacementType;
     'navigationRows': number;
-    'pagingEnable': boolean;
+    'url': string;
   }
-  interface HarmonizedViewport {
-    'annotationsEnable': boolean;
-  }
-  interface HarmonizedZoomSlider {}
+  interface HarmonizedViewport {}
 }
 
 declare global {
@@ -115,12 +108,6 @@ declare global {
   var HTMLHarmonizedButtonElement: {
     prototype: HTMLHarmonizedButtonElement;
     new (): HTMLHarmonizedButtonElement;
-  };
-
-  interface HTMLHarmonizedCustomResolverElement extends Components.HarmonizedCustomResolver, HTMLStencilElement {}
-  var HTMLHarmonizedCustomResolverElement: {
-    prototype: HTMLHarmonizedCustomResolverElement;
-    new (): HTMLHarmonizedCustomResolverElement;
   };
 
   interface HTMLHarmonizedDrawerElement extends Components.HarmonizedDrawer, HTMLStencilElement {}
@@ -218,16 +205,9 @@ declare global {
     prototype: HTMLHarmonizedViewportElement;
     new (): HTMLHarmonizedViewportElement;
   };
-
-  interface HTMLHarmonizedZoomSliderElement extends Components.HarmonizedZoomSlider, HTMLStencilElement {}
-  var HTMLHarmonizedZoomSliderElement: {
-    prototype: HTMLHarmonizedZoomSliderElement;
-    new (): HTMLHarmonizedZoomSliderElement;
-  };
   interface HTMLElementTagNameMap {
     'harmonized-annotations': HTMLHarmonizedAnnotationsElement;
     'harmonized-button': HTMLHarmonizedButtonElement;
-    'harmonized-custom-resolver': HTMLHarmonizedCustomResolverElement;
     'harmonized-drawer': HTMLHarmonizedDrawerElement;
     'harmonized-embed': HTMLHarmonizedEmbedElement;
     'harmonized-image': HTMLHarmonizedImageElement;
@@ -244,7 +224,6 @@ declare global {
     'harmonized-video': HTMLHarmonizedVideoElement;
     'harmonized-viewer': HTMLHarmonizedViewerElement;
     'harmonized-viewport': HTMLHarmonizedViewportElement;
-    'harmonized-zoom-slider': HTMLHarmonizedZoomSliderElement;
   }
 }
 
@@ -262,17 +241,15 @@ declare namespace LocalJSX {
     'size'?: string;
     'tooltip'?: string;
   }
-  interface HarmonizedCustomResolver {
-    'contentType'?: string;
-    'url'?: string;
-  }
   interface HarmonizedDrawer {
     'headerTitle'?: string;
     'onViewerDrawerToggle'?: (event: CustomEvent<any>) => void;
     'placement'?: PlacementType;
     'width'?: number;
   }
-  interface HarmonizedEmbed {}
+  interface HarmonizedEmbed {
+    'url'?: string;
+  }
   interface HarmonizedImage {
     'caption'?: string;
     'contentType'?: string;
@@ -316,12 +293,13 @@ declare namespace LocalJSX {
   interface HarmonizedTabs {}
   interface HarmonizedTopbar {}
   interface HarmonizedVideo {
+    'contentType'?: string;
     'url'?: string;
   }
   interface HarmonizedViewer {
+    'deepzoomEnabled'?: boolean;
     'defaultLanguage'?: string;
     'defaultTheme'?: string;
-    'documentUrl'?: string;
     'languageEnable'?: boolean;
     'navigationBackgroundColor'?: string;
     'navigationCols'?: number;
@@ -329,17 +307,13 @@ declare namespace LocalJSX {
     'navigationPlacement'?: PlacementType;
     'navigationRows'?: number;
     'onStatusChanged'?: (event: CustomEvent<any>) => void;
-    'pagingEnable'?: boolean;
+    'url'?: string;
   }
-  interface HarmonizedViewport {
-    'annotationsEnable'?: boolean;
-  }
-  interface HarmonizedZoomSlider {}
+  interface HarmonizedViewport {}
 
   interface IntrinsicElements {
     'harmonized-annotations': HarmonizedAnnotations;
     'harmonized-button': HarmonizedButton;
-    'harmonized-custom-resolver': HarmonizedCustomResolver;
     'harmonized-drawer': HarmonizedDrawer;
     'harmonized-embed': HarmonizedEmbed;
     'harmonized-image': HarmonizedImage;
@@ -356,7 +330,6 @@ declare namespace LocalJSX {
     'harmonized-video': HarmonizedVideo;
     'harmonized-viewer': HarmonizedViewer;
     'harmonized-viewport': HarmonizedViewport;
-    'harmonized-zoom-slider': HarmonizedZoomSlider;
   }
 }
 
@@ -368,7 +341,6 @@ declare module "@stencil/core" {
     interface IntrinsicElements {
       'harmonized-annotations': LocalJSX.HarmonizedAnnotations & JSXBase.HTMLAttributes<HTMLHarmonizedAnnotationsElement>;
       'harmonized-button': LocalJSX.HarmonizedButton & JSXBase.HTMLAttributes<HTMLHarmonizedButtonElement>;
-      'harmonized-custom-resolver': LocalJSX.HarmonizedCustomResolver & JSXBase.HTMLAttributes<HTMLHarmonizedCustomResolverElement>;
       'harmonized-drawer': LocalJSX.HarmonizedDrawer & JSXBase.HTMLAttributes<HTMLHarmonizedDrawerElement>;
       'harmonized-embed': LocalJSX.HarmonizedEmbed & JSXBase.HTMLAttributes<HTMLHarmonizedEmbedElement>;
       'harmonized-image': LocalJSX.HarmonizedImage & JSXBase.HTMLAttributes<HTMLHarmonizedImageElement>;
@@ -385,7 +357,6 @@ declare module "@stencil/core" {
       'harmonized-video': LocalJSX.HarmonizedVideo & JSXBase.HTMLAttributes<HTMLHarmonizedVideoElement>;
       'harmonized-viewer': LocalJSX.HarmonizedViewer & JSXBase.HTMLAttributes<HTMLHarmonizedViewerElement>;
       'harmonized-viewport': LocalJSX.HarmonizedViewport & JSXBase.HTMLAttributes<HTMLHarmonizedViewportElement>;
-      'harmonized-zoom-slider': LocalJSX.HarmonizedZoomSlider & JSXBase.HTMLAttributes<HTMLHarmonizedZoomSliderElement>;
     }
   }
 }

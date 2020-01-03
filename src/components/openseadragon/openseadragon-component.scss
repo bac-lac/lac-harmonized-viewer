@@ -1,8 +1,10 @@
 harmonized-openseadragon {
+    position: relative;
     display: flex;
     align-items: center;
     flex: 1 1 auto;
     height: 100%;
+    width: 100%;
 
     .button-navigation {
         opacity: 0;
@@ -20,11 +22,14 @@ harmonized-openseadragon {
         }
     }
 
-    .openseadragon {
-        display: flex;
-        flex-direction: column;
+    .openseadragon-container {
+        position: absolute;
+        height: 100%;
         width: 100%;
-        height: 100vh;
-        max-height: 500px;
+    }
+    .openseadragon {
+        position: relative;
+        height: 100%;
+        width: 100%;
     }
 }

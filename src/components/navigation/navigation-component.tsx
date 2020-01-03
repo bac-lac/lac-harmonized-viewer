@@ -1,7 +1,7 @@
 import { Component, Prop, h, Element, Listen, State, Watch, Host } from '@stencil/core';
 import 'manifesto.js';
 import { Unsubscribe, Store } from '@stencil/redux';
-import { setPage } from '../../store/actions/document';
+import { viewItem } from '../../store/actions/viewport';
 import { t } from '../../services/i18n-service';
 
 @Component({
@@ -23,12 +23,11 @@ export class NavigationComponent {
         this.resize()
     }
 
-    setPage: typeof setPage
+    viewItem: typeof viewItem
     storeUnsubscribe: Unsubscribe
 
-    @State() loading: MyAppState["document"]["loading"]
-    @State() page: MyAppState["document"]["page"]
-    @State() pages: MyAppState["document"]["pages"]
+    @State() currentItemIndex: MyAppState["viewport"]["itemIndex"] = 0
+    @State() items: MyAppState["viewport"]["items"] = []
 
     @Prop({ context: "store" }) store: Store
 
@@ -38,15 +37,14 @@ export class NavigationComponent {
 
     componentWillLoad() {
 
-        this.store.mapDispatchToProps(this, { setPage })
+        this.store.mapDispatchToProps(this, { viewItem })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { loading: loading, page: page, pages: pages }
+                viewport: { itemIndex, items }
             } = state
             return {
-                loading: loading,
-                page: page,
-                pages: pages
+                currentItemIndex: itemIndex,
+                items
             }
         })
     }
@@ -67,15 +65,15 @@ export class NavigationComponent {
 
         // Handle keyboard previous/next navigation
         if (ev.key === 'ArrowRight' || ev.key == 'ArrowDown') {
-            this.setPage(this.page + 1)
+            this.viewItem(this.currentItemIndex + 1)
         }
         else if (ev.key === 'ArrowLeft' || ev.key == 'ArrowUp') {
-            this.setPage(this.page - 1)
+            this.viewItem(this.currentItemIndex - 1)
         }
     }
 
     handleThumbnailClick(page: number) {
-        this.setPage(page)
+        this.viewItem(page)
     }
 
     handleThumbnailLoad(ev: Event) {
@@ -84,10 +82,10 @@ export class NavigationComponent {
         }
     }
 
-    @Watch('page')
+    @Watch('currentItemIndex')
     handlePageChange() {
-        if (this.pages && this.pages.length > this.page) {
-            const image: HTMLElement = this.el.querySelector(`harmonized-image[page="${this.page}"]`);
+        if (this.items.length > this.currentItemIndex) {
+            const image: HTMLElement = this.el.querySelector(`harmonized-image[page="${this.currentItemIndex}"]`);
             if (image) {
                 this.scaleScroll()
                 //image.scrollIntoView({ behavior: "smooth", block: "nearest" })
@@ -104,7 +102,7 @@ export class NavigationComponent {
 
     // Keeps the select item visible as a user goes through the thumbnail list
     scaleScroll() {
-        const currentItem = (this.el.querySelector(`harmonized-image[page="${this.page}"]`) as HTMLElement);
+        const currentItem = (this.el.querySelector(`harmonized-image[page="${this.currentItemIndex}"]`) as HTMLElement);
         if (this.imageList && currentItem) {
             // The value 4 in calculations is the margin
             // Image is past the left border of the overflow
@@ -160,12 +158,15 @@ export class NavigationComponent {
     }
 
     render() {
+        if (this.items.length <= 1) {
+            return null;
+        }
 
         const className = `mdc-image-list mdc-image-list--horizontal mdc-image-list--${this.cols}col`
 
         return  <harmonized-image-list class={className} tabindex={0}>
                     {
-                        this.pages && this.pages.map((page, index) =>
+                        this.items.map((page, index) =>
 
                             <harmonized-image
                                 src={page.thumbnail}
@@ -175,7 +176,8 @@ export class NavigationComponent {
                                 show-caption={false}
                                 show-tooltip={false}
                                 preload={index < 16}
-                                onImageLoad={this.handleThumbnailLoad.bind(this)} />
+                                onImageLoad={this.handleThumbnailLoad.bind(this)}
+                            />
                         )
                     }
                 </harmonized-image-list>

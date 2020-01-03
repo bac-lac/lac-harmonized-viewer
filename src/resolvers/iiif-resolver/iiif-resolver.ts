@@ -80,7 +80,8 @@ export class IIIFResolver extends Resolver {
                         label: this.mapLabels(canvas.getLabel()),
                         image: resource.id,
                         //image: this.getImageUri(resource, 1000),
-                        thumbnail: this.getThumbnailUri(canvas)
+                        thumbnail: this.getThumbnailUri(canvas),
+                        tileSources: this.resolveTileSource(image)
                     }
                 }
             }))

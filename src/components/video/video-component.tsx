@@ -2,19 +2,23 @@ import { Component, h, Prop, Element, Host, State } from '@stencil/core';
 import Axios from 'axios';
 
 @Component({
-    tag: 'harmonized-video'
+    tag: 'harmonized-video',
+    styleUrl: 'video-component.scss'
 })
 export class VideoComponent {
 
     @Element() el: HTMLElement
 
     @Prop() url: string
+    @Prop() contentType: string
 
-    @State() sourceUrl: string
-    @State() authorization: string
+    private sourceUrl: string
+    private authorization: string
+
+    private player: any;
 
     async componentDidLoad() {
-        await this.init()
+        //await this.init()
     }
 
     async init() {
@@ -26,7 +30,6 @@ export class VideoComponent {
             this.authorization = response.headers['authorization'].replace("Bearer ", "")
 
             this.sourceUrl = response.data
-
             this.renderVideoPlayer()
         }
         catch (e) {
@@ -34,10 +37,8 @@ export class VideoComponent {
         }
     }
 
-    handlePlayerLoad() {
-        this.init().then((value) => {
-
-        })
+    async handlePlayerLoad() {
+        await this.init()
     }
 
     render() {
@@ -47,17 +48,11 @@ export class VideoComponent {
         }
 
         return <Host class="video">
-
-            { <link type="text/css" href="//amp.azure.net/libs/amp/latest/skins/amp-default/azuremediaplayer.min.css"
-                rel="stylesheet" /> }
-            <script type="text/javascript" src="//amp.azure.net/libs/amp/latest/azuremediaplayer.min.js"
-                onLoad={this.handlePlayerLoad.bind(this)}>
+            <style id="azuremediaplayerstyles"></style>
+            <script type="text/javascript" src="//amp.azure.net/libs/amp/latest/azuremediaplayer.min.js" onLoad={this.handlePlayerLoad.bind(this)}>
             </script>
 
-            <video id="vid1" class="embed-responsive-item azuremediaplayer amp-default-skin amp-big-play-centered">
-                <p class="amp-no-js">
-                    To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video
-                </p>
+            <video id="azuremediaplayer" class="azuremediaplayer amp-default-skin amp-big-play-centered embed-responsive-item" tabindex="0">
             </video>
         </Host>
     }
@@ -71,23 +66,28 @@ export class VideoComponent {
                 "nativeControlsForTouch": false,
                 "controls": true,
                 "autoplay": true,
-                "logo": {
-                    "enabled": false
-                }
+                "fluid": true
             }
 
             const videoPlayer = (window as any).amp(video, options)
+            const style = this.el.querySelector('style');
+            const resize = function() {
+                const vjsStylesDimensions = document.querySelector('.vjs-styles-dimensions');
+                style.innerHTML = vjsStylesDimensions ? vjsStylesDimensions.innerHTML : null;
+            };
+            window.addEventListener('resize', resize);
+            window.dispatchEvent(new Event('resize'));
 
             videoPlayer.src([{
-                "src": this.sourceUrl,
-                "type": "application/vnd.ms-sstr+xml",
+                "src": this.sourceUrl, //"https://www.radiantmediaplayer.com/media/bbb-360p.mp4",
+                "type": this.contentType, //"video/mp4",
                 "protectionInfo": [
                     {
                         "type": "AES",
                         "authenticationToken": `Bearer=${this.authorization}`
                     }
                 ]
-            }])
+            }]);
         }
     }
 }

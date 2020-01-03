@@ -15,7 +15,7 @@ export class AnnotationsComponent {
 
     storeUnsubscribe: Unsubscribe
 
-    @State() annotations: MyAppState["document"]["annotations"]
+    @State() annotations: MyAppState["viewport"]["annotations"] = []
 
     @Prop({ context: "store" }) store: Store
 
@@ -23,10 +23,10 @@ export class AnnotationsComponent {
 
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                document: { annotations: annotations }
+                viewport: { annotations }
             } = state
             return {
-                annotations: annotations
+                annotations
             }
         })
     }

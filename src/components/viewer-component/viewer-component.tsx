@@ -1,17 +1,13 @@
-import { Component, Host, h, Element, Prop, Method, State, Watch, Event, EventEmitter } from '@stencil/core';
+import { Component, Host, h, Element, Prop, Method, State, Watch, Event, EventEmitter, Listen } from '@stencil/core';
 import "@stencil/redux";
-import 'manifesto.js';
 import { Store, Unsubscribe } from "@stencil/redux";
 import { configureStore } from "../../store";
-import { setDocumentUrl, setDocumentContentType, setDocumentTitle, setDocumentAlternateFormats, setAnnotations, setStatus, addOverlay, setOptions, setLanguage, addLanguage, enterFullscreen, exitFullscreen, addCustomResolver, setConfiguration, setDocumentPages } from '../../store/actions/document';
+import { addOverlay, setOptions, setLanguage, addLanguage, setConfiguration } from '../../store/actions/document';
 import i18next from 'i18next';
-import iconError from '../../assets/material-icons/ic_error_24px.svg'
 import { loadPersistedState } from '../../services/persisted-state-service';
 import { AppConfig } from '../../app.config';
-import { id } from '../../utils/utils';
-import { IIIFResolver } from '../../resolvers/iiif-resolver/iiif-resolver';
-import { Resolver } from '../../resolvers/resolver';
-import { setManifest } from '../../store/actions/manifest';
+import { fetchManifest } from '../../store/actions/manifest';
+import { toggleFullscreen } from '../../store/actions/viewport';
 
 @Component({
 	tag: 'harmonized-viewer',
@@ -22,9 +18,6 @@ import { setManifest } from '../../store/actions/manifest';
 	shadow: true
 })
 export class ViewerComponent {
-
-    private resolver: Resolver
-
 	@Element() el: HTMLElement
 
 	//@Prop() language: string
@@ -35,41 +28,31 @@ export class ViewerComponent {
 	@Prop() navigationRows: number = 1
 	@Prop() navigationBackgroundColor: string
 
-	@Prop() languageEnable: boolean
-
-	@Prop() pagingEnable: boolean
-	@Prop({ attribute: 'url' }) documentUrl: string
-
+	@Prop() url: string
 	@Prop({ attribute: 'language' }) defaultLanguage: string
 	@Prop({ attribute: 'theme' }) defaultTheme: string
+	@Prop() languageEnable: boolean
+	@Prop({ attribute: 'deepzoom'}) deepzoomEnabled: boolean = true
 
-	addCustomResolver: typeof addCustomResolver
 	addLanguage: typeof addLanguage
 	addOverlayState: typeof addOverlay
 	setConfiguration: typeof setConfiguration
-	setDocumentContentType: typeof setDocumentContentType
-	setDocumentUrl: typeof setDocumentUrl
-    setDocumentPages: typeof setDocumentPages
-    setDocumentTitle: typeof setDocumentTitle
-    setDocumentAlternateFormats: typeof setDocumentAlternateFormats
-    setAnnotations: typeof setAnnotations
 	setLanguage: typeof setLanguage
-	enterFullscreen: typeof enterFullscreen
-	_exitFullscreen: typeof exitFullscreen
-	setStatus: typeof setStatus
 	setOptions: typeof setOptions
-	setManifest: typeof setManifest
+
+	fetchManifest: typeof fetchManifest
+
+	toggleFullscreen: typeof toggleFullscreen
 
 	storeUnsubscribe: Unsubscribe
+
+	@State() currentItemIndex: MyAppState['viewport']['itemIndex']
+	@State() items: MyAppState['viewport']['items']
+	@State() fullscreen: MyAppState['viewport']['fullscreen']
 
 	@State() configuration: MyAppState["document"]["configuration"]
 	@State() language: MyAppState["document"]["language"]
 	@State() availableLanguages: MyAppState["document"]["availableLanguages"]
-	@State() page: MyAppState["document"]["page"]
-	@State() pages: MyAppState["document"]["pages"]
-	@State() url: MyAppState["document"]["url"]
-	@State() status: MyAppState["document"]["status"]
-	@State() statusCode: MyAppState["document"]["status"]["code"]
 	@State() theme: MyAppState["document"]["theme"]
 
 	@Prop({ context: "store" }) store: Store
@@ -83,53 +66,23 @@ export class ViewerComponent {
 
 	@Method()
 	async getUrl(): Promise<string> {
-
-		if (this.pages.length > this.page) {
-			return this.pages[this.page].image
-		}
-		else {
-			return null
-		}
+		// Revise
+		return this.items[this.currentItemIndex].image;
 	}
 
 	@Method()
 	async getPage(): Promise<number> {
-		return this.page
-	}
-
-	@Method()
-	async fullscreen() {
-		this.enterFullscreen(this.el)
-	}
-
-	@Method()
-	async exitFullscreen() {
-		this._exitFullscreen()
+		return this.currentItemIndex + 1;
 	}
 
 	@Method()
 	async addOverlay(x: number, y: number, width: number, height: number) {
-		console.log('aded')
 		this.addOverlayState(x, y, width, height)
 	}
 
-	@Method()
-	async addResolver() {
-		const resolverId = id()
-		this.addCustomResolver(resolverId)
-	}
-
-	@Watch('documentUrl')
-	handleUrlChange() {
-		this.setDocumentUrl(this.documentUrl)
-	}
-
-	@Watch('page')
-	handlePageChange() {
-		if(this.page > -1 && this.page < this.pages.length)
-		{
-			this.setDocumentContentType(this.resolver.getManifest().getSequenceByIndex(0).getCanvasByIndex(this.page).getImages()[0].getResource().getFormat().value)
-		}
+	@Listen('fullscreenchange')
+	async handleFullscreenChange() {
+		this.toggleFullscreen();
 	}
 
 	// @Listen('click', { target: 'document' })
@@ -147,23 +100,22 @@ export class ViewerComponent {
 	// }
 
 	componentWillLoad() {
-
 		this.store.setStore(configureStore({}))
-		this.store.mapDispatchToProps(this, { setConfiguration, setDocumentPages, setDocumentTitle, setDocumentAlternateFormats, setAnnotations, addCustomResolver, addLanguage, addOverlay, setDocumentContentType, enterFullscreen, exitFullscreen, setDocumentUrl, setLanguage, setOptions, setStatus, setManifest })
+		this.store.mapDispatchToProps(this, { addLanguage, addOverlay, setLanguage, setConfiguration, setOptions, fetchManifest, toggleFullscreen })
 		this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
-				document: { configuration: configuration, language: language, availableLanguages: availableLanguages, page: page, pages: pages, url: url, status: status, theme: theme }
+				document: { configuration, language, availableLanguages, theme },
+				viewport: { itemIndex, items, fullscreen }
 			} = state
 			return {
-				configuration: configuration,
-				language: language,
-				availableLanguages: availableLanguages,
-				page: page,
-				pages: pages,
-				status: status,
-				statusCode: status.code,
-				theme: theme,
-				url: url
+				configuration,
+				language,
+				availableLanguages,
+				theme,
+
+				currentItemIndex: itemIndex,
+				items,
+				fullscreen
 			}
 		})
 
@@ -174,37 +126,13 @@ export class ViewerComponent {
 		this.setConfiguration({
 			language: {
 				enable: this.languageEnable
-			}
+			},
+			deepzoom: this.deepzoomEnabled
 		})
-
-		this.setDocumentUrl(this.documentUrl)
 	}
 
 	async componentDidLoad() {
-		const resolver = new IIIFResolver()
-		this.resolver = resolver
-		await this.resolver.init(this.url)
-		
-		this.setManifest(this.resolver.getManifest())
-
-		this.setDocumentContentType(this.resolver.getManifest().getSequenceByIndex(0).getCanvasByIndex(this.page).getImages()[0].getResource().getFormat().value)
-		
-		const url = this.resolver.getManifest().getSequences()[0].getCanvasByIndex(this.page).getImages()[0].getResource().id
-		
-		this.setDocumentUrl(url)
-
-		this.setDocumentTitle(this.resolver.getTitle())
-
-		const iiifResolver = this.resolver as IIIFResolver
-
-        this.setDocumentPages(iiifResolver.getPages())
-
-        // Annotations
-        this.setAnnotations(this.resolver.annotations())
-
-        // Alternate formats
-        this.setDocumentAlternateFormats(this.resolver.alternateFormats())
-
+		this.fetchManifest(this.url);
 	}
 
 	componentDidUnload() {
@@ -297,45 +225,26 @@ export class ViewerComponent {
 			className += ` harmonized-viewer-theme--${theme}`
 		}
 
+		if (this.fullscreen) {
+			className += ` harmonized-viewer-fullscreen`;
+		}
+
+		// Errors not shown - to restructure like this:
+		// - Error with manifest fetching => Show here
+		// - Error with item loading/showing => Show in viewport
 		return  <div class={className}>
-					{/*this.renderNavigation("left")*/}
 					<harmonized-topbar />
-					<div class="viewer__content full-height">
-						{
-						this.status.error
-						?	this.renderError(this.status.error)
-						:	<harmonized-viewport />
-						}
-					</div>
-					{this.pages && this.pages.length > 0 &&
-						<harmonized-navigation cols={this.navigationCols}
-											   rows={this.navigationRows}
-											   auto-resize={true}
-											   style={{ backgroundColor: this.navigationBackgroundColor }} />
-					}
+
+					<harmonized-viewport />
+
+					<harmonized-navigation 	cols={this.navigationCols}
+											rows={this.navigationRows}
+											auto-resize={true}
+											style={{ backgroundColor: this.navigationBackgroundColor }} 
+					/>
 					
-					<slot name="footer" />
 				</div>
 	}
-
-	/*renderNavigation(placement: PlacementType) {
-
-		const conditions = (this.pages && this.pages.length > 0) && (this.navigationPlacement == placement)
-
-		if (conditions) {
-
-			if (placement == "left" || placement == "right") {
-
-				return  <harmonized-drawer placement={placement} toolbar={true} visible={true} width={250}>
-							<harmonized-navigation 	cols={this.navigationCols}
-													style={{ backgroundColor: this.navigationBackgroundColor }} />
-					    </harmonized-drawer>
-			}
-			else {
-				return 
-			}
-		}
-	}*/
 
 	renderError(error: DocumentError) {
 

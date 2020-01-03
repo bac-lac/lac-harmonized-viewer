@@ -38,14 +38,17 @@
         height: 100%;
     }
 
-    .viewer__content {
+    /*.viewer__content {
         height: 100%;
         display: flex;
         align-items: center;
         flex-direction: column;
-    }
+    }*/
 
-    .hv-main {
+    &.harmonized-viewer-fullscreen {
+        height: 100vh;
+    }
+    /*.hv-main {
         overflow: hidden;
         flex: auto;
         display: flex;
@@ -64,7 +67,7 @@
             height: 100%;
             flex: auto;
         }
-    }
+    }*/
 
     .hv-content {
         height: 100%;
