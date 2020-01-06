@@ -49,14 +49,13 @@ export class ViewportComponent {
     render() {
         const currentItem: DocumentPage = this.items[this.currentItemIndex];
         const viewportType: ViewportType = currentItem ? resolveViewportType(currentItem.contentType) : undefined;
-        const isVideo: boolean = viewportType === 'video';
 
         // TODO
         /*if (this.status.code == 'empty') {
             return undefined
         }*/
 
-        return <Host class={`viewport ${isVideo && 'viewport-video'}`}>
+        return <Host class={`viewport viewport-${viewportType}`}>
 
             {/*
                 this.status.code == 'loading' &&

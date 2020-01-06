@@ -11,6 +11,11 @@
     &-video {
         min-height: auto;
     }
+    &-video, &-pdf {
+        > harmonized-drawer{
+            top: 0;
+        }
+    }
 
     &__content {
         width: 100%;
@@ -47,6 +52,15 @@
 
     .paging-label {
         text-align: center;
+    }
+
+    /* When stencil loads the newly rendered webcomponent (when infoshown==true),
+    *  it inserts the web components into DOM, then goes through the render.
+    *  Since the drawer doesn't have the css class .mdc-drawer on mount,
+    *  it shakes the viewport for a split-second if not hidden
+    */
+    > harmonized-drawer:not(.mdc-drawer) {
+        display: none;
     }
 
     // .hv-overlay {

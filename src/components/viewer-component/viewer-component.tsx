@@ -8,6 +8,7 @@ import { loadPersistedState } from '../../services/persisted-state-service';
 import { AppConfig } from '../../app.config';
 import { fetchManifest } from '../../store/actions/manifest';
 import { toggleFullscreen } from '../../store/actions/viewport';
+import iconError from '../../assets/material-icons/ic_error_24px.svg'
 
 @Component({
 	tag: 'harmonized-viewer',
