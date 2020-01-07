@@ -84,6 +84,7 @@ export namespace Components {
     'defaultTheme': string;
     'getPage': () => Promise<number>;
     'getUrl': () => Promise<string>;
+    'getViewportType': () => Promise<ViewportType>;
     'languageEnable': boolean;
     'navigationBackgroundColor': string;
     'navigationCols': number;
@@ -306,6 +307,8 @@ declare namespace LocalJSX {
     'navigationEnable'?: boolean;
     'navigationPlacement'?: PlacementType;
     'navigationRows'?: number;
+    'onItemChanged'?: (event: CustomEvent<any>) => void;
+    'onItemsLoaded'?: (event: CustomEvent<any>) => void;
     'onStatusChanged'?: (event: CustomEvent<any>) => void;
     'url'?: string;
   }

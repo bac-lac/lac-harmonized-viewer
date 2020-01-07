@@ -60,13 +60,13 @@
     }
 }
 
-@font-face {
+/*@font-face {
     font-family: azuremediaplayer;
-    src: url("assets/fonts/azuremediaplayer.eot");
-    src: url("assets/fonts/azuremediaplayer.woff") format("woff"), url("assets/fonts/azuremediaplayer.ttf") format("truetype"), url("assets/fonts/azuremediaplayer.svg#icomoon") format("svg");
+    src: url("http://amp.azure.net/libs/amp/latest/skins/amp-default/assets/fonts/azuremediaplayer.eot");
+    src: url("http://amp.azure.net/libs/amp/latest/skins/amp-default/assets/fonts/azuremediaplayer.woff") format("woff"), url("http://amp.azure.net/libs/amp/latest/skins/amp-default/assets/fonts/azuremediaplayer.ttf") format("truetype"), url("http://amp.azure.net/libs/amp/latest/skins/amp-default/assets/fonts/azuremediaplayer.svg#icomoon") format("svg");
     font-weight: normal;
     font-style: normal
-}
+}*/
 
 .amp-default-skin {
     color: #fff;
@@ -648,7 +648,7 @@ body.vjs-full-window {
 }
 
 .amp-default-skin .amp-live-edge-progress {
-    background-image: url("assets/icons/live-edge-hover.gif");
+    background-image: url("http://amp.azure.net/libs/amp/latest/skins/amp-default/assets/icons/live-edge-hover.gif");
     display: none;
     float: right;
     height: 100%;
@@ -855,7 +855,7 @@ body.vjs-full-window {
 }
 
 .amp-default-skin .vjs-loading-spinner {
-    background: url("assets/icons/buffering-rainbow-bg.png");
+    background: url("http://amp.azure.net/libs/amp/latest/skins/amp-default/assets/icons/buffering-rainbow-bg.png");
     font-size: 0;
     left: 50%;
     margin-left: -48px;
@@ -868,7 +868,7 @@ body.vjs-full-window {
 }
 
 .amp-default-skin .vjs-loading-spinner::before {
-    content: url("assets/icons/buffering-rainbow.gif")
+    content: url("http://amp.azure.net/libs/amp/latest/skins/amp-default/assets/icons/buffering-rainbow.gif")
 }
 
 .amp-default-skin .vjs-waiting .vjs-loading-spinner,
@@ -1279,7 +1279,7 @@ body.vjs-full-window {
 
 .amp-default-skin .amp-logo>div,
 .amp-default-skin .amp-logo>span {
-    background-image: url("assets/icons/amslogo.png");
+    background-image: url("http://amp.azure.net/libs/amp/latest/skins/amp-default/assets/icons/amslogo.png");
     background-position: right top;
     background-repeat: no-repeat;
     background-size: contain;
@@ -1337,7 +1337,7 @@ body.vjs-full-window {
 
 .amp-default-skin .amp-logo-ad>div,
 .amp-default-skin .amp-logo-ad>span {
-    background-image: url("assets/icons/amslogo.png");
+    background-image: url("http://amp.azure.net/libs/amp/latest/skins/amp-default/assets/icons/amslogo.png");
     background-position: right top;
     background-repeat: no-repeat;
     background-size: contain;

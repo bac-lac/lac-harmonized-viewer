@@ -9,6 +9,7 @@ import { AppConfig } from '../../app.config';
 import { fetchManifest } from '../../store/actions/manifest';
 import { toggleFullscreen } from '../../store/actions/viewport';
 import iconError from '../../assets/material-icons/ic_error_24px.svg'
+import { resolveViewportType } from '../../utils/viewport';
 
 @Component({
 	tag: 'harmonized-viewer',
@@ -59,18 +60,46 @@ export class ViewerComponent {
 	@Prop({ context: "store" }) store: Store
 
 	@Event({ eventName: 'statusChanged' }) statusChanged: EventEmitter
+	@Event({ eventName: 'itemChanged' }) itemChanged: EventEmitter
+	@Event({ eventName: 'itemsLoaded' }) itemsLoaded: EventEmitter
 
 	@Watch('statusCode')
 	handleStatusChange(newValue: StatusCode, oldValue: StatusCode) {
 		this.statusChanged.emit(newValue)
 	}
 
+	// Currently assume that the manifest is only fetched once
+	@Watch('currentItemIndex')
+	async emitItemChangeEvent(newValue: number, oldValue: number) : Promise<any> {
+		if (!this.items || newValue >= this.items.length)
+			return null;
+
+		return this.itemChanged.emit(this.items[newValue]);
+	}
+
+	@Watch('items')
+	async emitItemsLoadedEvent(newValue: DocumentPage[], oldValue: DocumentPage[]) : Promise<any> {
+		// We avoid emitting an event on the initial componentLoad (goes from undefined => [])
+		if (!oldValue && (!newValue || newValue.length === 0))
+			return;
+
+		return this.itemsLoaded.emit();
+	}
+
+	// ??
 	@Method()
 	async getUrl(): Promise<string> {
-		// Revise
 		return this.items[this.currentItemIndex].image;
 	}
 
+	@Method()
+	async getViewportType(): Promise<ViewportType> {
+		const currentItem: DocumentPage = this.items[this.currentItemIndex];
+		const viewportType: ViewportType = currentItem ? resolveViewportType(currentItem.contentType) : undefined;
+		return viewportType;
+	}
+
+	// ??
 	@Method()
 	async getPage(): Promise<number> {
 		return this.currentItemIndex + 1;

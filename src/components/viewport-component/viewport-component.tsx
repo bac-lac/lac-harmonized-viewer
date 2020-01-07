@@ -1,4 +1,4 @@
-import { Component, Element, h, Prop, State, Host, Listen } from '@stencil/core';
+import { Component, Element, h, Prop, State, Host, Listen, Event } from '@stencil/core';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { toggleDrawer } from '../../store/actions/viewport';
 import { t } from '../../services/i18n-service';
