@@ -1,5 +1,4 @@
 import { Component, h, Element, Prop } from '@stencil/core';
-import "../../utils/icon-library";
 
 @Component({
     tag: 'harmonized-embed',
