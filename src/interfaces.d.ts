@@ -83,6 +83,7 @@ interface DocumentPage {
     image: string
     thumbnail: string
     tileSources: string[]
+    metadata: DocumentMetadata[]
 }
 
 interface DocumentAnnotation {
@@ -140,6 +141,11 @@ interface DocumentOverlay {
 interface DocumentLabel {
     locale: string
     value: string
+}
+
+interface DocumentMetadata {
+    label: string,
+    value: DocumentLabel[]
 }
 
 interface Configuration {

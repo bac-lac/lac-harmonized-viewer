@@ -9,6 +9,7 @@ import { AppConfig } from '../../app.config';
 import { fetchManifest } from '../../store/actions/manifest';
 import { toggleFullscreen } from '../../store/actions/viewport';
 import iconError from '../../assets/material-icons/ic_error_24px.svg'
+import { Item } from '../../models/item';
 import { resolveViewportType } from '../../utils/viewport';
 
 @Component({
@@ -91,6 +92,14 @@ export class ViewerComponent {
 	async getUrl(): Promise<string> {
 		return this.items[this.currentItemIndex].image;
 	}
+
+	@Method()
+	async getCurrentItem() {
+		if (!this.items || !this.items[this.currentItemIndex])
+			return;
+
+		return new Item(this.items[this.currentItemIndex]);
+	} 
 
 	@Method()
 	async getViewportType(): Promise<ViewportType> {

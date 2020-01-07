@@ -10,6 +10,9 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
   MessageType,
 } from './components/message/message-options';
+import {
+  Item,
+} from './models/item';
 
 export namespace Components {
   interface HarmonizedAnnotations {}
@@ -82,6 +85,7 @@ export namespace Components {
     'deepzoomEnabled': boolean;
     'defaultLanguage': string;
     'defaultTheme': string;
+    'getCurrentItem': () => Promise<Item>;
     'getPage': () => Promise<number>;
     'getUrl': () => Promise<string>;
     'getViewportType': () => Promise<ViewportType>;

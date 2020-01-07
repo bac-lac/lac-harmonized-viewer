@@ -2,6 +2,8 @@ import { Resolver } from "../resolver"
 import { IIIFDocument } from "./iiif-document"
 import { t } from "../../services/i18n-service"
 
+
+
 export class IIIFResolver extends Resolver {
 
     thumbnailDefaultFormat: string = 'image/jpeg'
@@ -81,7 +83,15 @@ export class IIIFResolver extends Resolver {
                         image: resource.id,
                         //image: this.getImageUri(resource, 1000),
                         thumbnail: this.getThumbnailUri(canvas),
-                        tileSources: this.resolveTileSource(image)
+                        tileSources: this.resolveTileSource(image),
+                        metadata: canvas.getMetadata().map(
+                            (lvp: Manifesto.LabelValuePair): DocumentMetadata => {
+                                return {
+                                    label: lvp.getLabel(),
+                                    value: this.mapLabels(lvp.value)
+                                } 
+                            }
+                        )
                     }
                 }
             }))
