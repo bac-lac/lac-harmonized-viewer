@@ -1,6 +1,13 @@
 harmonized-video {
     display: block;
     overflow: hidden;
-}
 
-@import './assets/azure-media-player/azuremediaplayer.min.css';
+    /*#harmonized-viewer-custom-video*/
+
+    #harmonized-viewer-html5-video {
+        > video {
+            display: block;
+            width: 100%;
+        }
+    }
+}

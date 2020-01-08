@@ -35,6 +35,7 @@ export class ViewerComponent {
 	@Prop({ attribute: 'language' }) defaultLanguage: string
 	@Prop({ attribute: 'theme' }) defaultTheme: string
 	@Prop() languageEnable: boolean
+	@Prop() customVideoPlayer: boolean = false;
 	@Prop({ attribute: 'deepzoom'}) deepzoomEnabled: boolean = true
 
 	addLanguage: typeof addLanguage
@@ -166,6 +167,7 @@ export class ViewerComponent {
 			language: {
 				enable: this.languageEnable
 			},
+			customVideoPlayer: this.customVideoPlayer,
 			deepzoom: this.deepzoomEnabled
 		})
 	}

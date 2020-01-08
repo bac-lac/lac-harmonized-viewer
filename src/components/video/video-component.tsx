@@ -1,118 +1,77 @@
-import { Component, h, Prop, Element, Host, State } from '@stencil/core';
-import Axios from 'axios';
+import { Component, h, Prop, Element, Host, State, Event, EventEmitter } from '@stencil/core';
+import { Unsubscribe, Store } from '@stencil/redux';
 
 @Component({
     tag: 'harmonized-video',
     styleUrl: 'video-component.scss'
 })
+/*
+    To provide a custom video, you must:
+    1 - Listen to the 'hvCustomVideoPlayerRender' DOM event
+    2 - On event, querySelect the harmonized viewer (#harmonized-viewer)
+    3 - then querySelect the harmonized-viewer's shadow-root for the #harmonized-viewer-custom-video container
+    4 - inject your on video within this element => do not inject any <link /> elements
+*/
 export class VideoComponent {
 
     @Element() el: HTMLElement
 
+    @Prop({ context: "store" }) store: Store
+
     @Prop() url: string
     @Prop() contentType: string
 
-    private fseAuthorization: string
-    private fseUrl: string
+    storeUnsubscribe: Unsubscribe
 
-    private sourceAuthorization: string
-    private sourceUrl : string
+    @State() customVideoPlayer: boolean = false;
 
-    // We currently assume that all video files have an authorization flow like so:
-    // - Get authorization token from internal provider
-    // - Check authorization token to FSE and receive new token and url to media storage
-    // - Set AES + streaming location in video player
-    async handlePlayerLoad() {
-        // Shadow DOM doesn't support font face setting. Have to bring it up to the HEAD of the document.
-        if (!document.querySelector('#harmonized-viewer-azuremediaplayer-style')) {
-            const fontFaceStyle = document.createElement('style');
-            fontFaceStyle.id = 'harmonized-viewer-azuremediaplayer-style';
-            document.head.appendChild(fontFaceStyle);
-            fontFaceStyle.innerHTML = `
-                @font-face {
-                    font-family: azuremediaplayer;
-                    src: url("http://amp.azure.net/libs/amp/latest/skins/amp-default/assets/fonts/azuremediaplayer.eot");
-                    src: url("http://amp.azure.net/libs/amp/latest/skins/amp-default/assets/fonts/azuremediaplayer.woff") format("woff"), url("http://amp.azure.net/libs/amp/latest/skins/amp-default/assets/fonts/azuremediaplayer.ttf") format("truetype"), url("http://amp.azure.net/libs/amp/latest/skins/amp-default/assets/fonts/azuremediaplayer.svg#icomoon") format("svg");
-                    font-weight: normal;
-                    font-style: normal
-                }
-            `;
-        }
+    @Event({ eventName: 'hvCustomVideoPlayerRender' }) customVideoPlayerRender: EventEmitter;
 
-        await Axios.get(this.url)
-        .then((response) => {
-            if (response.status === 200) {
-                this.fseAuthorization = response.headers['authorization'].replace("Bearer ", "");
-                this.fseUrl = response.data;
-
-                return Axios.get(this.fseUrl, { headers: { 'Authorization': 'bearer ' + this.fseAuthorization }});
-            } else {
-                // error
+    componentWillLoad() {
+        this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
+            const {
+                document: { configuration: { customVideoPlayer } }
+            } = state
+            return {
+                customVideoPlayer
             }
-        })
-        .then((response) => {
-            if (response.status === 200 && response.data) {
-                this.sourceAuthorization = response.data.token;
-                this.sourceUrl = response.data.url;
-
-                this.renderVideoPlayer();
-            } else {
-                // error
-            }
-        })
-        .catch((e) => {
-            console.log(e);
-            // Render video error
         });
     }
 
-    renderVideoPlayer() {
+    componentDidLoad() {
+        if (this.customVideoPlayer) {
+            this.customVideoPlayerRender.emit({ url: this.url, contentType: this.contentType });
+        }
+    }
 
-        const video = this.el.querySelector('video')
-        if (video) {
+    componentDidUnload() {
+        this.storeUnsubscribe()
+    }
 
-            const options = {
-                "nativeControlsForTouch": false,
-                "controls": true,
-                "autoplay": true,
-                "fluid": true
-            }
-
-            const videoPlayer = (window as any).amp(video, options)
-            const style = this.el.querySelector('style');
-            const resize = function() {
-                const vjsStylesDimensions = document.querySelector('.vjs-styles-dimensions');
-                style.innerHTML = vjsStylesDimensions ? vjsStylesDimensions.innerHTML : null;
-            };
-            window.addEventListener('resize', resize);
-            window.dispatchEvent(new Event('resize'));
-
-            videoPlayer.src([{
-                "src": this.sourceUrl, //"https://www.radiantmediaplayer.com/media/bbb-360p.mp4",
-                "type": "application/vnd.ms-sstr+xml", //"video/mp4",
-                "protectionInfo": [
-                    {
-                        "type": "AES",
-                        "authenticationToken": `Bearer=${this.sourceAuthorization}`
-                    }
-                ]
-            }]);
+    componentDidUpdate() {
+        if (this.customVideoPlayer) {
+            this.customVideoPlayerRender.emit({ url: this.url, contentType: this.contentType });
         }
     }
 
     render() {
-
         if (!this.url) {
             return undefined
         }
 
         return <Host class="video">
-            <style id="azuremediaplayerstyles"></style>
-            <script type="text/javascript" src="//amp.azure.net/libs/amp/latest/azuremediaplayer.min.js" onLoad={this.handlePlayerLoad.bind(this)}>
-            </script>
+                    {this.customVideoPlayer
+                        ?   <div id="harmonized-viewer-custom-video">
 
-            <video id="azuremediaplayer" class="azuremediaplayer amp-default-skin amp-big-play-centered embed-responsive-item" tabindex="0">
-            </video>
-        </Host>
+                            </div>
+                        :   <div id="harmonized-viewer-html5-video">
+                                <video controls>
+                                    <source src={this.url} type={this.contentType}>
+                                        This browser does not support the HTML5 video element.
+                                    </source>
+                                </video>
+                            </div>
+                    }
+                </Host>;
     }
 }

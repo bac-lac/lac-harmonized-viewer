@@ -150,6 +150,7 @@ interface DocumentMetadata {
 
 interface Configuration {
     language: LanguageConfiguration
+    customVideoPlayer: boolean
     deepzoom: boolean
 }
 

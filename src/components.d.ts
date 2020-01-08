@@ -82,6 +82,7 @@ export namespace Components {
   }
   interface HarmonizedViewer {
     'addOverlay': (x: number, y: number, width: number, height: number) => Promise<void>;
+    'customVideoPlayer': boolean;
     'deepzoomEnabled': boolean;
     'defaultLanguage': string;
     'defaultTheme': string;
@@ -299,9 +300,11 @@ declare namespace LocalJSX {
   interface HarmonizedTopbar {}
   interface HarmonizedVideo {
     'contentType'?: string;
+    'onHvCustomVideoPlayerRender'?: (event: CustomEvent<any>) => void;
     'url'?: string;
   }
   interface HarmonizedViewer {
+    'customVideoPlayer'?: boolean;
     'deepzoomEnabled'?: boolean;
     'defaultLanguage'?: string;
     'defaultTheme'?: string;
