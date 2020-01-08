@@ -206,16 +206,12 @@ export class OpenSeadragonComponent {
             springStiffness: 10.0,
             showNavigator: true,
             navigatorPosition: "BOTTOM_RIGHT",
-            showNavigationControl: true,
+            showNavigationControl: false,
             showSequenceControl: false,
             sequenceMode: true,
             maxZoomPixelRatio: 300,
             tileSources: this.currentItem.tileSources,
-            initialPage: this.currentItemIndex,
-
-            zoomInButton: "harmonized-viewer-openseadragon-zoom-in",
-            zoomOutButton: "harmonized-viewer-openseadragon-zoom-out",
-            homeButton: "harmonized-viewer-openseadragon-refresh"
+            initialPage: this.currentItemIndex
         })
 
         this.instance.addHandler('open', () => {
