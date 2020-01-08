@@ -35,6 +35,10 @@
     }
 
     harmonized-button {
+        &.circle > button {
+            background-color: #fff;
+        }
+
         .mdc-button {
             @include mdc-button-ink-color(#46494c);
             &[disabled] {

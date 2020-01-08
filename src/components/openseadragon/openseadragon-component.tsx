@@ -1,13 +1,15 @@
 import { Component, h, Element, Event, EventEmitter, Method, Listen, State, Prop, Watch, Host } from '@stencil/core';
 import { Store, Unsubscribe } from "@stencil/redux";
-import { setZoom, clearOverlays, } from "../../store/actions/document";
-import { viewItem } from '../../store/actions/viewport';
 import openseadragon from 'openseadragon';
-import { Resolver } from '../../resolvers/resolver';
-import { IIIFResolver } from '../../resolvers/iiif-resolver/iiif-resolver';
-import { IIIFDocument } from '../../resolvers/iiif-resolver/iiif-document';
+import { clearOverlays } from "../../store/actions/document";
+import { viewItem } from '../../store/actions/viewport';
+
+import iconPlus from '../../assets/material-design-icons/add-24px.svg'
+import iconMinus from '../../assets/material-design-icons/remove-24px.svg'
+import iconRefresh from '../../assets/material-design-icons/refresh-24px.svg'
 import iconChevronLeft from '../../assets/material-design-icons/ic_chevron_left_48px.svg'
 import iconChevronRight from '../../assets/material-design-icons/ic_chevron_right_48px.svg'
+import { homedir } from 'os';
 
 @Component({
     tag: 'harmonized-openseadragon',
@@ -160,6 +162,26 @@ export class OpenSeadragonComponent {
         }
     }
 
+    handleZoomIn() {
+        if (this.instance && this.instance.viewport) {
+            this.instance.viewport.zoomBy(this.instance.zoomPerClick / 1.0);
+            this.instance.viewport.applyConstraints();
+        }
+    }
+
+    handleZoomOut() {
+        if (this.instance && this.instance.viewport) {
+            this.instance.viewport.zoomBy(1.0 / this.instance.zoomPerClick);
+            this.instance.viewport.applyConstraints();
+        }
+    }
+
+    handleRefreshClick() {
+        if (this.instance && this.instance.viewport) {
+            this.instance.viewport.goHome();
+        }
+    }
+
     handlePreviousClick() {
         this.viewItem(this.currentItemIndex - 1)
     }
@@ -183,13 +205,17 @@ export class OpenSeadragonComponent {
             animationTime: 0.1,
             springStiffness: 10.0,
             showNavigator: true,
-            navigatorPosition: "TOP_LEFT",
-            showNavigationControl: false,
+            navigatorPosition: "BOTTOM_RIGHT",
+            showNavigationControl: true,
             showSequenceControl: false,
             sequenceMode: true,
             maxZoomPixelRatio: 300,
             tileSources: this.currentItem.tileSources,
-            initialPage: this.currentItemIndex
+            initialPage: this.currentItemIndex,
+
+            zoomInButton: "harmonized-viewer-openseadragon-zoom-in",
+            zoomOutButton: "harmonized-viewer-openseadragon-zoom-out",
+            homeButton: "harmonized-viewer-openseadragon-refresh"
         })
 
         this.instance.addHandler('open', () => {
@@ -285,6 +311,32 @@ export class OpenSeadragonComponent {
 
     render() {
         return <Host>
+            <div class="button-topbar-group">
+                <harmonized-button
+                    class="button-topbar"
+                    icon={iconPlus}
+                    size="sm"
+                    title="Zoom in"
+                    aria-label="Zoom in"
+                    onClick={this.handleZoomIn.bind(this)}
+                />
+                <harmonized-button
+                    class="button-topbar"
+                    icon={iconMinus}
+                    size="sm"
+                    title="Zoom out"
+                    aria-label="Zoom out"
+                    onClick={this.handleZoomOut.bind(this)}
+                />
+                <harmonized-button
+                    class="button-topbar"
+                    icon={iconRefresh}
+                    size="sm"
+                    title="Refresh zoom"
+                    aria-label="Refresh zoom"
+                    onClick={this.handleRefreshClick.bind(this)}
+                />
+            </div>
 
             <harmonized-button
                 class="button-navigation button-navigation--prev"

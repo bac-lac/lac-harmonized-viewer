@@ -4,6 +4,10 @@ harmonized-button {
 
     display: flex;
 
+    &.circle > button {
+        border-radius: 50%;
+    }
+
     .mdc-button {
         @include mdc-button-ink-color(#fff);
 

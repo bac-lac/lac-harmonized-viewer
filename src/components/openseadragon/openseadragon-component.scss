@@ -10,8 +10,8 @@ harmonized-openseadragon {
         opacity: 0;
         transition: opacity 200ms ease;
 
-        z-index: 1;
         position: absolute;
+        z-index: 2;
 
         &--prev {
             left: 30px;
@@ -19,6 +19,17 @@ harmonized-openseadragon {
 
         &--next {
             right: 30px;
+        }
+    }
+
+    .button-topbar-group {
+        position: absolute;
+        z-index: 4;
+        top: 0;
+        left: 0;
+
+        > .button-topbar {
+            margin-left: 10px;
         }
     }
 

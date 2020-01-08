@@ -12,7 +12,6 @@ import iconFullscreenExit from '../../assets/material-icons/ic_fullscreen_exit_2
 import { toggleFullscreen, toggleDrawer } from '../../store/actions/viewport';
 import { t } from '../../services/i18n-service';
 import { resolveViewportType } from '../../utils/viewport';
-import viewport from '../../store/reducers/viewport';
 
 @Component({
     tag: 'harmonized-topbar',
