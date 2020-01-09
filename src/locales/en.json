@@ -12,6 +12,17 @@
     "pager": "Item <b>{{page}}</b> of <b>{{pageCount}}</b>",
     "untitled": "Untitled",
     "ok": "OK",
+
+    "browserNoVideo": "This browser does not support the HTML5 video element.",
+
+    "closeSidebar": "Close sidebar",
+
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "zoomReset": "Reset zoom",
+    "goToNextPage": "Go to next page",
+    "goToPrevPage": "Go to previous page",
+    
     "errors": {
         "request-failed": "Document request failed<br />{{url}}",
         "request-failed-notfound": "Document could not be found {{url}}",

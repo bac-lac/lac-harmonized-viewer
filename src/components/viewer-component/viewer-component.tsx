@@ -32,9 +32,7 @@ export class ViewerComponent {
 	@Prop() navigationBackgroundColor: string
 
 	@Prop() url: string
-	@Prop({ attribute: 'language' }) defaultLanguage: string
-	@Prop({ attribute: 'theme' }) defaultTheme: string
-	@Prop() languageEnable: boolean
+	@Prop() lang: string
 	@Prop() customVideoPlayer: boolean = false;
 	@Prop({ attribute: 'deepzoom'}) deepzoomEnabled: boolean = true
 
@@ -88,12 +86,6 @@ export class ViewerComponent {
 		return this.itemsLoaded.emit();
 	}
 
-	// ??
-	@Method()
-	async getUrl(): Promise<string> {
-		return this.items[this.currentItemIndex].image;
-	}
-
 	@Method()
 	async getCurrentItem() {
 		if (!this.items || !this.items[this.currentItemIndex])
@@ -109,12 +101,7 @@ export class ViewerComponent {
 		return viewportType;
 	}
 
-	// ??
-	@Method()
-	async getPage(): Promise<number> {
-		return this.currentItemIndex + 1;
-	}
-
+	/* ??? */
 	@Method()
 	async addOverlay(x: number, y: number, width: number, height: number) {
 		this.addOverlayState(x, y, width, height)
@@ -165,7 +152,7 @@ export class ViewerComponent {
 
 		this.setConfiguration({
 			language: {
-				enable: this.languageEnable
+				enable: true
 			},
 			customVideoPlayer: this.customVideoPlayer,
 			deepzoom: this.deepzoomEnabled
@@ -178,28 +165,6 @@ export class ViewerComponent {
 
 	componentDidUnload() {
 		this.storeUnsubscribe()
-	}
-
-	initLanguage() {
-
-		i18next
-			//.use(i18nextBrowserLanguageDetector)
-			.init({
-				fallbackLng: 'en',
-				debug: false,
-				//ns: ['common'],
-				// defaultNS: 'common'
-			}, (err, t) => {
-
-				const language = this.resolveLanguage()
-				this.setLanguage(language.code)
-			})
-
-		AppConfig.languages.forEach((language) => {
-			this.addLanguage(language.code, language.name)
-			i18next.addResourceBundle(language.code, 'translation', language, true, true)
-		})
-
 	}
 
 	initCustomFlags() {
@@ -219,7 +184,29 @@ export class ViewerComponent {
 		})
 	}
 
-	resolveLanguage(): Language {
+	initLanguage() {
+
+		i18next
+			.init({
+				lng: this.lang,
+				fallbackLng: 'en',
+				debug: false,
+				//ns: ['common'],
+				// defaultNS: 'common'
+			}, (err, t) => {
+
+				const language = this.lang || 'en';
+				this.setLanguage(language)
+			})
+
+		AppConfig.languages.forEach((language) => {
+			this.addLanguage(language.code, language.name)
+			i18next.addResourceBundle(language.code, 'translation', language, true, true)
+		})
+
+	}
+
+	/*resolveLanguage(): Language {
 
 		let resolved = null
 
@@ -236,9 +223,9 @@ export class ViewerComponent {
 		}
 
 		return this.availableLanguages.find(i => i.code && i.code == resolved)
-	}
+	}*/
 
-	resolveTheme(): string {
+	/*resolveTheme(): string {
 
 		let resolved = null
 
@@ -255,13 +242,13 @@ export class ViewerComponent {
 		}
 
 		return resolved
-	}
+	}*/
 
 	render() {
 
 		let className = 'harmonized-viewer'
 
-		const theme = this.resolveTheme()
+		const theme = 'light';
 		if (theme) {
 			className += ` harmonized-viewer-theme--${theme}`
 		}

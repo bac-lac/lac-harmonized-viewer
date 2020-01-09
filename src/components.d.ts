@@ -84,13 +84,9 @@ export namespace Components {
     'addOverlay': (x: number, y: number, width: number, height: number) => Promise<void>;
     'customVideoPlayer': boolean;
     'deepzoomEnabled': boolean;
-    'defaultLanguage': string;
-    'defaultTheme': string;
     'getCurrentItem': () => Promise<Item>;
-    'getPage': () => Promise<number>;
-    'getUrl': () => Promise<string>;
     'getViewportType': () => Promise<ViewportType>;
-    'languageEnable': boolean;
+    'lang': string;
     'navigationBackgroundColor': string;
     'navigationCols': number;
     'navigationEnable': boolean;
@@ -306,9 +302,7 @@ declare namespace LocalJSX {
   interface HarmonizedViewer {
     'customVideoPlayer'?: boolean;
     'deepzoomEnabled'?: boolean;
-    'defaultLanguage'?: string;
-    'defaultTheme'?: string;
-    'languageEnable'?: boolean;
+    'lang'?: string;
     'navigationBackgroundColor'?: string;
     'navigationCols'?: number;
     'navigationEnable'?: boolean;

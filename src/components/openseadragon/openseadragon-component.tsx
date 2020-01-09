@@ -4,12 +4,13 @@ import openseadragon from 'openseadragon';
 import { clearOverlays } from "../../store/actions/document";
 import { viewItem } from '../../store/actions/viewport';
 
+import { t } from '../../services/i18n-service';
+
 import iconPlus from '../../assets/material-design-icons/add-24px.svg'
 import iconMinus from '../../assets/material-design-icons/remove-24px.svg'
 import iconRefresh from '../../assets/material-design-icons/refresh-24px.svg'
 import iconChevronLeft from '../../assets/material-design-icons/ic_chevron_left_48px.svg'
 import iconChevronRight from '../../assets/material-design-icons/ic_chevron_right_48px.svg'
-import { homedir } from 'os';
 
 @Component({
     tag: 'harmonized-openseadragon',
@@ -201,7 +202,6 @@ export class OpenSeadragonComponent {
 
         this.instance = openseadragon({
             element: this.el.querySelector(".openseadragon"),
-            prefixUrl: "/dist/vendors/openseadragon/images/",
             animationTime: 0.1,
             springStiffness: 10.0,
             showNavigator: true,
@@ -312,24 +312,24 @@ export class OpenSeadragonComponent {
                     class="button-topbar"
                     icon={iconPlus}
                     size="sm"
-                    title="Zoom in"
-                    aria-label="Zoom in"
+                    title={t('zoomIn')}
+                    aria-label={t('zoomIn')}
                     onClick={this.handleZoomIn.bind(this)}
                 />
                 <harmonized-button
                     class="button-topbar"
                     icon={iconMinus}
                     size="sm"
-                    title="Zoom out"
-                    aria-label="Zoom out"
+                    title={t('zoomOut')}
+                    aria-label={t('zoomOut')}
                     onClick={this.handleZoomOut.bind(this)}
                 />
                 <harmonized-button
                     class="button-topbar"
                     icon={iconRefresh}
                     size="sm"
-                    title="Refresh zoom"
-                    aria-label="Refresh zoom"
+                    title={t('zoomReset')}
+                    aria-label={t('zoomReset')}
                     onClick={this.handleRefreshClick.bind(this)}
                 />
             </div>
@@ -338,8 +338,8 @@ export class OpenSeadragonComponent {
                 class="button-navigation button-navigation--prev"
                 icon={iconChevronLeft}
                 size="lg"
-                title="Go to previous page"
-                aria-label="Go to previous page"
+                title={t('goToPrevPage')}
+                aria-label={t('goToPrevPage')}
                 onClick={this.handlePreviousClick.bind(this)}
                 disabled={/*this.status.loading ||*/ this.currentItemIndex === 0} />
 
@@ -351,8 +351,8 @@ export class OpenSeadragonComponent {
                 class="button-navigation button-navigation--next"
                 icon={iconChevronRight}
                 size="lg"
-                title="Go to next page"
-                aria-label="Go to next page"
+                title={t('goToNextPage')}
+                aria-label={t('goToNextPage')}
                 onClick={this.handleNextClick.bind(this)}
                 disabled={/*this.status.loading ||*/ this.currentItemIndex + 1 >= this.items.length} />
 

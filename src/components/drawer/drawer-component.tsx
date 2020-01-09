@@ -1,5 +1,6 @@
 import { Component, h, Element, State, Prop, Host, Event, EventEmitter } from '@stencil/core';
 import { MDCDrawer } from "@material/drawer";
+import { t } from '../../services/i18n-service';
 import arrowRight from '../../assets/material-design-icons/ic_chevron_right_36px.svg'
 
 @Component({
@@ -40,8 +41,8 @@ export class DrawerComponent {
                         <div class="mdc-drawer__close">
                             <harmonized-button
                             icon={arrowRight}
-                            title="Close sidebar"
-                            aria-label="Close sidebar"
+                            title={t('closeSidebar')}
+                            aria-label={t('closeSidebar')}
                             onClick={this.handleClose.bind(this)} />
                         </div>
                         <div class="mdc-drawer__title">

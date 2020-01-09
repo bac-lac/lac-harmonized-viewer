@@ -12,6 +12,17 @@
     "pager": "Article <b>{{page}}</b> de <b>{{pageCount}}</b>",
     "untitled": "Sans titre",
     "ok": "OK",
+    
+    "browserNoVideo": "@@@",
+
+    "closeSidebar": "@@@",
+
+    "zoomIn": "@@@",
+    "zoomOut": "@@@",
+    "zoomReset": "@@@",
+    "goToNextPage": "@@@",
+    "goToPrevPage": "@@@",
+
     "errors": {
         "request-failed": "La requête au document a échoué {{url}}",
         "request-failed-notfound": "Document introuvable",

@@ -1,5 +1,6 @@
 import { Component, h, Prop, Element, Host, State, Event, EventEmitter } from '@stencil/core';
 import { Unsubscribe, Store } from '@stencil/redux';
+import { t } from '../../services/i18n-service';
 
 @Component({
     tag: 'harmonized-video',
@@ -67,7 +68,7 @@ export class VideoComponent {
                         :   <div id="harmonized-viewer-html5-video">
                                 <video controls>
                                     <source src={this.url} type={this.contentType}>
-                                        This browser does not support the HTML5 video element.
+                                        {t('browserNoVideo')}
                                     </source>
                                 </video>
                             </div>
