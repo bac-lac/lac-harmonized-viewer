@@ -87,7 +87,7 @@ export namespace Components {
     'deepzoomEnabled': boolean;
     'getCurrentItem': () => Promise<Item>;
     'getViewportType': () => Promise<ViewportType>;
-    'lang': string;
+    'language': string;
     'navigationBackgroundColor': string;
     'navigationCols': number;
     'navigationEnable': boolean;
@@ -304,7 +304,7 @@ declare namespace LocalJSX {
     'customItemProps'?: string[];
     'customVideoPlayer'?: boolean;
     'deepzoomEnabled'?: boolean;
-    'lang'?: string;
+    'language'?: string;
     'navigationBackgroundColor'?: string;
     'navigationCols'?: number;
     'navigationEnable'?: boolean;

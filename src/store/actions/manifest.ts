@@ -44,7 +44,6 @@ export const fetchManifest = (url: string) => async (dispatch, _getState) => {
                 const annotations: DocumentAnnotation[] = resolver.getAnnotations();
 
                 const customItemProps: string[] = _getState().document.configuration.customItemProps;
-                console.log(customItemProps);
                 const items: DocumentPage[] = resolver.getPages(customItemProps);
                 dispatch(loadView(title, annotations, items));
             })

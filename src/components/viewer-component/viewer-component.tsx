@@ -32,7 +32,7 @@ export class ViewerComponent {
 	@Prop() navigationBackgroundColor: string
 
 	@Prop() url: string
-	@Prop() lang: string
+	@Prop() language: string
 	@Prop() customVideoPlayer: boolean = false;
 	@Prop() customItemProps: string[] = [];
 	@Prop({ attribute: 'deepzoom'}) deepzoomEnabled: boolean = true
@@ -54,8 +54,6 @@ export class ViewerComponent {
 	@State() fullscreen: MyAppState['viewport']['fullscreen']
 
 	@State() configuration: MyAppState["document"]["configuration"]
-	@State() language: MyAppState["document"]["language"]
-	@State() availableLanguages: MyAppState["document"]["availableLanguages"]
 	@State() theme: MyAppState["document"]["theme"]
 
 	@Prop({ context: "store" }) store: Store
@@ -132,13 +130,11 @@ export class ViewerComponent {
 		this.store.mapDispatchToProps(this, { addLanguage, addOverlay, setLanguage, setConfiguration, setOptions, fetchManifest, toggleFullscreen })
 		this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
-				document: { configuration, language, availableLanguages, theme },
+				document: { configuration, theme },
 				viewport: { itemIndex, items, fullscreen }
 			} = state
 			return {
 				configuration,
-				language,
-				availableLanguages,
 				theme,
 
 				currentItemIndex: itemIndex,
@@ -190,14 +186,14 @@ export class ViewerComponent {
 
 		i18next
 			.init({
-				lng: this.lang,
+				lng: this.language,
 				fallbackLng: 'en',
 				debug: false,
 				//ns: ['common'],
 				// defaultNS: 'common'
 			}, (err, t) => {
 
-				const language = this.lang || 'en';
+				const language = this.language || 'en';
 				this.setLanguage(language)
 			})
 

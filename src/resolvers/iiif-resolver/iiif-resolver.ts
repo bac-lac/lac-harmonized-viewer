@@ -111,7 +111,6 @@ export class IIIFResolver extends Resolver {
                     };
 
                     customItemProps.forEach((prop) => {item[prop] = canvas.getProperty(prop)});
-                    console.log(item);
                     return item;
                 }
             }))
