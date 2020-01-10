@@ -1,8 +1,24 @@
 import { Resolver } from "../resolver"
 import { IIIFDocument } from "./iiif-document"
 import { t } from "../../services/i18n-service"
+import 'manifesto.js';
 
+// Library getProperty function had a bug for falsy values (intentional? as in, no boolean values expected?)
+Manifesto.Canvas.prototype.getProperty = function(name: string) : any {
+    let prop: any = null;
+        
+        if (this.__jsonld) {
+            prop = this.__jsonld[name];
 
+            // if (!prop) {    FIXED - would go into if-block with falsy values
+            if (typeof prop === 'undefined') {
+                // property may have a prepended '@'
+                prop = this.__jsonld['@' + name];
+            }
+        }
+        
+        return prop;
+}
 
 export class IIIFResolver extends Resolver {
 
@@ -66,7 +82,7 @@ export class IIIFResolver extends Resolver {
         return this.getSequence(0)
     }
 
-    getPages(): DocumentPage[] {
+    getPages(customItemProps: string[] = []): DocumentPage[] {
 
         return this.getDefaultSequence().getCanvases()
             .flatMap((canvas) => canvas.getImages().map((image) => {
@@ -76,7 +92,7 @@ export class IIIFResolver extends Resolver {
 
                     const format = resource.getFormat()
 
-                    return {
+                    const item: any = {
                         id: canvas.id,
                         contentType: format && format.value,
                         label: this.mapLabels(canvas.getLabel()),
@@ -92,7 +108,11 @@ export class IIIFResolver extends Resolver {
                                 } 
                             }
                         )
-                    }
+                    };
+
+                    customItemProps.forEach((prop) => {item[prop] = canvas.getProperty(prop)});
+                    console.log(item);
+                    return item;
                 }
             }))
     }

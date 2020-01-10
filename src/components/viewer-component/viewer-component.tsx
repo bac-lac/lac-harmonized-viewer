@@ -34,6 +34,7 @@ export class ViewerComponent {
 	@Prop() url: string
 	@Prop() lang: string
 	@Prop() customVideoPlayer: boolean = false;
+	@Prop() customItemProps: string[] = [];
 	@Prop({ attribute: 'deepzoom'}) deepzoomEnabled: boolean = true
 
 	addLanguage: typeof addLanguage
@@ -155,6 +156,7 @@ export class ViewerComponent {
 				enable: true
 			},
 			customVideoPlayer: this.customVideoPlayer,
+			customItemProps: this.customItemProps,
 			deepzoom: this.deepzoomEnabled
 		})
 	}
@@ -164,7 +166,7 @@ export class ViewerComponent {
 	}
 
 	componentDidUnload() {
-		this.storeUnsubscribe()
+		this.storeUnsubscribe();
 	}
 
 	initCustomFlags() {

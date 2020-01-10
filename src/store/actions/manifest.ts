@@ -25,6 +25,7 @@ export const fetchManifest = (url: string) => async (dispatch, _getState) => {
     await resolver.init(url)
             .then((iiifResolver) => {
                 const manifest : Manifesto.IManifest = resolver.getManifest();
+                dispatch(setManifest(manifest));
 
                 // Load items into the viewport
                 const resolverTitleLabels: DocumentLabel[] = resolver.getTitle();
@@ -41,33 +42,16 @@ export const fetchManifest = (url: string) => async (dispatch, _getState) => {
                     }
                 }
                 const annotations: DocumentAnnotation[] = resolver.getAnnotations();
-                const items: DocumentPage[] = resolver.getPages();
+
+                const customItemProps: string[] = _getState().document.configuration.customItemProps;
+                console.log(customItemProps);
+                const items: DocumentPage[] = resolver.getPages(customItemProps);
                 dispatch(loadView(title, annotations, items));
             })
 
             .catch((e) => {
                 console.log(e);
             });
-    
-    /*this.setManifest(this.resolver.getManifest())
-
-    this.setDocumentContentType(this.resolver.getManifest().getSequenceByIndex(0).getCanvasByIndex(this.page).getImages()[0].getResource().getFormat().value)
-    
-    const url2 = this.resolver.getManifest().getSequences()[0].getCanvasByIndex(this.page).getImages()[0].getResource().id
-    
-    this.setDocumentUrl(url2)
-
-    this.setDocumentTitle(this.resolver.getTitle())
-
-    const iiifResolver = this.resolver as IIIFResolver
-
-    this.setDocumentPages(iiifResolver.getPages())
-
-    // Annotations
-    this.setAnnotations(this.resolver.annotations())
-
-    // Alternate formats
-    this.setDocumentAlternateFormats(this.resolver.alternateFormats())*/
 };
 
 
