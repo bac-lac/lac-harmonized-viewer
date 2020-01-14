@@ -101,6 +101,27 @@ export class ViewerComponent {
 		return viewportType;
 	}
 
+	@Method()
+	async getTopBarElement(): Promise<HTMLElement> {
+		return this.el.shadowRoot.querySelector('harmonized-topbar') as HTMLElement;
+	}
+
+	@Method()
+	async getViewportElement(): Promise<HTMLElement> {
+		return this.el.shadowRoot.querySelector('harmonized-viewport') as HTMLElement;
+	}
+
+	@Method()
+	async getCustomVideoElement(): Promise<HTMLElement> {
+		console.log(this.el.shadowRoot.querySelector('#harmonized-viewer-custom-video') as HTMLElement);
+		return this.el.shadowRoot.querySelector('#harmonized-viewer-custom-video') as HTMLElement;
+	}
+
+	@Method()
+	async getNavigationElement(): Promise<HTMLElement> {
+		return this.el.shadowRoot.querySelector('harmonized-navigation') as HTMLElement;
+	}
+
 	/* ??? */
 	@Method()
 	async addOverlay(x: number, y: number, width: number, height: number) {
