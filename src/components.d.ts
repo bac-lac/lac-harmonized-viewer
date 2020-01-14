@@ -88,6 +88,7 @@ export namespace Components {
     'getCurrentItem': () => Promise<Item>;
     'getViewportType': () => Promise<ViewportType>;
     'language': string;
+    'metadataDictionary': MetadataMapping[];
     'navigationBackgroundColor': string;
     'navigationCols': number;
     'navigationEnable': boolean;
@@ -305,6 +306,7 @@ declare namespace LocalJSX {
     'customVideoPlayer'?: boolean;
     'deepzoomEnabled'?: boolean;
     'language'?: string;
+    'metadataDictionary'?: MetadataMapping[];
     'navigationBackgroundColor'?: string;
     'navigationCols'?: number;
     'navigationEnable'?: boolean;

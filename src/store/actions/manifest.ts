@@ -1,6 +1,5 @@
 import { TypeKeys } from "./index"
 import { IIIFResolver } from '../../resolvers/iiif-resolver/iiif-resolver';
-import { Resolver } from '../../resolvers/resolver';
 import { loadView } from './viewport';
 import "manifesto.js";
 
@@ -18,8 +17,8 @@ export const fetchManifest = (url: string) => async (dispatch, _getState) => {
     // TODO
 
     // We use the IIIF resolver solution for now => convert to better solution eventually
-    const resolver = new IIIFResolver();
     const configuration = _getState().document.configuration as Configuration
+    const resolver = new IIIFResolver(configuration.language);
     resolver.disableDeepzoom = configuration && !configuration.deepzoom;
 
     await resolver.init(url)
@@ -29,22 +28,18 @@ export const fetchManifest = (url: string) => async (dispatch, _getState) => {
 
                 // Load items into the viewport
                 const resolverTitleLabels: DocumentLabel[] = resolver.getTitle();
-                let title: string;
+                let title: string = null;
                 // Some manifests don't support multiple locales and return strings
                 if (typeof resolverTitleLabels === 'string') {
                     title = resolverTitleLabels;
-                } else {
-                    if (resolverTitleLabels instanceof Array && resolverTitleLabels.find(label => label.locale === 'en')) {
-                        // Change to state determined locale
-                        title = resolverTitleLabels.find(label => label.locale === 'en').value;
-                    } else {
-                        title = null;
-                    }
                 }
+                else if (resolverTitleLabels instanceof Array &&
+                         resolverTitleLabels.find(label => label.locale === configuration.language)) {
+                    title = resolverTitleLabels.find(label => label.locale === configuration.language).value;
+                }
+                // Remove eventually
                 const annotations: DocumentAnnotation[] = resolver.getAnnotations();
-
-                const customItemProps: string[] = _getState().document.configuration.customItemProps;
-                const items: DocumentPage[] = resolver.getPages(customItemProps);
+                const items: DocumentPage[] = resolver.getPages(configuration.customItemProps);
                 dispatch(loadView(title, annotations, items));
             })
 

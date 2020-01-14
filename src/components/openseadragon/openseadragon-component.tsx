@@ -11,6 +11,7 @@ import iconMinus from '../../assets/material-design-icons/remove-24px.svg'
 import iconRefresh from '../../assets/material-design-icons/refresh-24px.svg'
 import iconChevronLeft from '../../assets/material-design-icons/ic_chevron_left_48px.svg'
 import iconChevronRight from '../../assets/material-design-icons/ic_chevron_right_48px.svg'
+import { selectCurrentItem } from '../../store/selectors/item';
 
 @Component({
     tag: 'harmonized-openseadragon',
@@ -33,9 +34,9 @@ export class OpenSeadragonComponent {
 
     @State() overlays: MyAppState["document"]["overlays"]
 
-    currentItem: DocumentPage
-    @State() currentItemIndex: MyAppState['viewport']['itemIndex']
-    @State() items: MyAppState['viewport']['items']
+    @State() currentItemIndex: MyAppState["viewport"]["itemIndex"]
+    @State() numberOfItems: number;
+    @State() currentItem: DocumentPage
 
     @Prop({ context: "store" }) store: Store
 
@@ -67,37 +68,16 @@ export class OpenSeadragonComponent {
     componentWillLoad() {
         this.store.mapDispatchToProps(this, {  viewItem, clearOverlays })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
-            const {
-                viewport: { itemIndex, items }
-            } = state
             return {
-                currentItemIndex: itemIndex,
-                items
+                currentItemIndex: state.viewport.itemIndex,
+                numberOfItems: state.viewport.items.length,
+                currentItem: selectCurrentItem(state)
             }
-        })
+        });
     }
 
     componentDidLoad() {
-
-        /*const resolver = new IIIFResolver()
-
-        const options = this.options.filter(i => i.component && i.component === 'openseadragon')
-
-        const optionDisableDeepzoom = options.find(i => i.name && i.name === 'disabledeepzoom')
-        if (optionDisableDeepzoom) {
-            resolver.disableDeepzoom = optionDisableDeepzoom.value as boolean
-        }
-
-        this.resolver = resolver
-
-        await this.resolve()*/
-
-        this.currentItem = this.items[this.currentItemIndex];
         this.create();
-    }
-
-    componentWillUpdate() {
-        this.currentItem = this.items[this.currentItemIndex];
     }
 
     componentDidUpdate() {
@@ -354,7 +334,7 @@ export class OpenSeadragonComponent {
                 title={t('goToNextPage')}
                 aria-label={t('goToNextPage')}
                 onClick={this.handleNextClick.bind(this)}
-                disabled={/*this.status.loading ||*/ this.currentItemIndex + 1 >= this.items.length} />
+                disabled={/*this.status.loading ||*/ this.currentItemIndex + 1 >= this.numberOfItems} />
 
             <div class="overlays">
                 {this.overlays &&

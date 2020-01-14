@@ -13,6 +13,9 @@
     "untitled": "Sans titre",
     "ok": "OK",
     
+    "noAnnotations": "@@@",
+    "noAnnovationValue": "@@@",
+
     "browserNoVideo": "@@@",
 
     "closeSidebar": "@@@",

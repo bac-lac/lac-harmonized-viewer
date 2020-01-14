@@ -1,9 +1,7 @@
 import { Component, h, Element, State, Prop } from '@stencil/core';
 import { Unsubscribe, Store } from '@stencil/redux';
-import iconExpand from '../../assets/material-design-icons/ic_add_24px.svg'
-import iconCollapse from '../../assets/material-design-icons/ic_remove_24px.svg'
-import { animate } from '../../utils/utils';
 import { t } from '../../services/i18n-service';
+import { selectCurrentItem } from '../../store/selectors/item';
 
 @Component({
     tag: 'harmonized-annotations',
@@ -13,80 +11,49 @@ export class AnnotationsComponent {
 
     @Element() el: HTMLElement
 
-    storeUnsubscribe: Unsubscribe
-
-    @State() annotations: MyAppState["viewport"]["annotations"] = []
-
     @Prop({ context: "store" }) store: Store
 
-    componentWillLoad() {
+    storeUnsubscribe: Unsubscribe
 
+    @State() language: string
+    @State() currentItem: DocumentPage
+
+    componentWillLoad() {
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
-            const {
-                viewport: { annotations }
-            } = state
             return {
-                annotations
+                language: state.document.configuration.language,
+                currentItem: selectCurrentItem(state)
             }
         })
-    }
-
-    componentDidLoad() {
-
-        const links = this.el.querySelectorAll('.mdc-list-item__secondary-text a')
-        if (links) {
-
-        }
     }
 
     componentDidUnload() {
         this.storeUnsubscribe()
     }
 
-    handleExpandClick(ev: MouseEvent) {
-
-
-    }
-
     render() {
+        console.log(this.currentItem);
+        return  <dl class="annotation-list">
+                    {this.currentItem
+                        ?   this.currentItem.metadata.map((annotation) => {
+                                const label = annotation.label.find(label => label.locale === this.language);
+                                const content = annotation.value.find(value => value.locale === this.language);
+                                if (!label || label.value == "" || !content) {
+                                    return null;
+                                }
 
-        return <dl class="annotation-list">
-            {
-                this.annotations.map((annotation) => [
-                    <dt tabindex="0" class={this.renderAnnotationClass(annotation)}>
-                        {
-                            annotation.label &&
-                            <span>{t(annotation.label)}</span>
-                        }
-                    </dt>,
-                    <dd>
-                        <span innerHTML={annotation.content}>
-                        </span>
-                    </dd>
-                ])
-            }
-        </dl>
-    }
-
-    isCollapsed(annotation: DocumentAnnotation) {
-        if (!annotation) {
-            return undefined
-        }
-        return annotation.content.length > 100
-    }
-
-    renderAnnotationClass(annotation: DocumentAnnotation) {
-
-        if (!annotation) {
-            return undefined
-        }
-
-        let className = ''
-
-        if (this.isCollapsed(annotation)) {
-            className += ' is-collapsed'
-        }
-
-        return className
+                                return [
+                                    <dt tabindex="0">
+                                        <span>{t(label.value)}</span>
+                                    </dt>,
+                                    <dd>
+                                        <span innerHTML={content.value != "" ? content.value : t('noAnnovationValue')}>
+                                        </span>
+                                    </dd>
+                                ]
+                            })
+                        :   <span>{t('noAnnotations')}</span>
+                    }
+                </dl>;
     }
 }

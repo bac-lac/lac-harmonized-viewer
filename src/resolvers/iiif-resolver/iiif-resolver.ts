@@ -28,8 +28,15 @@ export class IIIFResolver extends Resolver {
 
     disableDeepzoom: boolean = false
 
+    private language: string
     private manifest: Manifesto.IManifest
     private manifestJson: string
+
+
+    constructor(language: string = 'en') {
+        super();
+        this.language = language;
+    }
 
     async init(url: string) {
 
@@ -82,7 +89,7 @@ export class IIIFResolver extends Resolver {
         return this.getSequence(0)
     }
 
-    getPages(customItemProps: string[] = []): DocumentPage[] {
+    getPages(customItemProps: string[] = [], metadataDictionary: MetadataMapping[] = []): DocumentPage[] {
 
         return this.getDefaultSequence().getCanvases()
             .flatMap((canvas) => canvas.getImages().map((image) => {
@@ -97,14 +104,19 @@ export class IIIFResolver extends Resolver {
                         contentType: format && format.value,
                         label: this.mapLabels(canvas.getLabel()),
                         image: resource.id,
-                        //image: this.getImageUri(resource, 1000),
                         thumbnail: this.getThumbnailUri(canvas),
                         tileSources: this.resolveTileSource(image),
                         metadata: canvas.getMetadata().map(
                             (lvp: Manifesto.LabelValuePair): DocumentMetadata => {
+                                const key = lvp.getLabel();
+                                let keySearch: MetadataMapping = metadataDictionary.find(m => m.key === key);
+                                const label : DocumentLabel[] = keySearch ? keySearch.values : [{ locale: 'en', value: lvp.getLabel() }];
+                                const value : DocumentLabel[] = this.mapLabels(lvp.value); 
+
                                 return {
-                                    label: lvp.getLabel(),
-                                    value: this.mapLabels(lvp.value)
+                                    key,
+                                    label,
+                                    value
                                 } 
                             }
                         )
@@ -122,6 +134,7 @@ export class IIIFResolver extends Resolver {
             .flatMap((canvas) => canvas.getImages().map((image) => this.resolveTileSource(image)))
     }
 
+    // Avoid
     getAnnotations(): DocumentAnnotation[] {
 
         if (!this.manifest) {

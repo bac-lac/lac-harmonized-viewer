@@ -35,6 +35,7 @@ export class ViewerComponent {
 	@Prop() language: string
 	@Prop() customVideoPlayer: boolean = false;
 	@Prop() customItemProps: string[] = [];
+	@Prop() metadataDictionary: MetadataMapping[] = []
 	@Prop({ attribute: 'deepzoom'}) deepzoomEnabled: boolean = true
 
 	addLanguage: typeof addLanguage
@@ -148,11 +149,10 @@ export class ViewerComponent {
 		this.initLanguage()
 
 		this.setConfiguration({
-			language: {
-				enable: true
-			},
+			language: this.language,
 			customVideoPlayer: this.customVideoPlayer,
 			customItemProps: this.customItemProps,
+			metadataDictionary: this.metadataDictionary,
 			deepzoom: this.deepzoomEnabled
 		})
 	}

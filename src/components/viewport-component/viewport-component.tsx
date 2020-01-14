@@ -3,6 +3,7 @@ import { Unsubscribe, Store } from '@stencil/redux';
 import { toggleDrawer } from '../../store/actions/viewport';
 import { t } from '../../services/i18n-service';
 import { resolveViewportType } from '../../utils/viewport';
+import { selectCurrentItem } from '../../store/selectors/item';
 
 @Component({
     tag: 'harmonized-viewport',
@@ -18,22 +19,19 @@ export class ViewportComponent {
 
     storeUnsubscribe: Unsubscribe
 
-    @State() currentItemIndex: MyAppState['viewport']['itemIndex']
-    @State() items: MyAppState['viewport']['items']
+    @State() numberOfItems: number
+    @State() currentItem: DocumentPage
     @State() infoShown: MyAppState["viewport"]["infoShown"];
 
     componentWillLoad() {
 
         this.store.mapDispatchToProps(this, { toggleDrawer })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
-            const {
-                viewport: { itemIndex, items, infoShown }
-            } = state
             return {
-                currentItemIndex: itemIndex,
-                items,
-                infoShown
-            }
+                numberOfItems: state.viewport.items.length,
+                currentItem: selectCurrentItem(state),
+                infoShown: state.viewport.infoShown
+            };
         });
     }
 
@@ -47,8 +45,7 @@ export class ViewportComponent {
     }
 
     render() {
-        const currentItem: DocumentPage = this.items[this.currentItemIndex];
-        const viewportType: ViewportType = currentItem ? resolveViewportType(currentItem.contentType) : undefined;
+        const viewportType: ViewportType = this.currentItem ? resolveViewportType(this.currentItem.contentType) : undefined;
 
         // TODO
         /*if (this.status.code == 'empty') {
@@ -62,25 +59,25 @@ export class ViewportComponent {
                 <harmonized-spinner />
             */}
 
-            {currentItem && 
+            {this.currentItem && 
                 <div class="viewport__content">
                     {(() => {
                         switch(viewportType) {
                             case 'image':
                             return <harmonized-openseadragon id="viewport" />;
                             case 'pdf':
-                                return <harmonized-embed id="viewport" url={currentItem.image} />;
+                                return <harmonized-embed id="viewport" url={this.currentItem.image} />;
                             case 'video':
-                                return <harmonized-video id="viewport" url={currentItem.image} contentType={currentItem.contentType} />;
+                                return <harmonized-video id="viewport" url={this.currentItem.image} contentType={this.currentItem.contentType} />;
                             default:
                                 return null;
                         }
                     })()}
 
-                    {this.items.length > 1 &&
+                    {this.numberOfItems > 1 &&
                         <div class="viewport__content-pager">
                             <div class="paging-label">
-                                {t(currentItem.label)}
+                                {t(this.currentItem.label)}
                             </div>
                             <harmonized-pager />
                         </div>

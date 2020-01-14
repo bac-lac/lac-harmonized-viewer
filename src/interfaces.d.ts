@@ -4,6 +4,11 @@ interface AppConfig {
     contentTypes?: ContentTypeMapping[]
 }
 
+interface MetadataMapping {
+    key: string,
+    values: DocumentLabel[]
+}
+
 interface ContentTypeMapping {
     formats: string[]
     component: string
@@ -144,17 +149,15 @@ interface DocumentLabel {
 }
 
 interface DocumentMetadata {
-    label: string,
+    key: string,
+    label: DocumentLabel[],
     value: DocumentLabel[]
 }
 
 interface Configuration {
-    language: LanguageConfiguration
+    language: string
     customVideoPlayer: boolean
     customItemProps: string[]
+    metadataDictionary: MetadataMapping[]
     deepzoom: boolean
-}
-
-interface LanguageConfiguration {
-    enable: boolean
 }
