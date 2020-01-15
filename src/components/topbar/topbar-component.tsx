@@ -114,29 +114,32 @@ export class TopbarComponent {
         return <Host>
             <div class={`mdc-top-app-bar ${hasFixedTopbar && 'mdc-top-app-bar--fixed'} mdc-top-app-bar--dense`}>
                 <div class="mdc-top-app-bar__row">
+                    <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+
+                    </section>
+
                     <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
-
-                        {<harmonized-button
-                            class="mdc-top-app-bar__action-item"
-                            icon={this.infoShown ? iconInfoFull : iconInfo}
-                            size="sm"
-                            label={''}
-                            aria-label={this.infoShown ? t('hideInfo') : t('showInfo')}
-                            tooltip={this.infoShown ? t('hideInfo') : t('showInfo')}
-                            onClick={this.toggleDrawer}>
-
-                        </harmonized-button>}
-
-                        <harmonized-button
-                                class={`mdc-top-app-bar__action-item ${this.fullscreen && 'button-fullscreen-exit'}`}
-                                icon={this.fullscreen ? iconFullscreenExit : iconFullscreen}
+                        <div class="group">
+                            <harmonized-button
+                                class="mdc-top-app-bar__action-item"
+                                icon={this.infoShown ? iconInfoFull : iconInfo}
                                 size="sm"
                                 label={''}
-                                aria-label={this.fullscreen ? t('exitFullscreen') : t('enterFullscreen')}
-                                tooltip={this.fullscreen ? t('exitFullscreen') : t('enterFullscreen')}
-                                onClick={this.handleFullscreenToggle.bind(this)}>
+                                aria-label={this.infoShown ? t('hideInfo') : t('showInfo')}
+                                tooltip={this.infoShown ? t('hideInfo') : t('showInfo')}
+                                onClick={this.toggleDrawer}>
+                            </harmonized-button>
 
-                        </harmonized-button>
+                            <harmonized-button
+                                    class={`mdc-top-app-bar__action-item ${this.fullscreen && 'button-fullscreen-exit'}`}
+                                    icon={this.fullscreen ? iconFullscreenExit : iconFullscreen}
+                                    size="sm"
+                                    label={''}
+                                    aria-label={this.fullscreen ? t('exitFullscreen') : t('enterFullscreen')}
+                                    tooltip={this.fullscreen ? t('exitFullscreen') : t('enterFullscreen')}
+                                    onClick={this.handleFullscreenToggle.bind(this)}>
+                            </harmonized-button>
+                        </div>
                     </section>
                 </div>
             </div>

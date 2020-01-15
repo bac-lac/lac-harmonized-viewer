@@ -50,7 +50,12 @@ export class NavigationComponent {
     }
 
     componentDidLoad() {
-        this.imageList = this.el.querySelector('harmonized-image-list')
+    }
+
+    componentDidUpdate() {
+        if (!this.imageList) {
+            this.imageList = (this.el.querySelector('.harmonized-image-list') as HTMLElement);
+        }
 
         this.resize()
         this.scaleScroll();
@@ -70,6 +75,10 @@ export class NavigationComponent {
         else if (ev.key === 'ArrowLeft' || ev.key == 'ArrowUp') {
             this.viewItem(this.currentItemIndex - 1)
         }
+
+        if (ev.key == "ArrowDown" || ev.key == 'ArrowUp') {
+            ev.stopPropagation();
+        }
     }
 
     handleThumbnailClick(page: number) {
@@ -82,16 +91,16 @@ export class NavigationComponent {
         }
     }
 
-    @Watch('currentItemIndex')
+    /*@Watch('currentItemIndex')
     handlePageChange() {
-        if (this.items.length > this.currentItemIndex) {
+        if (this.items.length >= this.currentItemIndex) {
             const image: HTMLElement = this.el.querySelector(`harmonized-image[page="${this.currentItemIndex}"]`);
             if (image) {
                 this.scaleScroll()
                 //image.scrollIntoView({ behavior: "smooth", block: "nearest" })
             }
         }
-    }
+    }*/
 
     @Listen('resize', { target: 'window' })
     handleResize() {
@@ -107,10 +116,13 @@ export class NavigationComponent {
             // The value 4 in calculations is the margin
             // Image is past the left border of the overflow
             if (currentItem.offsetLeft < this.imageList.scrollLeft) {
+                //console.log(`Image offsetLeft=${currentItem.offsetLeft} < Image list scrollLeft=${this.imageList.scrollLeft}`);
                 this.imageList.scrollLeft = this.imageList.scrollLeft - currentItem.clientWidth - 4;
             }
             // Image is past the right border of the overflow
+            // Image left offset location + image width is PAST imagelist scrollLeft location + imagelist width
             else if (currentItem.offsetLeft + currentItem.clientWidth > this.imageList.scrollLeft + this.imageList.clientWidth) {
+                //console.log(`Image offsetLeft=${currentItem.offsetLeft} & clientWidth=${currentItem.clientWidth} > Image list scrollLeft=${this.imageList.scrollLeft} & clientWidth=${this.imageList.clientWidth}`);
                 this.imageList.scrollLeft += currentItem.clientWidth + 4;
             }
         }
@@ -126,7 +138,7 @@ export class NavigationComponent {
 
     getListTopOffset() {
 
-        const list = this.el.querySelector('harmonized-image-list')
+        const list = this.el.querySelector('.harmonized-image-list')
         if (list) {
 
             const paddingTop = this.getComputedStyle(list, 'padding-top')
@@ -162,9 +174,9 @@ export class NavigationComponent {
             return null;
         }
 
-        const className = `mdc-image-list mdc-image-list--horizontal mdc-image-list--${this.cols}col`
+        const className = `harmonized-image-list mdc-image-list mdc-image-list--horizontal mdc-image-list--${this.cols}col`
 
-        return  <harmonized-image-list class={className} tabindex={0}>
+        return  <harmonized-image-list class={className} tabindex={0} >
                     {
                         this.items.map((page, index) =>
 

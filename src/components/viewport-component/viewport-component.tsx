@@ -21,7 +21,6 @@ export class ViewportComponent {
 
     @State() numberOfItems: number
     @State() currentItem: DocumentPage
-    @State() infoShown: MyAppState["viewport"]["infoShown"];
 
     componentWillLoad() {
 
@@ -29,19 +28,13 @@ export class ViewportComponent {
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             return {
                 numberOfItems: state.viewport.items.length,
-                currentItem: selectCurrentItem(state),
-                infoShown: state.viewport.infoShown
+                currentItem: selectCurrentItem(state)
             };
         });
     }
 
     componentDidUnload() {
         this.storeUnsubscribe()
-    }
-
-    @Listen('viewerDrawerToggle')
-    handleDrawerToggle() {
-        this.toggleDrawer()
     }
 
     render() {
@@ -84,13 +77,6 @@ export class ViewportComponent {
                     }  
                 </div>
             }
-
-            {this.infoShown &&
-                <harmonized-drawer headerTitle="Details" placement="right">
-                    <harmonized-annotations></harmonized-annotations>
-                </harmonized-drawer>
-            }
-
         </Host>
     }
 }

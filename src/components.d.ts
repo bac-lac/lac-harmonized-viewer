@@ -30,8 +30,7 @@ export namespace Components {
   }
   interface HarmonizedDrawer {
     'headerTitle': string;
-    'placement': PlacementType;
-    'width': number;
+    'shown': boolean;
   }
   interface HarmonizedEmbed {
     'url': string;
@@ -86,6 +85,11 @@ export namespace Components {
     'customVideoPlayer': boolean;
     'deepzoomEnabled': boolean;
     'getCurrentItem': () => Promise<Item>;
+    'getCustomVideoElement': () => Promise<HTMLElement>;
+    'getDrawerElement': () => Promise<HTMLElement>;
+    'getNavigationElement': () => Promise<HTMLElement>;
+    'getTopBarElement': () => Promise<HTMLElement>;
+    'getViewportElement': () => Promise<HTMLElement>;
     'getViewportType': () => Promise<ViewportType>;
     'language': string;
     'metadataDictionary': MetadataMapping[];
@@ -248,8 +252,7 @@ declare namespace LocalJSX {
   interface HarmonizedDrawer {
     'headerTitle'?: string;
     'onViewerDrawerToggle'?: (event: CustomEvent<any>) => void;
-    'placement'?: PlacementType;
-    'width'?: number;
+    'shown'?: boolean;
   }
   interface HarmonizedEmbed {
     'url'?: string;

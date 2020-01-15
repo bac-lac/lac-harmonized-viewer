@@ -61,15 +61,15 @@
     <script type="text/javascript">
         var viewer = document.querySelector('#hv');
 
-        viewer.addEventListener('pageLoad', (event) => {
+        viewer.addEventListener('pageLoad', function (event) {
 
             if (event.detail === 0) {
                 viewer.addOverlay(750, 780, 500, 500);
             }
         });
 
-        viewer.addEventListener('overlayClick', (event) => {
-            console.log('overlayClick external listener', event)
+        viewer.addEventListener('overlayClick', function(event) {
+            console.log('overlayClick external listener', event);
         });
     </script>
 

@@ -32,7 +32,6 @@ export class AnnotationsComponent {
     }
 
     render() {
-        console.log(this.currentItem);
         return  <dl class="annotation-list">
                     {this.currentItem
                         ?   this.currentItem.metadata.map((annotation) => {

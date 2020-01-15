@@ -1,11 +1,12 @@
 harmonized-drawer {
-    top: 48px; // if viewport-pdf or videoport-video > top: 0 (set in harmonized-viewport)
-    height: calc(100% - 48px) !important;
+    position: absolute;
+    max-width: 256px;
     background-color: #ece8e8 !important;
     border: 1px solid #999999 !important;
     border-right: 0;
+    // override dir="rtl" attribute
 
-    &.mdc-drawer {
+    /*&.mdc-drawer {
         width: inherit;
         background-color: transparent;
 
@@ -42,7 +43,7 @@ harmonized-drawer {
                 }
             }
         }
-    }
+    }*/
 
     .mdc-drawer__header {
         position: relative;
@@ -55,6 +56,7 @@ harmonized-drawer {
             flex: 1;
             margin-bottom: 0;
             text-align: center;
+            font-size: 14px;
         }
 
         > .mdc-drawer__close {
@@ -86,5 +88,9 @@ harmonized-drawer {
     .mdc-drawer__content {
         padding-left: 16px;
         padding-right: 16px;
+
+        dl {
+            text-align: left;
+        }
     }
 }

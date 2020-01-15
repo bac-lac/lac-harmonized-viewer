@@ -1,4 +1,4 @@
-import { Component, h, Element, State, Prop, Host, Event, EventEmitter } from '@stencil/core';
+import { Component, h, Element, State, Prop, Host, Event, EventEmitter, Watch } from '@stencil/core';
 import { MDCDrawer } from "@material/drawer";
 import { t } from '../../services/i18n-service';
 import arrowRight from '../../assets/material-design-icons/ic_chevron_right_36px.svg'
@@ -12,8 +12,7 @@ export class DrawerComponent {
     @Element() el: HTMLElement
 
     @Prop() headerTitle: string
-    @Prop() placement: PlacementType = 'left'
-    @Prop() width: number = 300
+    @Prop() shown: boolean = false;
 
     @Event() viewerDrawerToggle: EventEmitter;
 
@@ -27,17 +26,22 @@ export class DrawerComponent {
         if (this.drawer) this.drawer.destroy()
     }
 
-    handleClose() {
+    @Watch('shown')
+    handleOpen(newValue: boolean, oldValue: boolean): void {
+        if (newValue !== oldValue && newValue) {
+            this.drawer.open = true;
+        }
+    }
+
+    handleClose() : void {
         this.drawer.open = false;
         this.viewerDrawerToggle.emit();
     }
 
+    // Use rtl to force material design in popping drawer from the right side (other options??)
     render() {
-
-        let className = `mdc-drawer mdc-drawer--${this.placement} mdc-drawer--dismissible mdc-drawer--open`;
-
-        return <Host class={className} style={{ width: `${this.width}px` }}>
-                    <div class="mdc-drawer__header">
+        return <Host dir="rtl" class='mdc-drawer mdc-drawer--dismissible'>
+                    <div dir="ltr" class="mdc-drawer__header">
                         <div class="mdc-drawer__close">
                             <harmonized-button
                             icon={arrowRight}
@@ -49,7 +53,7 @@ export class DrawerComponent {
                             {this.headerTitle}
                         </div>
                     </div>
-                    <div class="mdc-drawer__content">
+                    <div dir="ltr" class="mdc-drawer__content">
                         <slot />
                     </div>
                 </Host>;

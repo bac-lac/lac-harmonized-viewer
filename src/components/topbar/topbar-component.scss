@@ -39,12 +39,12 @@ harmonized-topbar {
             }*/
         }
 
+        .mdc-top-app-bar__section {
+            padding: 0;
+        }
+
         .mdc-top-app-bar__action-item {
             margin-right: 10px;
-
-            &:last-child {
-                margin-right: 0;
-            }
         }
 
         .mdc-menu {

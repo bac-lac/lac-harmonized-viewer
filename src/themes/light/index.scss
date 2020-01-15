@@ -11,6 +11,14 @@
 
     background-color: #ece8e8;
 
+    .white-text {
+        color: #fff !important;
+
+        * {
+            color: #fff !important;
+        }
+    }
+
     harmonized-topbar {
         .mdc-top-app-bar {
             /*box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),

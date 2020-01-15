@@ -1,5 +1,5 @@
 import { Component, h, Element, State, Listen, Host, Prop, Watch } from '@stencil/core';
-import tippy, { sticky } from 'tippy.js';
+import 'intersection-observer';
 
 @Component({
     tag: 'harmonized-image-list',
@@ -10,6 +10,7 @@ export class ImageListComponent {
     @Element() el: HTMLElement
 
     @State() children: number = 0
+
 
     private observer: IntersectionObserver
 
@@ -82,8 +83,4 @@ export class ImageListComponent {
             }
         })
     }
-
-    // render() {
-    //     return <Host />
-    // }
 }

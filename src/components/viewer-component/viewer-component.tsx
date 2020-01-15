@@ -7,7 +7,7 @@ import i18next from 'i18next';
 import { loadPersistedState } from '../../services/persisted-state-service';
 import { AppConfig } from '../../app.config';
 import { fetchManifest } from '../../store/actions/manifest';
-import { toggleFullscreen } from '../../store/actions/viewport';
+import { toggleFullscreen, toggleDrawer } from '../../store/actions/viewport';
 import iconError from '../../assets/material-icons/ic_error_24px.svg'
 import { Item } from '../../models/item';
 import { resolveViewportType } from '../../utils/viewport';
@@ -47,12 +47,14 @@ export class ViewerComponent {
 	fetchManifest: typeof fetchManifest
 
 	toggleFullscreen: typeof toggleFullscreen
+	toggleDrawer: typeof toggleDrawer
 
 	storeUnsubscribe: Unsubscribe
 
 	@State() currentItemIndex: MyAppState['viewport']['itemIndex']
 	@State() items: MyAppState['viewport']['items']
 	@State() fullscreen: MyAppState['viewport']['fullscreen']
+	@State() infoShown: MyAppState['viewport']['infoShown']
 
 	@State() configuration: MyAppState["document"]["configuration"]
 	@State() theme: MyAppState["document"]["theme"]
@@ -113,13 +115,17 @@ export class ViewerComponent {
 
 	@Method()
 	async getCustomVideoElement(): Promise<HTMLElement> {
-		console.log(this.el.shadowRoot.querySelector('#harmonized-viewer-custom-video') as HTMLElement);
 		return this.el.shadowRoot.querySelector('#harmonized-viewer-custom-video') as HTMLElement;
 	}
 
 	@Method()
 	async getNavigationElement(): Promise<HTMLElement> {
 		return this.el.shadowRoot.querySelector('harmonized-navigation') as HTMLElement;
+	}
+
+	@Method()
+	async getDrawerElement(): Promise<HTMLElement> {
+		return this.el.shadowRoot.querySelector('harmonized-drawer') as HTMLElement;
 	}
 
 	/* ??? */
@@ -132,6 +138,11 @@ export class ViewerComponent {
 	async handleFullscreenChange() {
 		this.toggleFullscreen();
 	}
+
+	@Listen('viewerDrawerToggle')
+    handleDrawerToggle() {
+        this.toggleDrawer()
+    }
 
 	// @Listen('click', { target: 'document' })
 	// handleDocumentClick() {
@@ -149,11 +160,11 @@ export class ViewerComponent {
 
 	componentWillLoad() {
 		this.store.setStore(configureStore({}))
-		this.store.mapDispatchToProps(this, { addLanguage, addOverlay, setLanguage, setConfiguration, setOptions, fetchManifest, toggleFullscreen })
+		this.store.mapDispatchToProps(this, { addLanguage, addOverlay, setLanguage, setConfiguration, setOptions, fetchManifest, toggleFullscreen, toggleDrawer })
 		this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
 				document: { configuration, theme },
-				viewport: { itemIndex, items, fullscreen }
+				viewport: { itemIndex, items, fullscreen, infoShown }
 			} = state
 			return {
 				configuration,
@@ -161,7 +172,8 @@ export class ViewerComponent {
 
 				currentItemIndex: itemIndex,
 				items,
-				fullscreen
+				fullscreen,
+				infoShown
 			}
 		})
 
@@ -280,6 +292,7 @@ export class ViewerComponent {
 		// - Error with manifest fetching => Show here
 		// - Error with item loading/showing => Show in viewport
 		return  <div class={className}>
+			
 					<harmonized-topbar />
 
 					<harmonized-viewport />
@@ -289,6 +302,10 @@ export class ViewerComponent {
 											auto-resize={true}
 											style={{ backgroundColor: this.navigationBackgroundColor }} 
 					/>
+
+					<harmonized-drawer headerTitle="Details" shown={this.infoShown}>
+						<harmonized-annotations></harmonized-annotations>
+					</harmonized-drawer>
 					
 				</div>
 	}

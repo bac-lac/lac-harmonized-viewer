@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { Md5 } from 'ts-md5/dist/md5'
 import { loadPersistedState } from '../services/persisted-state-service'
-import { IIIFResolver } from './iiif-resolver/iiif-resolver'
 
 export abstract class Resolver {
 
@@ -73,9 +72,5 @@ export abstract class Resolver {
         languageMap.forEach(i => labels.push({ locale: i.locale, value: i.value }))
 
         return labels
-    }
-
-    static create(): Resolver {
-        return new IIIFResolver()
     }
 }
