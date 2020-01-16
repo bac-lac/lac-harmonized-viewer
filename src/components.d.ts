@@ -36,10 +36,12 @@ export namespace Components {
     'url': string;
   }
   interface HarmonizedImage {
+    'addImageProperty': (value: string) => Promise<void>;
     'caption': string;
     'contentType': string;
     'page': number;
     'preload': boolean;
+    'removeImageProperty': (value: string) => Promise<void>;
     'showCaption': boolean;
     'showTooltip': boolean;
     'src': string;
@@ -47,7 +49,6 @@ export namespace Components {
   }
   interface HarmonizedImageList {}
   interface HarmonizedMessage {
-    'text': string;
     'type': MessageType;
   }
   interface HarmonizedNavigation {
@@ -87,6 +88,7 @@ export namespace Components {
     'getCurrentItem': () => Promise<Item>;
     'getCustomVideoElement': () => Promise<HTMLElement>;
     'getDrawerElement': () => Promise<HTMLElement>;
+    'getItems': () => Promise<Item[]>;
     'getNavigationElement': () => Promise<HTMLElement>;
     'getTopBarElement': () => Promise<HTMLElement>;
     'getViewportElement': () => Promise<HTMLElement>;
@@ -98,6 +100,7 @@ export namespace Components {
     'navigationEnable': boolean;
     'navigationPlacement': PlacementType;
     'navigationRows': number;
+    'preventLoadOnEmpty': boolean;
     'url': string;
   }
   interface HarmonizedViewport {}
@@ -271,12 +274,12 @@ declare namespace LocalJSX {
   }
   interface HarmonizedImageList {}
   interface HarmonizedMessage {
-    'text'?: string;
     'type'?: MessageType;
   }
   interface HarmonizedNavigation {
     'autoResize'?: boolean;
     'cols'?: number;
+    'onHvNavigationUpdated'?: (event: CustomEvent<any>) => void;
     'rows'?: number;
   }
   interface HarmonizedOpenseadragon {
@@ -298,7 +301,9 @@ declare namespace LocalJSX {
     'label'?: string;
   }
   interface HarmonizedTabs {}
-  interface HarmonizedTopbar {}
+  interface HarmonizedTopbar {
+    'onHarmonizedViewerTopBarUpdated'?: (event: CustomEvent<any>) => void;
+  }
   interface HarmonizedVideo {
     'contentType'?: string;
     'onHvCustomVideoPlayerRender'?: (event: CustomEvent<any>) => void;
@@ -315,12 +320,17 @@ declare namespace LocalJSX {
     'navigationEnable'?: boolean;
     'navigationPlacement'?: PlacementType;
     'navigationRows'?: number;
+    'onHvManifestError'?: (event: CustomEvent<any>) => void;
+    'onHvManifestIsEmpty'?: (event: CustomEvent<any>) => void;
+    'onHvRender'?: (event: CustomEvent<any>) => void;
     'onItemChanged'?: (event: CustomEvent<any>) => void;
     'onItemsLoaded'?: (event: CustomEvent<any>) => void;
-    'onStatusChanged'?: (event: CustomEvent<any>) => void;
+    'preventLoadOnEmpty'?: boolean;
     'url'?: string;
   }
-  interface HarmonizedViewport {}
+  interface HarmonizedViewport {
+    'onHarmonizedViewerViewportUpdated'?: (event: CustomEvent<any>) => void;
+  }
 
   interface IntrinsicElements {
     'harmonized-annotations': HarmonizedAnnotations;

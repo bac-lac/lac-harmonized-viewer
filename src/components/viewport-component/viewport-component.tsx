@@ -1,4 +1,4 @@
-import { Component, Element, h, Prop, State, Host, Listen, Event } from '@stencil/core';
+import { Component, Element, h, Prop, State, Host, Listen, Event, EventEmitter } from '@stencil/core';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { toggleDrawer } from '../../store/actions/viewport';
 import { t } from '../../services/i18n-service';
@@ -22,6 +22,8 @@ export class ViewportComponent {
     @State() numberOfItems: number
     @State() currentItem: DocumentPage
 
+    @Event({ eventName: 'harmonizedViewerViewportUpdated'}) updatedEvent: EventEmitter
+
     componentWillLoad() {
 
         this.store.mapDispatchToProps(this, { toggleDrawer })
@@ -31,6 +33,10 @@ export class ViewportComponent {
                 currentItem: selectCurrentItem(state)
             };
         });
+    }
+
+    componentDidUpdate() {
+        this.updatedEvent.emit();
     }
 
     componentDidUnload() {

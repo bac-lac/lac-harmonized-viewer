@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { Md5 } from 'ts-md5/dist/md5'
 import { loadPersistedState } from '../services/persisted-state-service'
 
@@ -55,11 +54,6 @@ export abstract class Resolver {
         }
 
         return true
-    }
-
-    protected async httpGet(url: string) {
-
-        return await axios.get(url)
     }
 
     protected mapLabels(languageMap: Manifesto.LanguageMap): DocumentLabel[] {

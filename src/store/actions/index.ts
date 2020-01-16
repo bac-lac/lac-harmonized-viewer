@@ -1,5 +1,5 @@
 import { SetOptions, SetZoom, SetZoomRequest, SetError, AddOverlay, ClearOverlays, SetConfiguration, SetLanguage, SetTheme, AddLanguage } from './document';
-import { FetchingManifest, SetManifest } from './manifest';
+import { FetchingManifest, SetManifest, RaiseManifestError } from './manifest';
 import { ViewItem, LoadView, ToggleFullscreen, ToggleDrawer } from './viewport';
 
 export interface NullAction {
@@ -9,7 +9,7 @@ export interface NullAction {
 // Keep this type updated with each known action
 export type ActionTypes = NullAction |
                 SetError | AddLanguage | SetLanguage | SetTheme | SetOptions | SetZoom | SetZoomRequest | AddOverlay | ClearOverlays | SetConfiguration  |
-                FetchingManifest | SetManifest |
+                FetchingManifest | SetManifest | RaiseManifestError |
                 ViewItem | LoadView | ToggleFullscreen | ToggleDrawer;
 
 export enum TypeKeys {
@@ -33,6 +33,7 @@ export enum TypeKeys {
     // Manifest
     FETCHING_MANIFEST = "FETCHING_MANIFEST",
     SET_MANIFEST = "SET_MANIFEST",
+    RAISE_MANIFEST_ERROR = "RAISE_MANIFEST_ERROR",
     
     // Viewport
     VIEW_ITEM = "VIEW_ITEM",

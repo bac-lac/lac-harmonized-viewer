@@ -1,4 +1,4 @@
-import { Component, h, Element, Prop, Host, State, Listen, Watch } from '@stencil/core';
+import { Component, h, Element, Prop, Host, State, Listen, Watch, Event, EventEmitter } from '@stencil/core';
 import { Store, Unsubscribe } from '@stencil/redux';
 import { MDCTopAppBar } from '@material/top-app-bar';
 import { MDCMenu, Corner } from '@material/menu';
@@ -35,6 +35,8 @@ export class TopbarComponent {
     toggleDrawer: typeof toggleDrawer
 
     storeUnsubscribe: Unsubscribe
+
+    @Event({ eventName: 'harmonizedViewerTopBarUpdated'}) updatedEvent: EventEmitter
 
     private topAppBar?: MDCTopAppBar
     private menuDisplay?: MDCMenu
@@ -79,6 +81,10 @@ export class TopbarComponent {
         if (snackBarElem) {
             this.snackBar = new MDCSnackbar(snackBarElem)
         }
+    }
+
+    componentDidUpdate() {
+        this.updatedEvent.emit();
     }
 
     componentDidUnload() {

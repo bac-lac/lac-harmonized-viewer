@@ -1,5 +1,6 @@
 import { Resolver } from "../resolver"
 import { IIIFDocument } from "./iiif-document"
+import axios from 'axios'
 import { t } from "../../services/i18n-service"
 import 'manifesto.js';
 
@@ -44,16 +45,19 @@ export class IIIFResolver extends Resolver {
             return undefined
         }
 
-        const response = await this.httpGet(url)
-
-        if(response.status == 200) {
+        await axios.get(url, { validateStatus: status => status === 200 })
+        .then((response) => {
             this.manifestJson = response.data as string
             if (this.manifestJson) {
+                // Check if we can actually parse it?
                 this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
             }
-        }
-
-        return this
+        })
+        .catch((e) => {
+            throw new Error('manifest-not-found');
+        });
+        
+        return this;
     }
 
     contentTypes(): string[] {

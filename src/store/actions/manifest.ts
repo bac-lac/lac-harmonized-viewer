@@ -2,11 +2,11 @@ import { TypeKeys } from "./index"
 import { IIIFResolver } from '../../resolvers/iiif-resolver/iiif-resolver';
 import { loadView } from './viewport';
 import "manifesto.js";
+import { AppConfig } from "../../app.config";
 
 export interface FetchingManifest {
     type: TypeKeys.FETCHING_MANIFEST
 };
-
 export const fetchManifest = (url: string) => async (dispatch, _getState) => {
     const fetchingAction: FetchingManifest = {
         type: TypeKeys.FETCHING_MANIFEST
@@ -42,9 +42,15 @@ export const fetchManifest = (url: string) => async (dispatch, _getState) => {
                 const items: DocumentPage[] = resolver.getPages(configuration.customItemProps);
                 dispatch(loadView(title, annotations, items));
             })
-
             .catch((e) => {
-                console.log(e);
+                const errorCode: string = e.message;
+                const errorType: DocumentError = AppConfig.errors.find(error => error.code === errorCode);
+                // Supported error code
+                if (!errorType) {
+                    throw e;
+                }
+
+                dispatch(raiseManifestError(errorType));
             });
 };
 
@@ -52,14 +58,24 @@ export const fetchManifest = (url: string) => async (dispatch, _getState) => {
 export interface SetManifest {
     type: TypeKeys.SET_MANIFEST
     manifest: Manifesto.IManifest
-}
-
+};
 export const setManifest = (manifest: Manifesto.IManifest) => (dispatch, _getState) => {
-
     const action: SetManifest = {
         type: TypeKeys.SET_MANIFEST,
         manifest: manifest
     }
+    dispatch(action);
+};
 
-    dispatch(action)
-}
+export interface RaiseManifestError {
+    type: TypeKeys.RAISE_MANIFEST_ERROR,
+    error: DocumentError
+};
+export const raiseManifestError = (error: DocumentError) => (dispatch, _getState) => {
+    console.log(`Harmonized Viewer: Error ${error.code} has been raised.`)
+    const action: RaiseManifestError = {
+        type: TypeKeys.RAISE_MANIFEST_ERROR,
+        error 
+    };
+    dispatch(action);
+};

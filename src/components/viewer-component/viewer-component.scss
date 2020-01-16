@@ -70,14 +70,6 @@
         }
     }*/
 
-    .hv-content {
-        height: 100%;
-        flex: 1 1 auto;
-        display: flex;
-        flex-direction: row;
-        position: relative;
-    }
-
     .error-message {
         margin: 0 auto;
         text-align: center;
@@ -89,6 +81,25 @@
         }
     }
 }
+
+.centered-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+.spinner-container {
+    position: relative;
+    display: block;
+    width: 240px;
+    height: 4px;
+    margin: 5px 0;
+    overflow: hidden;
+}
+
 
 // .tooltip {
 //     font-size: 13px;

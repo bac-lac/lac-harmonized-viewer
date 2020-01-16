@@ -14,13 +14,14 @@
     
 
     &.mdc-image-list {
-        padding: 5px;
+        padding: 3px 5px 5px 5px;
     }
 
     &.mdc-image-list--horizontal {
         flex-direction: row;
         flex-wrap: nowrap;
         overflow-x: scroll;
+        overflow-y: hidden;
 
         .mdc-image-list__item {
             min-width: calc(100% / 4 - 4.2px);

@@ -1,4 +1,4 @@
-import { Component, Prop, h, Element, Listen, State, Watch, Host } from '@stencil/core';
+import { Component, Prop, h, Element, Listen, State, Watch, Host, Event, EventEmitter } from '@stencil/core';
 import 'manifesto.js';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { viewItem } from '../../store/actions/viewport';
@@ -18,10 +18,7 @@ export class NavigationComponent {
 
     @Prop() autoResize: boolean = false
 
-    @Watch('rows')
-    handleRowsChange() {
-        this.resize()
-    }
+    @Prop({ context: "store" }) store: Store
 
     viewItem: typeof viewItem
     storeUnsubscribe: Unsubscribe
@@ -29,9 +26,9 @@ export class NavigationComponent {
     @State() currentItemIndex: MyAppState["viewport"]["itemIndex"] = 0
     @State() items: MyAppState["viewport"]["items"] = []
 
-    @Prop({ context: "store" }) store: Store
-
     @State() loadedImageCount: number = 0
+
+    @Event({ eventName: "hvNavigationUpdated" }) updatedEvent;
 
     private imageList: HTMLElement
 
@@ -50,6 +47,7 @@ export class NavigationComponent {
     }
 
     componentDidLoad() {
+        this.resize()
     }
 
     componentDidUpdate() {
@@ -59,6 +57,8 @@ export class NavigationComponent {
 
         this.resize()
         this.scaleScroll();
+
+        this.updatedEvent.emit();
     }
 
     componentDidUnload() {
@@ -130,10 +130,12 @@ export class NavigationComponent {
 
     resize() {
 
+        /* Doesn't seem to server a purpose
         // Adjust the height of the navigation to show a specific number of rows
         if (this.imageList) {
-            this.el.style.height = `${this.imageList.offsetHeight}px`
+            //this.el.style.height = `${this.imageList.offsetHeight}px`
         }
+        */
     }
 
     getListTopOffset() {
@@ -176,7 +178,7 @@ export class NavigationComponent {
 
         const className = `harmonized-image-list mdc-image-list mdc-image-list--horizontal mdc-image-list--${this.cols}col`
 
-        return  <harmonized-image-list class={className} tabindex={0} >
+        return  <harmonized-image-list class={className} tabindex={0}>
                     {
                         this.items.map((page, index) =>
 

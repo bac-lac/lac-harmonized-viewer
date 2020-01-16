@@ -4,12 +4,12 @@ import { Store, Unsubscribe } from "@stencil/redux";
 import { configureStore } from "../../store";
 import { addOverlay, setOptions, setLanguage, addLanguage, setConfiguration } from '../../store/actions/document';
 import i18next from 'i18next';
-import { loadPersistedState } from '../../services/persisted-state-service';
 import { AppConfig } from '../../app.config';
 import { fetchManifest } from '../../store/actions/manifest';
 import { toggleFullscreen, toggleDrawer } from '../../store/actions/viewport';
 import iconError from '../../assets/material-icons/ic_error_24px.svg'
 import { Item } from '../../models/item';
+import { t } from '../../services/i18n-service';
 import { resolveViewportType } from '../../utils/viewport';
 
 @Component({
@@ -35,6 +35,7 @@ export class ViewerComponent {
 	@Prop() language: string
 	@Prop() customVideoPlayer: boolean = false;
 	@Prop() customItemProps: string[] = [];
+	@Prop() preventLoadOnEmpty: boolean = false;
 	@Prop() metadataDictionary: MetadataMapping[] = []
 	@Prop({ attribute: 'deepzoom'}) deepzoomEnabled: boolean = true
 
@@ -51,50 +52,61 @@ export class ViewerComponent {
 
 	storeUnsubscribe: Unsubscribe
 
+	@State() configuration: MyAppState["document"]["configuration"]
+	@State() theme: MyAppState["document"]["theme"]
+
+	@State() manifestError: MyAppState['manifest']['error']
+	@State() manifestFetching: MyAppState['manifest']['fetching']
+	@State() manifestFetched: MyAppState['manifest']['fetched']
+
 	@State() currentItemIndex: MyAppState['viewport']['itemIndex']
 	@State() items: MyAppState['viewport']['items']
 	@State() fullscreen: MyAppState['viewport']['fullscreen']
 	@State() infoShown: MyAppState['viewport']['infoShown']
 
-	@State() configuration: MyAppState["document"]["configuration"]
-	@State() theme: MyAppState["document"]["theme"]
-
 	@Prop({ context: "store" }) store: Store
 
-	@Event({ eventName: 'statusChanged' }) statusChanged: EventEmitter
+	@Event({ eventName: 'hvRender' }) rendered: EventEmitter
+	@Event({ eventName: 'hvManifestError' }) manifestErrorOccurred: EventEmitter
+	@Event({ eventName: 'hvManifestIsEmpty' }) manifestIsEmpty: EventEmitter
 	@Event({ eventName: 'itemChanged' }) itemChanged: EventEmitter
 	@Event({ eventName: 'itemsLoaded' }) itemsLoaded: EventEmitter
 
-	@Watch('statusCode')
-	handleStatusChange(newValue: StatusCode, oldValue: StatusCode) {
-		this.statusChanged.emit(newValue)
-	}
 
 	// Currently assume that the manifest is only fetched once
 	@Watch('currentItemIndex')
-	async emitItemChangeEvent(newValue: number, oldValue: number) : Promise<any> {
+	async emitItemChangeEvent(newValue: number, oldValue: number) : Promise<void> {
 		if (!this.items || newValue >= this.items.length)
 			return null;
 
-		return this.itemChanged.emit(this.items[newValue]);
+		this.el.addEventListener('hvRender', function() {
+			this.itemChanged.emit();
+		}.bind(this), { once: true });
 	}
 
 	@Watch('items')
-	async emitItemsLoadedEvent(newValue: DocumentPage[], oldValue: DocumentPage[]) : Promise<any> {
+	async emitItemsLoadedEvent(newValue: DocumentPage[], oldValue: DocumentPage[]) : Promise<void> {
 		// We avoid emitting an event on the initial componentLoad (goes from undefined => [])
 		if (!oldValue && (!newValue || newValue.length === 0))
 			return;
 
-		return this.itemsLoaded.emit();
+		this.el.addEventListener('hvRender', function() {
+			this.itemsLoaded.emit();
+		}.bind(this), { once: true });
 	}
 
 	@Method()
-	async getCurrentItem() {
+	async getCurrentItem(): Promise<Item> {
 		if (!this.items || !this.items[this.currentItemIndex])
 			return;
 
 		return new Item(this.items[this.currentItemIndex]);
-	} 
+	}
+
+	@Method()
+	async getItems() : Promise<Item[]> {
+		return this.items.map(item => new Item(item));
+	}
 
 	@Method()
 	async getViewportType(): Promise<ViewportType> {
@@ -164,11 +176,16 @@ export class ViewerComponent {
 		this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
 				document: { configuration, theme },
+				manifest: { error, fetching, fetched },
 				viewport: { itemIndex, items, fullscreen, infoShown }
 			} = state
 			return {
 				configuration,
 				theme,
+
+				manifestError: error,
+				manifestFetching: fetching,
+				manifestFetched: fetched,
 
 				currentItemIndex: itemIndex,
 				items,
@@ -191,7 +208,24 @@ export class ViewerComponent {
 	}
 
 	async componentDidLoad() {
-		this.fetchManifest(this.url);
+		await this.fetchManifest(this.url);
+	}
+
+	componentDidUpdate() {
+		if (this.manifestError) {
+			this.manifestErrorOccurred.emit();
+		}
+
+		if (this.preventLoadOnEmpty) {
+			// Check if manifest is loaded & empty
+			if (this.manifestFetched && this.items.length === 0) {
+				this.manifestIsEmpty.emit();
+			}
+		}
+	}
+
+	componentDidRender() {
+		this.rendered.emit();
 	}
 
 	componentDidUnload() {
@@ -277,12 +311,29 @@ export class ViewerComponent {
 
 	render() {
 
-		let className = 'harmonized-viewer'
-
-		const theme = 'light';
-		if (theme) {
-			className += ` harmonized-viewer-theme--${theme}`
+		if (this.manifestFetching) {
+			return 	<div class="centered-box">
+						<span>{t('loadingManifest')}</span>
+						<div class="spinner-container">
+						<harmonized-spinner></harmonized-spinner>
+						</div>
+					</div>
 		}
+
+		if (this.manifestError) {
+			return  <div class="centered-box">
+						<harmonized-message type="error">
+								{t(`errors.${this.manifestError.code}`)}
+						</harmonized-message>
+					</div>
+		}
+
+		if (this.preventLoadOnEmpty) {
+			return;
+		}
+
+
+		let className = 'harmonized-viewer harmonized-viewer-theme--light'
 
 		if (this.fullscreen) {
 			className += ` harmonized-viewer-fullscreen`;
@@ -310,7 +361,7 @@ export class ViewerComponent {
 				</div>
 	}
 
-	renderError(error: DocumentError) {
+	/*renderError(error: DocumentError) {
 
 		if (!error) {
 			return undefined
@@ -330,5 +381,5 @@ export class ViewerComponent {
 				{i18next.t(`errors.${error.code}`, { ...errorParameters, errorParameters, interpolation: { escapeValue: false } })}
 			</div>
 		</div>
-	}
+	}*/
 }

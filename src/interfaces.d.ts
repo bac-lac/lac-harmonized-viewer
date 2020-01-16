@@ -29,6 +29,7 @@ interface DocumentState {
 interface ManifestState {
     fetching: boolean,
     fetched: boolean,
+    error: DocumentError,
     manifest: Manifesto.IManifest
 }
 
@@ -44,7 +45,7 @@ interface ViewportState {
 // Used in viewport, topbar, etc.
 type ViewportType = 'image' | 'pdf' | 'video' | 'audio';
 
-type ErrorCode = 'request-failed' | 'request-failed-notfound' | 'contenttype-unsupported'
+type ErrorCode = 'manifest-not-found' | 'request-failed' | 'request-failed-notfound' | 'contenttype-unsupported'
 type ErrorSeverity = 'fatal' | 'error' | 'warning'
 
 interface DocumentBase {
@@ -63,7 +64,7 @@ interface Language {
 }
 
 interface DocumentError {
-    code: ErrorCode
+    code: ErrorCode,
     severity: ErrorSeverity
     optionalParameters?: DocumentErrorParameter[]
 }

@@ -7,7 +7,6 @@ import { MessageType } from "./message-options";
 })
 export class MessageComponent {
 
-    @Prop() text: string
     @Prop() type: MessageType
 
     className(type: MessageType) {
@@ -32,12 +31,6 @@ export class MessageComponent {
     render() {
 
         return <article class={this.className(this.type)}>
-            {
-                this.text &&
-                <div class="message-header">
-                    <p>{this.text}</p>
-                </div>
-            }
             <div class="message-body">
                 <slot />
             </div>
