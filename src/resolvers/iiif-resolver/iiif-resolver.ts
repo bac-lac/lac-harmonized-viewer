@@ -49,7 +49,7 @@ export class IIIFResolver extends Resolver {
         .then((response) => {
             this.manifestJson = response.data as string
             if (this.manifestJson) {
-                // Check if we can actually parse it?
+                // Add a parse check here eventually
                 this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
             }
         })

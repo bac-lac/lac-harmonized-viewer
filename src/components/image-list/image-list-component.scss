@@ -1,7 +1,8 @@
-@import '@material/image-list/mixins';
-//@import '@material/image-list/mdc-image-list';
 
 .harmonized-image-list {
+    @import '@material/image-list/mdc-image-list';
+    @import '@material/image-list/mixins';
+
     @include mdc-image-list-standard-columns(4);
 
     @media (min-width: 480px) {
@@ -12,9 +13,18 @@
         @include mdc-image-list-standard-columns(16);
     }
     
+    // IE11
+    display: flex;
+    margin: 0px auto;
 
     &.mdc-image-list {
         padding: 3px 5px 5px 5px;
+
+        .mdc-image-list__item {
+            position: relative;
+            box-sizing: border-box;
+            list-style-type: none;
+        }
     }
 
     &.mdc-image-list--horizontal {
@@ -33,5 +43,9 @@
                 min-width: calc(100% / 16 - 4.2px);
             }
         }
+    }
+
+    harmonized-image.is-active {
+
     }
 }

@@ -11,6 +11,7 @@ import iconError from '../../assets/material-icons/ic_error_24px.svg'
 import { Item } from '../../models/item';
 import { t } from '../../services/i18n-service';
 import { resolveViewportType } from '../../utils/viewport';
+import { addEventListenerToRunOnce } from '../../utils/utils';
 
 @Component({
 	tag: 'harmonized-viewer',
@@ -33,7 +34,7 @@ export class ViewerComponent {
 
 	@Prop() url: string
 	@Prop() language: string
-	@Prop() customVideoPlayer: boolean = false;
+	@Prop({ attribute: 'customvideoplayer'}) customVideoPlayer: boolean = false;
 	@Prop() customItemProps: string[] = [];
 	@Prop() preventLoadOnEmpty: boolean = false;
 	@Prop() metadataDictionary: MetadataMapping[] = []
@@ -79,9 +80,9 @@ export class ViewerComponent {
 		if (!this.items || newValue >= this.items.length)
 			return null;
 
-		this.el.addEventListener('hvRender', function() {
+		addEventListenerToRunOnce(this.el, 'hvRender', function() {
 			this.itemChanged.emit();
-		}.bind(this), { once: true });
+		}.bind(this));
 	}
 
 	@Watch('items')
@@ -90,9 +91,9 @@ export class ViewerComponent {
 		if (!oldValue && (!newValue || newValue.length === 0))
 			return;
 
-		this.el.addEventListener('hvRender', function() {
+		addEventListenerToRunOnce(this.el, 'hvRender', function() {
 			this.itemsLoaded.emit();
-		}.bind(this), { once: true });
+		}.bind(this));
 	}
 
 	@Method()
@@ -204,11 +205,17 @@ export class ViewerComponent {
 			customItemProps: this.customItemProps,
 			metadataDictionary: this.metadataDictionary,
 			deepzoom: this.deepzoomEnabled
-		})
+		});
+
+		// IE11 fix
+        if ((this.el as any).msRequestFullscreen) {
+            (document as any).onmsfullscreenchange =  this.handleFullscreenChange.bind(this);
+        }
 	}
 
-	async componentDidLoad() {
-		await this.fetchManifest(this.url);
+	componentDidLoad() {
+		// Move this into WillLoad (needs tests)
+		this.fetchManifest(this.url);
 	}
 
 	componentDidUpdate() {

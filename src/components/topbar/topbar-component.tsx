@@ -91,19 +91,32 @@ export class TopbarComponent {
         this.storeUnsubscribe()
     }
 
-    @Listen('fullscreenchange')
-    handleFullscreenChange() {
-        this.fullscreen = (document.fullscreenElement ? true : false)
-    }
-
     handleFullscreenToggle() {
         if (!this.fullscreen) {
             const viewer = this.el.closest(".harmonized-viewer");
             if (viewer) {
-                viewer.requestFullscreen();
+                const viewerElement: any = viewer;
+                if (viewerElement.requestFullscreen) {
+                    viewerElement.requestFullscreen();
+                } else if (viewerElement.msRequestFullscreen) {
+                    viewerElement.msRequestFullscreen();
+                } else if (viewerElement.mozRequestFullscreen) {
+                    viewerElement.mozRequestFullscreen();
+                } else if (viewerElement.webkitRequestFullscreen) {
+                    viewerElement.webkitRequestFullscreen();
+                }
             }
         } else {
-            document.exitFullscreen();
+            const documentElement: any = document;
+            if (documentElement.exitFullscreen) {
+                documentElement.exitFullscreen();
+            } else if (documentElement.msExitFullscreen) {
+                documentElement.msExitFullscreen();
+            } else if (documentElement.mozCancelFullscreen) {
+                documentElement.mozCancelFullscreen();
+            } else if (documentElement.webkitExitFullscreen) {
+                documentElement.webkitExitFullscreen();
+            }
         }
     }
 
@@ -128,6 +141,7 @@ export class TopbarComponent {
                         <div class="group">
                             <harmonized-button
                                 class="mdc-top-app-bar__action-item"
+                                style={{display: 'inline'}}
                                 icon={this.infoShown ? iconInfoFull : iconInfo}
                                 size="sm"
                                 label={''}
@@ -138,6 +152,7 @@ export class TopbarComponent {
 
                             <harmonized-button
                                     class={`mdc-top-app-bar__action-item ${this.fullscreen && 'button-fullscreen-exit'}`}
+                                    style={{display: 'inline'}}
                                     icon={this.fullscreen ? iconFullscreenExit : iconFullscreen}
                                     size="sm"
                                     label={''}

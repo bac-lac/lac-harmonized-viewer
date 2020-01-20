@@ -15,6 +15,7 @@ export const AppConfig: AppConfig = {
 
     errors: [
         { code: 'manifest-not-found', severity: 'fatal' },
+        { code: 'manifest-incorrect-format', severity: 'fatal' },
         { code: 'request-failed',  severity: 'fatal' },
         { code: 'request-failed-notfound', severity: 'fatal' },
         { code: 'contenttype-unsupported',  severity: 'fatal' }

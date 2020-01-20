@@ -1,6 +1,6 @@
-@import '../../global/mixins';
 
 harmonized-image {
+    @import '../../global/mixins';
     @import '@material/animation/functions';
     display: inline-block;
     position: relative;

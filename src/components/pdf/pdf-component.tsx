@@ -1,4 +1,4 @@
-import { Component, h, Element, Prop } from '@stencil/core';
+import { Component, h, Element, Prop, Host } from '@stencil/core';
 
 @Component({
     tag: 'harmonized-embed',
@@ -11,6 +11,8 @@ export class PdfComponent {
     @Prop() url: string
 
     render() {
-        return <embed src={this.url} type="application/pdf" width="100%" height="100%" />
+        return  <embed src={this.url} type="application/pdf" width="100%" height="100%">
+                    If you can see this
+                </embed>
     }
 }

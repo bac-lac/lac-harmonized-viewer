@@ -32,7 +32,7 @@ export class VideoComponent {
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
                 document: { configuration: { customVideoPlayer } }
-            } = state
+            } = state;
             return {
                 customVideoPlayer
             }

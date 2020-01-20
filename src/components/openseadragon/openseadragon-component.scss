@@ -27,14 +27,20 @@ harmonized-openseadragon {
         z-index: 4;
         top: 0;
         left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 48px;
 
         > .button-topbar {
+            display: inline-block;
             margin-left: 10px;
         }
     }
 
     .openseadragon-container {
         position: absolute;
+        top: 0;
         height: 100%;
         width: 100%;
     }

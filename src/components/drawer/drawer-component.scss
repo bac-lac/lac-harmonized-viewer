@@ -1,49 +1,16 @@
+@import '@material/drawer/mdc-drawer';
 harmonized-drawer {
     position: absolute;
+    top: 0;
     max-width: 256px;
     background-color: #ece8e8 !important;
     border: 1px solid #999999 !important;
     border-right: 0;
-    // override dir="rtl" attribute
 
-    /*&.mdc-drawer {
-        width: inherit;
-        background-color: transparent;
-
-        &--left {
-            left: 0;
-            right: initial;
-        }
-
-        &--right {
-            left: initial;
-            right: 0;
-
-            &.mdc-drawer--closing {
-                transform: translateX(100%);
-            }
-        }
-
-        &--top,
-        &--bottom {
-            width: 100%;
-        }
-
-        .mdc-drawer__toolbar {
-            display: flex;
-            margin: 0 5px;
-            justify-content: flex-end;
-        }
-
-        harmonized-button {
-            button {
-                &::before,
-                &::after {
-                    border-radius: 2px;
-                }
-            }
-        }
-    }*/
+    &.mdc-drawer {
+        left: inherit;
+        right: 0px;
+    }
 
     .mdc-drawer__header {
         position: relative;

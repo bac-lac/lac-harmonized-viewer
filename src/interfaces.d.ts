@@ -45,7 +45,7 @@ interface ViewportState {
 // Used in viewport, topbar, etc.
 type ViewportType = 'image' | 'pdf' | 'video' | 'audio';
 
-type ErrorCode = 'manifest-not-found' | 'request-failed' | 'request-failed-notfound' | 'contenttype-unsupported'
+type ErrorCode = 'manifest-not-found' | 'manifest-incorrect-format' | 'request-failed' | 'request-failed-notfound' | 'contenttype-unsupported'
 type ErrorSeverity = 'fatal' | 'error' | 'warning'
 
 interface DocumentBase {

@@ -26,10 +26,11 @@ export class ButtonComponent {
 
         const element = this.el.querySelector("button")
         if (element) {
+            /*
             const ripple = new MDCRipple(element)
             if (ripple) {
                 ripple.unbounded = true
-            }
+            }*/
         }
     }
 
@@ -38,7 +39,7 @@ export class ButtonComponent {
         let className = null
         let buttonClassName = null
 
-        className = "mdc-touch-target-wrapper"
+        className = "-target-wrapper"
 
         if (this.icon && !this.label) {
             buttonClassName = 'mdc-icon-button'

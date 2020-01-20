@@ -1,6 +1,6 @@
 harmonized-button {
-    @import '@material/button/mixins';
-    @import '@material/icon-button/mixins';
+    @import '@material/button/mdc-button';
+    @import '@material/icon-button/mdc-icon-button';
 
     display: flex;
 
@@ -47,6 +47,28 @@ harmonized-button {
         }
         &--lg {
             @include mdc-icon-button-icon-size(30px, 30px);
+        }
+    }
+}
+
+.harmonized-viewer-theme--light harmonized-button {
+    @import '@material/button/mixins';
+    @import '@material/icon-button/mixins';
+    
+    &.circle > button {
+        background-color: #fff;
+    }
+
+    .mdc-button {
+        @include mdc-button-ink-color(#46494c);
+        &[disabled] {
+            @include mdc-button-ink-color(#c5c3c6);
+        }
+    }
+    .mdc-icon-button {
+        @include mdc-icon-button-ink-color(#46494c);
+        &[disabled] {
+            @include mdc-icon-button-ink-color(#c5c3c6);
         }
     }
 }

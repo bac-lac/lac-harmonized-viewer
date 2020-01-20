@@ -55,3 +55,11 @@ export function animate(element: Element, animation: string, callback?: () => vo
 
     element.addEventListener('animationend', handleAnimationEnd)
 }
+
+// To support IE11
+export function addEventListenerToRunOnce(target: Element, eventName: string, callback: Function) {
+    target.addEventListener(eventName, function onetime() {
+        target.removeEventListener(eventName, onetime);
+        callback();
+    });
+}
