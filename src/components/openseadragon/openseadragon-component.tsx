@@ -42,16 +42,11 @@ export class OpenSeadragonComponent {
 
     @Event() pageLoad: EventEmitter
 
-    /*@Watch('currentItemIndex')
-    handlePageChange(newValue: number, oldValue: number) { 
-        if (this.instance) {
-            this.instance.goToPage(newValue)
-        }
-    }*/
-
-    /*@Watch('url')
-    handleUrlChange(newValue: string, oldValue: string) {
-    }*/
+    @Listen('keydown', { target: 'parent' })
+    handleKeyDown(ev: KeyboardEvent) {
+        // If we let the event bubble up, moving the image (key up/down) will change items
+        ev.stopPropagation();
+    }
 
     @Watch('zoomRequest')
     handleZoomRequest(newValue: DocumentZoom, oldValue: DocumentZoom) {

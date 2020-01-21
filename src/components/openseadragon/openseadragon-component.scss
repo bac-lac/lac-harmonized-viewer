@@ -25,12 +25,14 @@ harmonized-openseadragon {
     .button-topbar-group {
         position: absolute;
         z-index: 4;
-        top: 0;
+        bottom: 0;
         left: 0;
         display: flex;
+        flex-direction: row;
         align-items: center;
         justify-content: center;
         height: 48px;
+        z-index: 10;
 
         > .button-topbar {
             display: inline-block;

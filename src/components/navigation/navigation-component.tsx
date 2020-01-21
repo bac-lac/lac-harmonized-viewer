@@ -65,9 +65,8 @@ export class NavigationComponent {
         this.storeUnsubscribe()
     }
 
-    @Listen('keydown', { target: 'window' })
+    @Listen('keydown', { target: 'parent' })
     handleKeyDown(ev: KeyboardEvent) {
-
         // Handle keyboard previous/next navigation
         if (ev.key === 'ArrowRight' || ev.key == 'ArrowDown') {
             this.viewItem(this.currentItemIndex + 1)
@@ -77,6 +76,7 @@ export class NavigationComponent {
         }
 
         if (ev.key == "ArrowDown" || ev.key == 'ArrowUp') {
+            ev.preventDefault();
             ev.stopPropagation();
         }
     }
