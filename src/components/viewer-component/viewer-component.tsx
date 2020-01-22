@@ -6,7 +6,7 @@ import { addOverlay, setOptions, setLanguage, addLanguage, setConfiguration } fr
 import i18next from 'i18next';
 import { AppConfig } from '../../app.config';
 import { fetchManifest } from '../../store/actions/manifest';
-import { toggleFullscreen, toggleDrawer } from '../../store/actions/viewport';
+import { viewItem, toggleFullscreen, toggleDrawer } from '../../store/actions/viewport';
 import iconError from '../../assets/material-icons/ic_error_24px.svg'
 import { Item } from '../../models/item';
 import { t } from '../../services/i18n-service';
@@ -48,6 +48,7 @@ export class ViewerComponent {
 
 	fetchManifest: typeof fetchManifest
 
+	viewItem: typeof viewItem
 	toggleFullscreen: typeof toggleFullscreen
 	toggleDrawer: typeof toggleDrawer
 
@@ -102,6 +103,18 @@ export class ViewerComponent {
 			return;
 
 		return new Item(this.items[this.currentItemIndex]);
+	}
+
+	@Method()
+	async setItem(index: number): Promise<boolean> {
+		if (!this.items || index >= this.items.length || index < 0) {
+			return false;
+		}
+
+		if (this.currentItemIndex != index)
+			this.viewItem(index);
+
+		return true;
 	}
 
 	@Method()
@@ -173,7 +186,7 @@ export class ViewerComponent {
 
 	componentWillLoad() {
 		this.store.setStore(configureStore({}))
-		this.store.mapDispatchToProps(this, { addLanguage, addOverlay, setLanguage, setConfiguration, setOptions, fetchManifest, toggleFullscreen, toggleDrawer })
+		this.store.mapDispatchToProps(this, { addLanguage, addOverlay, setLanguage, setConfiguration, setOptions, fetchManifest, viewItem, toggleFullscreen, toggleDrawer })
 		this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
 			const {
 				document: { configuration, theme },

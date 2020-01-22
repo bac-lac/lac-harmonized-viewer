@@ -101,6 +101,7 @@ export namespace Components {
     'navigationPlacement': PlacementType;
     'navigationRows': number;
     'preventLoadOnEmpty': boolean;
+    'setItem': (index: number) => Promise<boolean>;
     'url': string;
   }
   interface HarmonizedViewport {}
