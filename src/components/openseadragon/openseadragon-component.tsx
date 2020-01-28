@@ -284,7 +284,7 @@ export class OpenSeadragonComponent {
         return <Host>
             <div class="button-topbar-group">
                 <harmonized-button
-                    class="button-topbar"
+                    class="button-topbar circle"
                     icon={iconPlus}
                     size="sm"
                     title={t('zoomIn')}
@@ -292,7 +292,7 @@ export class OpenSeadragonComponent {
                     onClick={this.handleZoomIn.bind(this)}
                 />
                 <harmonized-button
-                    class="button-topbar"
+                    class="button-topbar circle"
                     icon={iconMinus}
                     size="sm"
                     title={t('zoomOut')}
@@ -300,7 +300,7 @@ export class OpenSeadragonComponent {
                     onClick={this.handleZoomOut.bind(this)}
                 />
                 <harmonized-button
-                    class="button-topbar"
+                    class="button-topbar circle"
                     icon={iconRefresh}
                     size="sm"
                     title={t('zoomReset')}

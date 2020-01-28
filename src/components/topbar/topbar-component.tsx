@@ -36,6 +36,7 @@ export class TopbarComponent {
 
     storeUnsubscribe: Unsubscribe
 
+    @Event({ eventName: '_hvFullscreenToggle' }) fullscreenToggle: EventEmitter
     @Event({ eventName: 'harmonizedViewerTopBarUpdated'}) updatedEvent: EventEmitter
 
     private topAppBar?: MDCTopAppBar
@@ -92,32 +93,7 @@ export class TopbarComponent {
     }
 
     handleFullscreenToggle() {
-        if (!this.fullscreen) {
-            const viewer = this.el.closest(".harmonized-viewer");
-            if (viewer) {
-                const viewerElement: any = viewer;
-                if (viewerElement.requestFullscreen) {
-                    viewerElement.requestFullscreen();
-                } else if (viewerElement.msRequestFullscreen) {
-                    viewerElement.msRequestFullscreen();
-                } else if (viewerElement.mozRequestFullscreen) {
-                    viewerElement.mozRequestFullscreen();
-                } else if (viewerElement.webkitRequestFullscreen) {
-                    viewerElement.webkitRequestFullscreen();
-                }
-            }
-        } else {
-            const documentElement: any = document;
-            if (documentElement.exitFullscreen) {
-                documentElement.exitFullscreen();
-            } else if (documentElement.msExitFullscreen) {
-                documentElement.msExitFullscreen();
-            } else if (documentElement.mozCancelFullscreen) {
-                documentElement.mozCancelFullscreen();
-            } else if (documentElement.webkitExitFullscreen) {
-                documentElement.webkitExitFullscreen();
-            }
-        }
+        
     }
 
     handleDisplayClick() {
@@ -128,7 +104,7 @@ export class TopbarComponent {
         // Top bar is fixed for PDFs & Video/Audio - for now
         const currentItem = this.items[this.currentItemIndex] as DocumentPage;
         const viewportType = currentItem ? resolveViewportType(currentItem.contentType) : undefined;
-        const hasFixedTopbar = viewportType !== 'image';
+        const hasFixedTopbar = true; //viewportType !== 'image';    Make it fixed for all, for now.
 
         return <Host>
             <div class={`mdc-top-app-bar ${hasFixedTopbar && 'mdc-top-app-bar--fixed'} mdc-top-app-bar--dense`}>
@@ -158,7 +134,7 @@ export class TopbarComponent {
                                     label={''}
                                     aria-label={this.fullscreen ? t('exitFullscreen') : t('enterFullscreen')}
                                     tooltip={this.fullscreen ? t('exitFullscreen') : t('enterFullscreen')}
-                                    onClick={this.handleFullscreenToggle.bind(this)}>
+                                    onClick={this.fullscreenToggle.emit}>
                             </harmonized-button>
                         </div>
                     </section>

@@ -32,11 +32,16 @@ harmonized-openseadragon {
         align-items: center;
         justify-content: center;
         height: 48px;
+        margin-bottom: 25px;
         z-index: 10;
 
         > .button-topbar {
             display: inline-block;
             margin-left: 10px;
+
+            &:first-child {
+                margin-left: 25px;
+            }
         }
     }
 
@@ -50,5 +55,16 @@ harmonized-openseadragon {
         position: relative;
         height: 100%;
         width: 100%;
+
+        .navigator {
+            display: none !important;
+        }
+    }
+
+    @media (min-width: 720px) {
+        .openseadragon .navigator {
+            display: inline-block !important;
+            margin-right: 25px !important;
+        }
     }
 }

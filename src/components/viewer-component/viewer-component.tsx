@@ -160,15 +160,41 @@ export class ViewerComponent {
 		this.addOverlayState(x, y, width, height)
 	}
 
-	@Listen('fullscreenchange')
-	async handleFullscreenChange() {
-		this.toggleFullscreen();
-	}
-
 	@Listen('viewerDrawerToggle')
     handleDrawerToggle() {
         this.toggleDrawer()
-    }
+	}
+	
+	@Listen('_hvFullscreenToggle')
+	handleFullscreenToggle() {
+		if (!this.fullscreen) {
+			const viewerElement: any = this.el;
+            if (viewerElement) {
+                if (viewerElement.requestFullscreen) {
+                    viewerElement.requestFullscreen();
+                } else if (viewerElement.msRequestFullscreen) {
+                    viewerElement.msRequestFullscreen();
+                } else if (viewerElement.mozRequestFullscreen) {
+                    viewerElement.mozRequestFullscreen();
+                } else if (viewerElement.webkitRequestFullscreen) {
+                    viewerElement.webkitRequestFullscreen();
+                }
+            }
+        } else {
+            const documentElement: any = document;
+            if (documentElement.exitFullscreen) {
+                documentElement.exitFullscreen();
+            } else if (documentElement.msExitFullscreen) {
+                documentElement.msExitFullscreen();
+            } else if (documentElement.mozCancelFullscreen) {
+                documentElement.mozCancelFullscreen();
+            } else if (documentElement.webkitExitFullscreen) {
+                documentElement.webkitExitFullscreen();
+            }
+        }
+
+		this.toggleFullscreen();
+	}
 
 	// @Listen('click', { target: 'document' })
 	// handleDocumentClick() {
@@ -219,11 +245,6 @@ export class ViewerComponent {
 			metadataDictionary: this.metadataDictionary,
 			deepzoom: this.deepzoomEnabled
 		});
-
-		// IE11 fix
-        if ((this.el as any).msRequestFullscreen) {
-            (document as any).onmsfullscreenchange =  this.handleFullscreenChange.bind(this);
-        }
 	}
 
 	componentDidLoad() {
@@ -290,44 +311,6 @@ export class ViewerComponent {
 		})
 
 	}
-
-	/*resolveLanguage(): Language {
-
-		let resolved = null
-
-		const persistedState = loadPersistedState()
-
-		if (persistedState && persistedState.language) {
-			resolved = persistedState.language
-		}
-		else if (this.defaultLanguage) {
-			resolved = this.defaultLanguage
-		}
-		else {
-			resolved = 'en'
-		}
-
-		return this.availableLanguages.find(i => i.code && i.code == resolved)
-	}*/
-
-	/*resolveTheme(): string {
-
-		let resolved = null
-
-		const persistedState = loadPersistedState()
-
-		if (persistedState && persistedState.theme) {
-			resolved = persistedState.theme
-		}
-		else if (this.defaultTheme) {
-			resolved = this.defaultTheme
-		}
-		else {
-			resolved = 'light'
-		}
-
-		return resolved
-	}*/
 
 	render() {
 
