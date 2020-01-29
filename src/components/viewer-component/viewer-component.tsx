@@ -196,6 +196,31 @@ export class ViewerComponent {
 		this.toggleFullscreen();
 	}*/
 
+	@Listen('fullscreenchange', { target: 'document' })
+    @Listen('MSFullscreenChange', { target: 'document' })
+    @Listen('mozfullscreenchange', { target: 'document' })
+    @Listen('webkitfullscreenchange', { target: 'document' })
+    handleFullscreenToggleByOther() {
+        // Possibilities - fullscreenElement is null, our current element or some other element
+        const documentElement: any = document;
+        
+        // Remove our element from fullscreen if any other element is in fullscreen
+        if (documentElement.fullscreenElement === this.el ||
+            documentElement.msFullscreenElement === this.el ||
+            documentElement.mozFullScreenElement === this.el ||
+            documentElement.webkitFullscreenElement === this.el) { // or others? 
+
+            if (!this.fullscreen) {
+                this.toggleFullscreen();
+            }
+
+            return;  
+            
+        } else if (this.fullscreen) {
+            this.toggleFullscreen();
+        }
+    }
+
 	// @Listen('click', { target: 'document' })
 	// handleDocumentClick() {
 

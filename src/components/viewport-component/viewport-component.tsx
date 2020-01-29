@@ -63,11 +63,17 @@ export class ViewportComponent {
                     {(() => {
                         switch(viewportType) {
                             case 'image':
-                            return <harmonized-openseadragon id="viewport" />;
+                                return <harmonized-openseadragon id="viewport" />;
+
                             case 'pdf':
                                 return <harmonized-embed id="viewport" url={this.currentItem.image} />;
+
+                            case 'audio': 
+                                return <harmonized-audio id="viewport" url={this.currentItem.image} contentType={this.currentItem.contentType} />;
+
                             case 'video':
                                 return <harmonized-video id="viewport" url={this.currentItem.image} contentType={this.currentItem.contentType} />;
+
                             default:
                                 return null;
                         }

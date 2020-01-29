@@ -10,7 +10,8 @@ export const AppConfig: AppConfig = {
     contentTypes: [
         { formats: ['application/json', 'application/ld+json', 'text/plain', 'image/jpeg'], component: 'image' },
         { formats: ['application/pdf'], component: 'pdf' },
-        { formats: ['video/mp4', 'application/vnd.ms-sstr+xml'], component: 'video' }
+        { formats: ['audio/mp4', 'video/mp4', 'application/vnd.ms-sstr+xml'], component: 'video' },
+        { formats: ['audio/mpeg', 'audio/wav', 'audio/ogg'], component: 'audio' }
     ],
 
     errors: [

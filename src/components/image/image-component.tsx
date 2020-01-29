@@ -2,6 +2,7 @@ import { Component, Prop, h, Element, Event, EventEmitter, Host, State, Method, 
 import { Unsubscribe, Store } from '@stencil/redux';
 import { viewItem } from '../../store/actions/viewport';
 import { isNumber } from 'util';
+import { resolveViewportType } from '../../utils/viewport';
 import tippy, { sticky, Props, Instance } from 'tippy.js';
 import { t } from '../../services/i18n-service';
 
@@ -136,22 +137,19 @@ export class ImageComponent {
         if (this.src === null || this.src === '')
             return 'https://baclac.blob.core.windows.net/cdn/assets/placeholder-unavailable.jpeg';
 
-        switch (this.contentType) {
-            case 'application/json':
-            case 'application/ld+json': 
-            case 'text/plain':
-            case 'image/jpeg':
+        const viewportType: string = resolveViewportType(this.contentType);
+        switch (viewportType) {
+            case 'image':
                 return this.src;
 
-            case 'application/pdf':
+            case 'pdf':
                 return 'https://baclac.blob.core.windows.net/cdn/assets/placeholder-pdf.jpeg';
 
-            case 'video/mp4':
-            case 'application/vnd.ms-sstr+xml':
+            case 'video':
                 return 'https://baclac.blob.core.windows.net/cdn/assets/placeholder-video.jpeg';
 
-            // Audio
-            //https://baclac.blob.core.windows.net/cdn/assets/placeholder-audio.jpeg
+            case 'audio':
+                return 'https://baclac.blob.core.windows.net/cdn/assets/placeholder-audio.jpeg';
 
             default:
                 return 'https://baclac.blob.core.windows.net/cdn/assets/placeholder-unavailable.jpeg';

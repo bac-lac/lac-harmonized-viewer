@@ -16,6 +16,10 @@ import {
 
 export namespace Components {
   interface HarmonizedAnnotations {}
+  interface HarmonizedAudio {
+    'contentType': string;
+    'url': string;
+  }
   interface HarmonizedButton {
     'disabled': boolean;
     'dropdown': boolean;
@@ -114,6 +118,12 @@ declare global {
   var HTMLHarmonizedAnnotationsElement: {
     prototype: HTMLHarmonizedAnnotationsElement;
     new (): HTMLHarmonizedAnnotationsElement;
+  };
+
+  interface HTMLHarmonizedAudioElement extends Components.HarmonizedAudio, HTMLStencilElement {}
+  var HTMLHarmonizedAudioElement: {
+    prototype: HTMLHarmonizedAudioElement;
+    new (): HTMLHarmonizedAudioElement;
   };
 
   interface HTMLHarmonizedButtonElement extends Components.HarmonizedButton, HTMLStencilElement {}
@@ -219,6 +229,7 @@ declare global {
   };
   interface HTMLElementTagNameMap {
     'harmonized-annotations': HTMLHarmonizedAnnotationsElement;
+    'harmonized-audio': HTMLHarmonizedAudioElement;
     'harmonized-button': HTMLHarmonizedButtonElement;
     'harmonized-drawer': HTMLHarmonizedDrawerElement;
     'harmonized-embed': HTMLHarmonizedEmbedElement;
@@ -241,6 +252,10 @@ declare global {
 
 declare namespace LocalJSX {
   interface HarmonizedAnnotations {}
+  interface HarmonizedAudio {
+    'contentType'?: string;
+    'url'?: string;
+  }
   interface HarmonizedButton {
     'disabled'?: boolean;
     'dropdown'?: boolean;
@@ -304,6 +319,7 @@ declare namespace LocalJSX {
   interface HarmonizedTabs {}
   interface HarmonizedTopbar {
     'onHarmonizedViewerTopBarUpdated'?: (event: CustomEvent<any>) => void;
+    'on_hvFullscreenToggle'?: (event: CustomEvent<any>) => void;
   }
   interface HarmonizedVideo {
     'contentType'?: string;
@@ -335,6 +351,7 @@ declare namespace LocalJSX {
 
   interface IntrinsicElements {
     'harmonized-annotations': HarmonizedAnnotations;
+    'harmonized-audio': HarmonizedAudio;
     'harmonized-button': HarmonizedButton;
     'harmonized-drawer': HarmonizedDrawer;
     'harmonized-embed': HarmonizedEmbed;
@@ -362,6 +379,7 @@ declare module "@stencil/core" {
   export namespace JSX {
     interface IntrinsicElements {
       'harmonized-annotations': LocalJSX.HarmonizedAnnotations & JSXBase.HTMLAttributes<HTMLHarmonizedAnnotationsElement>;
+      'harmonized-audio': LocalJSX.HarmonizedAudio & JSXBase.HTMLAttributes<HTMLHarmonizedAudioElement>;
       'harmonized-button': LocalJSX.HarmonizedButton & JSXBase.HTMLAttributes<HTMLHarmonizedButtonElement>;
       'harmonized-drawer': LocalJSX.HarmonizedDrawer & JSXBase.HTMLAttributes<HTMLHarmonizedDrawerElement>;
       'harmonized-embed': LocalJSX.HarmonizedEmbed & JSXBase.HTMLAttributes<HTMLHarmonizedEmbedElement>;
