@@ -165,7 +165,7 @@ export class ViewerComponent {
         this.toggleDrawer()
 	}
 	
-	@Listen('_hvFullscreenToggle')
+	/*@Listen('_hvFullscreenToggle')
 	handleFullscreenToggle() {
 		if (!this.fullscreen) {
 			const viewerElement: any = this.el;
@@ -194,7 +194,7 @@ export class ViewerComponent {
         }
 
 		this.toggleFullscreen();
-	}
+	}*/
 
 	// @Listen('click', { target: 'document' })
 	// handleDocumentClick() {

@@ -9,6 +9,8 @@ import { t } from '../../services/i18n-service';
 import iconPlus from '../../assets/material-design-icons/add-24px.svg'
 import iconMinus from '../../assets/material-design-icons/remove-24px.svg'
 import iconRefresh from '../../assets/material-design-icons/refresh-24px.svg'
+import iconEnterFullscreen from '../../assets/material-design-icons/ic_fullscreen_24px.svg'
+import iconExitFullscreen from '../../assets/material-design-icons/ic_fullscreen_exit_24px.svg'
 import iconChevronLeft from '../../assets/material-design-icons/ic_chevron_left_48px.svg'
 import iconChevronRight from '../../assets/material-design-icons/ic_chevron_right_48px.svg'
 import { selectCurrentItem } from '../../store/selectors/item';
@@ -37,6 +39,8 @@ export class OpenSeadragonComponent {
     @State() currentItemIndex: MyAppState["viewport"]["itemIndex"]
     @State() numberOfItems: number;
     @State() currentItem: DocumentPage
+
+    @State() isFullscreen: boolean = false;
 
     @Prop({ context: "store" }) store: Store
 
@@ -158,6 +162,60 @@ export class OpenSeadragonComponent {
         }
     }
 
+    handleFullscreenToggle() {
+        if (this.instance) {
+            if (!this.isFullscreen) {
+                const viewerElement: any = this.el;
+                if (viewerElement) {
+                    if (viewerElement.requestFullscreen) {
+                        viewerElement.requestFullscreen();
+                    } else if (viewerElement.msRequestFullscreen) {
+                        viewerElement.msRequestFullscreen();
+                    } else if (viewerElement.mozRequestFullscreen) {
+                        viewerElement.mozRequestFullscreen();
+                    } else if (viewerElement.webkitRequestFullscreen) {
+                        viewerElement.webkitRequestFullscreen();
+                    }
+                }
+            } else {
+                const documentElement: any = document;
+                if (documentElement.exitFullscreen) {
+                    documentElement.exitFullscreen();
+                } else if (documentElement.msExitFullscreen) {
+                    documentElement.msExitFullscreen();
+                } else if (documentElement.mozCancelFullscreen) {
+                    documentElement.mozCancelFullscreen();
+                } else if (documentElement.webkitExitFullscreen) {
+                    documentElement.webkitExitFullscreen();
+                }
+            }
+        }
+    }
+
+    @Listen('fullscreenchange', { target: 'document' })
+    @Listen('MSFullscreenChange', { target: 'document' })
+    @Listen('mozfullscreenchange', { target: 'document' })
+    @Listen('webkitfullscreenchange', { target: 'document' })
+    handleFullscreenExternalToggle() {
+        // Possibilities - fullscreenElement is null, our current element or some other element
+        const documentElement: any = document;
+        // Due to shadowDOM => use viewer element
+        const viewerElement: any = document.querySelector('harmonized-viewer');
+        // Remove our element from fullscreen if any other element is in fullscreen
+        if (documentElement.fullscreenElement === viewerElement ||
+            documentElement.msFullscreenElement === this.el || // Doesn't use shadow dom
+            documentElement.mozFullScreenElement === viewerElement ||
+            documentElement.webkitFullscreenElement === viewerElement) { // ??? 
+
+            if (!this.isFullscreen) {
+                this.isFullscreen = true;
+            }
+            
+        } else if (this.isFullscreen) {
+            this.isFullscreen = false;
+        }
+    }
+
     handlePreviousClick() {
         this.viewItem(this.currentItemIndex - 1)
     }
@@ -180,7 +238,7 @@ export class OpenSeadragonComponent {
             animationTime: 0.1,
             springStiffness: 10.0,
             showNavigator: true,
-            navigatorPosition: "BOTTOM_RIGHT",
+            navigatorPosition: "TOP_LEFT",
             showNavigationControl: false,
             showSequenceControl: false,
             sequenceMode: true,
@@ -285,6 +343,16 @@ export class OpenSeadragonComponent {
             <div class="button-topbar-group">
                 <harmonized-button
                     class="button-topbar circle"
+                    style={{'marginBottom': '15px'}}
+                    icon={this.isFullscreen ? iconExitFullscreen : iconEnterFullscreen}
+                    size="sm"
+                    title={this.isFullscreen ? t('exitFullscreen') : t('enterFullscreen')}
+                    aria-label={this.isFullscreen  ? t('exitFullscreen') : t('enterFullscreen')}
+                    onClick={this.handleFullscreenToggle.bind(this)}
+                />
+
+                <harmonized-button
+                    class="button-topbar circle"
                     icon={iconPlus}
                     size="sm"
                     title={t('zoomIn')}
@@ -309,27 +377,34 @@ export class OpenSeadragonComponent {
                 />
             </div>
 
-            <harmonized-button
-                class="button-navigation button-navigation--prev"
-                icon={iconChevronLeft}
-                size="lg"
-                title={t('goToPrevPage')}
-                aria-label={t('goToPrevPage')}
-                onClick={this.handlePreviousClick.bind(this)}
-                disabled={/*this.status.loading ||*/ this.currentItemIndex === 0} />
+            {!this.isFullscreen && 
+                <harmonized-button
+                    class="button-navigation button-navigation--prev"
+                    icon={iconChevronLeft}
+                    size="lg"
+                    title={t('goToPrevPage')}
+                    aria-label={t('goToPrevPage')}
+                    onClick={this.handlePreviousClick.bind(this)}
+                    disabled={/*this.status.loading ||*/ this.currentItemIndex === 0}
+                />
+            }
 
             <div class="openseadragon-container">
                 <div class="openseadragon"></div>
             </div>
 
-            <harmonized-button
-                class="button-navigation button-navigation--next"
-                icon={iconChevronRight}
-                size="lg"
-                title={t('goToNextPage')}
-                aria-label={t('goToNextPage')}
-                onClick={this.handleNextClick.bind(this)}
-                disabled={/*this.status.loading ||*/ this.currentItemIndex + 1 >= this.numberOfItems} />
+            {!this.isFullscreen &&
+                <harmonized-button
+                    class="button-navigation button-navigation--next"
+                    icon={iconChevronRight}
+                    size="lg"
+                    title={t('goToNextPage')}
+                    aria-label={t('goToNextPage')}
+                    onClick={this.handleNextClick.bind(this)}
+                    disabled={/*this.status.loading ||*/ this.currentItemIndex + 1 >= this.numberOfItems}
+                />
+            }
+            
 
             <div class="overlays">
                 {this.overlays &&

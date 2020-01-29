@@ -92,10 +92,6 @@ export class TopbarComponent {
         this.storeUnsubscribe()
     }
 
-    handleFullscreenToggle() {
-        
-    }
-
     handleDisplayClick() {
         this.menuDisplay.open = !this.menuDisplay.open
     }
@@ -126,7 +122,7 @@ export class TopbarComponent {
                                 onClick={this.toggleDrawer}>
                             </harmonized-button>
 
-                            <harmonized-button
+                            {/*<harmonized-button
                                     class={`mdc-top-app-bar__action-item ${this.fullscreen && 'button-fullscreen-exit'}`}
                                     style={{display: 'inline'}}
                                     icon={this.fullscreen ? iconFullscreenExit : iconFullscreen}
@@ -135,7 +131,7 @@ export class TopbarComponent {
                                     aria-label={this.fullscreen ? t('exitFullscreen') : t('enterFullscreen')}
                                     tooltip={this.fullscreen ? t('exitFullscreen') : t('enterFullscreen')}
                                     onClick={this.fullscreenToggle.emit}>
-                            </harmonized-button>
+                            </harmonized-button>*/}
                         </div>
                     </section>
                 </div>
