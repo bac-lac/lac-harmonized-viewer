@@ -9,9 +9,10 @@
 
     &-video {
         min-height: auto !important;
+        background-color: #333;
     }
     &-audio, &-video, &-pdf {
-        > harmonized-drawer{
+        > harmonized-drawer {
             top: 0;
             height: 100% !important;
         }
@@ -23,6 +24,8 @@
         flex: auto;
         display: flex;
         flex-direction: column;
+        align-items: center;
+        justify-content: center;
 
         &--loading {
             opacity: 0.3;

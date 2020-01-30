@@ -175,18 +175,22 @@ export class OpenSeadragonComponent {
                         viewerElement.mozRequestFullscreen();
                     } else if (viewerElement.webkitRequestFullscreen) {
                         viewerElement.webkitRequestFullscreen();
+                    } else {
+                        return;
                     }
                 }
             } else {
                 const documentElement: any = document;
-                if (documentElement.exitFullscreen) {
+                if (documentElement.fullscreenElement && documentElement.exitFullscreen) {
                     documentElement.exitFullscreen();
-                } else if (documentElement.msExitFullscreen) {
+                } else if (documentElement.msFullscreenElement && documentElement.msExitFullscreen) {
                     documentElement.msExitFullscreen();
-                } else if (documentElement.mozCancelFullscreen) {
+                } else if (documentElement.mozFullScreenElement && documentElement.mozCancelFullscreen) {
                     documentElement.mozCancelFullscreen();
-                } else if (documentElement.webkitExitFullscreen) {
+                } else if (documentElement.webkitFullscreenElement && documentElement.webkitExitFullscreen) {
                     documentElement.webkitExitFullscreen();
+                } else {
+                    return;
                 }
             }
         }
@@ -207,10 +211,27 @@ export class OpenSeadragonComponent {
             documentElement.mozFullScreenElement === viewerElement ||
             documentElement.webkitFullscreenElement === viewerElement) { // ??? 
 
+            // Toggle after comparison
             if (!this.isFullscreen) {
                 this.isFullscreen = true;
+                return;
+
+            } else {
+                // Exit fullscreen - avoids overlaying fullscreens
+                if (documentElement.fullscreenElement && documentElement.exitFullscreen) {
+                    documentElement.exitFullscreen();
+                } else if (documentElement.msFullscreenElement && documentElement.msExitFullscreen) {
+                    documentElement.msExitFullscreen();
+                } else if (documentElement.mozFullScreenElement && documentElement.mozCancelFullscreen) {
+                    documentElement.mozCancelFullscreen();
+                } else if (documentElement.webkitFullscreenElement && documentElement.webkitExitFullscreen) {
+                    documentElement.webkitExitFullscreen();
+                } else {
+                    return;
+                }
+
+                this.isFullscreen = false;
             }
-            
         } else if (this.isFullscreen) {
             this.isFullscreen = false;
         }

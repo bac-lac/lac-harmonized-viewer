@@ -31,7 +31,7 @@ harmonized-openseadragon {
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        margin: 0 30px 30px 0;
+        margin-right: 30px;
 
         > .button-topbar {
             display: inline-block;
@@ -61,3 +61,13 @@ harmonized-openseadragon {
         }
     }
 }
+
+// IE11 fix due to Stencil appending generate shadow dom class to every selector if put in Viewer-component
+.harmonized-viewer.harmonized-viewer-fullscreen harmonized-viewport harmonized-openseadragon {
+    background-color: #333;
+
+    .button-topbar-group {
+        margin-bottom: 30px;
+    }
+}
+

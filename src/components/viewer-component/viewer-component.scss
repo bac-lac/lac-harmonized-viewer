@@ -46,6 +46,8 @@
     &.harmonized-viewer-fullscreen {
         height: 100vh;
     }
+
+    
     /*.hv-main {
         overflow: hidden;
         flex: auto;
@@ -81,7 +83,7 @@
 
 .centered-box {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100%;
