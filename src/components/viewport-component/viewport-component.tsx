@@ -19,6 +19,7 @@ export class ViewportComponent {
 
     storeUnsubscribe: Unsubscribe
 
+    @State() suppressGallery: boolean = false;
     @State() numberOfItems: number
     @State() currentItem: DocumentPage
 
@@ -29,6 +30,7 @@ export class ViewportComponent {
         this.store.mapDispatchToProps(this, { toggleDrawer })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             return {
+                suppressGallery: state.document.configuration ? state.document.configuration.suppressGallery : false, 
                 numberOfItems: state.viewport.items.length,
                 currentItem: selectCurrentItem(state)
             };
@@ -63,7 +65,7 @@ export class ViewportComponent {
                     {(() => {
                         switch(viewportType) {
                             case 'image':
-                                return <harmonized-openseadragon id="viewport" />;
+                                return <harmonized-openseadragon id="viewport" allowPaging={!this.suppressGallery}/>;
 
                             case 'pdf':
                                 return <harmonized-embed id="viewport" url={this.currentItem.image} />;
@@ -84,7 +86,9 @@ export class ViewportComponent {
                             <div class="paging-label">
                                 {t(this.currentItem.label)}
                             </div>
-                            <harmonized-pager />
+                            {!this.suppressGallery &&
+                                <harmonized-pager />
+                            }
                         </div>
                     }  
                 </div>

@@ -159,6 +159,6 @@ interface Configuration {
     language: string
     customVideoPlayer: boolean
     customItemProps: string[]
-    metadataDictionary: MetadataMapping[]
     deepzoom: boolean
+    suppressGallery: boolean
 }

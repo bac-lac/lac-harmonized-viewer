@@ -37,8 +37,8 @@ export class ViewerComponent {
 	@Prop({ attribute: 'customvideoplayer'}) customVideoPlayer: boolean = false;
 	@Prop() customItemProps: string[] = [];
 	@Prop() preventLoadOnEmpty: boolean = false;
-	@Prop() metadataDictionary: MetadataMapping[] = []
 	@Prop({ attribute: 'deepzoom'}) deepzoomEnabled: boolean = true
+	@Prop() suppressGallery: boolean = true;
 
 	addLanguage: typeof addLanguage
 	addOverlayState: typeof addOverlay
@@ -233,8 +233,8 @@ export class ViewerComponent {
 			language: this.language,
 			customVideoPlayer: this.customVideoPlayer,
 			customItemProps: this.customItemProps,
-			metadataDictionary: this.metadataDictionary,
-			deepzoom: this.deepzoomEnabled
+			deepzoom: this.deepzoomEnabled,
+			suppressGallery: this.suppressGallery
 		});
 	}
 
@@ -341,11 +341,13 @@ export class ViewerComponent {
 
 					<harmonized-viewport />
 
-					<harmonized-navigation 	cols={this.navigationCols}
-											rows={this.navigationRows}
-											auto-resize={true}
-											style={{ backgroundColor: this.navigationBackgroundColor }} 
-					/>
+					{!this.suppressGallery &&
+						<harmonized-navigation 	cols={this.navigationCols}
+												rows={this.navigationRows}
+												auto-resize={true}
+												style={{ backgroundColor: this.navigationBackgroundColor }} 
+						/>
+					}
 
 					<harmonized-drawer headerTitle="Details" shown={this.infoShown}>
 						<harmonized-annotations></harmonized-annotations>

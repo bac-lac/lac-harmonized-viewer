@@ -61,6 +61,7 @@ export namespace Components {
     'rows': number;
   }
   interface HarmonizedOpenseadragon {
+    'allowPaging': boolean;
     'getOverlays': () => Promise<DocumentOverlay[]>;
     'openseadragon': () => Promise<any>;
   }
@@ -98,7 +99,6 @@ export namespace Components {
     'getViewportElement': () => Promise<HTMLElement>;
     'getViewportType': () => Promise<ViewportType>;
     'language': string;
-    'metadataDictionary': MetadataMapping[];
     'navigationBackgroundColor': string;
     'navigationCols': number;
     'navigationEnable': boolean;
@@ -106,6 +106,7 @@ export namespace Components {
     'navigationRows': number;
     'preventLoadOnEmpty': boolean;
     'setItem': (index: number) => Promise<boolean>;
+    'suppressGallery': boolean;
     'url': string;
   }
   interface HarmonizedViewport {}
@@ -299,6 +300,7 @@ declare namespace LocalJSX {
     'rows'?: number;
   }
   interface HarmonizedOpenseadragon {
+    'allowPaging'?: boolean;
     'onOverlayClick'?: (event: CustomEvent<any>) => void;
     'onPageLoad'?: (event: CustomEvent<any>) => void;
   }
@@ -331,7 +333,6 @@ declare namespace LocalJSX {
     'customVideoPlayer'?: boolean;
     'deepzoomEnabled'?: boolean;
     'language'?: string;
-    'metadataDictionary'?: MetadataMapping[];
     'navigationBackgroundColor'?: string;
     'navigationCols'?: number;
     'navigationEnable'?: boolean;
@@ -343,6 +344,7 @@ declare namespace LocalJSX {
     'onItemChanged'?: (event: CustomEvent<any>) => void;
     'onItemsLoaded'?: (event: CustomEvent<any>) => void;
     'preventLoadOnEmpty'?: boolean;
+    'suppressGallery'?: boolean;
     'url'?: string;
   }
   interface HarmonizedViewport {

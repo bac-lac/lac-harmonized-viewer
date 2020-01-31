@@ -24,6 +24,8 @@ export class OpenSeadragonComponent {
     @Element() el: HTMLElement
     @Event() overlayClick: EventEmitter
 
+    @Prop() allowPaging: boolean =  true;
+
     //private this.viewer: any
     private instance: any
     private mouseTracker: any
@@ -398,7 +400,7 @@ export class OpenSeadragonComponent {
                 />
             </div>
 
-            {!this.isFullscreen && 
+            {!this.isFullscreen && this.allowPaging && 
                 <harmonized-button
                     class="button-navigation button-navigation--prev"
                     icon={iconChevronLeft}
@@ -414,7 +416,7 @@ export class OpenSeadragonComponent {
                 <div class="openseadragon"></div>
             </div>
 
-            {!this.isFullscreen &&
+            {!this.isFullscreen && this.allowPaging &&
                 <harmonized-button
                     class="button-navigation button-navigation--next"
                     icon={iconChevronRight}
