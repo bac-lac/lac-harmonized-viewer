@@ -3,8 +3,8 @@ import { ActionTypes, TypeKeys } from "../actions/index";
 const getInitialState = (): ViewportState => {
 
     return {
-        title: null,
-        annotations: [],
+        title: [],
+        metadata: [],
         itemIndex: 0,
         items: [],
         fullscreen: false,
@@ -19,7 +19,7 @@ const viewport = (state = getInitialState(), action: ActionTypes): ViewportState
             return { ...state, itemIndex: action.index };
         }
         case TypeKeys.LOAD_VIEW: {
-            return { ...state, title: action.title, annotations: action.annotations, itemIndex: action.index, items: action.items };
+            return { ...state, title: action.title, metadata: action.metadata, itemIndex: action.index, items: action.items };
         }
         case TypeKeys.TOGGLE_FULLSCREEN: {
             return { ...state, fullscreen: !state.fullscreen }

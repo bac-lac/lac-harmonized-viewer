@@ -34,8 +34,8 @@ interface ManifestState {
 }
 
 interface ViewportState {
-    title: string,
-    annotations: DocumentAnnotation[],
+    title: DocumentLabel[],
+    metadata: DocumentMetadata[],
     itemIndex: number,
     items: DocumentPage[]
     fullscreen: boolean,

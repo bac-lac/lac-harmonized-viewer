@@ -38,7 +38,7 @@ export const config: Config = {
   commonjs: {
     namedExports: {
       'node_modules/path': ['path'],
-      "node_modules/i18next": ['i18next'],
+      'node_modules/i18next': ['i18next'],
       'node_modules/openseadragon/openseadragon.js': ['openseadragon']
     }
   },

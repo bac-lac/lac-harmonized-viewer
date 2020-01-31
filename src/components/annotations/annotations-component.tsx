@@ -2,6 +2,8 @@ import { Component, h, Element, State, Prop } from '@stencil/core';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { t } from '../../services/i18n-service';
 import { selectCurrentItem } from '../../store/selectors/item';
+import viewport from '../../store/reducers/viewport';
+import { getLanguageKvpValue } from '../../utils/lang';
 
 @Component({
     tag: 'harmonized-annotations',
@@ -16,12 +18,18 @@ export class AnnotationsComponent {
     storeUnsubscribe: Unsubscribe
 
     @State() language: string
+
+    @State() title: MyAppState['viewport']['title']
+    @State() metadata: MyAppState['viewport']['metadata']
     @State() currentItem: DocumentPage
 
     componentWillLoad() {
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             return {
                 language: state.document.configuration.language,
+
+                title: state.viewport.title,
+                metadata: state.viewport.metadata,
                 currentItem: selectCurrentItem(state)
             }
         })
@@ -32,27 +40,67 @@ export class AnnotationsComponent {
     }
 
     render() {
-        return  <dl class="annotation-list">
-                    {this.currentItem
-                        ?   this.currentItem.metadata.map((annotation) => {
-                                const label = annotation.label.find(label => label.locale === this.language);
-                                const content = annotation.value.find(value => value.locale === this.language);
-                                if (!label || label.value == "" || !content) {
-                                    return null;
-                                }
+        // Record level of manifest
+        // Title
+        const recordTitle: string = getLanguageKvpValue(this.title, this.language);
+        // Metadata
+        const recordMetadata: any = this.metadata.map(
+            function(metadata: DocumentMetadata) {
+                const label: string = getLanguageKvpValue(metadata.label, this.language);
+                const value: string = getLanguageKvpValue(metadata.value, this.language);
 
-                                return [
-                                    <dt tabindex="0">
-                                        <span>{t(label.value)}</span>
-                                    </dt>,
-                                    <dd>
-                                        <span innerHTML={content.value != "" ? content.value : t('noAnnovationValue')}>
-                                        </span>
-                                    </dd>
-                                ]
-                            })
-                        :   <span>{t('noAnnotations')}</span>
+                return { label, value };
+            }.bind(this)
+        );
+
+        // Item level
+        // Title
+        const itemTitle: string = this.currentItem ? getLanguageKvpValue(this.currentItem.label, this.language) : '';
+        // Metadata
+        const itemMetadata: any = this.currentItem
+                                    ? this.currentItem.metadata.map(
+                                        function(metadata: DocumentMetadata) {
+                                            const label: string = getLanguageKvpValue(metadata.label, this.language);
+                                            const value: string = getLanguageKvpValue(metadata.value, this.language);
+
+                                            return { label, value };
+                                        }.bind(this))
+                                    : [];
+
+
+
+        return  <dl class="annotation-list">
+                    {this.renderAnnotation(t('title'), recordTitle)}
+                    {
+                        recordMetadata.map(
+                            (pair) => {
+                                return this.renderAnnotation(pair.label, pair.value)
+                            }
+                        )
                     }
+
+                    {this.renderAnnotation(t('titleItem'), itemTitle)}
+                    {
+                        itemMetadata.map(
+                            (pair) => {
+                                return this.renderAnnotation(pair.label, pair.value)
+                            }
+                        )
+                    }
+                    
                 </dl>;
+    }
+
+   
+
+    private renderAnnotation(label: string, value: string) {
+        return [
+            <dt tabindex="0">
+                <span>{label}</span>
+            </dt>,
+            <dd>
+                <span>{value}</span>
+            </dd>
+        ];
     }
 }

@@ -92,7 +92,6 @@ export class IIIFResolver extends Resolver {
     getDefaultSequence(): Manifesto.ISequence {
         return this.getSequence(0)
     }
-
     getPages(customItemProps: string[] = [], metadataDictionary: MetadataMapping[] = []): DocumentPage[] {
 
         return this.getDefaultSequence().getCanvases()
@@ -112,10 +111,10 @@ export class IIIFResolver extends Resolver {
                         tileSources: this.resolveTileSource(image),
                         metadata: canvas.getMetadata().map(
                             (lvp: Manifesto.LabelValuePair): DocumentMetadata => {
+                                console.log("Item", lvp);
                                 const key = lvp.getLabel();
-                                let keySearch: MetadataMapping = metadataDictionary.find(m => m.key === key);
-                                const label : DocumentLabel[] = keySearch ? keySearch.values : [{ locale: 'en', value: lvp.getLabel() }];
-                                const value : DocumentLabel[] = this.mapLabels(lvp.value); 
+                                const label: DocumentLabel[] = lvp.label;
+                                const value: DocumentLabel[] = lvp.value; 
 
                                 return {
                                     key,
@@ -136,6 +135,23 @@ export class IIIFResolver extends Resolver {
 
         return this.getDefaultSequence().getCanvases()
             .flatMap((canvas) => canvas.getImages().map((image) => this.resolveTileSource(image)))
+    }
+
+    getMetadata(): DocumentMetadata[] {
+        return this.manifest.getMetadata().map(
+            (lvp: Manifesto.LabelValuePair): DocumentMetadata => {
+                console.log("Record", lvp);
+                const key = lvp.getLabel();
+                const label: DocumentLabel[] = lvp.label;
+                const value: DocumentLabel[] = lvp.value; 
+
+                return {
+                    key,
+                    label,
+                    value
+                } 
+            }
+        );
     }
 
     // Avoid

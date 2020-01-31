@@ -27,20 +27,10 @@ export const fetchManifest = (url: string) => async (dispatch, _getState) => {
                 dispatch(setManifest(manifest));
 
                 // Load items into the viewport
-                const resolverTitleLabels: DocumentLabel[] = resolver.getTitle();
-                let title: string = null;
-                // Some manifests don't support multiple locales and return strings
-                if (typeof resolverTitleLabels === 'string') {
-                    title = resolverTitleLabels;
-                }
-                else if (resolverTitleLabels instanceof Array &&
-                         resolverTitleLabels.find(label => label.locale === configuration.language)) {
-                    title = resolverTitleLabels.find(label => label.locale === configuration.language).value;
-                }
-                // Remove eventually
-                const annotations: DocumentAnnotation[] = resolver.getAnnotations();
+                const title: DocumentLabel[] = resolver.getTitle();
+                const metadata: DocumentMetadata[] = resolver.getMetadata();
                 const items: DocumentPage[] = resolver.getPages(configuration.customItemProps);
-                dispatch(loadView(title, annotations, items));
+                dispatch(loadView(title, metadata, items));
             })
             .catch((e) => {
                 const errorCode: string = e.message;

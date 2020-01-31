@@ -14,8 +14,8 @@
     "untitled": "Untitled",
     "ok": "OK",
 
-    "noAnnotations": "No annotations available for this item.",
-    "noAnnovationValue": "No value.",
+    "title": "Title",
+    "titleItem": "Item title",
 
     "browserNoVideo": "This browser does not support the HTML5 video element.",
 

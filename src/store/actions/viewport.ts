@@ -21,16 +21,16 @@ export const viewItem = (index: number) => (dispatch, _getState) => {
 
 export interface LoadView {
     type: TypeKeys.LOAD_VIEW,
-    title: string,
-    annotations: DocumentAnnotation[],
+    title: DocumentLabel[],
+    metadata: DocumentMetadata[],
     index: number,
     items: DocumentPage[]
 };
-export const loadView = (title: string, annotations: DocumentAnnotation[], items: DocumentPage[]) => (dispatch, _getState) => {
+export const loadView = (title: DocumentLabel[], metadata: DocumentMetadata[], items: DocumentPage[]) => (dispatch, _getState) => {
     const action: LoadView = {
         type: TypeKeys.LOAD_VIEW,
         title,
-        annotations,
+        metadata,
         index: 0,
         items
     };

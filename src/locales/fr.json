@@ -13,9 +13,9 @@
     "pager": "Article <b>{{page}}</b> de <b>{{pageCount}}</b>",
     "untitled": "Sans titre",
     "ok": "OK",
-    
-    "noAnnotations": "@@@",
-    "noAnnovationValue": "@@@",
+
+    "title": "Titre",
+    "titleItem": "Titre de l'objet",
 
     "browserNoVideo": "@@@",
 

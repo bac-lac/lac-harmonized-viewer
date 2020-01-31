@@ -163,37 +163,6 @@ export class ViewerComponent {
         this.toggleDrawer()
 	}
 	
-	/*@Listen('_hvFullscreenToggle')
-	handleFullscreenToggle() {
-		if (!this.fullscreen) {
-			const viewerElement: any = this.el;
-            if (viewerElement) {
-                if (viewerElement.requestFullscreen) {
-                    viewerElement.requestFullscreen();
-                } else if (viewerElement.msRequestFullscreen) {
-                    viewerElement.msRequestFullscreen();
-                } else if (viewerElement.mozRequestFullscreen) {
-                    viewerElement.mozRequestFullscreen();
-                } else if (viewerElement.webkitRequestFullscreen) {
-                    viewerElement.webkitRequestFullscreen();
-                }
-            }
-        } else {
-            const documentElement: any = document;
-            if (documentElement.exitFullscreen) {
-                documentElement.exitFullscreen();
-            } else if (documentElement.msExitFullscreen) {
-                documentElement.msExitFullscreen();
-            } else if (documentElement.mozCancelFullscreen) {
-                documentElement.mozCancelFullscreen();
-            } else if (documentElement.webkitExitFullscreen) {
-                documentElement.webkitExitFullscreen();
-            }
-        }
-
-		this.toggleFullscreen();
-	}*/
-
 	@Listen('fullscreenchange', { target: 'document' })
     @Listen('MSFullscreenChange', { target: 'document' })
     @Listen('mozfullscreenchange', { target: 'document' })
@@ -201,7 +170,6 @@ export class ViewerComponent {
     handleFullscreenToggleByOther() {
         // Possibilities - fullscreenElement is null, our current element or some other element
         const documentElement: any = document;
-        console.log('Viewer', documentElement.msFullscreenElement, this.el)
         // Remove our element from fullscreen if any other element is in fullscreen
         if (documentElement.fullscreenElement === this.el ||
 			this.el.contains((documentElement as any).msFullscreenElement) || // IE11
@@ -331,8 +299,7 @@ export class ViewerComponent {
 		AppConfig.languages.forEach((language) => {
 			this.addLanguage(language.code, language.name)
 			i18next.addResourceBundle(language.code, 'translation', language, true, true)
-		})
-
+		});
 	}
 
 	render() {
