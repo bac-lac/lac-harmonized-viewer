@@ -38,7 +38,7 @@ export class ViewerComponent {
 	@Prop() customItemProps: string[] = [];
 	@Prop() preventLoadOnEmpty: boolean = false;
 	@Prop({ attribute: 'deepzoom'}) deepzoomEnabled: boolean = true
-	@Prop() suppressGallery: boolean = true;
+	@Prop() suppressGallery: boolean = false;
 
 	addLanguage: typeof addLanguage
 	addOverlayState: typeof addOverlay

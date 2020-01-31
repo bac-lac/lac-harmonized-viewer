@@ -111,7 +111,6 @@ export class IIIFResolver extends Resolver {
                         tileSources: this.resolveTileSource(image),
                         metadata: canvas.getMetadata().map(
                             (lvp: Manifesto.LabelValuePair): DocumentMetadata => {
-                                console.log("Item", lvp);
                                 const key = lvp.getLabel();
                                 const label: DocumentLabel[] = lvp.label;
                                 const value: DocumentLabel[] = lvp.value; 
@@ -140,7 +139,6 @@ export class IIIFResolver extends Resolver {
     getMetadata(): DocumentMetadata[] {
         return this.manifest.getMetadata().map(
             (lvp: Manifesto.LabelValuePair): DocumentMetadata => {
-                console.log("Record", lvp);
                 const key = lvp.getLabel();
                 const label: DocumentLabel[] = lvp.label;
                 const value: DocumentLabel[] = lvp.value; 
