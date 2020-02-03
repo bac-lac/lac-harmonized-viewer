@@ -22,7 +22,7 @@ export class PdfComponent {
         }
 
         return  <embed src={this.url} type="application/pdf" width="100%" height="100%">
-                    If you can see this
+                    <span>{t('pdfNoEmbed')}</span>
                 </embed>
     }
 }

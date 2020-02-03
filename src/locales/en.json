@@ -29,6 +29,7 @@
 
     "pdfNoIE11Line1": "PDF viewing is currently not supported on Internet Explorer 11.",
     "pdfNoIE11Line2": "Use the download button or use a supported browser (e.g. Chrome, Safari, Firefox, Edge) to view this item.",
+    "pdfNoEmbed": "Something went wrong displaying this PDF.",
     
     "errors": {
         "manifest-not-found": "Manifest not found.",
