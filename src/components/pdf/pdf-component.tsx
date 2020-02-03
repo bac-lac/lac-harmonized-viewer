@@ -1,4 +1,7 @@
 import { Component, h, Element, Prop, Host } from '@stencil/core';
+import { isIE11 } from '../../utils/viewport';
+
+import  { t } from '../../services/i18n-service';
 
 @Component({
     tag: 'harmonized-embed',
@@ -11,6 +14,13 @@ export class PdfComponent {
     @Prop() url: string
 
     render() {
+        if (isIE11()) {
+            return  <Host class="pdf-ie11">
+                        <p>{t('pdfNoIE11Line1')}</p>
+                        <p>{t('pdfNoIE11Line2')}</p>
+                    </Host>
+        }
+
         return  <embed src={this.url} type="application/pdf" width="100%" height="100%">
                     If you can see this
                 </embed>

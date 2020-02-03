@@ -128,7 +128,7 @@ export class ImageComponent {
     }
 
     // Temporary thumbnail placeholder solution for pdf, audio and video content types.
-    determineThumbnail() {
+    determineThumbnail(viewportType: string) {
         // Replace links with CDN hosted images pre-prod
 
         //console.log(`Rendering thumbnail for page ${this.page} with content type=${this.contentType} and src=${this.src}`);
@@ -137,7 +137,6 @@ export class ImageComponent {
         if (this.src === null || this.src === '')
             return 'https://baclac.blob.core.windows.net/cdn/assets/placeholder-unavailable.jpeg';
 
-        const viewportType: string = resolveViewportType(this.contentType);
         switch (viewportType) {
             case 'image':
                 return this.src;
@@ -179,7 +178,8 @@ export class ImageComponent {
 
         const labelId = `label-page-${this.page}`
 
-        const thumbnailSrc = this.determineThumbnail();
+        const viewportType: string = resolveViewportType(this.contentType);
+        const thumbnailSrc = this.determineThumbnail(viewportType);
 
         return <Host
             role="button"

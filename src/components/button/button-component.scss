@@ -73,3 +73,8 @@ harmonized-button {
         }
     }
 }
+
+// ie11 fix
+.white-text harmonized-button button {
+    color: #fff !important;
+}

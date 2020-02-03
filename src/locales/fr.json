@@ -27,6 +27,9 @@
     "goToNextPage": "@@@",
     "goToPrevPage": "@@@",
 
+    "pdfNoIE11Line1": "L'affichage des PDF n'est actuellement pas pris en charge par Internet Explorer 11.",
+    "pdfNoIE11Line2": "Veuillez télécharger le fichier ou utiliser un navigateur pris en charge (par exemple Chrome, Safari, Firefox, Edge).",
+
     "errors": {
         "manifest-not-found": "Le manifeste n'a pas pu être trouvé.",
         "request-failed": "La requête au document a échoué {{url}}",
