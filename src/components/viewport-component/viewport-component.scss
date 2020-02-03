@@ -39,7 +39,11 @@
         }
 
         .viewport__content-pager {
+            width: 100%;
             padding: 0.5rem 0;
+            box-sizing: border-box;
+            // Change to theme eventually
+            background-color: #ece8e8;
         }
     }
 

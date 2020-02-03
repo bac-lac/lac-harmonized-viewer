@@ -121,6 +121,11 @@ export class ViewerComponent {
 	}
 
 	@Method()
+	async getItemCount() : Promise<number> {
+		return this.items.length;
+	}
+
+	@Method()
 	async getViewportType(): Promise<ViewportType> {
 		const currentItem: DocumentPage = this.items[this.currentItemIndex];
 		const viewportType: ViewportType = currentItem ? resolveViewportType(currentItem.contentType) : undefined;

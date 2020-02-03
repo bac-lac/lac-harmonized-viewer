@@ -93,6 +93,7 @@ export namespace Components {
     'getCurrentItem': () => Promise<Item>;
     'getCustomVideoElement': () => Promise<HTMLElement>;
     'getDrawerElement': () => Promise<HTMLElement>;
+    'getItemCount': () => Promise<number>;
     'getItems': () => Promise<Item[]>;
     'getNavigationElement': () => Promise<HTMLElement>;
     'getTopBarElement': () => Promise<HTMLElement>;
