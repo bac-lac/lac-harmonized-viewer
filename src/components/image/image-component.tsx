@@ -73,21 +73,18 @@ export class ImageComponent {
     }
 
     handleLoad(ev: Event) {
-
         this.loading = false
         this.loaded = true
-        this.failed = false
 
         this.createTooltip()
 
         this.imageLoad.emit(ev)
     }
 
-    handleError() {
-
+    handleError(ev: Event) {
+        this.failed = true
         this.loading = false
         this.loaded = false
-        this.failed = true
     }
 
     handleClick() {
@@ -134,7 +131,7 @@ export class ImageComponent {
         //console.log(`Rendering thumbnail for page ${this.page} with content type=${this.contentType} and src=${this.src}`);
 
         // No thumbnail placeholders
-        if (this.src === null || this.src === '')
+        if (this.src === null || this.src === '' || this.failed)
             return 'https://baclac.blob.core.windows.net/cdn/assets/placeholder-unavailable.jpeg';
 
         switch (viewportType) {
