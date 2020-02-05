@@ -1,32 +1,24 @@
 harmonized-embed {
     position: relative;
     display: block;
-    height: 100%;
     width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
 
-    embed {
+    embed, object {
         position: absolute;
-        > span {
-            display: flex;
-            height: 100%;
-            width: 100%;
-            align-items: center;
-            justify-content: center;    
-        }
-    }
-
-    &.pdf-ie11 {
         display: flex;
         flex-direction: column;
         height: 100%;
         width: 100%;
-        padding: 25px;
         align-items: center;
         justify-content: center;
 
-        > p {
+        > span {
             width: 100%;
+            padding: 0 15px;
             text-align: center;
+            white-space: pre-wrap;
         }
     }
 }

@@ -4,6 +4,7 @@ import { toggleDrawer } from '../../store/actions/viewport';
 import { t } from '../../services/i18n-service';
 import { resolveViewportType } from '../../utils/viewport';
 import { selectCurrentItem } from '../../store/selectors/item';
+import viewport from '../../store/reducers/viewport';
 
 @Component({
     tag: 'harmonized-viewport',
@@ -44,9 +45,9 @@ export class ViewportComponent {
     componentDidUnload() {
         this.storeUnsubscribe()
     }
-
+    
     render() {
-        const viewportType: ViewportType = this.currentItem ? resolveViewportType(this.currentItem.contentType) : undefined;
+        let viewportType: ViewportType = this.currentItem ? resolveViewportType(this.currentItem.contentType) : undefined;
 
         // TODO
         /*if (this.status.code == 'empty') {

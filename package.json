@@ -12,6 +12,7 @@
   "scripts": {
     "build": "stencil build",
     "start": "stencil build --dev --watch --serve",
+    "start.es5": "node --max-old-space-size=4096 ./node_modules/@stencil/core/bin/stencil build --dev --es5 --watch --serve", 
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
     "generate": "stencil generate"

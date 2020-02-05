@@ -68,6 +68,7 @@ export class ViewerComponent {
 
 	@Prop({ context: "store" }) store: Store
 
+	// Change all event names to prefix hv *eventually*
 	@Event({ eventName: 'hvRender' }) rendered: EventEmitter
 	@Event({ eventName: 'hvManifestError' }) manifestErrorOccurred: EventEmitter
 	@Event({ eventName: 'hvManifestIsEmpty' }) manifestIsEmpty: EventEmitter

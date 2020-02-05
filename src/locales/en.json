@@ -27,8 +27,8 @@
     "goToNextPage": "Go to next page",
     "goToPrevPage": "Go to previous page",
 
-    "pdfNoIE11Line1": "PDF viewing is currently not supported on Internet Explorer 11.",
-    "pdfNoIE11Line2": "Use the download button or use a supported browser (e.g. Chrome, Safari, Firefox, Edge) to view this item.",
+    "pdfIE11NoRenderLine1": "Harmonized Viewer could not render the PDF.",
+    "pdfIE11NoRenderLine2": "Please make sure you have a PDF reader plugin enabled (i.e. Adobe Reader) or use a modern browser that supports PDF rendering.",
     "pdfNoEmbed": "Something went wrong displaying this PDF.",
     
     "errors": {
