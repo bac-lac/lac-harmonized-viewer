@@ -1,7 +1,5 @@
 import { Component, h, Element, Prop, Host } from '@stencil/core';
 import { isIE11 } from '../../utils/viewport';
-import pdfjsLib from 'pdfjs-dist';
-import pdfjsViewer from 'pdfjs-dist/web/pdf_viewer.js';
 
 import  { t } from '../../services/i18n-service';
 

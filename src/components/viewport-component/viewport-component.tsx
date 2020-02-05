@@ -53,7 +53,6 @@ export class ViewportComponent {
         /*if (this.status.code == 'empty') {
             return undefined
         }*/
-
         return <Host class={`viewport viewport-${viewportType}`}>
 
             {/*
