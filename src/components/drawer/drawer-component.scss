@@ -7,6 +7,11 @@ harmonized-drawer {
     border: 1px solid #999999 !important;
     border-right: 0;
 
+    aside {
+        position: relative;
+        top: 0;
+    }
+    
     &.mdc-drawer {
         left: inherit;
         right: 0px;

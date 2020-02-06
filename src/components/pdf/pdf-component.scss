@@ -5,7 +5,7 @@ harmonized-embed {
     overflow-x: hidden;
     overflow-y: auto;
 
-    embed, object {
+    embed, object, div {
         position: absolute;
         display: flex;
         flex-direction: column;

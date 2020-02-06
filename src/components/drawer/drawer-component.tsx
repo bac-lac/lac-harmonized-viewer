@@ -1,6 +1,7 @@
 import { Component, h, Element, State, Prop, Host, Event, EventEmitter, Watch } from '@stencil/core';
 import { MDCDrawer } from "@material/drawer";
 import { t } from '../../services/i18n-service';
+import { isIE11 } from '../../utils/viewport';
 import arrowRight from '../../assets/material-design-icons/ic_chevron_right_36px.svg'
 
 @Component({
@@ -56,6 +57,7 @@ export class DrawerComponent {
                     <div dir="ltr" class="mdc-drawer__content">
                         <slot />
                     </div>
+                    {isIE11() && <iframe src="about:blank" style={{position: 'absolute', overflow: 'hidden', top: '0', left: '0', zIndex: '-1', border: 'none', minWidth: '100%', minHeight: '100%'}} />}
                 </Host>;
     }
 
