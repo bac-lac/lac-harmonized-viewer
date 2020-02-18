@@ -13,7 +13,7 @@
     "details": "Details",
     "pager": "Item <b>{{page}}</b> of <b>{{pageCount}}</b>",
     "untitled": "Untitled",
-    "ok": "OK",
+    "ok": "Okay",
 
     "title": "Title",
     "titleItem": "Item title",
@@ -35,7 +35,7 @@
     "errors": {
         "manifest-not-found": "Manifest not found.",
         "request-failed": "Document request failed {{url}}",
-        "request-failed-notfound": "Document could not be found at url {{url}}",
+        "request-failed-notfound": "Document could not be found {{url}}",
         "contenttype-unsupported": "Content type {{contentType}} is not supported"
     }
 }
