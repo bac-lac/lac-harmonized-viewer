@@ -1,16 +1,12 @@
 # Harmonized Viewer
-IIIF compliant web-based viewer built with Stencil.js and Openseadragon.
-
-Demo (default configuration):
-https://archives-viewer-demo.azurewebsites.net/demo/index.html
+IIIF compliant (v2.1.1) web-based viewer built with Stencil.js and Openseadragon.
 
 ## Functionality
-Harmonized Viewer supports the following formats:
+Supports the following formats:
 * Images (jpeg, png, gif)
 * PDFs
 * Audio (wav, mp3, ogg)
 * Video (mp4)
-
 
 ## Getting started
 
@@ -19,10 +15,6 @@ Harmonized Viewer supports the following formats:
 - **NodeJS**
   Install NodeJS on your local development environment (required for NPM dependencies).
   Make sure the NPM folder is appended to your PATH environment variable.
-  `https://nodejs.org/en/download`
-
-- **Git CLI**
-  Optional. Install Git (command line interface) on your local development environment.
 
 ### Working copy
 
