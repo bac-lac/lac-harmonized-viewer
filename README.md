@@ -1,9 +1,6 @@
 # Harmonized Viewer
 IIIF compliant web-based viewer built with Stencil.js and Openseadragon.
 
-Demo (default configuration):
-https://archives-viewer-demo.azurewebsites.net/demo/index.html
-
 ## Functionality
 Harmonized Viewer supports the following formats:
 * Images (jpeg, png, gif)
