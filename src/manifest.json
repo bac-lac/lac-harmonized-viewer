@@ -1,0 +1,1669 @@
+{
+    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/manifest",
+    "@context": "http://iiif.io/api/presentation/2/context.json",
+    "@type": "sc:Manifest",
+    "label": [
+        {
+            "@language": "en",
+            "@value": "Royal Commission to Investigate Chinese and Japanese Immigration into British Columbia fonds"
+        },
+        {
+            "@language": "fr",
+            "@value": "Fonds de la Commission royale d'enquête sur l'immigration chinoise et japonaise en Colombie-Britannique"
+        }
+    ],
+    "metadata": [
+        {
+            "label": "FoundIn",
+            "value": [
+                {
+                    "@language": "en",
+                    "@value": "Archives / Collections and Fonds"
+                },
+                {
+                    "@language": "fr",
+                    "@value": "Archives / Collections et Fonds"
+                }
+            ]
+        },
+        {
+            "label": "Reference",
+            "value": [
+                {
+                    "@language": "en",
+                    "@value": "RG33-145, R1082-0-0-E"
+                },
+                {
+                    "@language": "fr",
+                    "@value": "RG33-145, R1082-0-0-E"
+                }
+            ]
+        }
+    ],
+    "sequences": [
+        {
+            "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/sequence",
+            "@context": "http://iiif.io/api/presentation/2/context.json",
+            "@type": "sc:Sequence",
+            "viewingDirection": "left-to-right",
+            "canvases": [
+                {
+                    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
+                    "@context": "http://iiif.io/api/presentation/2/context.json",
+                    "@type": "sc:Canvas",
+                    "hasUserContent": true,
+                    "isDigiLab": false,
+                    "label": [
+                        {
+                            "@language": "en",
+                            "@value": "Part 1, excerpt, page 27."
+                        },
+                        {
+                            "@language": "fr",
+                            "@value": "Part 1, excerpt, page 27."
+                        }
+                    ],
+                    "width": 0,
+                    "height": 0,
+                    "images": [
+                        {
+                            "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                            "@context": "http://iiif.io/api/presentation/2/context.json",
+                            "@type": "oa:Annotation",
+                            "motivation": "sc:painting",
+                            "resource": {
+                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@type": "dctypes:Image",
+                                "service": {
+                                    "@context": "http://iiif.io/api/image/2/context.json",
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
+                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                },
+                                "width": 0,
+                                "height": 0
+                            },
+                            "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
+                        }
+                    ],
+                    "thumbnail": [
+                        {
+                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154903-v6&app=fonandcol&op=thumb&height=150",
+                            "@type": "dctypes:Image",
+                            "width": 0,
+                            "height": 0
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "label": "DateIssued",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1900 - 1902"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1900 - 1902"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "PublicAccessCode",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "HierarchyLevel",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "Fonds / Collection"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "Fonds / Collection"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "UrlPDF",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": ""
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
+                    "@context": "http://iiif.io/api/presentation/2/context.json",
+                    "@type": "sc:Canvas",
+                    "hasUserContent": false,
+                    "isDigiLab": true,
+                    "label": [
+                        {
+                            "@language": "en",
+                            "@value": "Page 28."
+                        },
+                        {
+                            "@language": "fr",
+                            "@value": "Page 28."
+                        }
+                    ],
+                    "width": 0,
+                    "height": 0,
+                    "images": [
+                        {
+                            "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                            "@context": "http://iiif.io/api/presentation/2/context.json",
+                            "@type": "oa:Annotation",
+                            "motivation": "sc:painting",
+                            "resource": {
+                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@type": "dctypes:Image",
+                                "service": {
+                                    "@context": "http://iiif.io/api/image/2/context.json",
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
+                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                },
+                                "width": 0,
+                                "height": 0
+                            },
+                            "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
+                        }
+                    ],
+                    "thumbnail": [
+                        {
+                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154904-v6&app=fonandcol&op=thumb&height=150",
+                            "@type": "dctypes:Image",
+                            "width": 0,
+                            "height": 0
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "label": "DateIssued",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1900 - 1902"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1900 - 1902"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "PublicAccessCode",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "HierarchyLevel",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "Fonds / Collection"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "Fonds / Collection"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "UrlPDF",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": ""
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
+                    "@context": "http://iiif.io/api/presentation/2/context.json",
+                    "@type": "sc:Canvas",
+                    "hasUserContent": false,
+                    "isDigiLab": false,
+                    "label": [
+                        {
+                            "@language": "en",
+                            "@value": "Page 29."
+                        },
+                        {
+                            "@language": "fr",
+                            "@value": "Page 29."
+                        }
+                    ],
+                    "width": 0,
+                    "height": 0,
+                    "images": [
+                        {
+                            "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                            "@context": "http://iiif.io/api/presentation/2/context.json",
+                            "@type": "oa:Annotation",
+                            "motivation": "sc:painting",
+                            "resource": {
+                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@type": "dctypes:Image",
+                                "service": {
+                                    "@context": "http://iiif.io/api/image/2/context.json",
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
+                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                },
+                                "width": 0,
+                                "height": 0
+                            },
+                            "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
+                        }
+                    ],
+                    "thumbnail": [
+                        {
+                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154905-v6&app=fonandcol&op=thumb&height=150",
+                            "@type": "dctypes:Image",
+                            "width": 0,
+                            "height": 0
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "label": "DateIssued",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1900 - 1902"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1900 - 1902"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "PublicAccessCode",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "HierarchyLevel",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "Fonds / Collection"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "Fonds / Collection"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "UrlPDF",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": ""
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
+                    "@context": "http://iiif.io/api/presentation/2/context.json",
+                    "@type": "sc:Canvas",
+                    "hasUserContent": false,
+                    "isDigiLab": false,
+                    "label": [
+                        {
+                            "@language": "en",
+                            "@value": "Page 30."
+                        },
+                        {
+                            "@language": "fr",
+                            "@value": "Page 30."
+                        }
+                    ],
+                    "width": 0,
+                    "height": 0,
+                    "images": [
+                        {
+                            "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                            "@context": "http://iiif.io/api/presentation/2/context.json",
+                            "@type": "oa:Annotation",
+                            "motivation": "sc:painting",
+                            "resource": {
+                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@type": "dctypes:Image",
+                                "service": {
+                                    "@context": "http://iiif.io/api/image/2/context.json",
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
+                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                },
+                                "width": 0,
+                                "height": 0
+                            },
+                            "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
+                        }
+                    ],
+                    "thumbnail": [
+                        {
+                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154906-v6&app=fonandcol&op=thumb&height=150",
+                            "@type": "dctypes:Image",
+                            "width": 0,
+                            "height": 0
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "label": "DateIssued",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1900 - 1902"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1900 - 1902"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "PublicAccessCode",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "HierarchyLevel",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "Fonds / Collection"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "Fonds / Collection"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "UrlPDF",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": ""
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
+                    "@context": "http://iiif.io/api/presentation/2/context.json",
+                    "@type": "sc:Canvas",
+                    "hasUserContent": false,
+                    "isDigiLab": false,
+                    "label": [
+                        {
+                            "@language": "en",
+                            "@value": "Part 1, excerpt, page 68."
+                        },
+                        {
+                            "@language": "fr",
+                            "@value": "Part 1, excerpt, page 68."
+                        }
+                    ],
+                    "width": 0,
+                    "height": 0,
+                    "images": [
+                        {
+                            "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                            "@context": "http://iiif.io/api/presentation/2/context.json",
+                            "@type": "oa:Annotation",
+                            "motivation": "sc:painting",
+                            "resource": {
+                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@type": "dctypes:Image",
+                                "service": {
+                                    "@context": "http://iiif.io/api/image/2/context.json",
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
+                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                },
+                                "width": 0,
+                                "height": 0
+                            },
+                            "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
+                        }
+                    ],
+                    "thumbnail": [
+                        {
+                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154907-v6&app=fonandcol&op=thumb&height=150",
+                            "@type": "dctypes:Image",
+                            "width": 0,
+                            "height": 0
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "label": "DateIssued",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1900 - 1902"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1900 - 1902"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "PublicAccessCode",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "HierarchyLevel",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "Fonds / Collection"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "Fonds / Collection"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "UrlPDF",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": ""
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
+                    "@context": "http://iiif.io/api/presentation/2/context.json",
+                    "@type": "sc:Canvas",
+                    "hasUserContent": false,
+                    "isDigiLab": false,
+                    "label": [
+                        {
+                            "@language": "en",
+                            "@value": "Page 69."
+                        },
+                        {
+                            "@language": "fr",
+                            "@value": "Page 69."
+                        }
+                    ],
+                    "width": 0,
+                    "height": 0,
+                    "images": [
+                        {
+                            "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                            "@context": "http://iiif.io/api/presentation/2/context.json",
+                            "@type": "oa:Annotation",
+                            "motivation": "sc:painting",
+                            "resource": {
+                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@type": "dctypes:Image",
+                                "service": {
+                                    "@context": "http://iiif.io/api/image/2/context.json",
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
+                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                },
+                                "width": 0,
+                                "height": 0
+                            },
+                            "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
+                        }
+                    ],
+                    "thumbnail": [
+                        {
+                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=thumb&height=150",
+                            "@type": "dctypes:Image",
+                            "width": 0,
+                            "height": 0
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "label": "DateIssued",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1900 - 1902"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1900 - 1902"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "PublicAccessCode",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "HierarchyLevel",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "Fonds / Collection"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "Fonds / Collection"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "UrlPDF",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": ""
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
+                    "@context": "http://iiif.io/api/presentation/2/context.json",
+                    "@type": "sc:Canvas",
+                    "hasUserContent": false,
+                    "isDigiLab": false,
+                    "label": [
+                        {
+                            "@language": "en",
+                            "@value": "Page 70."
+                        },
+                        {
+                            "@language": "fr",
+                            "@value": "Page 70."
+                        }
+                    ],
+                    "width": 0,
+                    "height": 0,
+                    "images": [
+                        {
+                            "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                            "@context": "http://iiif.io/api/presentation/2/context.json",
+                            "@type": "oa:Annotation",
+                            "motivation": "sc:painting",
+                            "resource": {
+                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@type": "dctypes:Image",
+                                "service": {
+                                    "@context": "http://iiif.io/api/image/2/context.json",
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
+                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                },
+                                "width": 0,
+                                "height": 0
+                            },
+                            "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
+                        }
+                    ],
+                    "thumbnail": [
+                        {
+                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154909-v6&app=fonandcol&op=thumb&height=150",
+                            "@type": "dctypes:Image",
+                            "width": 0,
+                            "height": 0
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "label": "DateIssued",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1900 - 1902"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1900 - 1902"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "PublicAccessCode",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "HierarchyLevel",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "Fonds / Collection"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "Fonds / Collection"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "UrlPDF",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": ""
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
+                    "@context": "http://iiif.io/api/presentation/2/context.json",
+                    "@type": "sc:Canvas",
+                    "hasUserContent": false,
+                    "isDigiLab": false,
+                    "label": [
+                        {
+                            "@language": "en",
+                            "@value": "Part 1, excerpt, page 508."
+                        },
+                        {
+                            "@language": "fr",
+                            "@value": "Part 1, excerpt, page 508."
+                        }
+                    ],
+                    "width": 0,
+                    "height": 0,
+                    "images": [
+                        {
+                            "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                            "@context": "http://iiif.io/api/presentation/2/context.json",
+                            "@type": "oa:Annotation",
+                            "motivation": "sc:painting",
+                            "resource": {
+                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@type": "dctypes:Image",
+                                "service": {
+                                    "@context": "http://iiif.io/api/image/2/context.json",
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
+                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                },
+                                "width": 0,
+                                "height": 0
+                            },
+                            "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
+                        }
+                    ],
+                    "thumbnail": [
+                        {
+                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154910-v6&app=fonandcol&op=thumb&height=150",
+                            "@type": "dctypes:Image",
+                            "width": 0,
+                            "height": 0
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "label": "DateIssued",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1900 - 1902"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1900 - 1902"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "PublicAccessCode",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "HierarchyLevel",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "Fonds / Collection"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "Fonds / Collection"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "UrlPDF",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": ""
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
+                    "@context": "http://iiif.io/api/presentation/2/context.json",
+                    "@type": "sc:Canvas",
+                    "hasUserContent": false,
+                    "isDigiLab": false,
+                    "label": [
+                        {
+                            "@language": "en",
+                            "@value": "Page 509."
+                        },
+                        {
+                            "@language": "fr",
+                            "@value": "Page 509."
+                        }
+                    ],
+                    "width": 0,
+                    "height": 0,
+                    "images": [
+                        {
+                            "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                            "@context": "http://iiif.io/api/presentation/2/context.json",
+                            "@type": "oa:Annotation",
+                            "motivation": "sc:painting",
+                            "resource": {
+                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@type": "dctypes:Image",
+                                "service": {
+                                    "@context": "http://iiif.io/api/image/2/context.json",
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
+                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                },
+                                "width": 0,
+                                "height": 0
+                            },
+                            "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
+                        }
+                    ],
+                    "thumbnail": [
+                        {
+                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154911-v6&app=fonandcol&op=thumb&height=150",
+                            "@type": "dctypes:Image",
+                            "width": 0,
+                            "height": 0
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "label": "DateIssued",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1900 - 1902"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1900 - 1902"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "PublicAccessCode",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "HierarchyLevel",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "Fonds / Collection"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "Fonds / Collection"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "UrlPDF",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": ""
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
+                    "@context": "http://iiif.io/api/presentation/2/context.json",
+                    "@type": "sc:Canvas",
+                    "hasUserContent": false,
+                    "isDigiLab": false,
+                    "label": [
+                        {
+                            "@language": "en",
+                            "@value": "Page 510."
+                        },
+                        {
+                            "@language": "fr",
+                            "@value": "Page 510."
+                        }
+                    ],
+                    "width": 0,
+                    "height": 0,
+                    "images": [
+                        {
+                            "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                            "@context": "http://iiif.io/api/presentation/2/context.json",
+                            "@type": "oa:Annotation",
+                            "motivation": "sc:painting",
+                            "resource": {
+                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@type": "dctypes:Image",
+                                "service": {
+                                    "@context": "http://iiif.io/api/image/2/context.json",
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
+                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                },
+                                "width": 0,
+                                "height": 0
+                            },
+                            "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
+                        }
+                    ],
+                    "thumbnail": [
+                        {
+                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154912-v6&app=fonandcol&op=thumb&height=150",
+                            "@type": "dctypes:Image",
+                            "width": 0,
+                            "height": 0
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "label": "DateIssued",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1900 - 1902"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1900 - 1902"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "PublicAccessCode",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "HierarchyLevel",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "Fonds / Collection"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "Fonds / Collection"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "UrlPDF",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": ""
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
+                    "@context": "http://iiif.io/api/presentation/2/context.json",
+                    "@type": "sc:Canvas",
+                    "hasUserContent": false,
+                    "isDigiLab": false,
+                    "label": [
+                        {
+                            "@language": "en",
+                            "@value": "Page 511."
+                        },
+                        {
+                            "@language": "fr",
+                            "@value": "Page 511."
+                        }
+                    ],
+                    "width": 0,
+                    "height": 0,
+                    "images": [
+                        {
+                            "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                            "@context": "http://iiif.io/api/presentation/2/context.json",
+                            "@type": "oa:Annotation",
+                            "motivation": "sc:painting",
+                            "resource": {
+                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@type": "dctypes:Image",
+                                "service": {
+                                    "@context": "http://iiif.io/api/image/2/context.json",
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
+                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                },
+                                "width": 0,
+                                "height": 0
+                            },
+                            "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
+                        }
+                    ],
+                    "thumbnail": [
+                        {
+                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154913-v6&app=fonandcol&op=thumb&height=150",
+                            "@type": "dctypes:Image",
+                            "width": 0,
+                            "height": 0
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "label": "DateIssued",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1900 - 1902"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1900 - 1902"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "PublicAccessCode",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "HierarchyLevel",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "Fonds / Collection"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "Fonds / Collection"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "UrlPDF",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": ""
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
+                    "@context": "http://iiif.io/api/presentation/2/context.json",
+                    "@type": "sc:Canvas",
+                    "hasUserContent": false,
+                    "isDigiLab": false,
+                    "label": [
+                        {
+                            "@language": "en",
+                            "@value": "Page 512."
+                        },
+                        {
+                            "@language": "fr",
+                            "@value": "Page 512."
+                        }
+                    ],
+                    "width": 0,
+                    "height": 0,
+                    "images": [
+                        {
+                            "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                            "@context": "http://iiif.io/api/presentation/2/context.json",
+                            "@type": "oa:Annotation",
+                            "motivation": "sc:painting",
+                            "resource": {
+                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@type": "dctypes:Image",
+                                "service": {
+                                    "@context": "http://iiif.io/api/image/2/context.json",
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
+                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                },
+                                "width": 0,
+                                "height": 0
+                            },
+                            "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
+                        }
+                    ],
+                    "thumbnail": [
+                        {
+                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154914-v6&app=fonandcol&op=thumb&height=150",
+                            "@type": "dctypes:Image",
+                            "width": 0,
+                            "height": 0
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "label": "DateIssued",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1900 - 1902"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1900 - 1902"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "PublicAccessCode",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "HierarchyLevel",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "Fonds / Collection"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "Fonds / Collection"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "UrlPDF",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": ""
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
+                    "@context": "http://iiif.io/api/presentation/2/context.json",
+                    "@type": "sc:Canvas",
+                    "hasUserContent": false,
+                    "isDigiLab": false,
+                    "label": [
+                        {
+                            "@language": "en",
+                            "@value": "Page 513."
+                        },
+                        {
+                            "@language": "fr",
+                            "@value": "Page 513."
+                        }
+                    ],
+                    "width": 0,
+                    "height": 0,
+                    "images": [
+                        {
+                            "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                            "@context": "http://iiif.io/api/presentation/2/context.json",
+                            "@type": "oa:Annotation",
+                            "motivation": "sc:painting",
+                            "resource": {
+                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@type": "dctypes:Image",
+                                "service": {
+                                    "@context": "http://iiif.io/api/image/2/context.json",
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
+                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                },
+                                "width": 0,
+                                "height": 0
+                            },
+                            "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
+                        }
+                    ],
+                    "thumbnail": [
+                        {
+                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154915-v6&app=fonandcol&op=thumb&height=150",
+                            "@type": "dctypes:Image",
+                            "width": 0,
+                            "height": 0
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "label": "DateIssued",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1900 - 1902"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1900 - 1902"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "PublicAccessCode",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "HierarchyLevel",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "Fonds / Collection"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "Fonds / Collection"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "UrlPDF",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": ""
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
+                    "@context": "http://iiif.io/api/presentation/2/context.json",
+                    "@type": "sc:Canvas",
+                    "hasUserContent": false,
+                    "isDigiLab": false,
+                    "label": [
+                        {
+                            "@language": "en",
+                            "@value": "Page 514."
+                        },
+                        {
+                            "@language": "fr",
+                            "@value": "Page 514."
+                        }
+                    ],
+                    "width": 0,
+                    "height": 0,
+                    "images": [
+                        {
+                            "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                            "@context": "http://iiif.io/api/presentation/2/context.json",
+                            "@type": "oa:Annotation",
+                            "motivation": "sc:painting",
+                            "resource": {
+                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@type": "dctypes:Image",
+                                "service": {
+                                    "@context": "http://iiif.io/api/image/2/context.json",
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
+                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                },
+                                "width": 0,
+                                "height": 0
+                            },
+                            "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
+                        }
+                    ],
+                    "thumbnail": [
+                        {
+                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154916-v6&app=fonandcol&op=thumb&height=150",
+                            "@type": "dctypes:Image",
+                            "width": 0,
+                            "height": 0
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "label": "DateIssued",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1900 - 1902"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1900 - 1902"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "PublicAccessCode",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "HierarchyLevel",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "Fonds / Collection"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "Fonds / Collection"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "UrlPDF",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": ""
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
+                    "@context": "http://iiif.io/api/presentation/2/context.json",
+                    "@type": "sc:Canvas",
+                    "hasUserContent": false,
+                    "isDigiLab": false,
+                    "label": [
+                        {
+                            "@language": "en",
+                            "@value": "Part 1, excerpt, page 539."
+                        },
+                        {
+                            "@language": "fr",
+                            "@value": "Part 1, excerpt, page 539."
+                        }
+                    ],
+                    "width": 0,
+                    "height": 0,
+                    "images": [
+                        {
+                            "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                            "@context": "http://iiif.io/api/presentation/2/context.json",
+                            "@type": "oa:Annotation",
+                            "motivation": "sc:painting",
+                            "resource": {
+                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@type": "dctypes:Image",
+                                "service": {
+                                    "@context": "http://iiif.io/api/image/2/context.json",
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
+                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                },
+                                "width": 0,
+                                "height": 0
+                            },
+                            "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
+                        }
+                    ],
+                    "thumbnail": [
+                        {
+                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154917-v6&app=fonandcol&op=thumb&height=150",
+                            "@type": "dctypes:Image",
+                            "width": 0,
+                            "height": 0
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "label": "DateIssued",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1900 - 1902"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1900 - 1902"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "PublicAccessCode",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "HierarchyLevel",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "Fonds / Collection"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "Fonds / Collection"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "UrlPDF",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": ""
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
+                    "@context": "http://iiif.io/api/presentation/2/context.json",
+                    "@type": "sc:Canvas",
+                    "hasUserContent": false,
+                    "isDigiLab": false,
+                    "label": [
+                        {
+                            "@language": "en",
+                            "@value": "Page 540."
+                        },
+                        {
+                            "@language": "fr",
+                            "@value": "Page 540."
+                        }
+                    ],
+                    "width": 0,
+                    "height": 0,
+                    "images": [
+                        {
+                            "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                            "@context": "http://iiif.io/api/presentation/2/context.json",
+                            "@type": "oa:Annotation",
+                            "motivation": "sc:painting",
+                            "resource": {
+                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@type": "dctypes:Image",
+                                "service": {
+                                    "@context": "http://iiif.io/api/image/2/context.json",
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
+                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                },
+                                "width": 0,
+                                "height": 0
+                            },
+                            "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
+                        }
+                    ],
+                    "thumbnail": [
+                        {
+                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154918-v6&app=fonandcol&op=thumb&height=150",
+                            "@type": "dctypes:Image",
+                            "width": 0,
+                            "height": 0
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "label": "DateIssued",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1900 - 1902"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1900 - 1902"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "PublicAccessCode",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "1"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "1"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "HierarchyLevel",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "Fonds / Collection"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "Fonds / Collection"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "UrlPDF",
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": ""
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": ""
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
