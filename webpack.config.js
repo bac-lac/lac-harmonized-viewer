@@ -14,9 +14,6 @@ module.exports = {
         library: 'HV'
     },
     resolve: {
-        // alias: {
-        //     handlebars: 'handlebars/dist/handlebars.runtime.min.js'
-        // },
         extensions: ['.scss', '.ts', '.tsx', '.js']
     },
     plugins: [
