@@ -16,7 +16,7 @@
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
     "generate": "stencil generate",
-    "copy.demo": "cpy src/demo.html src/manifest.json demo && cpy dist/**/*.* demo --parents"
+    "copy.demo": "cpy src/demo.html demo --rename=index.html && cpy src/manifest.json demo && cpy dist/**/*.* demo --parents"
   },
   "repository": {
     "type": "git",
