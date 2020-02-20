@@ -12,10 +12,11 @@
   "scripts": {
     "build": "stencil build",
     "start": "stencil build --dev --watch --serve",
-    "start.es5": "node --max-old-space-size=4096 ./node_modules/@stencil/core/bin/stencil build --dev --es5 --watch --serve", 
+    "start.es5": "node --max-old-space-size=4096 ./node_modules/@stencil/core/bin/stencil build --dev --es5 --watch --serve",
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
-    "generate": "stencil generate"
+    "generate": "stencil generate",
+    "copy.demo": "copy src/index.html src/manifest.json dist/* dist/**/* demo"
   },
   "repository": {
     "type": "git",
@@ -77,6 +78,7 @@
     "@types/overlayscrollbars": "^1.9.0",
     "autoprefixer": "^9.6.1",
     "babel-loader": "^8.0.6",
+    "copy": "^0.3.2",
     "copy-webpack-plugin": "^5.1.1",
     "css-loader": "^3.2.0",
     "extract-loader": "^3.1.0",
