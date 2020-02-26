@@ -12,10 +12,11 @@
   "scripts": {
     "build": "stencil build",
     "start": "stencil build --dev --watch --serve",
-    "start.es5": "node --max-old-space-size=4096 ./node_modules/@stencil/core/bin/stencil build --dev --es5 --watch --serve", 
+    "start.es5": "node --max-old-space-size=4096 ./node_modules/@stencil/core/bin/stencil build --dev --es5 --watch --serve",
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
-    "generate": "stencil generate"
+    "generate": "stencil generate",
+    "copy.demo": "cpy src/demo.html demo --rename=index.html && cpy src/manifest.json demo && cpy dist/**/*.* demo --parents"
   },
   "repository": {
     "type": "git",
@@ -78,6 +79,7 @@
     "autoprefixer": "^9.6.1",
     "babel-loader": "^8.0.6",
     "copy-webpack-plugin": "^5.1.1",
+    "cpy-cli": "^3.1.0",
     "css-loader": "^3.2.0",
     "extract-loader": "^3.1.0",
     "file-loader": "^4.2.0",
