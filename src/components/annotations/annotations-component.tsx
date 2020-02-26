@@ -73,8 +73,12 @@ export class AnnotationsComponent {
                     {this.renderAnnotation(t('title'), recordTitle)}
                     {
                         recordMetadata.map(
-                            (pair) => {
-                                return this.renderAnnotation(pair.label, pair.value)
+                            (pair, index) => {
+                                if (pair.value && pair.value.trim() != "") {
+                                    return this.renderAnnotation(pair.label, pair.value)
+                                } else {
+                                    return undefined;
+                                }
                             }
                         )
                     }
@@ -83,7 +87,11 @@ export class AnnotationsComponent {
                     {
                         itemMetadata.map(
                             (pair) => {
-                                return this.renderAnnotation(pair.label, pair.value)
+                                if (pair.value && pair.value.trim() != "") {
+                                    return this.renderAnnotation(pair.label, pair.value)
+                                } else {
+                                    return undefined;
+                                }
                             }
                         )
                     }
