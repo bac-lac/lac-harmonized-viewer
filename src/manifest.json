@@ -51,8 +51,6 @@
                     "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
                     "@context": "http://iiif.io/api/presentation/2/context.json",
                     "@type": "sc:Canvas",
-                    "hasUserContent": true,
-                    "isDigiLab": false,
                     "label": [
                         {
                             "@language": "en",
@@ -152,8 +150,6 @@
                     "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
                     "@context": "http://iiif.io/api/presentation/2/context.json",
                     "@type": "sc:Canvas",
-                    "hasUserContent": false,
-                    "isDigiLab": true,
                     "label": [
                         {
                             "@language": "en",
@@ -253,8 +249,6 @@
                     "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
                     "@context": "http://iiif.io/api/presentation/2/context.json",
                     "@type": "sc:Canvas",
-                    "hasUserContent": false,
-                    "isDigiLab": false,
                     "label": [
                         {
                             "@language": "en",
@@ -354,8 +348,6 @@
                     "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
                     "@context": "http://iiif.io/api/presentation/2/context.json",
                     "@type": "sc:Canvas",
-                    "hasUserContent": false,
-                    "isDigiLab": false,
                     "label": [
                         {
                             "@language": "en",
@@ -455,8 +447,6 @@
                     "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
                     "@context": "http://iiif.io/api/presentation/2/context.json",
                     "@type": "sc:Canvas",
-                    "hasUserContent": false,
-                    "isDigiLab": false,
                     "label": [
                         {
                             "@language": "en",
@@ -556,8 +546,6 @@
                     "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
                     "@context": "http://iiif.io/api/presentation/2/context.json",
                     "@type": "sc:Canvas",
-                    "hasUserContent": false,
-                    "isDigiLab": false,
                     "label": [
                         {
                             "@language": "en",
@@ -657,8 +645,6 @@
                     "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
                     "@context": "http://iiif.io/api/presentation/2/context.json",
                     "@type": "sc:Canvas",
-                    "hasUserContent": false,
-                    "isDigiLab": false,
                     "label": [
                         {
                             "@language": "en",
@@ -758,8 +744,6 @@
                     "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
                     "@context": "http://iiif.io/api/presentation/2/context.json",
                     "@type": "sc:Canvas",
-                    "hasUserContent": false,
-                    "isDigiLab": false,
                     "label": [
                         {
                             "@language": "en",
@@ -859,8 +843,6 @@
                     "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
                     "@context": "http://iiif.io/api/presentation/2/context.json",
                     "@type": "sc:Canvas",
-                    "hasUserContent": false,
-                    "isDigiLab": false,
                     "label": [
                         {
                             "@language": "en",
@@ -960,8 +942,6 @@
                     "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
                     "@context": "http://iiif.io/api/presentation/2/context.json",
                     "@type": "sc:Canvas",
-                    "hasUserContent": false,
-                    "isDigiLab": false,
                     "label": [
                         {
                             "@language": "en",
@@ -1061,8 +1041,6 @@
                     "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
                     "@context": "http://iiif.io/api/presentation/2/context.json",
                     "@type": "sc:Canvas",
-                    "hasUserContent": false,
-                    "isDigiLab": false,
                     "label": [
                         {
                             "@language": "en",
@@ -1162,8 +1140,6 @@
                     "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
                     "@context": "http://iiif.io/api/presentation/2/context.json",
                     "@type": "sc:Canvas",
-                    "hasUserContent": false,
-                    "isDigiLab": false,
                     "label": [
                         {
                             "@language": "en",
@@ -1263,8 +1239,6 @@
                     "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
                     "@context": "http://iiif.io/api/presentation/2/context.json",
                     "@type": "sc:Canvas",
-                    "hasUserContent": false,
-                    "isDigiLab": false,
                     "label": [
                         {
                             "@language": "en",
@@ -1364,8 +1338,6 @@
                     "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
                     "@context": "http://iiif.io/api/presentation/2/context.json",
                     "@type": "sc:Canvas",
-                    "hasUserContent": false,
-                    "isDigiLab": false,
                     "label": [
                         {
                             "@language": "en",
@@ -1465,8 +1437,6 @@
                     "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
                     "@context": "http://iiif.io/api/presentation/2/context.json",
                     "@type": "sc:Canvas",
-                    "hasUserContent": false,
-                    "isDigiLab": false,
                     "label": [
                         {
                             "@language": "en",
@@ -1566,8 +1536,6 @@
                     "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
                     "@context": "http://iiif.io/api/presentation/2/context.json",
                     "@type": "sc:Canvas",
-                    "hasUserContent": false,
-                    "isDigiLab": false,
                     "label": [
                         {
                             "@language": "en",
