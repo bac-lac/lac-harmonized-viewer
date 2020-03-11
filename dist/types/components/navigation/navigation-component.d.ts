@@ -1,0 +1,30 @@
+import 'manifesto.js';
+import { Unsubscribe, Store } from '@stencil/redux';
+import { viewItem } from '../../store/actions/viewport';
+export declare class NavigationComponent {
+    el: HTMLElement;
+    cols: number;
+    rows: number;
+    autoResize: boolean;
+    store: Store;
+    viewItem: typeof viewItem;
+    storeUnsubscribe: Unsubscribe;
+    currentItemIndex: MyAppState["viewport"]["itemIndex"];
+    items: MyAppState["viewport"]["items"];
+    loadedImageCount: number;
+    updatedEvent: any;
+    private imageList;
+    componentWillLoad(): void;
+    componentDidLoad(): void;
+    componentDidUpdate(): void;
+    componentDidUnload(): void;
+    handleKeyDown(ev: KeyboardEvent): void;
+    handleThumbnailClick(page: number): void;
+    handleThumbnailLoad(ev: Event): void;
+    handleResize(): void;
+    scaleScroll(): void;
+    resize(): void;
+    getListTopOffset(): number;
+    getComputedStyle(element: Element, name: string): number;
+    render(): any;
+}

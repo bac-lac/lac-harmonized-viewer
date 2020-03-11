@@ -1,0 +1,84 @@
+harmonized-tabs {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+harmonized-tabs .mdc-tab-bar {
+  flex: 0;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab-scroller__scroll-area--scroll {
+  overflow-x: auto;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab {
+  line-height: 1.25rem;
+  height: 40px;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__icon {
+  color: #686868;
+  fill: currentColor;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple::before, harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple::after {
+  background-color: #686868;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple:hover::before {
+  opacity: 0.04;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple.mdc-ripple-upgraded--background-focused::before, harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple:not(.mdc-ripple-upgraded):focus::before {
+  transition-duration: 75ms;
+  opacity: 0.12;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple:not(.mdc-ripple-upgraded)::after {
+  transition: opacity 150ms linear;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple:not(.mdc-ripple-upgraded):active::after {
+  transition-duration: 75ms;
+  opacity: 0.12;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple.mdc-ripple-upgraded {
+  --mdc-ripple-fg-opacity: 0.12;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__text-label {
+  color: #686868;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__icon {
+  color: #ddd;
+  fill: currentColor;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple::before, harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple::after {
+  background-color: #686868;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple:hover::before {
+  opacity: 0.04;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple.mdc-ripple-upgraded--background-focused::before, harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple:not(.mdc-ripple-upgraded):focus::before {
+  transition-duration: 75ms;
+  opacity: 0.12;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple:not(.mdc-ripple-upgraded)::after {
+  transition: opacity 150ms linear;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple:not(.mdc-ripple-upgraded):active::after {
+  transition-duration: 75ms;
+  opacity: 0.12;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple.mdc-ripple-upgraded {
+  --mdc-ripple-fg-opacity: 0.12;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab.mdc-tab--active .mdc-tab__icon {
+  color: #fff;
+  fill: currentColor;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: #fff;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab-indicator__content--underline {
+  border-color: #8cb7b8;
+}
+harmonized-tabs .mdc-tab-bar .mdc-tab__text-label {
+  font-size: 12px;
+}
+harmonized-tabs .tabs__panels {
+  display: flex;
+  flex: 1;
+  overflow-y: auto;
+}

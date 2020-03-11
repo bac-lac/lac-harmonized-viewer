@@ -1,0 +1,10 @@
+harmonized-video {
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  /*#harmonized-viewer-custom-video*/
+}
+harmonized-video #harmonized-viewer-html5-video > video {
+  display: block;
+  width: 100%;
+}

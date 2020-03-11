@@ -1,0 +1,35 @@
+{
+  "entries": [
+    "components\\audio-component\\audio-component.js",
+    "components\\annotations\\annotations-component.js",
+    "components\\image-list\\image-list-component.js",
+    "components\\message\\message-component.js",
+    "components\\spinner\\spinner-component.js",
+    "components\\overlay\\overlay-component.js",
+    "components\\pager\\pager-component.js",
+    "components\\pdf\\pdf-component.js",
+    "components\\tabs\\tabs-component.js",
+    "components\\tabs\\tab-component.js",
+    "components\\video\\video-component.js",
+    "components\\viewport-component\\viewport-component.js",
+    "components\\button\\button-component.js",
+    "components\\drawer\\drawer-component.js",
+    "components\\navigation\\navigation-component.js",
+    "components\\topbar\\topbar-component.js",
+    "components\\image\\image-component.js",
+    "components\\openseadragon\\openseadragon-component.js",
+    "components\\viewer-component\\viewer-component.js"
+  ],
+  "compiler": {
+    "name": "@stencil/core",
+    "version": "1.8.1",
+    "typescriptVersion": "3.7.2"
+  },
+  "collections": [
+    {
+      "name": "@stencil/redux",
+      "tags": []
+    }
+  ],
+  "bundles": []
+}

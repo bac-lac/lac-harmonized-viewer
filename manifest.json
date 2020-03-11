@@ -1,5 +1,5 @@
 {
-    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/manifest",
+    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/manifest.json",
     "@context": "http://iiif.io/api/presentation/2/context.json",
     "@type": "sc:Manifest",
     "label": [
@@ -14,7 +14,16 @@
     ],
     "metadata": [
         {
-            "label": "FoundIn",
+            "label": [
+                {
+                    "@language": "en",
+                    "@value": "Found in"
+                },
+                {
+                    "@language": "fr",
+                    "@value": "Trouvé dans"
+                }
+            ],
             "value": [
                 {
                     "@language": "en",
@@ -27,7 +36,16 @@
             ]
         },
         {
-            "label": "Reference",
+            "label": [
+                {
+                    "@language": "en",
+                    "@value": "Reference"
+                },
+                {
+                    "@language": "fr",
+                    "@value": "Référence"
+                }
+            ],
             "value": [
                 {
                     "@language": "en",
@@ -36,6 +54,28 @@
                 {
                     "@language": "fr",
                     "@value": "RG33-145, R1082-0-0-E"
+                }
+            ]
+        },
+        {
+            "label": [
+                {
+                    "@language": "en",
+                    "@value": "Item number"
+                },
+                {
+                    "@language": "fr",
+                    "@value": "No d’identification"
+                }
+            ],
+            "value": [
+                {
+                    "@language": "en",
+                    "@value": "134"
+                },
+                {
+                    "@language": "fr",
+                    "@value": "134"
                 }
             ]
         }
@@ -51,7 +91,7 @@
                     "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
                     "@context": "http://iiif.io/api/presentation/2/context.json",
                     "@type": "sc:Canvas",
-                    "hasUserContent": true,
+                    "hasUserContent": false,
                     "isDigiLab": false,
                     "label": [
                         {
@@ -63,8 +103,8 @@
                             "@value": "Part 1, excerpt, page 27."
                         }
                     ],
-                    "width": 0,
-                    "height": 0,
+                    "width": 600,
+                    "height": 990,
                     "images": [
                         {
                             "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
@@ -72,56 +112,40 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154903-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
+                                "format": "image/jpeg",
                                 "service": {
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154903-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
-                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
-                                "width": 0,
-                                "height": 0
+                                "width": 600,
+                                "height": 990
                             },
                             "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
                         }
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154903-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154903-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
-                            "width": 0,
-                            "height": 0
+                            "width": 91,
+                            "height": 150
                         }
                     ],
                     "metadata": [
                         {
-                            "label": "DateIssued",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Hierarchical level"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Niveau hiérarchique"
                                 }
-                            ]
-                        },
-                        {
-                            "label": "PublicAccessCode",
-                            "value": [
-                                {
-                                    "@language": "en",
-                                    "@value": "1"
-                                },
-                                {
-                                    "@language": "fr",
-                                    "@value": "1"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "HierarchyLevel",
+                            ],
                             "value": [
                                 {
                                     "@language": "en",
@@ -134,15 +158,24 @@
                             ]
                         },
                         {
-                            "label": "UrlPDF",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": ""
+                                    "@value": "Ecopy number"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": ""
+                                    "@value": "Numéro ecopy"
+                                }
+                            ],
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "e006154903-v6"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "e006154903-v6"
                                 }
                             ]
                         }
@@ -153,7 +186,7 @@
                     "@context": "http://iiif.io/api/presentation/2/context.json",
                     "@type": "sc:Canvas",
                     "hasUserContent": false,
-                    "isDigiLab": true,
+                    "isDigiLab": false,
                     "label": [
                         {
                             "@language": "en",
@@ -164,8 +197,8 @@
                             "@value": "Page 28."
                         }
                     ],
-                    "width": 0,
-                    "height": 0,
+                    "width": 600,
+                    "height": 989,
                     "images": [
                         {
                             "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
@@ -173,56 +206,40 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154904-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
+                                "format": "image/jpeg",
                                 "service": {
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154904-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
-                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
-                                "width": 0,
-                                "height": 0
+                                "width": 600,
+                                "height": 989
                             },
                             "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
                         }
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154904-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154904-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
-                            "width": 0,
-                            "height": 0
+                            "width": 91,
+                            "height": 150
                         }
                     ],
                     "metadata": [
                         {
-                            "label": "DateIssued",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Hierarchical level"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Niveau hiérarchique"
                                 }
-                            ]
-                        },
-                        {
-                            "label": "PublicAccessCode",
-                            "value": [
-                                {
-                                    "@language": "en",
-                                    "@value": "1"
-                                },
-                                {
-                                    "@language": "fr",
-                                    "@value": "1"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "HierarchyLevel",
+                            ],
                             "value": [
                                 {
                                     "@language": "en",
@@ -235,15 +252,24 @@
                             ]
                         },
                         {
-                            "label": "UrlPDF",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": ""
+                                    "@value": "Ecopy number"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": ""
+                                    "@value": "Numéro ecopy"
+                                }
+                            ],
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "e006154904-v6"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "e006154904-v6"
                                 }
                             ]
                         }
@@ -265,8 +291,8 @@
                             "@value": "Page 29."
                         }
                     ],
-                    "width": 0,
-                    "height": 0,
+                    "width": 600,
+                    "height": 992,
                     "images": [
                         {
                             "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
@@ -274,56 +300,40 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154905-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
+                                "format": "image/jpeg",
                                 "service": {
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154905-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
-                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
-                                "width": 0,
-                                "height": 0
+                                "width": 600,
+                                "height": 992
                             },
                             "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
                         }
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154905-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154905-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
-                            "width": 0,
-                            "height": 0
+                            "width": 91,
+                            "height": 150
                         }
                     ],
                     "metadata": [
                         {
-                            "label": "DateIssued",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Hierarchical level"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Niveau hiérarchique"
                                 }
-                            ]
-                        },
-                        {
-                            "label": "PublicAccessCode",
-                            "value": [
-                                {
-                                    "@language": "en",
-                                    "@value": "1"
-                                },
-                                {
-                                    "@language": "fr",
-                                    "@value": "1"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "HierarchyLevel",
+                            ],
                             "value": [
                                 {
                                     "@language": "en",
@@ -336,15 +346,24 @@
                             ]
                         },
                         {
-                            "label": "UrlPDF",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": ""
+                                    "@value": "Ecopy number"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": ""
+                                    "@value": "Numéro ecopy"
+                                }
+                            ],
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "e006154905-v6"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "e006154905-v6"
                                 }
                             ]
                         }
@@ -366,8 +385,8 @@
                             "@value": "Page 30."
                         }
                     ],
-                    "width": 0,
-                    "height": 0,
+                    "width": 600,
+                    "height": 991,
                     "images": [
                         {
                             "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
@@ -375,56 +394,40 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154906-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
+                                "format": "image/jpeg",
                                 "service": {
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154906-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
-                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
-                                "width": 0,
-                                "height": 0
+                                "width": 600,
+                                "height": 991
                             },
                             "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
                         }
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154906-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154906-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
-                            "width": 0,
-                            "height": 0
+                            "width": 91,
+                            "height": 150
                         }
                     ],
                     "metadata": [
                         {
-                            "label": "DateIssued",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Hierarchical level"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Niveau hiérarchique"
                                 }
-                            ]
-                        },
-                        {
-                            "label": "PublicAccessCode",
-                            "value": [
-                                {
-                                    "@language": "en",
-                                    "@value": "1"
-                                },
-                                {
-                                    "@language": "fr",
-                                    "@value": "1"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "HierarchyLevel",
+                            ],
                             "value": [
                                 {
                                     "@language": "en",
@@ -437,15 +440,24 @@
                             ]
                         },
                         {
-                            "label": "UrlPDF",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": ""
+                                    "@value": "Ecopy number"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": ""
+                                    "@value": "Numéro ecopy"
+                                }
+                            ],
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "e006154906-v6"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "e006154906-v6"
                                 }
                             ]
                         }
@@ -467,8 +479,8 @@
                             "@value": "Part 1, excerpt, page 68."
                         }
                     ],
-                    "width": 0,
-                    "height": 0,
+                    "width": 600,
+                    "height": 997,
                     "images": [
                         {
                             "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
@@ -476,56 +488,40 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154907-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
+                                "format": "image/jpeg",
                                 "service": {
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154907-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
-                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
-                                "width": 0,
-                                "height": 0
+                                "width": 600,
+                                "height": 997
                             },
                             "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
                         }
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154907-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154907-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
-                            "width": 0,
-                            "height": 0
+                            "width": 90,
+                            "height": 150
                         }
                     ],
                     "metadata": [
                         {
-                            "label": "DateIssued",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Hierarchical level"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Niveau hiérarchique"
                                 }
-                            ]
-                        },
-                        {
-                            "label": "PublicAccessCode",
-                            "value": [
-                                {
-                                    "@language": "en",
-                                    "@value": "1"
-                                },
-                                {
-                                    "@language": "fr",
-                                    "@value": "1"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "HierarchyLevel",
+                            ],
                             "value": [
                                 {
                                     "@language": "en",
@@ -538,15 +534,24 @@
                             ]
                         },
                         {
-                            "label": "UrlPDF",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": ""
+                                    "@value": "Ecopy number"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": ""
+                                    "@value": "Numéro ecopy"
+                                }
+                            ],
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "e006154907-v6"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "e006154907-v6"
                                 }
                             ]
                         }
@@ -568,8 +573,8 @@
                             "@value": "Page 69."
                         }
                     ],
-                    "width": 0,
-                    "height": 0,
+                    "width": 600,
+                    "height": 998,
                     "images": [
                         {
                             "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
@@ -577,56 +582,40 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
+                                "format": "image/jpeg",
                                 "service": {
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
-                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
-                                "width": 0,
-                                "height": 0
+                                "width": 600,
+                                "height": 998
                             },
                             "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
                         }
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
-                            "width": 0,
-                            "height": 0
+                            "width": 90,
+                            "height": 150
                         }
                     ],
                     "metadata": [
                         {
-                            "label": "DateIssued",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Hierarchical level"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Niveau hiérarchique"
                                 }
-                            ]
-                        },
-                        {
-                            "label": "PublicAccessCode",
-                            "value": [
-                                {
-                                    "@language": "en",
-                                    "@value": "1"
-                                },
-                                {
-                                    "@language": "fr",
-                                    "@value": "1"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "HierarchyLevel",
+                            ],
                             "value": [
                                 {
                                     "@language": "en",
@@ -639,116 +628,24 @@
                             ]
                         },
                         {
-                            "label": "UrlPDF",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": ""
+                                    "@value": "Ecopy number"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": ""
+                                    "@value": "Numéro ecopy"
                                 }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas",
-                    "@context": "http://iiif.io/api/presentation/2/context.json",
-                    "@type": "sc:Canvas",
-                    "hasUserContent": false,
-                    "isDigiLab": false,
-                    "label": [
-                        {
-                            "@language": "en",
-                            "@value": "Page 70."
-                        },
-                        {
-                            "@language": "fr",
-                            "@value": "Page 70."
-                        }
-                    ],
-                    "width": 0,
-                    "height": 0,
-                    "images": [
-                        {
-                            "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
-                            "@context": "http://iiif.io/api/presentation/2/context.json",
-                            "@type": "oa:Annotation",
-                            "motivation": "sc:painting",
-                            "resource": {
-                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
-                                "@type": "dctypes:Image",
-                                "service": {
-                                    "@context": "http://iiif.io/api/image/2/context.json",
-                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
-                                },
-                                "width": 0,
-                                "height": 0
-                            },
-                            "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
-                        }
-                    ],
-                    "thumbnail": [
-                        {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154909-v6&app=fonandcol&op=thumb&height=150",
-                            "@type": "dctypes:Image",
-                            "width": 0,
-                            "height": 0
-                        }
-                    ],
-                    "metadata": [
-                        {
-                            "label": "DateIssued",
+                            ],
                             "value": [
                                 {
                                     "@language": "en",
-                                    "@value": "1900 - 1902"
+                                    "@value": "e006154908-v6"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": "1900 - 1902"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "PublicAccessCode",
-                            "value": [
-                                {
-                                    "@language": "en",
-                                    "@value": "1"
-                                },
-                                {
-                                    "@language": "fr",
-                                    "@value": "1"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "HierarchyLevel",
-                            "value": [
-                                {
-                                    "@language": "en",
-                                    "@value": "Fonds / Collection"
-                                },
-                                {
-                                    "@language": "fr",
-                                    "@value": "Fonds / Collection"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "UrlPDF",
-                            "value": [
-                                {
-                                    "@language": "en",
-                                    "@value": ""
-                                },
-                                {
-                                    "@language": "fr",
-                                    "@value": ""
+                                    "@value": "e006154908-v6"
                                 }
                             ]
                         }
@@ -770,8 +667,8 @@
                             "@value": "Part 1, excerpt, page 508."
                         }
                     ],
-                    "width": 0,
-                    "height": 0,
+                    "width": 600,
+                    "height": 923,
                     "images": [
                         {
                             "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
@@ -779,56 +676,40 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154910-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
+                                "format": "image/jpeg",
                                 "service": {
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154910-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
-                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
-                                "width": 0,
-                                "height": 0
+                                "width": 600,
+                                "height": 923
                             },
                             "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
                         }
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154910-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154910-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
-                            "width": 0,
-                            "height": 0
+                            "width": 98,
+                            "height": 150
                         }
                     ],
                     "metadata": [
                         {
-                            "label": "DateIssued",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Hierarchical level"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Niveau hiérarchique"
                                 }
-                            ]
-                        },
-                        {
-                            "label": "PublicAccessCode",
-                            "value": [
-                                {
-                                    "@language": "en",
-                                    "@value": "1"
-                                },
-                                {
-                                    "@language": "fr",
-                                    "@value": "1"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "HierarchyLevel",
+                            ],
                             "value": [
                                 {
                                     "@language": "en",
@@ -841,15 +722,24 @@
                             ]
                         },
                         {
-                            "label": "UrlPDF",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": ""
+                                    "@value": "Ecopy number"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": ""
+                                    "@value": "Numéro ecopy"
+                                }
+                            ],
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "e006154910-v6"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "e006154910-v6"
                                 }
                             ]
                         }
@@ -871,8 +761,8 @@
                             "@value": "Page 509."
                         }
                     ],
-                    "width": 0,
-                    "height": 0,
+                    "width": 600,
+                    "height": 924,
                     "images": [
                         {
                             "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
@@ -880,56 +770,40 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154911-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
+                                "format": "image/jpeg",
                                 "service": {
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154911-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
-                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
-                                "width": 0,
-                                "height": 0
+                                "width": 600,
+                                "height": 924
                             },
                             "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
                         }
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154911-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154911-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
-                            "width": 0,
-                            "height": 0
+                            "width": 97,
+                            "height": 150
                         }
                     ],
                     "metadata": [
                         {
-                            "label": "DateIssued",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Hierarchical level"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Niveau hiérarchique"
                                 }
-                            ]
-                        },
-                        {
-                            "label": "PublicAccessCode",
-                            "value": [
-                                {
-                                    "@language": "en",
-                                    "@value": "1"
-                                },
-                                {
-                                    "@language": "fr",
-                                    "@value": "1"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "HierarchyLevel",
+                            ],
                             "value": [
                                 {
                                     "@language": "en",
@@ -942,15 +816,24 @@
                             ]
                         },
                         {
-                            "label": "UrlPDF",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": ""
+                                    "@value": "Ecopy number"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": ""
+                                    "@value": "Numéro ecopy"
+                                }
+                            ],
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "e006154911-v6"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "e006154911-v6"
                                 }
                             ]
                         }
@@ -972,8 +855,8 @@
                             "@value": "Page 510."
                         }
                     ],
-                    "width": 0,
-                    "height": 0,
+                    "width": 600,
+                    "height": 927,
                     "images": [
                         {
                             "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
@@ -981,56 +864,40 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154912-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
+                                "format": "image/jpeg",
                                 "service": {
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154912-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
-                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
-                                "width": 0,
-                                "height": 0
+                                "width": 600,
+                                "height": 927
                             },
                             "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
                         }
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154912-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154912-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
-                            "width": 0,
-                            "height": 0
+                            "width": 97,
+                            "height": 150
                         }
                     ],
                     "metadata": [
                         {
-                            "label": "DateIssued",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Hierarchical level"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Niveau hiérarchique"
                                 }
-                            ]
-                        },
-                        {
-                            "label": "PublicAccessCode",
-                            "value": [
-                                {
-                                    "@language": "en",
-                                    "@value": "1"
-                                },
-                                {
-                                    "@language": "fr",
-                                    "@value": "1"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "HierarchyLevel",
+                            ],
                             "value": [
                                 {
                                     "@language": "en",
@@ -1043,15 +910,24 @@
                             ]
                         },
                         {
-                            "label": "UrlPDF",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": ""
+                                    "@value": "Ecopy number"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": ""
+                                    "@value": "Numéro ecopy"
+                                }
+                            ],
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "e006154912-v6"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "e006154912-v6"
                                 }
                             ]
                         }
@@ -1073,8 +949,8 @@
                             "@value": "Page 511."
                         }
                     ],
-                    "width": 0,
-                    "height": 0,
+                    "width": 600,
+                    "height": 924,
                     "images": [
                         {
                             "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
@@ -1082,56 +958,40 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154913-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
+                                "format": "image/jpeg",
                                 "service": {
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154913-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
-                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
-                                "width": 0,
-                                "height": 0
+                                "width": 600,
+                                "height": 924
                             },
                             "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
                         }
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154913-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154913-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
-                            "width": 0,
-                            "height": 0
+                            "width": 97,
+                            "height": 150
                         }
                     ],
                     "metadata": [
                         {
-                            "label": "DateIssued",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Hierarchical level"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Niveau hiérarchique"
                                 }
-                            ]
-                        },
-                        {
-                            "label": "PublicAccessCode",
-                            "value": [
-                                {
-                                    "@language": "en",
-                                    "@value": "1"
-                                },
-                                {
-                                    "@language": "fr",
-                                    "@value": "1"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "HierarchyLevel",
+                            ],
                             "value": [
                                 {
                                     "@language": "en",
@@ -1144,15 +1004,24 @@
                             ]
                         },
                         {
-                            "label": "UrlPDF",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": ""
+                                    "@value": "Ecopy number"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": ""
+                                    "@value": "Numéro ecopy"
+                                }
+                            ],
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "e006154913-v6"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "e006154913-v6"
                                 }
                             ]
                         }
@@ -1174,8 +1043,8 @@
                             "@value": "Page 512."
                         }
                     ],
-                    "width": 0,
-                    "height": 0,
+                    "width": 600,
+                    "height": 924,
                     "images": [
                         {
                             "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
@@ -1183,56 +1052,40 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154914-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
+                                "format": "image/jpeg",
                                 "service": {
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154914-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
-                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
-                                "width": 0,
-                                "height": 0
+                                "width": 600,
+                                "height": 924
                             },
                             "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
                         }
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154914-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154914-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
-                            "width": 0,
-                            "height": 0
+                            "width": 97,
+                            "height": 150
                         }
                     ],
                     "metadata": [
                         {
-                            "label": "DateIssued",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Hierarchical level"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Niveau hiérarchique"
                                 }
-                            ]
-                        },
-                        {
-                            "label": "PublicAccessCode",
-                            "value": [
-                                {
-                                    "@language": "en",
-                                    "@value": "1"
-                                },
-                                {
-                                    "@language": "fr",
-                                    "@value": "1"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "HierarchyLevel",
+                            ],
                             "value": [
                                 {
                                     "@language": "en",
@@ -1245,15 +1098,24 @@
                             ]
                         },
                         {
-                            "label": "UrlPDF",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": ""
+                                    "@value": "Ecopy number"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": ""
+                                    "@value": "Numéro ecopy"
+                                }
+                            ],
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "e006154914-v6"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "e006154914-v6"
                                 }
                             ]
                         }
@@ -1275,8 +1137,8 @@
                             "@value": "Page 513."
                         }
                     ],
-                    "width": 0,
-                    "height": 0,
+                    "width": 600,
+                    "height": 930,
                     "images": [
                         {
                             "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
@@ -1284,56 +1146,40 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154915-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
+                                "format": "image/jpeg",
                                 "service": {
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154915-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
-                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
-                                "width": 0,
-                                "height": 0
+                                "width": 600,
+                                "height": 930
                             },
                             "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
                         }
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154915-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154915-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
-                            "width": 0,
-                            "height": 0
+                            "width": 97,
+                            "height": 150
                         }
                     ],
                     "metadata": [
                         {
-                            "label": "DateIssued",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Hierarchical level"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Niveau hiérarchique"
                                 }
-                            ]
-                        },
-                        {
-                            "label": "PublicAccessCode",
-                            "value": [
-                                {
-                                    "@language": "en",
-                                    "@value": "1"
-                                },
-                                {
-                                    "@language": "fr",
-                                    "@value": "1"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "HierarchyLevel",
+                            ],
                             "value": [
                                 {
                                     "@language": "en",
@@ -1346,15 +1192,24 @@
                             ]
                         },
                         {
-                            "label": "UrlPDF",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": ""
+                                    "@value": "Ecopy number"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": ""
+                                    "@value": "Numéro ecopy"
+                                }
+                            ],
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "e006154915-v6"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "e006154915-v6"
                                 }
                             ]
                         }
@@ -1376,8 +1231,8 @@
                             "@value": "Page 514."
                         }
                     ],
-                    "width": 0,
-                    "height": 0,
+                    "width": 600,
+                    "height": 928,
                     "images": [
                         {
                             "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
@@ -1385,56 +1240,40 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154916-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
+                                "format": "image/jpeg",
                                 "service": {
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154916-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
-                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
-                                "width": 0,
-                                "height": 0
+                                "width": 600,
+                                "height": 928
                             },
                             "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
                         }
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154916-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154916-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
-                            "width": 0,
-                            "height": 0
+                            "width": 97,
+                            "height": 150
                         }
                     ],
                     "metadata": [
                         {
-                            "label": "DateIssued",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Hierarchical level"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Niveau hiérarchique"
                                 }
-                            ]
-                        },
-                        {
-                            "label": "PublicAccessCode",
-                            "value": [
-                                {
-                                    "@language": "en",
-                                    "@value": "1"
-                                },
-                                {
-                                    "@language": "fr",
-                                    "@value": "1"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "HierarchyLevel",
+                            ],
                             "value": [
                                 {
                                     "@language": "en",
@@ -1447,15 +1286,24 @@
                             ]
                         },
                         {
-                            "label": "UrlPDF",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": ""
+                                    "@value": "Ecopy number"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": ""
+                                    "@value": "Numéro ecopy"
+                                }
+                            ],
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "e006154916-v6"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "e006154916-v6"
                                 }
                             ]
                         }
@@ -1477,8 +1325,8 @@
                             "@value": "Part 1, excerpt, page 539."
                         }
                     ],
-                    "width": 0,
-                    "height": 0,
+                    "width": 600,
+                    "height": 929,
                     "images": [
                         {
                             "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
@@ -1486,56 +1334,40 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154917-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
+                                "format": "image/jpeg",
                                 "service": {
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154917-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
-                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
-                                "width": 0,
-                                "height": 0
+                                "width": 600,
+                                "height": 929
                             },
                             "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
                         }
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154917-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154917-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
-                            "width": 0,
-                            "height": 0
+                            "width": 97,
+                            "height": 150
                         }
                     ],
                     "metadata": [
                         {
-                            "label": "DateIssued",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Hierarchical level"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Niveau hiérarchique"
                                 }
-                            ]
-                        },
-                        {
-                            "label": "PublicAccessCode",
-                            "value": [
-                                {
-                                    "@language": "en",
-                                    "@value": "1"
-                                },
-                                {
-                                    "@language": "fr",
-                                    "@value": "1"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "HierarchyLevel",
+                            ],
                             "value": [
                                 {
                                     "@language": "en",
@@ -1548,15 +1380,24 @@
                             ]
                         },
                         {
-                            "label": "UrlPDF",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": ""
+                                    "@value": "Ecopy number"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": ""
+                                    "@value": "Numéro ecopy"
+                                }
+                            ],
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "e006154917-v6"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "e006154917-v6"
                                 }
                             ]
                         }
@@ -1578,8 +1419,8 @@
                             "@value": "Page 540."
                         }
                     ],
-                    "width": 0,
-                    "height": 0,
+                    "width": 600,
+                    "height": 930,
                     "images": [
                         {
                             "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
@@ -1587,56 +1428,40 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/annotation",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154918-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
+                                "format": "image/jpeg",
                                 "service": {
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154918-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
-                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json",
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img"
+                                    "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
-                                "width": 0,
-                                "height": 0
+                                "width": 600,
+                                "height": 930
                             },
                             "on": "https://stdigitalmanifests.blob.core.windows.net/manifest/1/134/canvas"
                         }
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154918-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154918-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
-                            "width": 0,
-                            "height": 0
+                            "width": 97,
+                            "height": 150
                         }
                     ],
                     "metadata": [
                         {
-                            "label": "DateIssued",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Hierarchical level"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": "1900 - 1902"
+                                    "@value": "Niveau hiérarchique"
                                 }
-                            ]
-                        },
-                        {
-                            "label": "PublicAccessCode",
-                            "value": [
-                                {
-                                    "@language": "en",
-                                    "@value": "1"
-                                },
-                                {
-                                    "@language": "fr",
-                                    "@value": "1"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "HierarchyLevel",
+                            ],
                             "value": [
                                 {
                                     "@language": "en",
@@ -1649,15 +1474,24 @@
                             ]
                         },
                         {
-                            "label": "UrlPDF",
-                            "value": [
+                            "label": [
                                 {
                                     "@language": "en",
-                                    "@value": ""
+                                    "@value": "Ecopy number"
                                 },
                                 {
                                     "@language": "fr",
-                                    "@value": ""
+                                    "@value": "Numéro ecopy"
+                                }
+                            ],
+                            "value": [
+                                {
+                                    "@language": "en",
+                                    "@value": "e006154918-v6"
+                                },
+                                {
+                                    "@language": "fr",
+                                    "@value": "e006154918-v6"
                                 }
                             ]
                         }

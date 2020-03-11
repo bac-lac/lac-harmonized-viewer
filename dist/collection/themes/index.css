@@ -1,0 +1,340 @@
+.harmonized-viewer-theme--dark {
+  background-color: #181818;
+}
+.harmonized-viewer-theme--dark harmonized-topbar .mdc-top-app-bar {
+  background-color: #181818;
+}
+.harmonized-viewer-theme--dark harmonized-topbar .mdc-top-app-bar button:not(:disabled) {
+  background-color: #181818;
+}
+.harmonized-viewer-theme--dark harmonized-topbar .mdc-top-app-bar button:not(:disabled) {
+  color: white;
+  /* @alternate */
+  color: var(--mdc-theme-text-primary-on-dark, white);
+}
+.harmonized-viewer-theme--dark harmonized-topbar .mdc-top-app-bar button .mdc-button__ripple::before, .harmonized-viewer-theme--dark harmonized-topbar .mdc-top-app-bar button .mdc-button__ripple::after {
+  background-color: white;
+}
+@supports not (-ms-ime-align: auto) {
+  .harmonized-viewer-theme--dark harmonized-topbar .mdc-top-app-bar button .mdc-button__ripple::before, .harmonized-viewer-theme--dark harmonized-topbar .mdc-top-app-bar button .mdc-button__ripple::after {
+    /* @alternate */
+    background-color: var(--mdc-theme-text-primary-on-dark, white);
+  }
+}
+.harmonized-viewer-theme--dark harmonized-topbar .mdc-top-app-bar button:hover .mdc-button__ripple::before {
+  opacity: 0.08;
+}
+.harmonized-viewer-theme--dark harmonized-topbar .mdc-top-app-bar button.mdc-ripple-upgraded--background-focused .mdc-button__ripple::before, .harmonized-viewer-theme--dark harmonized-topbar .mdc-top-app-bar button:not(.mdc-ripple-upgraded):focus .mdc-button__ripple::before {
+  transition-duration: 75ms;
+  opacity: 0.24;
+}
+.harmonized-viewer-theme--dark harmonized-topbar .mdc-top-app-bar button:not(.mdc-ripple-upgraded) .mdc-button__ripple::after {
+  transition: opacity 150ms linear;
+}
+.harmonized-viewer-theme--dark harmonized-topbar .mdc-top-app-bar button:not(.mdc-ripple-upgraded):active .mdc-button__ripple::after {
+  transition-duration: 75ms;
+  opacity: 0.24;
+}
+.harmonized-viewer-theme--dark harmonized-topbar .mdc-top-app-bar button.mdc-ripple-upgraded {
+  --mdc-ripple-fg-opacity: 0.24;
+}
+.harmonized-viewer-theme--dark harmonized-topbar .mdc-top-app-bar button:not(:disabled) {
+  color: #fff;
+}
+.harmonized-viewer-theme--dark harmonized-topbar .mdc-top-app-bar button .mdc-button__label {
+  font-size: 12px;
+}
+.harmonized-viewer-theme--dark harmonized-navigation {
+  background-color: #181818;
+}
+
+.harmonized-viewer-theme--light {
+  background-color: #ece8e8;
+}
+.harmonized-viewer-theme--light .white-text {
+  color: #fff !important;
+}
+.harmonized-viewer-theme--light .white-text * {
+  color: #fff !important;
+}
+.harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar {
+  /*box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),
+      0 1px 10px 0 rgba(0, 0, 0, 0.12);
+  background-color: #46494c;*/
+}
+.harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-button:not(:disabled) {
+  background-color: #46494c;
+}
+.harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-button:not(:disabled) {
+  color: white;
+  /* @alternate */
+  color: var(--mdc-theme-text-primary-on-dark, white);
+}
+.harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-button .mdc-button__ripple::before, .harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-button .mdc-button__ripple::after {
+  background-color: white;
+}
+@supports not (-ms-ime-align: auto) {
+  .harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-button .mdc-button__ripple::before, .harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-button .mdc-button__ripple::after {
+    /* @alternate */
+    background-color: var(--mdc-theme-text-primary-on-dark, white);
+  }
+}
+.harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-button:hover .mdc-button__ripple::before {
+  opacity: 0.08;
+}
+.harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-button.mdc-ripple-upgraded--background-focused .mdc-button__ripple::before, .harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-button:not(.mdc-ripple-upgraded):focus .mdc-button__ripple::before {
+  transition-duration: 75ms;
+  opacity: 0.24;
+}
+.harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-button:not(.mdc-ripple-upgraded) .mdc-button__ripple::after {
+  transition: opacity 150ms linear;
+}
+.harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-button:not(.mdc-ripple-upgraded):active .mdc-button__ripple::after {
+  transition-duration: 75ms;
+  opacity: 0.24;
+}
+.harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-button.mdc-ripple-upgraded {
+  --mdc-ripple-fg-opacity: 0.24;
+}
+.harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-button:not(:disabled) {
+  color: #46494c;
+}
+.harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-button:not(:disabled) .mdc-button__icon {
+  color: #46494c;
+}
+.harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-button .mdc-button__label {
+  font-size: 12px;
+}
+.harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-icon-button {
+  color: #46494c;
+}
+.harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-icon-button::before, .harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-icon-button::after {
+  background-color: #46494c;
+}
+.harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-icon-button:hover::before {
+  opacity: 0.04;
+}
+.harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-icon-button.mdc-ripple-upgraded--background-focused::before, .harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-icon-button:not(.mdc-ripple-upgraded):focus::before {
+  transition-duration: 75ms;
+  opacity: 0.12;
+}
+.harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-icon-button:not(.mdc-ripple-upgraded)::after {
+  transition: opacity 150ms linear;
+}
+.harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-icon-button:not(.mdc-ripple-upgraded):active::after {
+  transition-duration: 75ms;
+  opacity: 0.12;
+}
+.harmonized-viewer-theme--light harmonized-topbar .mdc-top-app-bar .mdc-icon-button.mdc-ripple-upgraded {
+  --mdc-ripple-fg-opacity: 0.12;
+}
+.harmonized-viewer-theme--light harmonized-button.circle > button {
+  background-color: #fff;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-button:not(:disabled) {
+  color: #46494c;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-button[disabled]:not(:disabled) {
+  color: #c5c3c6;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button {
+  color: #46494c;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button::before, .harmonized-viewer-theme--light harmonized-button .mdc-icon-button::after {
+  background-color: #46494c;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button:hover::before {
+  opacity: 0.04;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button.mdc-ripple-upgraded--background-focused::before, .harmonized-viewer-theme--light harmonized-button .mdc-icon-button:not(.mdc-ripple-upgraded):focus::before {
+  transition-duration: 75ms;
+  opacity: 0.12;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button:not(.mdc-ripple-upgraded)::after {
+  transition: opacity 150ms linear;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button:not(.mdc-ripple-upgraded):active::after {
+  transition-duration: 75ms;
+  opacity: 0.12;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button.mdc-ripple-upgraded {
+  --mdc-ripple-fg-opacity: 0.12;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button[disabled] {
+  color: #c5c3c6;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button[disabled]::before, .harmonized-viewer-theme--light harmonized-button .mdc-icon-button[disabled]::after {
+  background-color: #c5c3c6;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button[disabled]:hover::before {
+  opacity: 0.08;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button[disabled].mdc-ripple-upgraded--background-focused::before, .harmonized-viewer-theme--light harmonized-button .mdc-icon-button[disabled]:not(.mdc-ripple-upgraded):focus::before {
+  transition-duration: 75ms;
+  opacity: 0.24;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button[disabled]:not(.mdc-ripple-upgraded)::after {
+  transition: opacity 150ms linear;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button[disabled]:not(.mdc-ripple-upgraded):active::after {
+  transition-duration: 75ms;
+  opacity: 0.24;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button[disabled].mdc-ripple-upgraded {
+  --mdc-ripple-fg-opacity: 0.24;
+}
+.harmonized-viewer-theme--light harmonized-drawer .mdc-drawer .mdc-drawer__toolbar harmonized-button button:not(:disabled) {
+  color: #c7c7c7;
+}
+.harmonized-viewer-theme--light harmonized-drawer .mdc-drawer .mdc-drawer__toolbar harmonized-button .mdc-icon-button {
+  color: #c7c7c7;
+}
+.harmonized-viewer-theme--light harmonized-drawer .mdc-drawer .mdc-drawer__toolbar harmonized-button .mdc-icon-button::before, .harmonized-viewer-theme--light harmonized-drawer .mdc-drawer .mdc-drawer__toolbar harmonized-button .mdc-icon-button::after {
+  background-color: #c7c7c7;
+}
+.harmonized-viewer-theme--light harmonized-drawer .mdc-drawer .mdc-drawer__toolbar harmonized-button .mdc-icon-button:hover::before {
+  opacity: 0.08;
+}
+.harmonized-viewer-theme--light harmonized-drawer .mdc-drawer .mdc-drawer__toolbar harmonized-button .mdc-icon-button.mdc-ripple-upgraded--background-focused::before, .harmonized-viewer-theme--light harmonized-drawer .mdc-drawer .mdc-drawer__toolbar harmonized-button .mdc-icon-button:not(.mdc-ripple-upgraded):focus::before {
+  transition-duration: 75ms;
+  opacity: 0.24;
+}
+.harmonized-viewer-theme--light harmonized-drawer .mdc-drawer .mdc-drawer__toolbar harmonized-button .mdc-icon-button:not(.mdc-ripple-upgraded)::after {
+  transition: opacity 150ms linear;
+}
+.harmonized-viewer-theme--light harmonized-drawer .mdc-drawer .mdc-drawer__toolbar harmonized-button .mdc-icon-button:not(.mdc-ripple-upgraded):active::after {
+  transition-duration: 75ms;
+  opacity: 0.24;
+}
+.harmonized-viewer-theme--light harmonized-drawer .mdc-drawer .mdc-drawer__toolbar harmonized-button .mdc-icon-button.mdc-ripple-upgraded {
+  --mdc-ripple-fg-opacity: 0.24;
+}
+.harmonized-viewer-theme--light harmonized-drawer .mdc-drawer .mdc-drawer__content {
+  border-color: #424242;
+}
+.harmonized-viewer-theme--light harmonized-navigation harmonized-image .mdc-image-list__image {
+  padding: 0;
+  background: #181818;
+}
+.harmonized-viewer-theme--light harmonized-navigation harmonized-image .mdc-image-list__supporting .mdc-image-list__label {
+  color: #9f9f9f;
+  letter-spacing: 0;
+}
+.harmonized-viewer-theme--light harmonized-navigation harmonized-image:hover .mdc-image-list__image-aspect-container .mdc-image-list__image, .harmonized-viewer-theme--light harmonized-navigation harmonized-image.is-active .mdc-image-list__image-aspect-container .mdc-image-list__image {
+  box-shadow: 0 0 1.25px 2px #5772ff;
+}
+.harmonized-viewer-theme--light harmonized-navigation harmonized-image:hover .mdc-image-list__supporting .mdc-image-list__label, .harmonized-viewer-theme--light harmonized-navigation harmonized-image.is-active .mdc-image-list__supporting .mdc-image-list__label {
+  color: #181818;
+}
+.harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab {
+  height: 40px;
+}
+.harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__icon {
+  color: #686868;
+  fill: currentColor;
+}
+.harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple::before, .harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple::after {
+  background-color: #686868;
+}
+.harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple:hover::before {
+  opacity: 0.04;
+}
+.harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple.mdc-ripple-upgraded--background-focused::before, .harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple:not(.mdc-ripple-upgraded):focus::before {
+  transition-duration: 75ms;
+  opacity: 0.12;
+}
+.harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple:not(.mdc-ripple-upgraded)::after {
+  transition: opacity 150ms linear;
+}
+.harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple:not(.mdc-ripple-upgraded):active::after {
+  transition-duration: 75ms;
+  opacity: 0.12;
+}
+.harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple.mdc-ripple-upgraded {
+  --mdc-ripple-fg-opacity: 0.12;
+}
+.harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__text-label {
+  color: #686868;
+}
+.harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__icon {
+  color: #dcdcdd;
+  fill: currentColor;
+}
+.harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple::before, .harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple::after {
+  background-color: #686868;
+}
+.harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple:hover::before {
+  opacity: 0.04;
+}
+.harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple.mdc-ripple-upgraded--background-focused::before, .harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple:not(.mdc-ripple-upgraded):focus::before {
+  transition-duration: 75ms;
+  opacity: 0.12;
+}
+.harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple:not(.mdc-ripple-upgraded)::after {
+  transition: opacity 150ms linear;
+}
+.harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple:not(.mdc-ripple-upgraded):active::after {
+  transition-duration: 75ms;
+  opacity: 0.12;
+}
+.harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab__ripple.mdc-ripple-upgraded {
+  --mdc-ripple-fg-opacity: 0.12;
+}
+.harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab.mdc-tab--active .mdc-tab__icon {
+  color: #46494c;
+  fill: currentColor;
+}
+.harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: #46494c;
+}
+.harmonized-viewer-theme--light harmonized-tabs .mdc-tab-bar .mdc-tab .mdc-tab-indicator__content--underline {
+  border-color: #5772ff;
+}
+.harmonized-viewer-theme--light harmonized-annotations dl dt {
+  color: #424242;
+}
+.harmonized-viewer-theme--light harmonized-annotations dl dd {
+  color: #46494c;
+}
+.harmonized-viewer-theme--light harmonized-annotations dl dd a:link {
+  color: #46494c;
+}
+.harmonized-viewer-theme--light harmonized-annotations dl dd a:visited {
+  color: #46494c;
+}
+.harmonized-viewer-theme--light harmonized-pager .mdc-slider:not(.mdc-slider--disabled) .mdc-slider__track {
+  background-color: #5772ff;
+}
+.harmonized-viewer-theme--light harmonized-pager .mdc-slider:not(.mdc-slider--disabled) .mdc-slider__track-container {
+  background-color: rgba(87, 114, 255, 0.26);
+}
+.harmonized-viewer-theme--light harmonized-pager .mdc-slider:not(.mdc-slider--disabled) .mdc-slider__track-marker-container {
+  background-color: #5772ff;
+}
+.harmonized-viewer-theme--light harmonized-pager .mdc-slider:not(.mdc-slider--disabled) .mdc-slider__thumb {
+  fill: #5772ff;
+  stroke: #5772ff;
+}
+.harmonized-viewer-theme--light harmonized-pager .mdc-slider:not(.mdc-slider--disabled) .mdc-slider__focus-ring {
+  background-color: #5772ff;
+}
+.harmonized-viewer-theme--light harmonized-pager .mdc-slider:not(.mdc-slider--disabled) .mdc-slider__pin {
+  background-color: #5772ff;
+}
+.harmonized-viewer-theme--light harmonized-pager .mdc-slider:not(.mdc-slider--disabled) .mdc-slider__pin {
+  color: white;
+  /* @alternate */
+  color: var(--mdc-theme-text-primary-on-dark, white);
+}
+.harmonized-viewer-theme--light harmonized-pager .mdc-slider:not(.mdc-slider--disabled) .mdc-slider__track-container {
+  background-color: #c5c3c6;
+}
+.harmonized-viewer-theme--light harmonized-pager .mdc-slider:not(.mdc-slider--disabled) .mdc-slider__focus-ring {
+  background-color: #5772ff;
+}
+.harmonized-viewer-theme--light .error-message svg {
+  fill: #ef5350;
+}
+.harmonized-viewer-theme--light .error-message__text {
+  color: #46494c;
+}

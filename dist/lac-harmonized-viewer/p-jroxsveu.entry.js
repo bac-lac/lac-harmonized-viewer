@@ -1,0 +1,1 @@
+import{r as t,h as r,c as s,H as e}from"./p-686b7faf.js";const a=class{constructor(r){t(this,r)}render(){let t="";return this.active&&(t+=" active"),r(e,{class:t})}get el(){return s(this)}static get style(){return"harmonized-tab{width:100%;height:100%;overflow-y:auto;display:none}harmonized-tab.active{display:inline-block}"}};export{a as harmonized_tab};

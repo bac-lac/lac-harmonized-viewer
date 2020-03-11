@@ -1,0 +1,61 @@
+harmonized-openseadragon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  height: 100%;
+  width: 100%;
+}
+harmonized-openseadragon .button-navigation {
+  opacity: 0;
+  transition: opacity 200ms ease;
+  position: absolute;
+  z-index: 2;
+}
+harmonized-openseadragon .button-navigation--prev {
+  left: 30px;
+}
+harmonized-openseadragon .button-navigation--next {
+  right: 30px;
+}
+harmonized-openseadragon .button-topbar-group {
+  position: absolute;
+  z-index: 4;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-right: 30px;
+}
+harmonized-openseadragon .button-topbar-group > .button-topbar {
+  display: inline-block;
+}
+harmonized-openseadragon .openseadragon-container {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+}
+harmonized-openseadragon .openseadragon {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+harmonized-openseadragon .openseadragon .navigator {
+  display: none !important;
+}
+@media (min-width: 720px) {
+  harmonized-openseadragon .openseadragon .navigator {
+    display: inline-block !important;
+    margin-right: 25px !important;
+  }
+}
+
+.harmonized-viewer.harmonized-viewer-fullscreen harmonized-viewport harmonized-openseadragon {
+  background-color: #333;
+}
+.harmonized-viewer.harmonized-viewer-fullscreen harmonized-viewport harmonized-openseadragon .button-topbar-group {
+  margin-bottom: 30px;
+}

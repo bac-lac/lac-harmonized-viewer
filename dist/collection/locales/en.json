@@ -1,0 +1,41 @@
+{
+    "code": "en",
+    "name": "English",
+
+    "changeLanguage": "Change language",
+    "language_changed": "Language changed to <b>{{language}}</b>.",
+    "loadingManifest": "Loading manifest...",
+    "fullscreen": "Fullscreen",
+    "enterFullscreen": "Enter fullscreen",
+    "exitFullscreen": "Exit fullscreen",
+    "showInfo": "Show details",
+    "hideInfo": "Hide details",
+    "details": "Details",
+    "pager": "Item <b>{{page}}</b> of <b>{{pageCount}}</b>",
+    "untitled": "Untitled",
+    "ok": "Okay",
+
+    "title": "Title",
+    "titleItem": "Item title",
+
+    "browserNoVideo": "This browser does not support the HTML5 video element.",
+
+    "closeSidebar": "Close sidebar",
+
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "zoomReset": "Reset zoom",
+    "goToNextPage": "Go to next page",
+    "goToPrevPage": "Go to previous page",
+
+    "pdfIE11NoRenderLine1": "Harmonized Viewer could not render the PDF.",
+    "pdfIE11NoRenderLine2": "Please make sure you have a PDF reader plugin enabled (i.e. Adobe Reader) or use a modern browser that supports PDF rendering.",
+    "pdfNoEmbed": "Something went wrong displaying this PDF.",
+    
+    "errors": {
+        "manifest-not-found": "Manifest not found.",
+        "request-failed": "Document request failed {{url}}",
+        "request-failed-notfound": "Document could not be found {{url}}",
+        "contenttype-unsupported": "Content type {{contentType}} is not supported"
+    }
+}

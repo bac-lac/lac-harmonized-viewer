@@ -1,0 +1,36 @@
+import { Unsubscribe, Store } from '@stencil/redux';
+import { viewItem } from '../../store/actions/viewport';
+import { Props, Instance } from 'tippy.js';
+export declare class ImageComponent {
+    el: HTMLElement;
+    src: string;
+    contentType: string;
+    srcset: string;
+    preload: boolean;
+    page: number;
+    caption: string;
+    showCaption: boolean;
+    showTooltip: boolean;
+    loading: boolean;
+    loaded: boolean;
+    failed: boolean;
+    props: string[];
+    viewItem: typeof viewItem;
+    storeUnsubscribe: Unsubscribe;
+    currentItemIndex: number;
+    store: Store;
+    imageAdded: any;
+    imageLoad: any;
+    private tooltip;
+    addImageProperty(value: string): Promise<void>;
+    removeImageProperty(value: string): Promise<void>;
+    componentWillLoad(): void;
+    componentDidUnload(): void;
+    handleLoad(ev: Event): void;
+    handleError(ev: Event): void;
+    handleClick(): void;
+    componentDidRender(): void;
+    createTooltip(): Instance<Props>;
+    determineThumbnail(viewportType: string): string;
+    render(): any;
+}

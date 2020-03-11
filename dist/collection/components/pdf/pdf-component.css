@@ -1,0 +1,22 @@
+harmonized-embed {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+harmonized-embed embed, harmonized-embed object, harmonized-embed div {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+harmonized-embed embed > span, harmonized-embed object > span, harmonized-embed div > span {
+  width: 100%;
+  padding: 0 15px;
+  text-align: center;
+  white-space: pre-wrap;
+}

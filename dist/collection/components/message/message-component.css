@@ -1,0 +1,7 @@
+harmonized-message {
+  display: block;
+}
+harmonized-message .message .message-header,
+harmonized-message .message .message-body {
+  border-radius: 0;
+}

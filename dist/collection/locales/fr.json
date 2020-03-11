@@ -1,0 +1,39 @@
+{
+    "code": "fr",
+    "name": "Français",
+    "changeLanguage": "Choisir la langue",
+    "language_changed": "Le texte s'affiche maintenant en {{language}}.",
+    "loadingManifest": "Chargement du manifeste...",
+    "fullscreen": "Plein écran",
+    "enterFullscreen": "Ouvrir en mode plein écran",
+    "exitFullscreen": "Quitter le mode plein écran",
+    "showInfo": "Afficher les détails",
+    "hideInfo": "Cacher les détails",
+    "details": "Détails",
+    "pager": "Article <b>{{page}}</b> de <b>{{pageCount}}</b>",
+    "untitled": "Sans titre",
+    "ok": "OK",
+
+    "title": "Titre",
+    "titleItem": "Titre de l'objet",
+
+    "browserNoVideo": "Votre navigateur ne peut lire les vidéos HTML5.",
+
+    "closeSidebar": "Fermer la barre latérale",
+
+    "zoomIn": "Zoom avant",
+    "zoomOut": "Zoom arrière",
+    "zoomReset": "Retour au zoom par défaut",
+    "goToNextPage": "Page suivante",
+    "goToPrevPage": "Page précédente",
+
+    "pdfNoIE11Line1": "L'affichage des PDF n'est actuellement pas pris en charge par Internet Explorer 11.",
+    "pdfNoIE11Line2": "Veuillez télécharger le fichier ou utiliser un navigateur pris en charge (par exemple Chrome, Safari, Firefox, Edge).",
+
+    "errors": {
+        "manifest-not-found": "Le manifeste n'a pas pu être trouvé.",
+        "request-failed": "La requête a échoué {{url}}",
+        "request-failed-notfound": "Document introuvable {{url}}",
+        "contenttype-unsupported": "Le format {{contentType}} n'est pas pris en charge"
+    }
+}

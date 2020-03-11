@@ -1,0 +1,32 @@
+import { Resolver } from "../resolver";
+import { IIIFDocument } from "./iiif-document";
+import 'manifesto.js';
+export declare class IIIFResolver extends Resolver {
+    thumbnailDefaultFormat: string;
+    thumbnailDefaultExtension: string;
+    thumbnailHeight: number;
+    disableDeepzoom: boolean;
+    private language;
+    private manifest;
+    private manifestJson;
+    constructor(language?: string);
+    init(url: string): Promise<this>;
+    contentTypes(): string[];
+    getTitle(): DocumentLabel[];
+    getDocument(): IIIFDocument;
+    getSequence(index: number): Manifesto.ISequence;
+    getDefaultSequence(): Manifesto.ISequence;
+    getPages(customItemProps?: string[], metadataDictionary?: MetadataMapping[]): DocumentPage[];
+    tileSources(): string[];
+    getMetadata(): DocumentMetadata[];
+    getAnnotations(): DocumentAnnotation[];
+    getAlternateFormats(): DocumentAlternateFormat[];
+    getStartPageIndex(): number;
+    getThumbnailUri(canvas: Manifesto.ICanvas): string;
+    getManifest(): Manifesto.IManifest;
+    getImageUri(canvas: Manifesto.ICanvas, height: number): string;
+    resolveImageServiceUri(resource: Manifesto.IResource, trimFileName?: boolean): string;
+    resolveTileSource(image: Manifesto.IAnnotation): any;
+    resolveImageService(resource: Manifesto.IResource): Manifesto.IService;
+    private matchesAtLeastOne;
+}

@@ -1,0 +1,678 @@
+harmonized-button {
+  @keyframes mdc-ripple-fg-radius-in {
+    from {
+      animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transform: translate(var(--mdc-ripple-fg-translate-start, 0)) scale(1);
+    }
+    to {
+      transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
+    }
+  }
+  @keyframes mdc-ripple-fg-opacity-in {
+    from {
+      animation-timing-function: linear;
+      opacity: 0;
+    }
+    to {
+      opacity: var(--mdc-ripple-fg-opacity, 0);
+    }
+  }
+  @keyframes mdc-ripple-fg-opacity-out {
+    from {
+      animation-timing-function: linear;
+      opacity: var(--mdc-ripple-fg-opacity, 0);
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  display: flex;
+}
+harmonized-button .mdc-touch-target-wrapper {
+  display: inline;
+}
+harmonized-button .mdc-button {
+  font-family: Roboto, sans-serif;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-size: 0.875rem;
+  line-height: 2.25rem;
+  font-weight: 500;
+  letter-spacing: 0.0892857143em;
+  text-decoration: none;
+  text-transform: uppercase;
+  padding: 0 8px 0 8px;
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 64px;
+  border: none;
+  outline: none;
+  /* @alternate */
+  line-height: inherit;
+  user-select: none;
+  -webkit-appearance: none;
+  overflow: visible;
+  vertical-align: middle;
+  border-radius: 4px;
+}
+harmonized-button .mdc-button::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+harmonized-button .mdc-button:active {
+  outline: none;
+}
+harmonized-button .mdc-button:hover {
+  cursor: pointer;
+}
+harmonized-button .mdc-button:disabled {
+  background-color: transparent;
+  color: rgba(0, 0, 0, 0.37);
+  cursor: default;
+  pointer-events: none;
+}
+harmonized-button .mdc-button .mdc-button__ripple {
+  border-radius: 4px;
+}
+harmonized-button .mdc-button:not(:disabled) {
+  background-color: transparent;
+}
+harmonized-button .mdc-button .mdc-button__icon {
+  /* @noflip */
+  margin-left: 0;
+  /* @noflip */
+  margin-right: 8px;
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  vertical-align: top;
+}
+[dir=rtl] harmonized-button .mdc-button .mdc-button__icon, harmonized-button .mdc-button .mdc-button__icon[dir=rtl] {
+  /* @noflip */
+  margin-left: 8px;
+  /* @noflip */
+  margin-right: 0;
+}
+harmonized-button .mdc-button .mdc-button__touch {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 48px;
+  transform: translateY(-50%);
+}
+harmonized-button .mdc-button:not(:disabled) {
+  color: #6200ee;
+  /* @alternate */
+  color: var(--mdc-theme-primary, #6200ee);
+}
+harmonized-button .mdc-button__label + .mdc-button__icon {
+  /* @noflip */
+  margin-left: 8px;
+  /* @noflip */
+  margin-right: 0;
+}
+[dir=rtl] harmonized-button .mdc-button__label + .mdc-button__icon, harmonized-button .mdc-button__label + .mdc-button__icon[dir=rtl] {
+  /* @noflip */
+  margin-left: 0;
+  /* @noflip */
+  margin-right: 8px;
+}
+harmonized-button svg.mdc-button__icon {
+  fill: currentColor;
+}
+harmonized-button .mdc-button--raised .mdc-button__icon,
+harmonized-button .mdc-button--unelevated .mdc-button__icon,
+harmonized-button .mdc-button--outlined .mdc-button__icon {
+  /* @noflip */
+  margin-left: -4px;
+  /* @noflip */
+  margin-right: 8px;
+}
+[dir=rtl] harmonized-button .mdc-button--raised .mdc-button__icon, harmonized-button .mdc-button--raised .mdc-button__icon[dir=rtl],
+[dir=rtl] harmonized-button .mdc-button--unelevated .mdc-button__icon,
+harmonized-button .mdc-button--unelevated .mdc-button__icon[dir=rtl],
+[dir=rtl] harmonized-button .mdc-button--outlined .mdc-button__icon,
+harmonized-button .mdc-button--outlined .mdc-button__icon[dir=rtl] {
+  /* @noflip */
+  margin-left: 8px;
+  /* @noflip */
+  margin-right: -4px;
+}
+harmonized-button .mdc-button--raised .mdc-button__label + .mdc-button__icon,
+harmonized-button .mdc-button--unelevated .mdc-button__label + .mdc-button__icon,
+harmonized-button .mdc-button--outlined .mdc-button__label + .mdc-button__icon {
+  /* @noflip */
+  margin-left: 8px;
+  /* @noflip */
+  margin-right: -4px;
+}
+[dir=rtl] harmonized-button .mdc-button--raised .mdc-button__label + .mdc-button__icon, harmonized-button .mdc-button--raised .mdc-button__label + .mdc-button__icon[dir=rtl],
+[dir=rtl] harmonized-button .mdc-button--unelevated .mdc-button__label + .mdc-button__icon,
+harmonized-button .mdc-button--unelevated .mdc-button__label + .mdc-button__icon[dir=rtl],
+[dir=rtl] harmonized-button .mdc-button--outlined .mdc-button__label + .mdc-button__icon,
+harmonized-button .mdc-button--outlined .mdc-button__label + .mdc-button__icon[dir=rtl] {
+  /* @noflip */
+  margin-left: -4px;
+  /* @noflip */
+  margin-right: 8px;
+}
+harmonized-button .mdc-button--raised,
+harmonized-button .mdc-button--unelevated {
+  padding: 0 16px 0 16px;
+}
+harmonized-button .mdc-button--raised:disabled,
+harmonized-button .mdc-button--unelevated:disabled {
+  background-color: rgba(0, 0, 0, 0.12);
+  color: rgba(0, 0, 0, 0.37);
+}
+harmonized-button .mdc-button--raised:not(:disabled),
+harmonized-button .mdc-button--unelevated:not(:disabled) {
+  background-color: #6200ee;
+}
+@supports not (-ms-ime-align: auto) {
+  harmonized-button .mdc-button--raised:not(:disabled),
+harmonized-button .mdc-button--unelevated:not(:disabled) {
+    /* @alternate */
+    background-color: var(--mdc-theme-primary, #6200ee);
+  }
+}
+harmonized-button .mdc-button--raised:not(:disabled),
+harmonized-button .mdc-button--unelevated:not(:disabled) {
+  color: #fff;
+  /* @alternate */
+  color: var(--mdc-theme-on-primary, #fff);
+}
+harmonized-button .mdc-button--raised {
+  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+harmonized-button .mdc-button--raised:hover, harmonized-button .mdc-button--raised:focus {
+  box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+}
+harmonized-button .mdc-button--raised:active {
+  box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+harmonized-button .mdc-button--raised:disabled {
+  box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.2), 0px 0px 0px 0px rgba(0, 0, 0, 0.14), 0px 0px 0px 0px rgba(0, 0, 0, 0.12);
+}
+harmonized-button .mdc-button--outlined {
+  border-style: solid;
+  padding: 0 15px 0 15px;
+  border-width: 1px;
+}
+harmonized-button .mdc-button--outlined:disabled {
+  border-color: rgba(0, 0, 0, 0.37);
+}
+harmonized-button .mdc-button--outlined .mdc-button__ripple {
+  top: -1px;
+  left: -1px;
+  border: 1px solid transparent;
+}
+harmonized-button .mdc-button--outlined:not(:disabled) {
+  border-color: #6200ee;
+  /* @alternate */
+  border-color: var(--mdc-theme-primary, #6200ee);
+}
+harmonized-button .mdc-button--touch {
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+harmonized-button .mdc-ripple-surface--test-edge-var-bug {
+  --mdc-ripple-surface-test-edge-var: 1px solid #000;
+  visibility: hidden;
+}
+harmonized-button .mdc-ripple-surface--test-edge-var-bug::before {
+  border: var(--mdc-ripple-surface-test-edge-var);
+}
+harmonized-button .mdc-button {
+  --mdc-ripple-fg-size: 0;
+  --mdc-ripple-left: 0;
+  --mdc-ripple-top: 0;
+  --mdc-ripple-fg-scale: 1;
+  --mdc-ripple-fg-translate-end: 0;
+  --mdc-ripple-fg-translate-start: 0;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+harmonized-button .mdc-button .mdc-button__ripple::before,
+harmonized-button .mdc-button .mdc-button__ripple::after {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  content: "";
+}
+harmonized-button .mdc-button .mdc-button__ripple::before {
+  transition: opacity 15ms linear, background-color 15ms linear;
+  z-index: 1;
+}
+harmonized-button .mdc-button.mdc-ripple-upgraded .mdc-button__ripple::before {
+  transform: scale(var(--mdc-ripple-fg-scale, 1));
+}
+harmonized-button .mdc-button.mdc-ripple-upgraded .mdc-button__ripple::after {
+  top: 0;
+  /* @noflip */
+  left: 0;
+  transform: scale(0);
+  transform-origin: center center;
+}
+harmonized-button .mdc-button.mdc-ripple-upgraded--unbounded .mdc-button__ripple::after {
+  top: var(--mdc-ripple-top, 0);
+  /* @noflip */
+  left: var(--mdc-ripple-left, 0);
+}
+harmonized-button .mdc-button.mdc-ripple-upgraded--foreground-activation .mdc-button__ripple::after {
+  animation: mdc-ripple-fg-radius-in 225ms forwards, mdc-ripple-fg-opacity-in 75ms forwards;
+}
+harmonized-button .mdc-button.mdc-ripple-upgraded--foreground-deactivation .mdc-button__ripple::after {
+  animation: mdc-ripple-fg-opacity-out 150ms;
+  transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
+}
+harmonized-button .mdc-button .mdc-button__ripple::before,
+harmonized-button .mdc-button .mdc-button__ripple::after {
+  top: calc(50% - 100%);
+  /* @noflip */
+  left: calc(50% - 100%);
+  width: 200%;
+  height: 200%;
+}
+harmonized-button .mdc-button.mdc-ripple-upgraded .mdc-button__ripple::after {
+  width: var(--mdc-ripple-fg-size, 100%);
+  height: var(--mdc-ripple-fg-size, 100%);
+}
+harmonized-button .mdc-button .mdc-button__ripple::before, harmonized-button .mdc-button .mdc-button__ripple::after {
+  background-color: #6200ee;
+}
+@supports not (-ms-ime-align: auto) {
+  harmonized-button .mdc-button .mdc-button__ripple::before, harmonized-button .mdc-button .mdc-button__ripple::after {
+    /* @alternate */
+    background-color: var(--mdc-theme-primary, #6200ee);
+  }
+}
+harmonized-button .mdc-button:hover .mdc-button__ripple::before {
+  opacity: 0.04;
+}
+harmonized-button .mdc-button.mdc-ripple-upgraded--background-focused .mdc-button__ripple::before, harmonized-button .mdc-button:not(.mdc-ripple-upgraded):focus .mdc-button__ripple::before {
+  transition-duration: 75ms;
+  opacity: 0.12;
+}
+harmonized-button .mdc-button:not(.mdc-ripple-upgraded) .mdc-button__ripple::after {
+  transition: opacity 150ms linear;
+}
+harmonized-button .mdc-button:not(.mdc-ripple-upgraded):active .mdc-button__ripple::after {
+  transition-duration: 75ms;
+  opacity: 0.12;
+}
+harmonized-button .mdc-button.mdc-ripple-upgraded {
+  --mdc-ripple-fg-opacity: 0.12;
+}
+harmonized-button .mdc-button .mdc-button__ripple {
+  position: absolute;
+  box-sizing: content-box;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+harmonized-button .mdc-button:not(.mdc-button--outlined) .mdc-button__ripple {
+  top: 0;
+  left: 0;
+}
+harmonized-button .mdc-button--raised .mdc-button__ripple::before, harmonized-button .mdc-button--raised .mdc-button__ripple::after,
+harmonized-button .mdc-button--unelevated .mdc-button__ripple::before,
+harmonized-button .mdc-button--unelevated .mdc-button__ripple::after {
+  background-color: #fff;
+}
+@supports not (-ms-ime-align: auto) {
+  harmonized-button .mdc-button--raised .mdc-button__ripple::before, harmonized-button .mdc-button--raised .mdc-button__ripple::after,
+harmonized-button .mdc-button--unelevated .mdc-button__ripple::before,
+harmonized-button .mdc-button--unelevated .mdc-button__ripple::after {
+    /* @alternate */
+    background-color: var(--mdc-theme-on-primary, #fff);
+  }
+}
+harmonized-button .mdc-button--raised:hover .mdc-button__ripple::before,
+harmonized-button .mdc-button--unelevated:hover .mdc-button__ripple::before {
+  opacity: 0.08;
+}
+harmonized-button .mdc-button--raised.mdc-ripple-upgraded--background-focused .mdc-button__ripple::before, harmonized-button .mdc-button--raised:not(.mdc-ripple-upgraded):focus .mdc-button__ripple::before,
+harmonized-button .mdc-button--unelevated.mdc-ripple-upgraded--background-focused .mdc-button__ripple::before,
+harmonized-button .mdc-button--unelevated:not(.mdc-ripple-upgraded):focus .mdc-button__ripple::before {
+  transition-duration: 75ms;
+  opacity: 0.24;
+}
+harmonized-button .mdc-button--raised:not(.mdc-ripple-upgraded) .mdc-button__ripple::after,
+harmonized-button .mdc-button--unelevated:not(.mdc-ripple-upgraded) .mdc-button__ripple::after {
+  transition: opacity 150ms linear;
+}
+harmonized-button .mdc-button--raised:not(.mdc-ripple-upgraded):active .mdc-button__ripple::after,
+harmonized-button .mdc-button--unelevated:not(.mdc-ripple-upgraded):active .mdc-button__ripple::after {
+  transition-duration: 75ms;
+  opacity: 0.24;
+}
+harmonized-button .mdc-button--raised.mdc-ripple-upgraded,
+harmonized-button .mdc-button--unelevated.mdc-ripple-upgraded {
+  --mdc-ripple-fg-opacity: 0.24;
+}
+harmonized-button .mdc-button {
+  height: 36px;
+}
+harmonized-button .mdc-icon-button {
+  display: inline-block;
+  position: relative;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  fill: currentColor;
+  color: inherit;
+  font-size: 24px;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  width: 48px;
+  height: 48px;
+  padding: 12px;
+}
+harmonized-button .mdc-icon-button svg,
+harmonized-button .mdc-icon-button img {
+  width: 24px;
+  height: 24px;
+}
+harmonized-button .mdc-icon-button:disabled {
+  color: rgba(0, 0, 0, 0.38);
+  /* @alternate */
+  color: var(--mdc-theme-text-disabled-on-light, rgba(0, 0, 0, 0.38));
+  cursor: default;
+  pointer-events: none;
+}
+harmonized-button .mdc-icon-button__icon {
+  display: inline-block;
+}
+harmonized-button .mdc-icon-button__icon.mdc-icon-button__icon--on {
+  display: none;
+}
+harmonized-button .mdc-icon-button--on .mdc-icon-button__icon {
+  display: none;
+}
+harmonized-button .mdc-icon-button--on .mdc-icon-button__icon.mdc-icon-button__icon--on {
+  display: inline-block;
+}
+harmonized-button .mdc-icon-button {
+  --mdc-ripple-fg-size: 0;
+  --mdc-ripple-left: 0;
+  --mdc-ripple-top: 0;
+  --mdc-ripple-fg-scale: 1;
+  --mdc-ripple-fg-translate-end: 0;
+  --mdc-ripple-fg-translate-start: 0;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+harmonized-button .mdc-icon-button::before, harmonized-button .mdc-icon-button::after {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  content: "";
+}
+harmonized-button .mdc-icon-button::before {
+  transition: opacity 15ms linear, background-color 15ms linear;
+  z-index: 1;
+}
+harmonized-button .mdc-icon-button.mdc-ripple-upgraded::before {
+  transform: scale(var(--mdc-ripple-fg-scale, 1));
+}
+harmonized-button .mdc-icon-button.mdc-ripple-upgraded::after {
+  top: 0;
+  /* @noflip */
+  left: 0;
+  transform: scale(0);
+  transform-origin: center center;
+}
+harmonized-button .mdc-icon-button.mdc-ripple-upgraded--unbounded::after {
+  top: var(--mdc-ripple-top, 0);
+  /* @noflip */
+  left: var(--mdc-ripple-left, 0);
+}
+harmonized-button .mdc-icon-button.mdc-ripple-upgraded--foreground-activation::after {
+  animation: mdc-ripple-fg-radius-in 225ms forwards, mdc-ripple-fg-opacity-in 75ms forwards;
+}
+harmonized-button .mdc-icon-button.mdc-ripple-upgraded--foreground-deactivation::after {
+  animation: mdc-ripple-fg-opacity-out 150ms;
+  transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
+}
+harmonized-button .mdc-icon-button::before, harmonized-button .mdc-icon-button::after {
+  top: calc(50% - 50%);
+  /* @noflip */
+  left: calc(50% - 50%);
+  width: 100%;
+  height: 100%;
+}
+harmonized-button .mdc-icon-button.mdc-ripple-upgraded::before, harmonized-button .mdc-icon-button.mdc-ripple-upgraded::after {
+  top: var(--mdc-ripple-top, calc(50% - 50%));
+  /* @noflip */
+  left: var(--mdc-ripple-left, calc(50% - 50%));
+  width: var(--mdc-ripple-fg-size, 100%);
+  height: var(--mdc-ripple-fg-size, 100%);
+}
+harmonized-button .mdc-icon-button.mdc-ripple-upgraded::after {
+  width: var(--mdc-ripple-fg-size, 100%);
+  height: var(--mdc-ripple-fg-size, 100%);
+}
+harmonized-button .mdc-icon-button::before, harmonized-button .mdc-icon-button::after {
+  background-color: #000;
+}
+harmonized-button .mdc-icon-button:hover::before {
+  opacity: 0.04;
+}
+harmonized-button .mdc-icon-button.mdc-ripple-upgraded--background-focused::before, harmonized-button .mdc-icon-button:not(.mdc-ripple-upgraded):focus::before {
+  transition-duration: 75ms;
+  opacity: 0.12;
+}
+harmonized-button .mdc-icon-button:not(.mdc-ripple-upgraded)::after {
+  transition: opacity 150ms linear;
+}
+harmonized-button .mdc-icon-button:not(.mdc-ripple-upgraded):active::after {
+  transition-duration: 75ms;
+  opacity: 0.12;
+}
+harmonized-button .mdc-icon-button.mdc-ripple-upgraded {
+  --mdc-ripple-fg-opacity: 0.12;
+}
+harmonized-button.circle > button {
+  border-radius: 50%;
+  box-shadow: rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px, rgba(0, 0, 0, 0.2) 0px 3px 1px -2px;
+}
+harmonized-button .mdc-button:not(:disabled) {
+  color: #fff;
+}
+harmonized-button .mdc-button .mdc-button__label {
+  font-weight: normal;
+}
+harmonized-button .mdc-button.full-width {
+  width: 100%;
+}
+harmonized-button .mdc-button[disabled]:not(:disabled) {
+  color: #383838;
+}
+harmonized-button .mdc-button.mdc-button--raised:not(:disabled) {
+  background-color: #282828;
+}
+harmonized-button .mdc-button.mdc-button--raised:not(:disabled) {
+  color: white;
+  /* @alternate */
+  color: var(--mdc-theme-text-primary-on-dark, white);
+}
+harmonized-button .mdc-button.mdc-button--raised .mdc-button__ripple::before, harmonized-button .mdc-button.mdc-button--raised .mdc-button__ripple::after {
+  background-color: white;
+}
+@supports not (-ms-ime-align: auto) {
+  harmonized-button .mdc-button.mdc-button--raised .mdc-button__ripple::before, harmonized-button .mdc-button.mdc-button--raised .mdc-button__ripple::after {
+    /* @alternate */
+    background-color: var(--mdc-theme-text-primary-on-dark, white);
+  }
+}
+harmonized-button .mdc-button.mdc-button--raised:hover .mdc-button__ripple::before {
+  opacity: 0.08;
+}
+harmonized-button .mdc-button.mdc-button--raised.mdc-ripple-upgraded--background-focused .mdc-button__ripple::before, harmonized-button .mdc-button.mdc-button--raised:not(.mdc-ripple-upgraded):focus .mdc-button__ripple::before {
+  transition-duration: 75ms;
+  opacity: 0.24;
+}
+harmonized-button .mdc-button.mdc-button--raised:not(.mdc-ripple-upgraded) .mdc-button__ripple::after {
+  transition: opacity 150ms linear;
+}
+harmonized-button .mdc-button.mdc-button--raised:not(.mdc-ripple-upgraded):active .mdc-button__ripple::after {
+  transition-duration: 75ms;
+  opacity: 0.24;
+}
+harmonized-button .mdc-button.mdc-button--raised.mdc-ripple-upgraded {
+  --mdc-ripple-fg-opacity: 0.24;
+}
+harmonized-button .mdc-button .dropdown-arrow svg {
+  margin-right: 0;
+}
+harmonized-button .mdc-icon-button {
+  color: #fff;
+}
+harmonized-button .mdc-icon-button::before, harmonized-button .mdc-icon-button::after {
+  background-color: #fff;
+}
+harmonized-button .mdc-icon-button:hover::before {
+  opacity: 0.08;
+}
+harmonized-button .mdc-icon-button.mdc-ripple-upgraded--background-focused::before, harmonized-button .mdc-icon-button:not(.mdc-ripple-upgraded):focus::before {
+  transition-duration: 75ms;
+  opacity: 0.24;
+}
+harmonized-button .mdc-icon-button:not(.mdc-ripple-upgraded)::after {
+  transition: opacity 150ms linear;
+}
+harmonized-button .mdc-icon-button:not(.mdc-ripple-upgraded):active::after {
+  transition-duration: 75ms;
+  opacity: 0.24;
+}
+harmonized-button .mdc-icon-button.mdc-ripple-upgraded {
+  --mdc-ripple-fg-opacity: 0.24;
+}
+harmonized-button .mdc-icon-button[disabled] {
+  color: #383838;
+}
+harmonized-button .mdc-icon-button[disabled]::before, harmonized-button .mdc-icon-button[disabled]::after {
+  background-color: #383838;
+}
+harmonized-button .mdc-icon-button[disabled]:hover::before {
+  opacity: 0.04;
+}
+harmonized-button .mdc-icon-button[disabled].mdc-ripple-upgraded--background-focused::before, harmonized-button .mdc-icon-button[disabled]:not(.mdc-ripple-upgraded):focus::before {
+  transition-duration: 75ms;
+  opacity: 0.12;
+}
+harmonized-button .mdc-icon-button[disabled]:not(.mdc-ripple-upgraded)::after {
+  transition: opacity 150ms linear;
+}
+harmonized-button .mdc-icon-button[disabled]:not(.mdc-ripple-upgraded):active::after {
+  transition-duration: 75ms;
+  opacity: 0.12;
+}
+harmonized-button .mdc-icon-button[disabled].mdc-ripple-upgraded {
+  --mdc-ripple-fg-opacity: 0.12;
+}
+harmonized-button .mdc-icon-button--sm {
+  width: 36px;
+  height: 36px;
+  padding: 9px;
+  font-size: 18px;
+  min-width: 36px;
+}
+harmonized-button .mdc-icon-button--sm svg,
+harmonized-button .mdc-icon-button--sm img {
+  width: 18px;
+  height: 18px;
+}
+harmonized-button .mdc-icon-button--md {
+  width: 60px;
+  height: 60px;
+  padding: 15px;
+  font-size: 30px;
+  min-width: 60px;
+}
+harmonized-button .mdc-icon-button--md svg,
+harmonized-button .mdc-icon-button--md img {
+  width: 30px;
+  height: 30px;
+}
+harmonized-button .mdc-icon-button--lg {
+  width: 60px;
+  height: 60px;
+  padding: 15px;
+  font-size: 30px;
+  min-width: 60px;
+}
+harmonized-button .mdc-icon-button--lg svg,
+harmonized-button .mdc-icon-button--lg img {
+  width: 30px;
+  height: 30px;
+}
+
+.harmonized-viewer-theme--light harmonized-button.circle > button {
+  background-color: #fff;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-button:not(:disabled) {
+  color: #46494c;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-button[disabled]:not(:disabled) {
+  color: #c5c3c6;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button {
+  color: #46494c;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button::before, .harmonized-viewer-theme--light harmonized-button .mdc-icon-button::after {
+  background-color: #46494c;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button:hover::before {
+  opacity: 0.04;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button.mdc-ripple-upgraded--background-focused::before, .harmonized-viewer-theme--light harmonized-button .mdc-icon-button:not(.mdc-ripple-upgraded):focus::before {
+  transition-duration: 75ms;
+  opacity: 0.12;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button:not(.mdc-ripple-upgraded)::after {
+  transition: opacity 150ms linear;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button:not(.mdc-ripple-upgraded):active::after {
+  transition-duration: 75ms;
+  opacity: 0.12;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button.mdc-ripple-upgraded {
+  --mdc-ripple-fg-opacity: 0.12;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button[disabled] {
+  color: #c5c3c6;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button[disabled]::before, .harmonized-viewer-theme--light harmonized-button .mdc-icon-button[disabled]::after {
+  background-color: #c5c3c6;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button[disabled]:hover::before {
+  opacity: 0.08;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button[disabled].mdc-ripple-upgraded--background-focused::before, .harmonized-viewer-theme--light harmonized-button .mdc-icon-button[disabled]:not(.mdc-ripple-upgraded):focus::before {
+  transition-duration: 75ms;
+  opacity: 0.24;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button[disabled]:not(.mdc-ripple-upgraded)::after {
+  transition: opacity 150ms linear;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button[disabled]:not(.mdc-ripple-upgraded):active::after {
+  transition-duration: 75ms;
+  opacity: 0.24;
+}
+.harmonized-viewer-theme--light harmonized-button .mdc-icon-button[disabled].mdc-ripple-upgraded {
+  --mdc-ripple-fg-opacity: 0.24;
+}
+
+.white-text harmonized-button button {
+  color: #fff !important;
+}

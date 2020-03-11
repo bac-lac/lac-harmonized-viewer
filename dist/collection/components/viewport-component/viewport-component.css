@@ -1,0 +1,58 @@
+.viewport {
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  /* When stencil loads the newly rendered webcomponent (when infoshown==true),
+  *  it inserts the web components into DOM, then goes through the render.
+  *  Since the drawer doesn't have the css class .mdc-drawer on mount,
+  *  it shakes the viewport for a split-second if not hidden
+  */
+}
+.viewport-video {
+  min-height: auto !important;
+  background-color: #333;
+}
+.viewport-audio > harmonized-drawer, .viewport-video > harmonized-drawer, .viewport-pdf > harmonized-drawer {
+  top: 0;
+  height: 100% !important;
+}
+.viewport__content {
+  width: 100%;
+  height: 100%;
+  flex: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.viewport__content--loading {
+  opacity: 0.3;
+}
+.viewport__content > harmonized-embed {
+  flex: 1;
+}
+.viewport__content > harmonized-pager {
+  flex: 0;
+}
+.viewport__content .viewport__content-pager {
+  width: 100%;
+  padding: 0.5rem 0;
+  box-sizing: border-box;
+  background-color: #ece8e8;
+}
+.viewport:hover .button-navigation {
+  opacity: 1;
+}
+.viewport:hover .overlay {
+  opacity: 1;
+}
+.viewport .paging-label {
+  text-align: center;
+}
+.viewport > harmonized-drawer:not(.mdc-drawer) {
+  display: none;
+}

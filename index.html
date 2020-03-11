@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    <title>Harmonized Viewer demo</title>
+
+    <link type="text/css" href="/lac-harmonized-viewer/dist/lac-harmonized-viewer/lac-harmonized-viewer.css" rel="stylesheet" />
+    <script type="module" src="/lac-harmonized-viewer/dist/lac-harmonized-viewer/lac-harmonized-viewer.esm.js"></script>
+    <script nomodule src="/lac-harmonized-viewer/dist/lac-harmonized-viewer/lac-harmonized-viewer.js"></script>
+
+    <style type="text/css">
+        html {
+            font-size: 16px;
+        }
+
+        html,
+        body {
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <harmonized-viewer id="hv" class="harmonized-viewer"
+        url="manifest.json"
+        language="en"
+        deepzoom="false"
+        style="height:100%">
+    </harmonized-viewer>
+</body>
+</html>

@@ -1,0 +1,31 @@
+harmonized-pager {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  /*.slider-control {
+      width: 300px;
+      margin: 0 15px;
+  }*/
+  /*.mdc-slider {
+      @include mdc-slider-color-accessible(#f6e0b5);
+      @include mdc-slider-rail-color(#323232, 1);
+      @include mdc-slider-focus-halo-color(#f6e0b5);
+  }*/
+}
+harmonized-pager .paging-status {
+  text-align: center;
+  /*margin-bottom: -10px;*/
+}
+harmonized-pager .paging-status__value {
+  font-weight: 500;
+}
+harmonized-pager .paging-status__spacer--left::before, harmonized-pager .paging-status__spacer--right::after {
+  content: " ";
+}
+harmonized-pager .pager__controls {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+}
