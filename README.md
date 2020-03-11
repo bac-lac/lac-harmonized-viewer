@@ -1,6 +1,8 @@
 # Harmonized Viewer
 IIIF compliant (v2.1.1) web-based viewer built with Stencil.js and Openseadragon.
 
+Working example: https://bac-lac.github.io/lac-harmonized-viewer/
+
 ## Functionality
 Supports the following formats:
 * Images (jpeg, png, gif)
