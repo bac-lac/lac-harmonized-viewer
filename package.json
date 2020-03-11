@@ -83,7 +83,7 @@
     "css-loader": "^3.2.0",
     "extract-loader": "^3.1.0",
     "file-loader": "^4.2.0",
-    "node-sass": "^4.12.0",
+    "node-sass": "^4.13.1",
     "postcss": "^7.0.18",
     "postcss-loader": "^3.0.0",
     "rollup-plugin-node-polyfills": "^0.2.1",

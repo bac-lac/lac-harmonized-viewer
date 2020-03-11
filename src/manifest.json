@@ -112,11 +112,11 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "http://central.bac-lac.gc.ca/.item?id=e006154903-v6&app=fonandcol&op=img",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154903-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
                                 "format": "image/jpeg",
                                 "service": {
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154903-v6&app=fonandcol&op=img",
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154903-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
                                     "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
@@ -128,7 +128,7 @@
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154903-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154903-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
                             "width": 91,
                             "height": 150
@@ -206,11 +206,11 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "http://central.bac-lac.gc.ca/.item?id=e006154904-v6&app=fonandcol&op=img",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154904-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
                                 "format": "image/jpeg",
                                 "service": {
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154904-v6&app=fonandcol&op=img",
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154904-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
                                     "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
@@ -222,7 +222,7 @@
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154904-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154904-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
                             "width": 91,
                             "height": 150
@@ -300,11 +300,11 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "http://central.bac-lac.gc.ca/.item?id=e006154905-v6&app=fonandcol&op=img",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154905-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
                                 "format": "image/jpeg",
                                 "service": {
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154905-v6&app=fonandcol&op=img",
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154905-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
                                     "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
@@ -316,7 +316,7 @@
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154905-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154905-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
                             "width": 91,
                             "height": 150
@@ -394,11 +394,11 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "http://central.bac-lac.gc.ca/.item?id=e006154906-v6&app=fonandcol&op=img",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154906-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
                                 "format": "image/jpeg",
                                 "service": {
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154906-v6&app=fonandcol&op=img",
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154906-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
                                     "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
@@ -410,7 +410,7 @@
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154906-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154906-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
                             "width": 91,
                             "height": 150
@@ -488,11 +488,11 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "http://central.bac-lac.gc.ca/.item?id=e006154907-v6&app=fonandcol&op=img",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154907-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
                                 "format": "image/jpeg",
                                 "service": {
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154907-v6&app=fonandcol&op=img",
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154907-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
                                     "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
@@ -504,7 +504,7 @@
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154907-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154907-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
                             "width": 90,
                             "height": 150
@@ -582,11 +582,11 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
                                 "format": "image/jpeg",
                                 "service": {
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img",
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
                                     "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
@@ -598,7 +598,7 @@
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154908-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
                             "width": 90,
                             "height": 150
@@ -676,11 +676,11 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "http://central.bac-lac.gc.ca/.item?id=e006154910-v6&app=fonandcol&op=img",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154910-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
                                 "format": "image/jpeg",
                                 "service": {
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154910-v6&app=fonandcol&op=img",
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154910-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
                                     "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
@@ -692,7 +692,7 @@
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154910-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154910-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
                             "width": 98,
                             "height": 150
@@ -770,11 +770,11 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "http://central.bac-lac.gc.ca/.item?id=e006154911-v6&app=fonandcol&op=img",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154911-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
                                 "format": "image/jpeg",
                                 "service": {
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154911-v6&app=fonandcol&op=img",
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154911-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
                                     "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
@@ -786,7 +786,7 @@
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154911-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154911-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
                             "width": 97,
                             "height": 150
@@ -864,11 +864,11 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "http://central.bac-lac.gc.ca/.item?id=e006154912-v6&app=fonandcol&op=img",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154912-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
                                 "format": "image/jpeg",
                                 "service": {
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154912-v6&app=fonandcol&op=img",
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154912-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
                                     "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
@@ -880,7 +880,7 @@
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154912-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154912-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
                             "width": 97,
                             "height": 150
@@ -958,11 +958,11 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "http://central.bac-lac.gc.ca/.item?id=e006154913-v6&app=fonandcol&op=img",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154913-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
                                 "format": "image/jpeg",
                                 "service": {
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154913-v6&app=fonandcol&op=img",
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154913-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
                                     "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
@@ -974,7 +974,7 @@
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154913-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154913-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
                             "width": 97,
                             "height": 150
@@ -1052,11 +1052,11 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "http://central.bac-lac.gc.ca/.item?id=e006154914-v6&app=fonandcol&op=img",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154914-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
                                 "format": "image/jpeg",
                                 "service": {
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154914-v6&app=fonandcol&op=img",
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154914-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
                                     "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
@@ -1068,7 +1068,7 @@
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154914-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154914-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
                             "width": 97,
                             "height": 150
@@ -1146,11 +1146,11 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "http://central.bac-lac.gc.ca/.item?id=e006154915-v6&app=fonandcol&op=img",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154915-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
                                 "format": "image/jpeg",
                                 "service": {
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154915-v6&app=fonandcol&op=img",
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154915-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
                                     "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
@@ -1162,7 +1162,7 @@
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154915-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154915-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
                             "width": 97,
                             "height": 150
@@ -1240,11 +1240,11 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "http://central.bac-lac.gc.ca/.item?id=e006154916-v6&app=fonandcol&op=img",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154916-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
                                 "format": "image/jpeg",
                                 "service": {
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154916-v6&app=fonandcol&op=img",
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154916-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
                                     "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
@@ -1256,7 +1256,7 @@
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154916-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154916-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
                             "width": 97,
                             "height": 150
@@ -1334,11 +1334,11 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "http://central.bac-lac.gc.ca/.item?id=e006154917-v6&app=fonandcol&op=img",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154917-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
                                 "format": "image/jpeg",
                                 "service": {
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154917-v6&app=fonandcol&op=img",
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154917-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
                                     "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
@@ -1350,7 +1350,7 @@
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154917-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154917-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
                             "width": 97,
                             "height": 150
@@ -1428,11 +1428,11 @@
                             "@type": "oa:Annotation",
                             "motivation": "sc:painting",
                             "resource": {
-                                "@id": "http://central.bac-lac.gc.ca/.item?id=e006154918-v6&app=fonandcol&op=img",
+                                "@id": "https://central.bac-lac.gc.ca/.item?id=e006154918-v6&app=fonandcol&op=img",
                                 "@type": "dctypes:Image",
                                 "format": "image/jpeg",
                                 "service": {
-                                    "@id": "http://central.bac-lac.gc.ca/.item?id=e006154918-v6&app=fonandcol&op=img",
+                                    "@id": "https://central.bac-lac.gc.ca/.item?id=e006154918-v6&app=fonandcol&op=img",
                                     "@context": "http://iiif.io/api/image/2/context.json",
                                     "profile": "http://bac-lac.gc.ca/iiif/1/central.json"
                                 },
@@ -1444,7 +1444,7 @@
                     ],
                     "thumbnail": [
                         {
-                            "@id": "http://central.bac-lac.gc.ca/.item?id=e006154918-v6&app=fonandcol&op=thumb&height=150",
+                            "@id": "https://central.bac-lac.gc.ca/.item?id=e006154918-v6&app=fonandcol&op=thumb&height=150",
                             "@type": "dctypes:Image",
                             "width": 97,
                             "height": 150
