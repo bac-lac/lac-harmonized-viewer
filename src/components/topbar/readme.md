@@ -5,6 +5,14 @@
 <!-- Auto Generated Below -->
 
 
+## Events
+
+| Event                           | Description | Type               |
+| ------------------------------- | ----------- | ------------------ |
+| `_hvFullscreenToggle`           |             | `CustomEvent<any>` |
+| `harmonizedViewerTopBarUpdated` |             | `CustomEvent<any>` |
+
+
 ## Dependencies
 
 ### Used by
@@ -13,12 +21,12 @@
 
 ### Depends on
 
-- [hv-settings](../settings)
+- [harmonized-button](../button)
 
 ### Graph
 ```mermaid
 graph TD;
-  harmonized-topbar --> hv-settings
+  harmonized-topbar --> harmonized-button
   harmonized-viewer --> harmonized-topbar
   style harmonized-topbar fill:#f9f,stroke:#333,stroke-width:4px
 ```

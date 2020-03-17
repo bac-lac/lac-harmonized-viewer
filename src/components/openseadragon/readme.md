@@ -5,22 +5,40 @@
 <!-- Auto Generated Below -->
 
 
+## Properties
+
+| Property      | Attribute      | Description | Type      | Default |
+| ------------- | -------------- | ----------- | --------- | ------- |
+| `allowPaging` | `allow-paging` |             | `boolean` | `true`  |
+
+
 ## Events
 
 | Event          | Description | Type               |
 | -------------- | ----------- | ------------------ |
 | `overlayClick` |             | `CustomEvent<any>` |
+| `pageLoad`     |             | `CustomEvent<any>` |
 
 
 ## Methods
 
-### `getOverlays() => Promise<Overlay[]>`
+### `getOverlays() => Promise<DocumentOverlay[]>`
 
 
 
 #### Returns
 
-Type: `Promise<Overlay[]>`
+Type: `Promise<DocumentOverlay[]>`
+
+
+
+### `openseadragon() => Promise<any>`
+
+
+
+#### Returns
+
+Type: `Promise<any>`
 
 
 
@@ -31,9 +49,16 @@ Type: `Promise<Overlay[]>`
 
  - [harmonized-viewport](../viewport-component)
 
+### Depends on
+
+- [harmonized-button](../button)
+- [harmonized-overlay](../overlay)
+
 ### Graph
 ```mermaid
 graph TD;
+  harmonized-openseadragon --> harmonized-button
+  harmonized-openseadragon --> harmonized-overlay
   harmonized-viewport --> harmonized-openseadragon
   style harmonized-openseadragon fill:#f9f,stroke:#333,stroke-width:4px
 ```

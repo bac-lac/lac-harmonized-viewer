@@ -5,13 +5,11 @@
 <!-- Auto Generated Below -->
 
 
-## Properties
+## Events
 
-| Property             | Attribute             | Description | Type                                     | Default  |
-| -------------------- | --------------------- | ----------- | ---------------------------------------- | -------- |
-| `annotationsEnable`  | `annotations-enable`  |             | `boolean`                                | `false`  |
-| `navigationEnable`   | `navigation-enable`   |             | `boolean`                                | `true`   |
-| `navigationLocation` | `navigation-location` |             | `"bottom" \| "left" \| "right" \| "top"` | `'left'` |
+| Event                             | Description | Type               |
+| --------------------------------- | ----------- | ------------------ |
+| `harmonizedViewerViewportUpdated` |             | `CustomEvent<any>` |
 
 
 ## Dependencies
@@ -22,20 +20,22 @@
 
 ### Depends on
 
-- [harmonized-spinner](../spinner)
-- [hv-annotations](../annotations)
-- [hv-navigation](../navigation)
 - [harmonized-openseadragon](../openseadragon)
-- [harmonized-pdf](../pdf)
+- [harmonized-embed](../pdf)
+- [harmonized-audio](../audio-component)
+- [harmonized-video](../video)
+- [harmonized-pager](../pager)
 
 ### Graph
 ```mermaid
 graph TD;
-  harmonized-viewport --> harmonized-spinner
-  harmonized-viewport --> hv-annotations
-  harmonized-viewport --> hv-navigation
   harmonized-viewport --> harmonized-openseadragon
-  harmonized-viewport --> harmonized-pdf
+  harmonized-viewport --> harmonized-embed
+  harmonized-viewport --> harmonized-audio
+  harmonized-viewport --> harmonized-video
+  harmonized-viewport --> harmonized-pager
+  harmonized-openseadragon --> harmonized-button
+  harmonized-openseadragon --> harmonized-overlay
   harmonized-viewer --> harmonized-viewport
   style harmonized-viewport fill:#f9f,stroke:#333,stroke-width:4px
 ```

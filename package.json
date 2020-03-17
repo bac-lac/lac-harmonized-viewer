@@ -11,6 +11,7 @@
   "collection:main": "dist/collection/index.js",
   "scripts": {
     "build": "stencil build",
+    "build.docs": "stencil build --docs",
     "start": "stencil build --dev --watch --serve",
     "start.es5": "node --max-old-space-size=4096 ./node_modules/@stencil/core/bin/stencil build --dev --es5 --watch --serve",
     "test": "stencil test --spec --e2e",

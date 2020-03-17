@@ -1,4 +1,4 @@
-# harmonized-pager
+# harmonized-image-list
 
 
 
@@ -9,13 +9,13 @@
 
 ### Used by
 
- - [harmonized-viewport](../viewport-component)
+ - [harmonized-navigation](../navigation)
 
 ### Graph
 ```mermaid
 graph TD;
-  harmonized-viewport --> harmonized-pager
-  style harmonized-pager fill:#f9f,stroke:#333,stroke-width:4px
+  harmonized-navigation --> harmonized-image-list
+  style harmonized-image-list fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

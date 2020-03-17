@@ -9,13 +9,13 @@
 
 ### Used by
 
- - [harmonized-viewport](../viewport-component)
+ - [harmonized-viewer](../viewer-component)
 
 ### Graph
 ```mermaid
 graph TD;
-  harmonized-viewport --> hv-annotations
-  style hv-annotations fill:#f9f,stroke:#333,stroke-width:4px
+  harmonized-viewer --> harmonized-annotations
+  style harmonized-annotations fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------
