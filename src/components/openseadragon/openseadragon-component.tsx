@@ -280,6 +280,17 @@ export class OpenSeadragonComponent {
             //this.setStatus('loaded')
             // TODO check if index or pos
             this.pageLoad.emit(this.currentItemIndex)
+
+             // Added by Albert Opena 6/17/2020
+            // This adjust the canvas height to maximized screen layout.
+            var hv = document.getElementById('hv');           
+            var viewPortElement = hv.shadowRoot.children[1].getElementsByTagName('harmonized-viewport');            
+            if (this.numberOfItems > 1) {
+                viewPortElement[0].setAttribute('style','min-height:650px');
+            } else {
+                viewPortElement[0].setAttribute('sytle','min-height:550px');
+            }
+
         })
 
         this.instance.addHandler('page', (page: number) => {
