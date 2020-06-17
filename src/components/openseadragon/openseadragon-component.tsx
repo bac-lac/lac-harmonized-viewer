@@ -288,7 +288,7 @@ export class OpenSeadragonComponent {
             if (this.numberOfItems > 1) {
                 viewPortElement[0].setAttribute('style','min-height:650px');
             } else {
-                viewPortElement[0].setAttribute('sytle','min-height:550px');
+                viewPortElement[0].setAttribute('style','min-height:550px');
             }
 
         })
