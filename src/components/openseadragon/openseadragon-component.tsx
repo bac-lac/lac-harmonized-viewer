@@ -281,23 +281,8 @@ export class OpenSeadragonComponent {
             // TODO check if index or pos
             this.pageLoad.emit(this.currentItemIndex)
 
-            // Added by Albert Opena 6/17/2020
-            // This adjust the canvas height to maximized screen layout.
-            var hv = document.getElementsByTagName('harmonized-viewer');
-            if (hv != null) {
-                var vp = hv[0].shadowRoot.children;
-                for (var x = 0; x < vp.length; x++) {
-                    let itemViewPort = vp[x].getElementsByTagName('harmonized-viewport');
-                    if (itemViewPort.length > 0) {
-                        if (this.numberOfItems > 1) {
-                            itemViewPort[0].setAttribute('style', 'min-height:550px');
-                        } else {
-                            itemViewPort[0].setAttribute('style', 'min-height:650px');
-                        }
-                        break;
-                    }
-                }               
-            }
+            console.log(this.isFullscreen);
+            this.resizeFullScreenLayout();
 
         })
 
@@ -345,6 +330,32 @@ export class OpenSeadragonComponent {
 
     // }
 
+    resizeFullScreenLayout() {
+        // Added by Albert Opena 6/17/2020
+        // This adjust the canvas height to maximized screen layout.
+        var hv = document.getElementsByTagName('harmonized-viewer');
+        if (hv != null) {
+            var vp = hv[0].shadowRoot.children;
+            for (var x = 0; x < vp.length; x++) {
+                let itemViewPort = vp[x].getElementsByTagName('harmonized-viewport');
+                if (itemViewPort.length > 0) {
+                    if (this.isFullscreen) {
+                        if (this.numberOfItems > 1) {
+                            itemViewPort[0].setAttribute('style', 'min-height:550px');
+                        } else {
+                            itemViewPort[0].setAttribute('style', 'min-height:650px');
+                        }
+                        console.log('full screen');
+                    } else {
+                        itemViewPort[0].setAttribute('style', 'min-height:500px');
+                        console.log('default screen');
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
     drawOverlays() {
 
         // if (!this.instance) {
@@ -356,7 +367,6 @@ export class OpenSeadragonComponent {
 
                 const element = this.el.querySelector(`#overlay-${overlay.id}`) as HTMLElement
                 if (element) {
-
                     const bounds = this.instance.viewport.imageToViewportRectangle(overlay.x, overlay.y, overlay.width, overlay.height)
                     this.instance.addOverlay(element, bounds, 'TOP_LEFT')
 
