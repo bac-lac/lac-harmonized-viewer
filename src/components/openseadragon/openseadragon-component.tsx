@@ -56,7 +56,6 @@ export class OpenSeadragonComponent {
 
     @Watch('zoomRequest')
     handleZoomRequest(newValue: DocumentZoom, oldValue: DocumentZoom) {
-        console.log('handleZoomRequest');
         if (this.instance) {
             this.instance.viewport.zoomTo(newValue.value)
         }
@@ -68,7 +67,6 @@ export class OpenSeadragonComponent {
     }*/
 
     componentWillLoad() {
-        console.log('componentWillLoad');
         this.store.mapDispatchToProps(this, { viewItem, clearOverlays })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             return {
@@ -80,12 +78,10 @@ export class OpenSeadragonComponent {
     }
 
     componentDidLoad() {
-        console.log('componentDidLoad');
         this.create();
     }
 
     componentDidUpdate() {
-        console.log('componentDidUpdate');
         this.create();
     }
 
@@ -119,7 +115,6 @@ export class OpenSeadragonComponent {
     }
 
     componentDidRender() {
-        console.log('componentDidRender');
         this.drawOverlays()
     }
 
@@ -139,7 +134,6 @@ export class OpenSeadragonComponent {
     }
 
     handleCanvasLoad(tiledImage: any, callback: () => any) {
-        console.log('handleCanvasLoad');
         if (tiledImage.getFullyLoaded()) {
             setTimeout(callback, 1) // So both paths are asynchronous
         } else {
@@ -150,7 +144,6 @@ export class OpenSeadragonComponent {
     }
 
     handleZoomIn() {
-        console.log('handleZoomIn');
         if (this.instance && this.instance.viewport) {
             this.instance.viewport.zoomBy(this.instance.zoomPerClick / 1.0);
             this.instance.viewport.applyConstraints();
@@ -158,7 +151,6 @@ export class OpenSeadragonComponent {
     }
 
     handleZoomOut() {
-        console.log('handleZoomOut');
         if (this.instance && this.instance.viewport) {
             this.instance.viewport.zoomBy(1.0 / this.instance.zoomPerClick);
             this.instance.viewport.applyConstraints();
@@ -166,14 +158,12 @@ export class OpenSeadragonComponent {
     }
 
     handleRefreshClick() {
-        console.log('handleRefreshClick');
         if (this.instance && this.instance.viewport) {
             this.instance.viewport.goHome();
         }
     }
 
     handleFullscreenToggle() {
-        console.log('handleFullscreenToggle');
         if (this.instance) {
             if (!this.isFullscreen) {
                 const viewerElement: any = this.el;
@@ -213,23 +203,32 @@ export class OpenSeadragonComponent {
     @Listen('webkitfullscreenchange', { target: 'document' })
     handleFullscreenExternalToggle() {
         console.log('handleFullscreenExternalToggle');
+        
         // Possibilities - fullscreenElement is null, our current element or some other element
         const documentElement: any = document;
         // Due to shadowDOM => use viewer element
         const viewerElement: any = document.querySelector('harmonized-viewer');
+        console.log(viewerElement);
+        console.log(this.el);
+        
         // Remove our element from fullscreen if any other element is in fullscreen
         if (documentElement.fullscreenElement === viewerElement ||
             documentElement.msFullscreenElement === this.el || // Doesn't use shadow dom
             documentElement.mozFullScreenElement === viewerElement ||
             documentElement.webkitFullscreenElement === viewerElement) { // ??? 
 
+                console.log('yes remove full screen');
+
             // Toggle after comparison
             if (!this.isFullscreen) {
                 this.isFullscreen = true;
+                console.log('toggle after comparison full screen');
                 return;
 
             } else {
                 // Exit fullscreen - avoids overlaying fullscreens
+                console.log('Exit fullscreen - avoids overlaying fullscreens');
+                this.isFullscreen = false;
                 if (documentElement.fullscreenElement && documentElement.exitFullscreen) {
                     documentElement.exitFullscreen();
                 } else if (documentElement.msFullscreenElement && documentElement.msExitFullscreen) {
@@ -242,25 +241,23 @@ export class OpenSeadragonComponent {
                     return;
                 }
 
-                this.isFullscreen = false;
+               
             }
         } else if (this.isFullscreen) {
             this.isFullscreen = false;
         }
+        console.log(this.isFullscreen);
     }
 
     handlePreviousClick() {
-        console.log('handlePreviousClick');
         this.viewItem(this.currentItemIndex - 1)
     }
 
     handleNextClick() {
-        console.log('handleNextClick');
         this.viewItem(this.currentItemIndex + 1)
     }
 
     create() {
-        console.log('create');
         if (this.instance) {
             this.instance.destroy();
             this.instance = null;
@@ -353,12 +350,12 @@ export class OpenSeadragonComponent {
                 let itemViewPort = vp[x].getElementsByTagName('harmonized-viewport');
                 if (itemViewPort.length > 0) {
                     // if (this.isFullscreen) {
-                        if (this.numberOfItems > 1) {
-                            itemViewPort[0].setAttribute('style', 'min-height:550px');
-                        } else {
-                            itemViewPort[0].setAttribute('style', 'min-height:650px');
-                        }
-                        //console.log('full screen');
+                    if (this.numberOfItems > 1) {
+                        itemViewPort[0].setAttribute('style', 'min-height:550px');
+                    } else {
+                        itemViewPort[0].setAttribute('style', 'min-height:650px');
+                    }
+                    //console.log('full screen');
                     // } else {
                     //     itemViewPort[0].setAttribute('style', 'min-height:500px');
                     //     console.log('default screen');
@@ -370,8 +367,6 @@ export class OpenSeadragonComponent {
     }
 
     drawOverlays() {
-        console.log('drawOverlays');
-
         // if (!this.instance) {
         //     this.create()
         // }
