@@ -244,6 +244,7 @@ export class OpenSeadragonComponent {
                
             }
         } else if (this.isFullscreen) {
+            console.log('set fullscreen to false');
             this.isFullscreen = false;
         }
         console.log(this.isFullscreen);
