@@ -285,14 +285,18 @@ export class OpenSeadragonComponent {
             // This adjust the canvas height to maximized screen layout.
             var hv = document.getElementsByTagName('harmonized-viewer');
             if (hv != null) {
-                var viewPortElement = hv[0].shadowRoot.children[1].getElementsByTagName('harmonized-viewport');
-                if (viewPortElement != null) {
-                    if (this.numberOfItems > 1) {
-                        viewPortElement[0].setAttribute('style', 'min-height:650px');
-                    } else {
-                        viewPortElement[0].setAttribute('style', 'min-height:550px');
+                var vp = hv[0].shadowRoot.children;
+                for (var x = 0; x < vp.length; x++) {
+                    let itemViewPort = vp[x].getElementsByTagName('harmonized-viewport');
+                    if (itemViewPort.length > 0) {
+                        if (this.numberOfItems > 1) {
+                            itemViewPort[0].setAttribute('style', 'min-height:650px');
+                        } else {
+                            itemViewPort[0].setAttribute('style', 'min-height:550px');
+                        }
+                        break;
                     }
-                }
+                }               
             }
 
         })
