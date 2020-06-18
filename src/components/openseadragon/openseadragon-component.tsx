@@ -24,7 +24,7 @@ export class OpenSeadragonComponent {
     @Element() el: HTMLElement
     @Event() overlayClick: EventEmitter
 
-    @Prop() allowPaging: boolean =  true;
+    @Prop() allowPaging: boolean = true;
 
     //private this.viewer: any
     private instance: any
@@ -67,7 +67,7 @@ export class OpenSeadragonComponent {
     }*/
 
     componentWillLoad() {
-        this.store.mapDispatchToProps(this, {  viewItem, clearOverlays })
+        this.store.mapDispatchToProps(this, { viewItem, clearOverlays })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             return {
                 currentItemIndex: state.viewport.itemIndex,
@@ -281,15 +281,20 @@ export class OpenSeadragonComponent {
             // TODO check if index or pos
             this.pageLoad.emit(this.currentItemIndex)
 
-             // Added by Albert Opena 6/17/2020
+            // Added by Albert Opena 6/17/2020
             // This adjust the canvas height to maximized screen layout.
-            var hv = document.getElementById('hv');           
-            var viewPortElement = hv.shadowRoot.children[1].getElementsByTagName('harmonized-viewport');            
-            if (this.numberOfItems > 1) {
-                viewPortElement[0].setAttribute('style','min-height:650px');
-            } else {
-                viewPortElement[0].setAttribute('style','min-height:550px');
+            var hv = document.getElementsByTagName('harmonized-viewer');
+            if (hv != null) {
+                var viewPortElement = hv[0].shadowRoot.children[1].getElementsByTagName('harmonized-viewport');
+                if (viewPortElement != null) {
+                    if (this.numberOfItems > 1) {
+                        viewPortElement[0].setAttribute('style', 'min-height:650px');
+                    } else {
+                        viewPortElement[0].setAttribute('style', 'min-height:550px');
+                    }
+                }
             }
+
         })
 
         this.instance.addHandler('page', (page: number) => {
@@ -376,11 +381,11 @@ export class OpenSeadragonComponent {
             <div class="button-topbar-group">
                 <harmonized-button
                     class="button-topbar circle"
-                    style={{'marginBottom': '15px'}}
+                    style={{ 'marginBottom': '15px' }}
                     icon={this.isFullscreen ? iconExitFullscreen : iconEnterFullscreen}
                     size="sm"
                     title={this.isFullscreen ? t('exitFullscreen') : t('enterFullscreen')}
-                    aria-label={this.isFullscreen  ? t('exitFullscreen') : t('enterFullscreen')}
+                    aria-label={this.isFullscreen ? t('exitFullscreen') : t('enterFullscreen')}
                     onClick={this.handleFullscreenToggle.bind(this)}
                 />
 
@@ -410,7 +415,7 @@ export class OpenSeadragonComponent {
                 />
             </div>
 
-            {!this.isFullscreen && this.allowPaging && 
+            {!this.isFullscreen && this.allowPaging &&
                 <harmonized-button
                     class="button-navigation button-navigation--prev"
                     icon={iconChevronLeft}
@@ -437,7 +442,7 @@ export class OpenSeadragonComponent {
                     disabled={/*this.status.loading ||*/ this.currentItemIndex + 1 >= this.numberOfItems}
                 />
             }
-            
+
 
             <div class="overlays">
                 {this.overlays &&
