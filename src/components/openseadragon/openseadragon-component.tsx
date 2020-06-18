@@ -290,9 +290,9 @@ export class OpenSeadragonComponent {
                     let itemViewPort = vp[x].getElementsByTagName('harmonized-viewport');
                     if (itemViewPort.length > 0) {
                         if (this.numberOfItems > 1) {
-                            itemViewPort[0].setAttribute('style', 'min-height:650px');
-                        } else {
                             itemViewPort[0].setAttribute('style', 'min-height:550px');
+                        } else {
+                            itemViewPort[0].setAttribute('style', 'min-height:650px');
                         }
                         break;
                     }
