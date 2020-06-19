@@ -48,10 +48,8 @@
     <!-- //central-d.dev.bac-lac.gc.ca/.item/?id=4313&app=fse&op=video -->
 
     <harmonized-viewer id="hv" class="harmonized-viewer"
-        url="https://iiif.bodleian.ox.ac.uk/iiif/manifest/e32a277e-91e2-4a6d-8ba6-cc4bad230410.json"
-        language="en"
-        deepzoom="true"
-        style="height:100%">
+        url="https://iiif.bodleian.ox.ac.uk/iiif/manifest/e32a277e-91e2-4a6d-8ba6-cc4bad230410.json" language="en"
+        deepzoom="true" style="height:100%">
 
         <!-- <div slot="overlays">
             <harmonized-overlay x="50" y="80" width="500" height="500"></harmonized-overlay>
@@ -59,19 +57,34 @@
 
     </harmonized-viewer>
 
+    <!-- <br />
+    <button type="submit" class="btn btn-success" onclick="onfullScreen()">Full Screen</button> -->
+
     <script type="text/javascript">
         var viewer = document.querySelector('#hv');
 
         viewer.addEventListener('pageLoad', function (event) {
 
-            if (event.detail === 0) {
+            if (event.detail === 0) {              
                 viewer.addOverlay(750, 780, 500, 500);
             }
         });
 
-        viewer.addEventListener('overlayClick', function(event) {
+        viewer.addEventListener('overlayClick', function (event) {
             console.log('overlayClick external listener', event);
         });
+        function onfullScreen() {
+
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+
     </script>
 
 </body>

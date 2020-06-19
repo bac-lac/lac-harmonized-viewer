@@ -29,7 +29,7 @@ export class OpenSeadragonComponent {
     //private this.viewer: any
     private instance: any
     private mouseTracker: any
-    public toggleExternal: boolean = false;
+   
     //private context: any
 
     viewItem: typeof viewItem
@@ -44,6 +44,8 @@ export class OpenSeadragonComponent {
     @State() currentItem: DocumentPage
 
     @State() isFullscreen: boolean = false;
+
+    @State() toggleExternal: boolean = false;
 
     @Prop({ context: "store" }) store: Store
 
@@ -203,14 +205,13 @@ export class OpenSeadragonComponent {
     @Listen('mozfullscreenchange', { target: 'document' })
     @Listen('webkitfullscreenchange', { target: 'document' })
     handleFullscreenExternalToggle() {
-        console.log('handleFullscreenExternalToggle');
-
         // Possibilities - fullscreenElement is null, our current element or some other element
         const documentElement: any = document;
         // Due to shadowDOM => use viewer element
         const viewerElement: any = document.querySelector('harmonized-viewer');
-        console.log(viewerElement);
-        console.log(this.el);
+
+        this.toggleExternal = this.toggleExternal ? false : true;
+        this.resizeFullScreenLayout(this.toggleExternal);
 
         // Remove our element from fullscreen if any other element is in fullscreen
         if (documentElement.fullscreenElement === viewerElement ||
@@ -218,17 +219,13 @@ export class OpenSeadragonComponent {
             documentElement.mozFullScreenElement === viewerElement ||
             documentElement.webkitFullscreenElement === viewerElement) { // ??? 
 
-            console.log('yes remove full screen');
-
             // Toggle after comparison
             if (!this.isFullscreen) {
                 this.isFullscreen = true;
-                console.log('toggle after comparison full screen');
                 return;
 
             } else {
                 // Exit fullscreen - avoids overlaying fullscreens
-                console.log('Exit fullscreen - avoids overlaying fullscreens');
                 this.isFullscreen = false;
                 if (documentElement.fullscreenElement && documentElement.exitFullscreen) {
                     documentElement.exitFullscreen();
@@ -241,24 +238,10 @@ export class OpenSeadragonComponent {
                 } else {
                     return;
                 }
-
-
             }
         } else if (this.isFullscreen) {
-            console.log('set fullscreen to false');
             this.isFullscreen = false;
         }
-
-        console.log('setting toggleExternale:' + this.isFullscreen);
-        if (this.toggleExternal)
-            this.toggleExternal = false;
-        else 
-            this.toggleExternal = true;
-
-        this.toggleExternal = this.isFullscreen ? false : true;
-
-        this.resizeFullScreenLayout(this.toggleExternal);
-        console.log(this.toggleExternal);
     }
 
     handlePreviousClick() {
@@ -302,9 +285,6 @@ export class OpenSeadragonComponent {
             //this.setStatus('loaded')
             // TODO check if index or pos
             this.pageLoad.emit(this.currentItemIndex)
-
-            console.log('Is Full screen:' + this.isFullscreen);
-            
 
         })
 
@@ -352,9 +332,10 @@ export class OpenSeadragonComponent {
 
     // }
 
-    resizeFullScreenLayout(isToggleFullScreen: boolean) {
-        // Added by Albert Opena 6/17/2020
-        // This adjust the canvas height to maximized screen layout.
+    // Added by Albert Opena 6/17/2020
+    // This adjust the canvas height to maximized screen layout.
+    resizeFullScreenLayout(isToggleFullScreen: boolean) {       
+       
         var hv = document.getElementsByTagName('harmonized-viewer');
         if (hv != null) {
             var vp = hv[0].shadowRoot.children;
@@ -366,11 +347,9 @@ export class OpenSeadragonComponent {
                             itemViewPort[0].setAttribute('style', 'min-height:550px');
                         } else {
                             itemViewPort[0].setAttribute('style', 'min-height:650px');
-                        }
-                        console.log('full screen');
+                        }                      
                     } else {
                         itemViewPort[0].setAttribute('style', 'min-height:500px');
-                        console.log('default screen');
                     }
                     break;
                 }
