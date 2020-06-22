@@ -29,7 +29,8 @@ export class OpenSeadragonComponent {
     //private this.viewer: any
     private instance: any
     private mouseTracker: any
-   
+    private screenHeight: number = screen.height;
+
     //private context: any
 
     viewItem: typeof viewItem
@@ -334,20 +335,15 @@ export class OpenSeadragonComponent {
 
     // Added by Albert Opena 6/17/2020
     // This adjust the canvas height to maximized screen layout.
-    resizeFullScreenLayout(isToggleFullScreen: boolean) {       
-       
-        var hv = document.getElementsByTagName('harmonized-viewer');
+    resizeFullScreenLayout(isToggleFullScreen: boolean) {
+        const hv = document.getElementsByTagName('harmonized-viewer');
         if (hv != null) {
-            var vp = hv[0].shadowRoot.children;
+            const vp = hv[0].shadowRoot.children;
             for (var x = 0; x < vp.length; x++) {
                 let itemViewPort = vp[x].getElementsByTagName('harmonized-viewport');
                 if (itemViewPort.length > 0) {
                     if (isToggleFullScreen) {
-                        if (this.numberOfItems > 1) {
-                            itemViewPort[0].setAttribute('style', 'min-height:550px');
-                        } else {
-                            itemViewPort[0].setAttribute('style', 'min-height:650px');
-                        }                      
+                        itemViewPort[0].setAttribute('style', this.numberOfItems > 1 ? 'min-height:75vh' : 'min-height:90vh');
                     } else {
                         itemViewPort[0].setAttribute('style', 'min-height:500px');
                     }
