@@ -343,7 +343,7 @@ export class OpenSeadragonComponent {
                 let itemViewPort = vp[x].getElementsByTagName('harmonized-viewport');
                 if (itemViewPort.length > 0) {
                     if (isToggleFullScreen) {
-                        itemViewPort[0].setAttribute('style', this.numberOfItems > 1 ? 'min-height:75vh' : 'min-height:90vh');
+                        itemViewPort[0].setAttribute('style', this.numberOfItems > 1 ? 'min-height:70vh' : 'min-height:85vh');
                     } else {
                         itemViewPort[0].setAttribute('style', 'min-height:500px');
                     }
