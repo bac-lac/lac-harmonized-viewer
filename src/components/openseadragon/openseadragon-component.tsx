@@ -341,9 +341,18 @@ export class OpenSeadragonComponent {
             const vp = hv[0].shadowRoot.children;
             for (var x = 0; x < vp.length; x++) {
                 let itemViewPort = vp[x].getElementsByTagName('harmonized-viewport');
+                let imgList = vp[x].getElementsByTagName('harmonized-image-list');
+                console.log(imgList);
+
                 if (itemViewPort.length > 0) {
+                    let minHeight = 'min-height:85vh';
+                    if (imgList.length > 0) {
+                        minHeight = 'min-height:70vh';
+                        console.log('number of items :' + imgList[0].childNodes.length);
+                        console.log('image list count:' + imgList.length)
+                    }
                     if (isToggleFullScreen) {
-                        itemViewPort[0].setAttribute('style', this.numberOfItems > 1 ? 'min-height:70vh' : 'min-height:85vh');
+                        itemViewPort[0].setAttribute('style', minHeight);
                     } else {
                         itemViewPort[0].setAttribute('style', 'min-height:500px');
                     }
