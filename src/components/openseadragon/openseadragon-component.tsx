@@ -14,6 +14,7 @@ import iconExitFullscreen from '../../assets/material-design-icons/ic_fullscreen
 import iconChevronLeft from '../../assets/material-design-icons/ic_chevron_left_48px.svg'
 import iconChevronRight from '../../assets/material-design-icons/ic_chevron_right_48px.svg'
 import { selectCurrentItem } from '../../store/selectors/item';
+import { Console } from 'console';
 
 @Component({
     tag: 'harmonized-openseadragon',
@@ -168,6 +169,7 @@ export class OpenSeadragonComponent {
     }
 
     handleFullscreenToggle() {
+        console.log('handleFullscreenToggle');
         if (this.instance) {
             if (!this.isFullscreen) {
                 const viewerElement: any = this.el;
@@ -213,7 +215,7 @@ export class OpenSeadragonComponent {
         const viewerElement: any = document.querySelector('harmonized-viewer');
 
         this.toggleExternal = this.toggleExternal ? false : true;
-        this.resizeFullScreenLayout(this.toggleExternal);
+        //this.resizeScreenLayout(this.toggleExternal, false,'handleFullscreenExternalToggle');
 
         // Remove our element from fullscreen if any other element is in fullscreen
         if (documentElement.fullscreenElement === viewerElement ||
@@ -255,13 +257,16 @@ export class OpenSeadragonComponent {
     }
 
     create() {
+        console.log('create');
         if (this.instance) {
             this.instance.destroy();
             this.instance = null;
         }
 
-        if (!this.currentItem)
+        if (!this.currentItem) {
+            console.log('not this currentitem');
             return;
+        }
 
         this.instance = openseadragon({
             element: this.el.querySelector(".openseadragon"),
@@ -278,7 +283,7 @@ export class OpenSeadragonComponent {
         })
 
         this.instance.addHandler('open', () => {
-
+            console.log('create on open')
             this.clearOverlays()
 
             this.instance.viewport.zoomTo(this.instance.viewport.getMinZoom(), null, true)
@@ -288,19 +293,23 @@ export class OpenSeadragonComponent {
             // TODO check if index or pos
             this.pageLoad.emit(this.currentItemIndex)
 
+           // this.resizeScreenLayout(this.toggleExternal, false,'create on open');
+           
+
         })
 
         this.instance.addHandler('page', (page: number) => {
 
             //this.setStatus('loading')
+            console.log('create on page')
         })
 
         this.instance.addHandler('tile-loaded', (image: any) => {
-
+           
         })
 
         this.instance.addHandler('zoom', (ev: any) => {
-
+           
             /*if (isNaN(ev.zoom)) {
                 return undefined
             }
@@ -324,10 +333,8 @@ export class OpenSeadragonComponent {
             })*/
         })
 
-        //Added by Albert Opena 7/7/2020
-        // Set the height of the Harmonized viewer on the preview mode.
-        console.log('create');
-        this.resizeFullScreenLayout(true);
+      
+
     }
 
     // clearOverlays() {
@@ -341,35 +348,60 @@ export class OpenSeadragonComponent {
 
     // Added by Albert Opena 6/17/2020
     // This adjust the canvas height to maximized screen layout.
-    resizeFullScreenLayout(isToggleFullScreen: boolean) {
+    resizeScreenLayout(isToggleFullScreen: boolean, isPreview: boolean, SourceEntry: string) {
+        console.log('Source Entry:' + SourceEntry);
+        console.log('allow paging:' + this.allowPaging);
         const hv = document.getElementsByTagName('harmonized-viewer');
         if (hv != null) {
             const vp = hv[0].shadowRoot.children;
             for (var x = 0; x < vp.length; x++) {
                 let itemViewPort = vp[x].getElementsByTagName('harmonized-viewport');
                 let imgList = vp[x].getElementsByTagName('harmonized-image-list');
-                console.log(imgList);
-
+               
                 if (itemViewPort.length > 0) {
-                    let minHeight = 'min-height:85vh';
-                    if (imgList.length > 0) {
-                        minHeight = 'min-height:70vh';
-                    }
-                    if (isToggleFullScreen) {
+
+                    const minHeight = isPreview ? this.setpreviewStateHeight(imgList.length) : this.setFullScreenStateHeight(imgList.length);
+                    console.log(minHeight);
+                    if (isPreview) {
                         itemViewPort[0].setAttribute('style', minHeight);
-                    } else {
-                        itemViewPort[0].setAttribute('style', 'min-height:500px');
                     }
+                    else {
+                        if (isToggleFullScreen) {
+                            itemViewPort[0].setAttribute('style', minHeight);
+                        } else {
+                            itemViewPort[0].setAttribute('style', 'min-height:60vh');
+                        }
+                    }
+
                     break;
                 }
             }
         }
     }
 
+    setFullScreenStateHeight(imgCtr: number) {
+        console.log('setFullScreenStateHeight');
+        let minHeight = 'min-height:85vh';
+        if (imgCtr > 0) {
+            minHeight = 'min-height:70vh';
+        }
+        return minHeight;
+    }
+
+    setpreviewStateHeight(imgCtr: number) {
+        console.log('setpreviewStateHeight');
+        let minHeight = 'min-height:75vh';
+        if (imgCtr > 0) {
+            minHeight = 'min-height:60vh';
+        }
+        return minHeight;
+    }
+
     drawOverlays() {
         // if (!this.instance) {
         //     this.create()
         // }
+        console.log('drawOverlays');
 
         if (this.overlays) {
             this.overlays.forEach((overlay) => {
