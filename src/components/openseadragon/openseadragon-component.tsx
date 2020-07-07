@@ -207,6 +207,7 @@ export class OpenSeadragonComponent {
     @Listen('webkitfullscreenchange', { target: 'document' })
     handleFullscreenExternalToggle() {
         // Possibilities - fullscreenElement is null, our current element or some other element
+        console.log('handleFullscreenExternalToggle');
         const documentElement: any = document;
         // Due to shadowDOM => use viewer element
         const viewerElement: any = document.querySelector('harmonized-viewer');
@@ -322,6 +323,11 @@ export class OpenSeadragonComponent {
                 value: ev.zoom
             })*/
         })
+
+        //Added by Albert Opena 7/7/2020
+        // Set the height of the Harmonized viewer on the preview mode.
+        console.log('create');
+        this.resizeFullScreenLayout(true);
     }
 
     // clearOverlays() {
@@ -348,8 +354,6 @@ export class OpenSeadragonComponent {
                     let minHeight = 'min-height:85vh';
                     if (imgList.length > 0) {
                         minHeight = 'min-height:70vh';
-                        console.log('number of items :' + imgList[0].childNodes.length);
-                        console.log('image list count:' + imgList.length)
                     }
                     if (isToggleFullScreen) {
                         itemViewPort[0].setAttribute('style', minHeight);
