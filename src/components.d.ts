@@ -107,6 +107,7 @@ export namespace Components {
     'navigationRows': number;
     'preventLoadOnEmpty': boolean;
     'setItem': (index: number) => Promise<boolean>;
+    'setManifest': (newUrl: string) => Promise<void>;
     'suppressGallery': boolean;
     'url': string;
   }

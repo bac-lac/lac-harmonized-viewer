@@ -164,6 +164,12 @@ export class ViewerComponent {
 		this.addOverlayState(x, y, width, height)
 	}
 
+	@Method()
+	async setManifest(newUrl: string) {
+		console.log('SetManifest :' + newUrl)
+		this.fetchManifest(newUrl);
+	}
+
 	@Listen('viewerDrawerToggle')
     handleDrawerToggle() {
         this.toggleDrawer()
