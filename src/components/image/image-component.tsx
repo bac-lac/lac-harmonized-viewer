@@ -1,6 +1,6 @@
 import { Component, Prop, h, Element, Event, EventEmitter, Host, State, Method, Listen } from '@stencil/core';
 import { Unsubscribe, Store } from '@stencil/redux';
-import { viewItem } from '../../store/actions/viewport';
+import { viewItem, loadView } from '../../store/actions/viewport';
 import { isNumber } from 'util';
 import { resolveViewportType } from '../../utils/viewport';
 import tippy, { sticky, Props, Instance } from 'tippy.js';
@@ -34,6 +34,8 @@ export class ImageComponent {
     @State() items: MyAppState["viewport"]["items"] = []
 
     viewItem: typeof viewItem
+    loadView: typeof loadView
+
     storeUnsubscribe: Unsubscribe
 
     @State() currentItemIndex: number
@@ -100,7 +102,7 @@ export class ImageComponent {
         console.log(this.el);
         if (isNumber(this.page)) {
             if (this.contentType.includes('pdf')) {
-                const eCopy = this.getImageTitle(this.src) + '.json'
+                const eCopy = 'V0001-S004.json'; //TODO: this.getImageTitle(this.src) + '.json'
                 this.loadJsonData(eCopy);
             }
             else {
@@ -148,7 +150,13 @@ export class ImageComponent {
                     this.items.push(pdfImage);
                 }
             });
-            this.viewItem(this.page)
+            
+             this.viewItem(this.page)  //This will force to reload the images on the navigation thumbnail
+
+             setTimeout(() => {
+                const maxCurrentItemCount = this.items.filter(s=>typeof  s.parentEcopy == 'undefined').length;
+                this.viewItem(maxCurrentItemCount);   //this will load the first page of the pdf child
+             },200)
          }
     }
 
