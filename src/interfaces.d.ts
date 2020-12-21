@@ -90,6 +90,7 @@ interface DocumentPage {
     thumbnail: string
     tileSources: string[]
     metadata: DocumentMetadata[]
+    parentEcopy: string;
 }
 
 interface DocumentAnnotation {

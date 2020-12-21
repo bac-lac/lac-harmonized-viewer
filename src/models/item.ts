@@ -7,6 +7,9 @@ export class Item implements DocumentPage {
     thumbnail: string;
     tileSources: string[];
     metadata: DocumentMetadata[];
+    height: number;
+    width: number;
+    parentEcopy: string;
 
     constructor(item: DocumentPage) {
        Object.assign(this, item);

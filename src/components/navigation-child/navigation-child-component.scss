@@ -1,0 +1,59 @@
+harmonized-navigation {
+    display: block;
+    flex: 0 0 auto;
+    overflow-y: hidden;
+    background-color: #cecacb;
+
+    harmonized-image-list {
+        &.mdc-image-list {
+        }
+
+
+        // IE11 - Doesn't capture theme, todo, copied for now
+        .mdc-image-list__image {
+            padding: 0;
+            background: #181818;
+        }
+
+        .mdc-image-list__supporting {
+            .mdc-image-list__label {
+                color: #9f9f9f;
+                letter-spacing: 0;
+            }
+        }
+        
+        harmonized-image {
+            position: relative;
+
+            &:hover,
+            &.is-active {
+                .mdc-image-list__image-aspect-container {
+                    .mdc-image-list__image {
+                        box-shadow: 0 0 1.25px 2px #5772ff;
+                    }
+                }
+
+                .mdc-image-list__supporting {
+                    .mdc-image-list__label {
+                        color: #181818;
+                    }
+                }
+            }
+        }
+
+        
+
+        
+    }
+}
+
+harmonized-drawer harmonized-navigation {
+    height: 100%;
+}
+
+.hide {
+    display: none;
+}
+.show {
+    display: block;
+}

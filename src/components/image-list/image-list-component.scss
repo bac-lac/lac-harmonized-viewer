@@ -45,6 +45,24 @@
         }
     }
 
+    &.mdc-image-list--vertical {
+        flex-direction:column;
+        flex-wrap: nowrap;
+        overflow-x: scroll;
+        overflow-y: hidden;
+
+        .mdc-image-list__item {
+            min-width: calc(100% / 4 - 4.2px);
+
+            @media (min-width: 480px) {
+                min-width: calc(100% / 8 - 4.2px);
+            }
+            @media (min-width: 1280px) {
+                min-width: calc(100% / 16 - 4.2px);
+            }
+        }
+    }
+
     harmonized-image.is-active {
 
     }

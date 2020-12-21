@@ -6,12 +6,14 @@ import { resolveViewportType } from '../../utils/viewport';
 import tippy, { sticky, Props, Instance } from 'tippy.js';
 import { t } from '../../services/i18n-service';
 
+import { selectCurrentItem } from '../../store/selectors/item';
+
 @Component({
     tag: 'harmonized-image',
     styleUrl: 'image-component.scss'
 })
 export class ImageComponent {
-
+    
     @Element() el: HTMLElement
 
     @Prop() src: string
@@ -28,6 +30,9 @@ export class ImageComponent {
     @State() failed: boolean = false
     @State() props: string[] = []
 
+    @State() currentItem: DocumentPage
+    @State() items: MyAppState["viewport"]["items"] = []
+
     viewItem: typeof viewItem
     storeUnsubscribe: Unsubscribe
 
@@ -38,12 +43,14 @@ export class ImageComponent {
     @Event() imageAdded
     @Event() imageLoad
 
+    private viewer: any;
+
     private tooltip: Instance<Props>
 
     @Method()
     async addImageProperty(value: string): Promise<void> {
         if (!this.props.find(prop => prop == value)) {
-            this.props = [ ...this.props, value];
+            this.props = [...this.props, value];
         }
     }
 
@@ -60,10 +67,12 @@ export class ImageComponent {
         this.store.mapDispatchToProps(this, { viewItem })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
-                viewport: { itemIndex }
+                viewport: { itemIndex, items },
             } = state
             return {
-                currentItemIndex: itemIndex
+                currentItemIndex: itemIndex,
+                currentItem: selectCurrentItem(state),
+                items
             }
         })
     }
@@ -88,17 +97,102 @@ export class ImageComponent {
     }
 
     handleClick() {
+        console.log(this.el);
         if (isNumber(this.page)) {
+            if (this.contentType.includes('pdf')) {
+                const eCopy = this.getImageTitle(this.src) + '.json'
+                this.loadJsonData(eCopy);
+            }
+            else {
+                this.viewItem(this.page)
+            }
+        }
+
+    }
+
+    //PDF Pages 
+    async loadJsonData(url) {
+        await fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    this.viewItem(this.page);
+                }
+                return response.json();
+            })
+            .then(jsonResponse => {
+                this.addPDFPageItems(jsonResponse);
+            })
+            .catch((error:Error) => {
+                this.viewItem(this.page);
+            });
+    }
+
+    addPDFPageItems(data: any) {
+        if (data.images.length > 0) {
+            data.images.forEach(element => {
+                const title = this.getImageTitle(element.urlImage);                
+                const item = this.items.find(s => s.image == element.urlImage);
+                if (!this.isExist(item)) {
+                    let pdfImage = {
+                        id: this.currentItem.id,
+                        contentType: 'image/jpeg',
+                        label: this.setLabel(title),
+                        image: element.urlImage,
+                        tileSources: this.setTileSource(element.urlImage),
+                        thumbnail: element.urlThumbnail,
+                        metadata: this.currentItem.metadata,
+                        height: element.height,
+                        width: element.width,
+                        parentEcopy: data.parentEcopy
+                    } as DocumentPage;
+                    this.items.push(pdfImage);
+                }
+            });
             this.viewItem(this.page)
+         }
+    }
+
+    isExist(value) {
+        if (typeof value === 'undefined') {
+            return false;
+        } else {
+            return true;
         }
     }
+
+    setLabel(value: string) {
+        return [{
+            "locale": "en",
+            "value": value
+        }, {
+            "locale": "fr",
+            "value": value
+        }]
+    }
+
+    setTileSource(url: string): any {
+        return { "type": "image", "url": url };
+    }
+    getImageTitle(imgUrl: string) {
+        let title = '';
+        const url = imgUrl.split('&');
+        for (let x = 0; x < url.length; x++) {
+            let item = url[x];
+            if (item.includes('id')) {
+                const items = item.split('=');
+                title = items[1]
+                break;
+            }
+        }
+        return title;
+    }
+    //end PDF Pages 
 
     componentDidRender() {
         this.imageAdded.emit(this.el)
     }
 
     createTooltip() {
-
         if (!this.showTooltip) {
             return undefined
         }
@@ -109,7 +203,6 @@ export class ImageComponent {
                 this.tooltip.destroy()
                 this.tooltip = null
             }
-
             return this.tooltip = tippy(this.el, {
                 appendTo: 'parent',
                 theme: 'harmonized-dark',
@@ -202,7 +295,7 @@ export class ImageComponent {
                 />
 
                 <ul class="inv" role="listitem">
-                    {this.props.map((prop) => 
+                    {this.props.map((prop) =>
                         <li>{prop}</li>
                     )}
                 </ul>

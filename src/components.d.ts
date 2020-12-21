@@ -60,6 +60,11 @@ export namespace Components {
     'cols': number;
     'rows': number;
   }
+  interface HarmonizedNavigationChild {
+    'autoResize': boolean;
+    'cols': number;
+    'rows': number;
+  }
   interface HarmonizedOpenseadragon {
     'allowPaging': boolean;
     'getOverlays': () => Promise<DocumentOverlay[]>;
@@ -171,6 +176,12 @@ declare global {
     new (): HTMLHarmonizedNavigationElement;
   };
 
+  interface HTMLHarmonizedNavigationChildElement extends Components.HarmonizedNavigationChild, HTMLStencilElement {}
+  var HTMLHarmonizedNavigationChildElement: {
+    prototype: HTMLHarmonizedNavigationChildElement;
+    new (): HTMLHarmonizedNavigationChildElement;
+  };
+
   interface HTMLHarmonizedOpenseadragonElement extends Components.HarmonizedOpenseadragon, HTMLStencilElement {}
   var HTMLHarmonizedOpenseadragonElement: {
     prototype: HTMLHarmonizedOpenseadragonElement;
@@ -240,6 +251,7 @@ declare global {
     'harmonized-image-list': HTMLHarmonizedImageListElement;
     'harmonized-message': HTMLHarmonizedMessageElement;
     'harmonized-navigation': HTMLHarmonizedNavigationElement;
+    'harmonized-navigation-child': HTMLHarmonizedNavigationChildElement;
     'harmonized-openseadragon': HTMLHarmonizedOpenseadragonElement;
     'harmonized-overlay': HTMLHarmonizedOverlayElement;
     'harmonized-pager': HTMLHarmonizedPagerElement;
@@ -296,6 +308,12 @@ declare namespace LocalJSX {
     'type'?: MessageType;
   }
   interface HarmonizedNavigation {
+    'autoResize'?: boolean;
+    'cols'?: number;
+    'onHvNavigationUpdated'?: (event: CustomEvent<any>) => void;
+    'rows'?: number;
+  }
+  interface HarmonizedNavigationChild {
     'autoResize'?: boolean;
     'cols'?: number;
     'onHvNavigationUpdated'?: (event: CustomEvent<any>) => void;
@@ -363,6 +381,7 @@ declare namespace LocalJSX {
     'harmonized-image-list': HarmonizedImageList;
     'harmonized-message': HarmonizedMessage;
     'harmonized-navigation': HarmonizedNavigation;
+    'harmonized-navigation-child': HarmonizedNavigationChild;
     'harmonized-openseadragon': HarmonizedOpenseadragon;
     'harmonized-overlay': HarmonizedOverlay;
     'harmonized-pager': HarmonizedPager;
@@ -391,6 +410,7 @@ declare module "@stencil/core" {
       'harmonized-image-list': LocalJSX.HarmonizedImageList & JSXBase.HTMLAttributes<HTMLHarmonizedImageListElement>;
       'harmonized-message': LocalJSX.HarmonizedMessage & JSXBase.HTMLAttributes<HTMLHarmonizedMessageElement>;
       'harmonized-navigation': LocalJSX.HarmonizedNavigation & JSXBase.HTMLAttributes<HTMLHarmonizedNavigationElement>;
+      'harmonized-navigation-child': LocalJSX.HarmonizedNavigationChild & JSXBase.HTMLAttributes<HTMLHarmonizedNavigationChildElement>;
       'harmonized-openseadragon': LocalJSX.HarmonizedOpenseadragon & JSXBase.HTMLAttributes<HTMLHarmonizedOpenseadragonElement>;
       'harmonized-overlay': LocalJSX.HarmonizedOverlay & JSXBase.HTMLAttributes<HTMLHarmonizedOverlayElement>;
       'harmonized-pager': LocalJSX.HarmonizedPager & JSXBase.HTMLAttributes<HTMLHarmonizedPagerElement>;

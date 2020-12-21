@@ -3,10 +3,10 @@ import 'manifesto.js';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { viewItem } from '../../store/actions/viewport';
 import { t } from '../../services/i18n-service';
-
+import { selectCurrentItem } from '../../store/selectors/item';
 @Component({
-    tag: 'harmonized-navigation',
-    styleUrl: 'navigation-component.scss',
+    tag: 'harmonized-navigation-child',
+    styleUrl: 'navigation-child-component.scss',
     assetsDir: ''
 })
 export class NavigationComponent {
@@ -25,7 +25,7 @@ export class NavigationComponent {
 
     @State() currentItemIndex: MyAppState["viewport"]["itemIndex"] = 0
     @State() items: MyAppState["viewport"]["items"] = []
-
+    @State() currentItem: DocumentPage
     @State() loadedImageCount: number = 0
 
     @Event({ eventName: "hvNavigationUpdated" }) updatedEvent;
@@ -33,7 +33,6 @@ export class NavigationComponent {
     private imageList: HTMLElement
 
     componentWillLoad() {
-
         this.store.mapDispatchToProps(this, { viewItem })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
@@ -41,6 +40,7 @@ export class NavigationComponent {
             } = state
             return {
                 currentItemIndex: itemIndex,
+                currentItem: selectCurrentItem(state),
                 items
             }
         })
@@ -82,6 +82,7 @@ export class NavigationComponent {
     }
 
     handleThumbnailClick(page: number) {
+        alert('thumbnail click')
         this.viewItem(page)
     }
 
@@ -179,20 +180,27 @@ export class NavigationComponent {
         if (this.items.length <= 1) {
             return null;
         }
+        if (this.currentItem.contentType.includes('pdf')) {
+            this.el.className ="hydrated show";
+        }
+        else {
+            if (this.isParentEcopyExist(this.currentItem.parentEcopy)) {
+                this.el.className ="hydrated hide";
+            }
+        }
 
         var childItem = this.items.filter(s=>!this.isParentEcopyExist(s.parentEcopy))
         var parentItem =  this.items.filter(s=>this.isParentEcopyExist(s.parentEcopy));
+        const parentItemCount = parentItem.length;
       
-        const className = `harmonized-image-list mdc-image-list mdc-image-list--horizontal mdc-image-list--${this.cols}col`
-
+        const className = ` harmonized-image-list mdc-image-list mdc-image-list--horizontal mdc-image-list--${this.cols}col`
         return  <harmonized-image-list class={className} tabindex={0}>
                     {
-                        // this.items.map((page, index) =>
-                        parentItem.map((page, index) =>
+                        childItem.map((page, index) =>
                             <harmonized-image
                                 src={page.thumbnail}
                                 contentType={page.contentType}
-                                page={index}
+                                page={parentItemCount + index}
                                 caption={t(page.label)}
                                 show-caption={false}
                                 show-tooltip={false}
