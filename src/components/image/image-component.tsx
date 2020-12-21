@@ -102,7 +102,9 @@ export class ImageComponent {
         console.log(this.el);
         if (isNumber(this.page)) {
             if (this.contentType.includes('pdf')) {
-                const eCopy = 'V0001-S004.json'; //TODO: this.getImageTitle(this.src) + '.json'
+                const eCopy = 'https://stdigitalmanifests.blob.core.windows.net/pdfservice/V0001-S004.json';// 'V0001-S004.json'; //TODO: this.getImageTitle(this.src) + '.json'
+
+
                 this.loadJsonData(eCopy);
             }
             else {
