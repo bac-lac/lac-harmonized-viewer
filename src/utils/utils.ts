@@ -63,3 +63,53 @@ export function addEventListenerToRunOnce(target: Element, eventName: string, ca
         callback();
     });
 }
+
+
+export function isPDFChildExist(): boolean {
+    let isExist = false;
+    const hv = document.querySelector('harmonized-viewer')
+    const vp = hv.shadowRoot.children;
+    for (var x = 0; x < vp.length; x++) {
+        if (vp[x].className != '') {
+            var vp1 = vp[x].children
+            for (var x1 = 0; x1 < vp1.length; x1++) {
+                if (vp1[x1].tagName == 'HARMONIZED-NAVIGATION-CHILD') {
+                    console.log(vp1[x1].className);
+                    if (vp1[x1].className.includes('show')) {
+                        isExist =  true;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    return isExist;
+}
+
+export function getPdfImageElement(element: HTMLCollection, hasPdfPages: boolean): HTMLElement {
+    var imageElement: HTMLElement;
+    console.log('getpdfImmageElement');
+    console.log(element);
+    for (var x = 0; x < element.length; x++) {
+        console.log(element[x].tagName);
+        if (element[x].tagName == 'HARMONIZED-IMAGE-LIST') {
+            const imagesEl = element[x].children
+            for (var y = 0; y < imagesEl.length; y++) {
+                const el2 = imagesEl[y].children
+                const imageListEl = el2[0].children
+                for (var z = 0; z < imageListEl.length; z++) {
+                    if (imageListEl[z].tagName == 'IMG') {
+                        console.log(imageListEl[z]);
+                        const imgSrc = imageListEl[z].getAttribute('src');
+                        console.log(imgSrc);
+                        if (imgSrc.includes('placeholder-pdf')) {
+                            imageElement = imageListEl[z] as HTMLElement;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return imageElement;
+    }
+}

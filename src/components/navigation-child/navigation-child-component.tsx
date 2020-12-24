@@ -1,4 +1,4 @@
-import { Component, Prop, h, Element, Listen, State, Watch, Host, Event, EventEmitter } from '@stencil/core';
+import { Component, Prop, h, Element, Listen, State, Watch, Host, Event, EventEmitter, Method } from '@stencil/core';
 import 'manifesto.js';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { viewItem } from '../../store/actions/viewport';
@@ -82,7 +82,6 @@ export class NavigationComponent {
     }
 
     handleThumbnailClick(page: number) {
-        alert('thumbnail click')
         this.viewItem(page)
     }
 
@@ -173,42 +172,46 @@ export class NavigationComponent {
     }
 
     isParentEcopyExist(ecopy) {
-        return (typeof ecopy== 'undefined'? true: false )
+        return (typeof ecopy == 'undefined' ? true : false)
+    }
+
+    @Method()
+    async displayPdfChildNavigation(contentType: string) {
+        const childItem = this.items.filter(s => !this.isParentEcopyExist(s.parentEcopy))
+        if (contentType.includes('pdf')) {
+            this.el.className = childItem.length  > 0 ? "hydrated show" : "hydrated hide";
+        }
+        else {
+            if (this.isParentEcopyExist(this.currentItem.parentEcopy)) {
+                this.el.className = "hydrated hide";
+            }
+        }
     }
 
     render() {
         if (this.items.length <= 1) {
             return null;
         }
-        if (this.currentItem.contentType.includes('pdf')) {
-            this.el.className ="hydrated show";
-        }
-        else {
-            if (this.isParentEcopyExist(this.currentItem.parentEcopy)) {
-                this.el.className ="hydrated hide";
-            }
-        }
 
-        var childItem = this.items.filter(s=>!this.isParentEcopyExist(s.parentEcopy))
-        var parentItem =  this.items.filter(s=>this.isParentEcopyExist(s.parentEcopy));
-        const parentItemCount = parentItem.length;
-      
+        const childItem = this.items.filter(s => !this.isParentEcopyExist(s.parentEcopy))
+        const parentItemCount  = this.items.filter(s => this.isParentEcopyExist(s.parentEcopy)).length;
+ 
         const className = ` harmonized-image-list mdc-image-list mdc-image-list--horizontal mdc-image-list--${this.cols}col`
-        return  <harmonized-image-list class={className} tabindex={0}>
-                    {
-                        childItem.map((page, index) =>
-                            <harmonized-image
-                                src={page.thumbnail}
-                                contentType={page.contentType}
-                                page={parentItemCount + index}
-                                caption={t(page.label)}
-                                show-caption={false}
-                                show-tooltip={false}
-                                preload={index < 16}
-                                onImageLoad={this.handleThumbnailLoad.bind(this)}
-                            />
-                        )
-                    }
-                </harmonized-image-list>
+        return <harmonized-image-list class={className} tabindex={0}>
+            {
+                childItem.map((page, index) =>
+                    <harmonized-image
+                        src={page.thumbnail}
+                        contentType={page.contentType}
+                        page={parentItemCount + index}
+                        caption={t(page.label)}
+                        show-caption={false}
+                        show-tooltip={false}
+                        preload={index < 16}
+                        onImageLoad={this.handleThumbnailLoad.bind(this)}
+                    />
+                )
+            }
+        </harmonized-image-list>
     }
 }

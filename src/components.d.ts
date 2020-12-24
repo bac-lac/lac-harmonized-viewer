@@ -40,6 +40,7 @@ export namespace Components {
     'url': string;
   }
   interface HarmonizedImage {
+    'LoadPDFSplitData': () => Promise<void>;
     'addImageProperty': (value: string) => Promise<void>;
     'caption': string;
     'contentType': string;
@@ -63,6 +64,7 @@ export namespace Components {
   interface HarmonizedNavigationChild {
     'autoResize': boolean;
     'cols': number;
+    'displayPdfChildNavigation': (contentType: string) => Promise<void>;
     'rows': number;
   }
   interface HarmonizedOpenseadragon {
@@ -114,6 +116,7 @@ export namespace Components {
     'setItem': (index: number) => Promise<boolean>;
     'setManifest': (newUrl: string) => Promise<void>;
     'suppressGallery': boolean;
+    'uccApi': string;
     'url': string;
   }
   interface HarmonizedViewport {}
@@ -365,6 +368,7 @@ declare namespace LocalJSX {
     'onItemsLoaded'?: (event: CustomEvent<any>) => void;
     'preventLoadOnEmpty'?: boolean;
     'suppressGallery'?: boolean;
+    'uccApi'?: string;
     'url'?: string;
   }
   interface HarmonizedViewport {

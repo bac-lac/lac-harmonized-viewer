@@ -39,6 +39,7 @@ export class ViewerComponent {
 	@Prop() preventLoadOnEmpty: boolean = false;
 	@Prop({ attribute: 'deepzoom' }) deepzoomEnabled: boolean = true
 	@Prop() suppressGallery: boolean = false;
+	@Prop() uccApi: string;
 
 	addLanguage: typeof addLanguage
 	addOverlayState: typeof addOverlay
@@ -111,7 +112,6 @@ export class ViewerComponent {
 		if (!this.items || index >= this.items.length || index < 0 || this.currentItemIndex == index) {
 			return false;
 		}
-
 		this.viewItem(index);
 		return true;
 	}
@@ -246,7 +246,8 @@ export class ViewerComponent {
 			customVideoPlayer: this.customVideoPlayer,
 			customItemProps: this.customItemProps,
 			deepzoom: this.deepzoomEnabled,
-			suppressGallery: this.suppressGallery
+			suppressGallery: this.suppressGallery,
+			uccApi: this.uccApi
 		});
 	}
 
@@ -359,7 +360,7 @@ export class ViewerComponent {
 					style={{ backgroundColor: this.navigationBackgroundColor }}
 				/>
 			}
-			<harmonized-navigation-child
+			<harmonized-navigation-child class="hydrated hide"
 				cols={this.navigationCols}
 				rows={this.navigationRows}
 				auto-resize={true}

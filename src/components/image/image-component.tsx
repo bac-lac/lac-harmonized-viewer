@@ -1,19 +1,20 @@
 import { Component, Prop, h, Element, Event, EventEmitter, Host, State, Method, Listen } from '@stencil/core';
 import { Unsubscribe, Store } from '@stencil/redux';
-import { viewItem, loadView } from '../../store/actions/viewport';
+import { viewItem } from '../../store/actions/viewport';
 import { isNumber } from 'util';
 import { resolveViewportType } from '../../utils/viewport';
 import tippy, { sticky, Props, Instance } from 'tippy.js';
 import { t } from '../../services/i18n-service';
-
+import axios from 'axios'
 import { selectCurrentItem } from '../../store/selectors/item';
+import { getInstance } from '../../utils/utils';
 
 @Component({
     tag: 'harmonized-image',
     styleUrl: 'image-component.scss'
 })
 export class ImageComponent {
-    
+
     @Element() el: HTMLElement
 
     @Prop() src: string
@@ -32,10 +33,9 @@ export class ImageComponent {
 
     @State() currentItem: DocumentPage
     @State() items: MyAppState["viewport"]["items"] = []
+    @State() configuration: MyAppState["document"]["configuration"]
 
     viewItem: typeof viewItem
-    loadView: typeof loadView
-
     storeUnsubscribe: Unsubscribe
 
     @State() currentItemIndex: number
@@ -63,17 +63,26 @@ export class ImageComponent {
         }
     }
 
+    @Method()
+    async LoadPDFSplitData(): Promise<void> {
+        console.log('LoadPDFSplitData from hv image component');
+        this.handleClick();
+        this.viewItem(this.page);
+    }
+
 
     componentWillLoad() {
 
         this.store.mapDispatchToProps(this, { viewItem })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
+                document: { configuration },
                 viewport: { itemIndex, items },
             } = state
             return {
                 currentItemIndex: itemIndex,
                 currentItem: selectCurrentItem(state),
+                configuration,
                 items
             }
         })
@@ -99,18 +108,41 @@ export class ImageComponent {
     }
 
     handleClick() {
-        console.log(this.el);
         if (isNumber(this.page)) {
+            const eCopy = this.getImageTitle(this.src);
             if (this.contentType.includes('pdf')) {
-                const eCopy = 'https://stdigitalmanifests.blob.core.windows.net/pdfservice/V0001-S004.json';// 'V0001-S004.json'; //TODO: this.getImageTitle(this.src) + '.json'
-
-
-                this.loadJsonData(eCopy);
+                const uccUrl = this.configuration.uccApi + '/Read/' + eCopy;
+                this.getUccSetting(uccUrl, eCopy);
             }
             else {
                 this.viewItem(this.page)
+                this.getNavigationChildElement();
             }
         }
+
+    }
+
+    async getUccSetting(url: string, eCopy: string) {
+        if (!url) {
+            return undefined
+        }
+        await axios.get(url, { validateStatus: status => status === 200 })
+            .then(async (response) => {
+                const uccData = response.data;
+                if (uccData.digitalObject) {
+                    if (uccData.digitalObject.id > 0) {
+                        const rootUrl = 'https://stdigitalmanifests.blob.core.windows.net/pdfservice/';
+                        const pdfManifestUrl = eCopy + '.json';
+                        await this.loadJsonData(pdfManifestUrl);
+                    }
+                }
+
+            })
+            .catch((e) => {
+                this.viewItem(this.page);
+            });
+
+        return this;
 
     }
 
@@ -126,7 +158,7 @@ export class ImageComponent {
             .then(jsonResponse => {
                 this.addPDFPageItems(jsonResponse);
             })
-            .catch((error:Error) => {
+            .catch((error: Error) => {
                 this.viewItem(this.page);
             });
     }
@@ -134,7 +166,7 @@ export class ImageComponent {
     addPDFPageItems(data: any) {
         if (data.images.length > 0) {
             data.images.forEach(element => {
-                const title = this.getImageTitle(element.urlImage);                
+                const title = this.getImageTitle(element.urlImage);
                 const item = this.items.find(s => s.image == element.urlImage);
                 if (!this.isExist(item)) {
                     let pdfImage = {
@@ -152,14 +184,29 @@ export class ImageComponent {
                     this.items.push(pdfImage);
                 }
             });
-            
-             this.viewItem(this.page)  //This will force to reload the images on the navigation thumbnail
 
-             setTimeout(() => {
-                const maxCurrentItemCount = this.items.filter(s=>typeof  s.parentEcopy == 'undefined').length;
+            this.viewItem(this.page)  //This will force to reload the images on the navigation thumbnail
+
+            setTimeout(() => {
+                //change the pdf icon to new icon that point to the PDF childs
+                
+                const maxCurrentItemCount = this.items.filter(s => typeof s.parentEcopy == 'undefined').length;  //Count items that has child
                 this.viewItem(maxCurrentItemCount);   //this will load the first page of the pdf child
-             },200)
-         }
+
+                //show or hide navigation pdf child here
+                this.getNavigationChildElement();                
+            }, 100)
+        }
+    }
+
+    getNavigationChildElement() {
+        var hvNavChildEl = getInstance(this.el).children;
+        for (var x = 0; x < hvNavChildEl.length; x++) {
+            if (hvNavChildEl[x].tagName == 'HARMONIZED-NAVIGATION-CHILD') {
+                const hvcEl = hvNavChildEl[x] as any;
+                hvcEl.displayPdfChildNavigation(this.contentType);
+            }
+        }
     }
 
     isExist(value) {
@@ -242,7 +289,7 @@ export class ImageComponent {
                 return this.src;
 
             case 'pdf':
-                return 'https://baclac.blob.core.windows.net/cdn/assets/placeholder-pdf.jpeg';
+                return 'https://baclac.blob.core.windows.net/cdn/assets/placeholder-pdf-white.jpg';
 
             case 'video':
                 return 'https://baclac.blob.core.windows.net/cdn/assets/placeholder-video.jpeg';

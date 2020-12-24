@@ -17,7 +17,8 @@ harmonized-image {
     }
 
     .mdc-image-list__image-aspect-container {
-        opacity: 0.7;
+         opacity: 0.8;
+        //opacity: 1;
         filter: grayscale(50%);
         align-content: center;
         transition: all 200ms ease;
@@ -31,8 +32,8 @@ harmonized-image {
     &:hover,
     &.is-active {
         .mdc-image-list__image-aspect-container {
-            opacity: 1;
-            filter: grayscale(0%);
+             opacity: 1;
+             filter: grayscale(0%);
         }
     }
 
@@ -57,8 +58,8 @@ harmonized-image {
     &:hover,
     &.is-active {
         .mdc-image-list__image {
-            opacity: 1;
-            filter: grayscale(0%);
+             opacity: 1;
+             filter: grayscale(0%);
         }
     }
 

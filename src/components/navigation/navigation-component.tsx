@@ -4,6 +4,8 @@ import { Unsubscribe, Store } from '@stencil/redux';
 import { viewItem } from '../../store/actions/viewport';
 import { t } from '../../services/i18n-service';
 
+import { isPDFChildExist, getPdfImageElement } from '../../utils/utils';
+
 @Component({
     tag: 'harmonized-navigation',
     styleUrl: 'navigation-component.scss',
@@ -172,7 +174,20 @@ export class NavigationComponent {
     }
 
     isParentEcopyExist(ecopy) {
-        return (typeof ecopy== 'undefined'? true: false )
+        return (typeof ecopy == 'undefined' ? true : false)
+    }
+
+    togglePDFThumbnail() {
+        let isPDFChildElementExist = isPDFChildExist();
+        setTimeout(() => {
+            let imgSrc = getPdfImageElement(this.el.children, isPDFChildElementExist);
+            let imgUrl = `https://baclac.blob.core.windows.net/cdn/assets/placeholder-pdf-`;
+            imgUrl += isPDFChildElementExist ? 'blue.jpg' : 'white.jpg';
+            if (imgSrc != null) {
+                imgSrc.setAttribute('src', imgUrl);
+                imgSrc.setAttribute('data-src', imgUrl);
+            }
+        }, 100);
     }
 
     render() {
@@ -180,27 +195,27 @@ export class NavigationComponent {
             return null;
         }
 
-        var childItem = this.items.filter(s=>!this.isParentEcopyExist(s.parentEcopy))
-        var parentItem =  this.items.filter(s=>this.isParentEcopyExist(s.parentEcopy));
-      
+        const parentItem = this.items.filter(s => this.isParentEcopyExist(s.parentEcopy));
+        this.togglePDFThumbnail();
+
         const className = `harmonized-image-list mdc-image-list mdc-image-list--horizontal mdc-image-list--${this.cols}col`
 
-        return  <harmonized-image-list class={className} tabindex={0}>
-                    {
-                        // this.items.map((page, index) =>
-                        parentItem.map((page, index) =>
-                            <harmonized-image
-                                src={page.thumbnail}
-                                contentType={page.contentType}
-                                page={index}
-                                caption={t(page.label)}
-                                show-caption={false}
-                                show-tooltip={false}
-                                preload={index < 16}
-                                onImageLoad={this.handleThumbnailLoad.bind(this)}
-                            />
-                        )
-                    }
-                </harmonized-image-list>
+        return <harmonized-image-list class={className} tabindex={0}>
+            {
+                // this.items.map((page, index) =>
+                parentItem.map((page, index) =>
+                    <harmonized-image
+                        src={page.thumbnail}
+                        contentType={page.contentType}
+                        page={index}
+                        caption={t(page.label)}
+                        show-caption={false}
+                        show-tooltip={false}
+                        preload={index < 16}
+                        onImageLoad={this.handleThumbnailLoad.bind(this)}
+                    />
+                )
+            }
+        </harmonized-image-list>
     }
 }

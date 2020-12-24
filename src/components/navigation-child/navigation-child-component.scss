@@ -2,8 +2,10 @@ harmonized-navigation-child {
     display: block;
     flex: 0 0 auto;
     overflow-y: hidden;
-    background-color: #cecacb;
-
+    //background-color: #cecacb;
+    background-color: #2572b4;
+    opacity: 0.7;
+    background-blend-mode: color;
     harmonized-image-list {
         &.mdc-image-list {
         }
@@ -13,7 +15,7 @@ harmonized-navigation-child {
         .mdc-image-list__image {
             padding: 0;
             background: #181818;
-        }
+        }than
 
         .mdc-image-list__supporting {
             .mdc-image-list__label {
@@ -29,7 +31,7 @@ harmonized-navigation-child {
             &.is-active {
                 .mdc-image-list__image-aspect-container {
                     .mdc-image-list__image {
-                        box-shadow: 0 0 1.25px 2px #5772ff;
+                        box-shadow: 0 0 1.25px 2px #e9a43e;
                     }
                 }
 
