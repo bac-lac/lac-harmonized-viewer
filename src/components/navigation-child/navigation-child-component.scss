@@ -3,9 +3,7 @@ harmonized-navigation-child {
     flex: 0 0 auto;
     overflow-y: hidden;
     //background-color: #cecacb;
-    background-color: #2572b4;
-    opacity: 0.7;
-    background-blend-mode: color;
+    background-color: #708199;
     harmonized-image-list {
         &.mdc-image-list {
         }
@@ -31,7 +29,7 @@ harmonized-navigation-child {
             &.is-active {
                 .mdc-image-list__image-aspect-container {
                     .mdc-image-list__image {
-                        box-shadow: 0 0 1.25px 2px #e9a43e;
+                        box-shadow: 0 0 1.25px 2px #5772ff;
                     }
                 }
 
@@ -42,10 +40,6 @@ harmonized-navigation-child {
                 }
             }
         }
-
-        
-
-        
     }
 }
 

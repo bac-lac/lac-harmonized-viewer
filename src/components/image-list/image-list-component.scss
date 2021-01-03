@@ -30,7 +30,7 @@
     &.mdc-image-list--horizontal {
         flex-direction: row;
         flex-wrap: nowrap;
-        overflow-x: scroll;
+        overflow-x: auto;
         overflow-y: hidden;
 
         .mdc-image-list__item {
@@ -48,7 +48,7 @@
     &.mdc-image-list--vertical {
         flex-direction:column;
         flex-wrap: nowrap;
-        overflow-x: scroll;
+        overflow-x: auto;
         overflow-y: hidden;
 
         .mdc-image-list__item {

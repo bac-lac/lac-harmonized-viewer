@@ -1,10 +1,10 @@
-import { Component, Prop, h, Element, Listen, State, Watch, Host, Event, EventEmitter } from '@stencil/core';
+import { Component, Prop, h, Element, Listen, State, Watch, Host, Event, EventEmitter, Method } from '@stencil/core';
 import 'manifesto.js';
 import { Unsubscribe, Store } from '@stencil/redux';
 import { viewItem } from '../../store/actions/viewport';
 import { t } from '../../services/i18n-service';
 
-import { isPDFChildExist, getPdfImageElement } from '../../utils/utils';
+import { isPDFChildExist, getPdfImageElement, getInstance  } from '../../utils/utils';
 
 @Component({
     tag: 'harmonized-navigation',
@@ -32,7 +32,8 @@ export class NavigationComponent {
 
     @Event({ eventName: "hvNavigationUpdated" }) updatedEvent;
 
-    private imageList: HTMLElement
+    private imageList: HTMLElement;
+    private imageItem: any;
 
     componentWillLoad() {
 
@@ -53,10 +54,12 @@ export class NavigationComponent {
     }
 
     componentDidUpdate() {
+
         if (!this.imageList) {
             this.imageList = (this.el.querySelector('.harmonized-image-list') as HTMLElement);
         }
 
+       
         this.resize()
         this.scaleScroll();
 
@@ -70,11 +73,20 @@ export class NavigationComponent {
     @Listen('keydown', { target: 'parent' })
     handleKeyDown(ev: KeyboardEvent) {
         // Handle keyboard previous/next navigation
+        const navigationEl = this.el.querySelector('harmonized-image') as any;
         if (ev.key === 'ArrowRight' || ev.key == 'ArrowDown') {
-            this.viewItem(this.currentItemIndex + 1)
+           navigationEl.LoadImageData(this.currentItemIndex + 1);
+            //this.viewItem(this.currentItemIndex + 1)
         }
         else if (ev.key === 'ArrowLeft' || ev.key == 'ArrowUp') {
-            this.viewItem(this.currentItemIndex - 1)
+            let index = this.currentItemIndex -1;
+            const selectedContentType = this.items[index].contentType;
+            console.log('content type:' + this.items[index].contentType);
+            if (selectedContentType.includes('pdf')) {
+                index = index > 0 ? index -1:0;
+            }
+            navigationEl.LoadImageData(index);
+            
         }
 
         if (ev.key == "ArrowDown" || ev.key == 'ArrowUp') {
@@ -177,15 +189,20 @@ export class NavigationComponent {
         return (typeof ecopy == 'undefined' ? true : false)
     }
 
-    togglePDFThumbnail() {
-        let isPDFChildElementExist = isPDFChildExist();
+    @Method()
+    async togglePDFThumbnail() {
+        const nvEl = getInstance(this.el);
+        let isPDFChildElementExist = isPDFChildExist(nvEl);
+        const imageEL = this.el.querySelectorAll('img');
         setTimeout(() => {
-            let imgSrc = getPdfImageElement(this.el.children, isPDFChildElementExist);
+            let imgSrc = getPdfImageElement(imageEL);
             let imgUrl = `https://baclac.blob.core.windows.net/cdn/assets/placeholder-pdf-`;
             imgUrl += isPDFChildElementExist ? 'blue.jpg' : 'white.jpg';
+            const imgStyle = isPDFChildElementExist ? 'opacity:1; height:115%; border-color: #708199' : 'opacity:1; ';
             if (imgSrc != null) {
                 imgSrc.setAttribute('src', imgUrl);
                 imgSrc.setAttribute('data-src', imgUrl);
+                imgSrc.setAttribute('style',imgStyle);
             }
         }, 100);
     }
@@ -196,7 +213,7 @@ export class NavigationComponent {
         }
 
         const parentItem = this.items.filter(s => this.isParentEcopyExist(s.parentEcopy));
-        this.togglePDFThumbnail();
+        //this.togglePDFThumbnail();
 
         const className = `harmonized-image-list mdc-image-list mdc-image-list--horizontal mdc-image-list--${this.cols}col`
 

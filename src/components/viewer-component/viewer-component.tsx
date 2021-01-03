@@ -166,7 +166,6 @@ export class ViewerComponent {
 
 	@Method()
 	async setManifest(newUrl: string) {
-		console.log('SetManifest :' + newUrl)
 		this.fetchManifest(newUrl);
 	}
 
@@ -257,6 +256,7 @@ export class ViewerComponent {
 	}
 
 	componentDidUpdate() {
+		
 		if (this.manifestError) {
 			this.manifestErrorOccurred.emit();
 		}

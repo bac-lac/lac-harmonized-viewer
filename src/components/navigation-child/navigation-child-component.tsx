@@ -67,14 +67,6 @@ export class NavigationComponent {
 
     @Listen('keydown', { target: 'parent' })
     handleKeyDown(ev: KeyboardEvent) {
-        // Handle keyboard previous/next navigation
-        if (ev.key === 'ArrowRight' || ev.key == 'ArrowDown') {
-            this.viewItem(this.currentItemIndex + 1)
-        }
-        else if (ev.key === 'ArrowLeft' || ev.key == 'ArrowUp') {
-            this.viewItem(this.currentItemIndex - 1)
-        }
-
         if (ev.key == "ArrowDown" || ev.key == 'ArrowUp') {
             ev.preventDefault();
             ev.stopPropagation();
@@ -84,6 +76,8 @@ export class NavigationComponent {
     handleThumbnailClick(page: number) {
         this.viewItem(page)
     }
+
+   
 
     handleThumbnailLoad(ev: Event) {
         if (this.autoResize) {
@@ -174,7 +168,7 @@ export class NavigationComponent {
     isParentEcopyExist(ecopy) {
         return (typeof ecopy == 'undefined' ? true : false)
     }
-
+ 
     @Method()
     async displayPdfChildNavigation(contentType: string) {
         const childItem = this.items.filter(s => !this.isParentEcopyExist(s.parentEcopy))

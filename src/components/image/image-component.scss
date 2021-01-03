@@ -72,7 +72,8 @@ harmonized-image {
         height: 1px;
         margin: 0;
         overflow: hidden;
-        position: absolute;
+        //position: absolute;
+        position: initial;
         width: 1px;
     }
 }

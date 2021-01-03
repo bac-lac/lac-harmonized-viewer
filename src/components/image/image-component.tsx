@@ -45,10 +45,7 @@ export class ImageComponent {
     @Event() imageAdded
     @Event() imageLoad
 
-    private viewer: any;
-
     private tooltip: Instance<Props>
-
     @Method()
     async addImageProperty(value: string): Promise<void> {
         if (!this.props.find(prop => prop == value)) {
@@ -65,14 +62,20 @@ export class ImageComponent {
 
     @Method()
     async LoadPDFSplitData(): Promise<void> {
-        console.log('LoadPDFSplitData from hv image component');
-        this.handleClick();
-        this.viewItem(this.page);
+        const eCopy = this.getImageTitle(this.currentItemIndex);
+        const uccUrl = this.configuration.uccApi + '/Read/' + eCopy;
+        this.getUccSetting(uccUrl, eCopy);
+        setTimeout(() => {
+            this.getNavigationChildElement(this.contentType);
+        }, 500)
+
+    }
+    @Method()
+    async LoadImageData(index): Promise<void> {        
+        this.handleImageData(index);
     }
 
-
     componentWillLoad() {
-
         this.store.mapDispatchToProps(this, { viewItem })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
@@ -86,6 +89,13 @@ export class ImageComponent {
                 items
             }
         })
+    }
+    componentDidLoad() {
+        if (this.page == 0) {
+            if (this.items[0].contentType.includes('pdf')) {
+                this.handleClick();
+            }
+        }
     }
 
     componentDidUnload() {
@@ -108,18 +118,30 @@ export class ImageComponent {
     }
 
     handleClick() {
-        if (isNumber(this.page)) {
-            const eCopy = this.getImageTitle(this.src);
-            if (this.contentType.includes('pdf')) {
+        this.handleImageData(this.page);
+    }
+
+    handleImageData(itemPage: number) {
+        const eCopy = this.items[itemPage].label[0].value;
+        const selectedContentType = this.items[itemPage].contentType;
+        if (isNumber(itemPage)) {
+            if (selectedContentType.includes('pdf')) {
                 const uccUrl = this.configuration.uccApi + '/Read/' + eCopy;
                 this.getUccSetting(uccUrl, eCopy);
+
+                setTimeout(() => {
+                    const maxCurrentItemCount = this.items.filter(s => typeof s.parentEcopy == 'undefined').length;  //Count items that has child
+                    this.viewItem(maxCurrentItemCount);   //this will load the first page of the pdf child
+                    this.getNavigationChildElement(selectedContentType);
+                }, 1000)
             }
             else {
-                this.viewItem(this.page)
-                this.getNavigationChildElement();
+                this.viewItem(itemPage)
+                setTimeout(() => {
+                    this.getNavigationChildElement(selectedContentType);
+                }, 100);
             }
         }
-
     }
 
     async getUccSetting(url: string, eCopy: string) {
@@ -131,8 +153,8 @@ export class ImageComponent {
                 const uccData = response.data;
                 if (uccData.digitalObject) {
                     if (uccData.digitalObject.id > 0) {
-                        const rootUrl = 'https://stdigitalmanifests.blob.core.windows.net/pdfservice/';
-                        const pdfManifestUrl = eCopy + '.json';
+                        const rootUrl = window.location.hostname.includes('localhost')?'': 'https://stdigitalmanifests.blob.core.windows.net/pdfservice/';
+                        const pdfManifestUrl =rootUrl +  eCopy + '.json';
                         await this.loadJsonData(pdfManifestUrl);
                     }
                 }
@@ -156,7 +178,18 @@ export class ImageComponent {
                 return response.json();
             })
             .then(jsonResponse => {
-                this.addPDFPageItems(jsonResponse);
+                var data = jsonResponse;
+                if (typeof data.status != 'undefined' ) {
+                    if (data.status.includes('progress')) {
+                        alert(data.status);
+                    } else {
+                        this.addPDFPageItems(data);    
+                    }
+                } else {
+                    this.addPDFPageItems(data);
+                }
+                
+                
             })
             .catch((error: Error) => {
                 this.viewItem(this.page);
@@ -164,12 +197,16 @@ export class ImageComponent {
     }
 
     addPDFPageItems(data: any) {
+
         if (data.images.length > 0) {
-            data.images.forEach(element => {
-                const title = this.getImageTitle(element.urlImage);
+            let hvEl = getInstance(this.el);
+            let hilChild=  hvEl.querySelector('harmonized-navigation-child')[0] as HTMLElement;
+            const parentItemCount = this.items.length;
+            data.images.forEach((element, index) => {
+                const title = this.getPDFChildImageTitle(element.urlImage);
                 const item = this.items.find(s => s.image == element.urlImage);
                 if (!this.isExist(item)) {
-                    let pdfImage = {
+                    let page = {
                         id: this.currentItem.id,
                         contentType: 'image/jpeg',
                         label: this.setLabel(title),
@@ -181,32 +218,31 @@ export class ImageComponent {
                         width: element.width,
                         parentEcopy: data.parentEcopy
                     } as DocumentPage;
-                    this.items.push(pdfImage);
+                    this.items.push(page);
+
+                    if (hilChild) {
+                        let hvImage = document.createElement('harmonized-image') as HTMLHarmonizedImageElement;
+                        hvImage.src = page.thumbnail;
+                        hvImage.contentType = page.contentType;
+                        hvImage.page = parentItemCount + index;
+                        hvImage.caption = t(page.label);
+                        hvImage.showCaption = false;
+                        hvImage.showTooltip = false;
+                        hvImage.preload = index < 16;
+                        hilChild.appendChild(hvImage);
+                    }
                 }
             });
-
-            this.viewItem(this.page)  //This will force to reload the images on the navigation thumbnail
-
-            setTimeout(() => {
-                //change the pdf icon to new icon that point to the PDF childs
-                
-                const maxCurrentItemCount = this.items.filter(s => typeof s.parentEcopy == 'undefined').length;  //Count items that has child
-                this.viewItem(maxCurrentItemCount);   //this will load the first page of the pdf child
-
-                //show or hide navigation pdf child here
-                this.getNavigationChildElement();                
-            }, 100)
         }
     }
 
-    getNavigationChildElement() {
-        var hvNavChildEl = getInstance(this.el).children;
-        for (var x = 0; x < hvNavChildEl.length; x++) {
-            if (hvNavChildEl[x].tagName == 'HARMONIZED-NAVIGATION-CHILD') {
-                const hvcEl = hvNavChildEl[x] as any;
-                hvcEl.displayPdfChildNavigation(this.contentType);
-            }
-        }
+    getNavigationChildElement(selectedContentType: string) {
+        let hvEl = getInstance(this.el);
+        const navigationChild =  hvEl.querySelector('harmonized-navigation-child');
+        navigationChild.displayPdfChildNavigation(selectedContentType);
+
+        const navigation = hvEl.querySelector('harmonized-navigation') as any;
+        navigation.togglePDFThumbnail();
     }
 
     isExist(value) {
@@ -230,7 +266,23 @@ export class ImageComponent {
     setTileSource(url: string): any {
         return { "type": "image", "url": url };
     }
-    getImageTitle(imgUrl: string) {
+    getImageTitle(index: number) {
+        console.log(this.items[index].label);
+        const imgUrl = this.items[index].image;
+        let title = '';
+        const url = imgUrl.split('&');
+        for (let x = 0; x < url.length; x++) {
+            let item = url[x];
+            if (item.includes('id')) {
+                const items = item.split('=');
+                title = items[1]
+                break;
+            }
+        }
+        return title;
+    }
+
+    getPDFChildImageTitle(imgUrl: string) {
         let title = '';
         const url = imgUrl.split('&');
         for (let x = 0; x < url.length; x++) {
@@ -335,26 +387,27 @@ export class ImageComponent {
             title={this.caption == "" ? t('untitled') : this.caption}>
 
             <div class="mdc-image-list__image-aspect-container" role="list">
-                <img
-                    data-lazy-load
-                    src={(this.preload && thumbnailSrc)}
-                    data-src={thumbnailSrc}
-                    alt={this.caption == "" ? t('untitled') : this.caption}
-                    //srcset={(this.preload && this.srcset)}
-                    class="mdc-image-list__image mdc-elevation--z2"
-                    onLoad={this.handleLoad.bind(this)}
-                    onError={this.handleError.bind(this)}
-                    //aria-labelledby={labelId}
-                    style={{
-                        opacity: (this.loaded) ? '1' : '0'
-                    }}
-                    role="listitem"
-                />
-
                 <ul class="inv" role="listitem">
+                    <img
+                        data-lazy-load
+                        src={(this.preload && thumbnailSrc)}
+                        data-src={thumbnailSrc}
+                        alt={this.caption == "" ? t('untitled') : this.caption}
+                        //srcset={(this.preload && this.srcset)}
+                        class="mdc-image-list__image mdc-elevation--z2"
+                        onLoad={this.handleLoad.bind(this)}
+                        onError={this.handleError.bind(this)}
+                        //aria-labelledby={labelId}
+                        style={{
+                            opacity: (this.loaded) ? '1' : '0'
+                        }}
+                        role="listitem"
+                    />
+
                     {this.props.map((prop) =>
                         <li>{prop}</li>
                     )}
+
                 </ul>
             </div>
 

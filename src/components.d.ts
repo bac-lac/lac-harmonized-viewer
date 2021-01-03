@@ -40,6 +40,7 @@ export namespace Components {
     'url': string;
   }
   interface HarmonizedImage {
+    'LoadImageData': (index: any) => Promise<void>;
     'LoadPDFSplitData': () => Promise<void>;
     'addImageProperty': (value: string) => Promise<void>;
     'caption': string;
@@ -60,6 +61,7 @@ export namespace Components {
     'autoResize': boolean;
     'cols': number;
     'rows': number;
+    'togglePDFThumbnail': () => Promise<void>;
   }
   interface HarmonizedNavigationChild {
     'autoResize': boolean;
