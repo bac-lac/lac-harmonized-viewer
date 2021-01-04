@@ -7,7 +7,7 @@ import tippy, { sticky, Props, Instance } from 'tippy.js';
 import { t } from '../../services/i18n-service';
 import axios from 'axios'
 import { selectCurrentItem } from '../../store/selectors/item';
-import { getInstance,isPDFChildElement } from '../../utils/utils';
+import { getInstance,isPDFChildElement, PDFManifestStatus } from '../../utils/utils';
 import { MDCSnackbar } from '@material/snackbar';
 
 @Component({
@@ -181,7 +181,7 @@ export class ImageComponent {
             .then(jsonResponse => {
                 var data = jsonResponse;
                 if (typeof data.status != 'undefined' ) {
-                    if (data.status.includes('progress')) {
+                    if (data.status == PDFManifestStatus.InProgress) {
                         this.viewItem(this.page);
                         this.displaySnackBarMessage();
                     } else {

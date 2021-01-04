@@ -93,3 +93,10 @@ export function isPDFChildElement(): any {
   const hvImgList = ilHV.querySelectorAll('harmonized-image-list')[0];
   return hvImgList as any; 
 }
+
+export enum PDFManifestStatus {
+   Create = 1,
+   InProgress = 2,
+   Complete = 3,
+   Error = 4 
+}
