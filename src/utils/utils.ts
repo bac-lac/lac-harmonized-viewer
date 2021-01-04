@@ -85,3 +85,11 @@ export function getPdfImageElement(element: NodeListOf<HTMLImageElement>): HTMLE
   }
   return imageElement;
 }
+
+
+export function isPDFChildElement(): any {
+  const hv = document.querySelector("harmonized-viewer");
+  const ilHV =   hv.shadowRoot.querySelectorAll("harmonized-navigation-child")[0];
+  const hvImgList = ilHV.querySelectorAll('harmonized-image-list')[0];
+  return hvImgList as any; 
+}

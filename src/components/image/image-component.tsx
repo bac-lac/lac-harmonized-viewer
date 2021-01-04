@@ -7,7 +7,7 @@ import tippy, { sticky, Props, Instance } from 'tippy.js';
 import { t } from '../../services/i18n-service';
 import axios from 'axios'
 import { selectCurrentItem } from '../../store/selectors/item';
-import { getInstance } from '../../utils/utils';
+import { getInstance,isPDFChildElement } from '../../utils/utils';
 
 @Component({
     tag: 'harmonized-image',
@@ -67,7 +67,7 @@ export class ImageComponent {
         this.getUccSetting(uccUrl, eCopy);
         setTimeout(() => {
             this.getNavigationChildElement(this.contentType);
-        }, 500)
+        }, 1000)
 
     }
     @Method()
@@ -199,8 +199,12 @@ export class ImageComponent {
     addPDFPageItems(data: any) {
 
         if (data.images.length > 0) {
-            let hvEl = getInstance(this.el);
-            let hilChild=  hvEl.querySelector('harmonized-navigation-child')[0] as HTMLElement;
+            //let hvEl = getInstance(this.el);
+            //let hilChild=  hvEl.querySelector('harmonized-navigation-child')[0] as HTMLElement;
+
+            let hilChild = isPDFChildElement();
+            console.log('harmonized navigation child -> harmonized image list');
+            console.log(hilChild);
             const parentItemCount = this.items.length;
             data.images.forEach((element, index) => {
                 const title = this.getPDFChildImageTitle(element.urlImage);
@@ -221,6 +225,7 @@ export class ImageComponent {
                     this.items.push(page);
 
                     if (hilChild) {
+                        
                         let hvImage = document.createElement('harmonized-image') as HTMLHarmonizedImageElement;
                         hvImage.src = page.thumbnail;
                         hvImage.contentType = page.contentType;
@@ -229,6 +234,8 @@ export class ImageComponent {
                         hvImage.showCaption = false;
                         hvImage.showTooltip = false;
                         hvImage.preload = index < 16;
+                        console.log('adding child');
+                        console.log(hvImage);
                         hilChild.appendChild(hvImage);
                     }
                 }
