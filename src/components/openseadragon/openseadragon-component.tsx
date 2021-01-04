@@ -42,6 +42,7 @@ export class OpenSeadragonComponent {
     @State() overlays: MyAppState["document"]["overlays"]
 
     @State() currentItemIndex: MyAppState["viewport"]["itemIndex"]
+    @State() items: MyAppState["viewport"]["items"] = []
     @State() numberOfItems: number;
     @State() currentItem: DocumentPage
 
@@ -77,7 +78,8 @@ export class OpenSeadragonComponent {
             return {
                 currentItemIndex: state.viewport.itemIndex,
                 numberOfItems: state.viewport.items.length,
-                currentItem: selectCurrentItem(state)
+                currentItem: selectCurrentItem(state),
+                items: state.viewport.items
             }
         });
     }
@@ -168,7 +170,7 @@ export class OpenSeadragonComponent {
         }
     }
 
-    handleFullscreenToggle() {        
+    handleFullscreenToggle() {
         if (this.instance) {
             if (!this.isFullscreen) {
                 const viewerElement: any = this.el;
@@ -247,11 +249,34 @@ export class OpenSeadragonComponent {
     }
 
     handlePreviousClick() {
-        this.viewItem(this.currentItemIndex - 1)
+        this.currentItemIndex -= 1
+        const contentType = this.items[this.currentItemIndex].contentType
+        if (contentType.includes('pdf')) {            
+            this.currentItemIndex =  this.currentItemIndex > 0 ?  this.currentItemIndex  -1:0;
+            const hv = document.querySelector('harmonized-viewer');
+            const navigationEl = hv.shadowRoot.querySelector('harmonized-image') as any;
+            navigationEl.LoadImageData(this.currentItemIndex);
+        }
+        else {
+            this.viewItem(this.currentItemIndex)
+        }
+
     }
 
     handleNextClick() {
-        this.viewItem(this.currentItemIndex + 1)
+        this.currentItemIndex += 1
+        const contentType = this.items[this.currentItemIndex].contentType
+        if (contentType.includes('pdf')) {            
+            const hv = document.querySelector('harmonized-viewer');
+            const navigationEl = hv.shadowRoot.querySelector('harmonized-image') as any;
+            navigationEl.LoadImageData(this.currentItemIndex);
+        }
+        else {
+            this.viewItem(this.currentItemIndex)
+        }
+
+
+
     }
 
     create() {
@@ -346,7 +371,7 @@ export class OpenSeadragonComponent {
             const vp = hv[0].shadowRoot.children;
             for (var x = 0; x < vp.length; x++) {
                 console.log('Class Name:' + vp[x].className);
-                if (vp[x].className.includes('harmonized-viewer harmonized-viewer-theme--light',0)) {
+                if (vp[x].className.includes('harmonized-viewer harmonized-viewer-theme--light', 0)) {
                     let itemViewPort = vp[x];
                     if (isToggleFullScreen) {
                         itemViewPort.setAttribute('style', 'min-height:90vh');
@@ -358,7 +383,7 @@ export class OpenSeadragonComponent {
             }
         }
     }
-   
+
 
     drawOverlays() {
         // if (!this.instance) {
