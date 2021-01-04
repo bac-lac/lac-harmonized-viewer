@@ -9,6 +9,7 @@ import axios from 'axios'
 import { selectCurrentItem } from '../../store/selectors/item';
 import { getInstance,isPDFChildElement, PDFManifestStatus } from '../../utils/utils';
 import { MDCSnackbar } from '@material/snackbar';
+import { faIceCream } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     tag: 'harmonized-image',
@@ -137,6 +138,8 @@ export class ImageComponent {
                 }, 1000)
             }
             else {
+                let uccContribute = document.getElementById('uccContribute');
+                uccContribute.removeAttribute('disabled');
                 this.viewItem(itemPage)
                 setTimeout(() => {
                     this.getNavigationChildElement(selectedContentType);
@@ -181,13 +184,35 @@ export class ImageComponent {
             .then(jsonResponse => {
                 var data = jsonResponse;
                 if (typeof data.status != 'undefined' ) {
-                    if (data.status == PDFManifestStatus.InProgress) {
+                    console.log('data status ' + data.status);
+                    const dataStatus = data.status as number;
+                    if (dataStatus == PDFManifestStatus.InProgress || 
+                        dataStatus == PDFManifestStatus.NeverStarted || 
+                        dataStatus == PDFManifestStatus.Create)  {
+                        console.log('loading snackbar');
                         this.viewItem(this.page);
-                        this.displaySnackBarMessage();
-                    } else {
+                        this.displaySnackBarMessage(t('pdfsplitprocessing'));
+                        let uccContribute = document.getElementById('uccContribute') as HTMLElement;
+                        uccContribute.setAttribute('disabled','true')
+                    } 
+                    else if (dataStatus == PDFManifestStatus.Complete) {
+                        console.log('loading addpdfpageitems');
+                        let uccContribute = document.getElementById('uccContribute') as HTMLElement;
+                        uccContribute.removeAttribute('disabled');
+
                         this.addPDFPageItems(data);    
                     }
+                    else if (dataStatus == PDFManifestStatus.Error) {
+                        this.displaySnackBarMessage('Error encounter in generating Split PDF manifest');
+                        this.viewItem(this.page);
+                    }
+                    else {
+                        console.log('no item on the status ');
+                        this.viewItem(this.page);
+                    }
                 } else {
+                    let uccContribute = document.getElementById('uccContribute') as HTMLElement;
+                    uccContribute.removeAttribute('disabled');
                     this.addPDFPageItems(data);
                 }
                 
@@ -197,14 +222,14 @@ export class ImageComponent {
                 this.viewItem(this.page);
             });
     }
-    displaySnackBarMessage(){
+    displaySnackBarMessage(msg: string){
          // Temporary - to refactor
          const snackbarElem = document.querySelector('lac-harmonized-viewer .mdc-snackbar');
          if (snackbarElem !== undefined) {
            // Change label
            const snackbarLabel = snackbarElem.querySelector('.mdc-snackbar__label');
            if (snackbarLabel) {
-             snackbarLabel.textContent = t('pdfsplitprocessing');
+             snackbarLabel.textContent = msg; 
 
              const snackBar = new MDCSnackbar(snackbarElem);
              const snackBarDimissButton = snackbarElem.querySelector('button');
