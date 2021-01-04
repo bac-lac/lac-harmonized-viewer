@@ -35,5 +35,6 @@
         "request-failed": "La requête a échoué {{url}}",
         "request-failed-notfound": "Document introuvable {{url}}",
         "contenttype-unsupported": "Le format {{contentType}} n'est pas pris en charge"
-    }
+    },
+    "pdfsplitprocessing":"PDF split is processing "
 }

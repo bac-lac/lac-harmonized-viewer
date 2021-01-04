@@ -8,6 +8,7 @@ import { t } from '../../services/i18n-service';
 import axios from 'axios'
 import { selectCurrentItem } from '../../store/selectors/item';
 import { getInstance,isPDFChildElement } from '../../utils/utils';
+import { MDCSnackbar } from '@material/snackbar';
 
 @Component({
     tag: 'harmonized-image',
@@ -181,7 +182,8 @@ export class ImageComponent {
                 var data = jsonResponse;
                 if (typeof data.status != 'undefined' ) {
                     if (data.status.includes('progress')) {
-                        alert(data.status);
+                        this.viewItem(this.page);
+                        this.displaySnackBarMessage();
                     } else {
                         this.addPDFPageItems(data);    
                     }
@@ -194,6 +196,27 @@ export class ImageComponent {
             .catch((error: Error) => {
                 this.viewItem(this.page);
             });
+    }
+    displaySnackBarMessage(){
+         // Temporary - to refactor
+         const snackbarElem = document.querySelector('lac-harmonized-viewer .mdc-snackbar');
+         if (snackbarElem !== undefined) {
+           // Change label
+           const snackbarLabel = snackbarElem.querySelector('.mdc-snackbar__label');
+           if (snackbarLabel) {
+             snackbarLabel.textContent = t('pdfsplitprocessing');
+
+             const snackBar = new MDCSnackbar(snackbarElem);
+             const snackBarDimissButton = snackbarElem.querySelector('button');
+             if (snackBarDimissButton) {
+               snackBarDimissButton.addEventListener('click', function () {
+                 snackBar.close();
+               })
+             }
+
+             snackBar.open();
+           }
+         }
     }
 
     addPDFPageItems(data: any) {
