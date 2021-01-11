@@ -37,6 +37,5 @@
         "request-failed": "Document request failed {{url}}",
         "request-failed-notfound": "Document could not be found {{url}}",
         "contenttype-unsupported": "Content type {{contentType}} is not supported"
-    },
-    "pdfsplitprocessing":"PDF split is processing "
+    }   
 }

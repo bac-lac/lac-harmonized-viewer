@@ -5,6 +5,7 @@ import { clearOverlays } from "../../store/actions/document";
 import { viewItem } from '../../store/actions/viewport';
 
 import { t } from '../../services/i18n-service';
+import { getInstance, isPDFChildExist } from '../../utils/utils';
 
 import iconPlus from '../../assets/material-design-icons/add-24px.svg'
 import iconMinus from '../../assets/material-design-icons/remove-24px.svg'
@@ -365,22 +366,13 @@ export class OpenSeadragonComponent {
     // Added by Albert Opena 6/17/2020
     // This adjust the canvas height to maximized screen layout.
     resizeScreenLayout(isToggleFullScreen: boolean) {
-
-        const hv = document.getElementsByTagName('harmonized-viewer');
-        if (hv != null) {
-            const vp = hv[0].shadowRoot.children;
-            for (var x = 0; x < vp.length; x++) {
-                console.log('Class Name:' + vp[x].className);
-                if (vp[x].className.includes('harmonized-viewer harmonized-viewer-theme--light', 0)) {
-                    let itemViewPort = vp[x];
-                    if (isToggleFullScreen) {
-                        itemViewPort.setAttribute('style', 'min-height:90vh');
-                    } else {
-                        itemViewPort.setAttribute('style', 'min-height:75vh');
-                    }
-                    break;
-                }
-            }
+        const itemViewPort =  getInstance(this.el);
+        if (isToggleFullScreen) {
+            itemViewPort.setAttribute('style', 'min-height:90vh');
+        } else {
+            const PDFChildExist = isPDFChildExist(itemViewPort);
+            console.log(PDFChildExist);
+            itemViewPort.setAttribute('style', 'min-height:75vh');
         }
     }
 

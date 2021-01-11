@@ -40,6 +40,7 @@ export class ViewerComponent {
 	@Prop({ attribute: 'deepzoom' }) deepzoomEnabled: boolean = true
 	@Prop() suppressGallery: boolean = false;
 	@Prop() uccApi: string;
+	@Prop() pdfManifestUri: string;
 
 	addLanguage: typeof addLanguage
 	addOverlayState: typeof addOverlay
@@ -246,7 +247,8 @@ export class ViewerComponent {
 			customItemProps: this.customItemProps,
 			deepzoom: this.deepzoomEnabled,
 			suppressGallery: this.suppressGallery,
-			uccApi: this.uccApi
+			uccApi: this.uccApi,
+			pdfManifestUri: this.pdfManifestUri
 		});
 	}
 

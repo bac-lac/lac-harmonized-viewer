@@ -5,11 +5,9 @@ import { isNumber } from 'util';
 import { resolveViewportType } from '../../utils/viewport';
 import tippy, { sticky, Props, Instance } from 'tippy.js';
 import { t } from '../../services/i18n-service';
-import axios from 'axios'
+import axios from 'axios';
 import { selectCurrentItem } from '../../store/selectors/item';
-import { getInstance,isPDFChildElement, PDFManifestStatus } from '../../utils/utils';
-import { MDCSnackbar } from '@material/snackbar';
-import { faIceCream } from '@fortawesome/free-solid-svg-icons';
+import { getInstance, PDFManifestStatus } from '../../utils/utils';
 
 @Component({
     tag: 'harmonized-image',
@@ -73,7 +71,7 @@ export class ImageComponent {
 
     }
     @Method()
-    async LoadImageData(index): Promise<void> {        
+    async LoadImageData(index): Promise<void> {
         this.handleImageData(index);
     }
 
@@ -138,8 +136,7 @@ export class ImageComponent {
                 }, 1000)
             }
             else {
-                let uccContribute = document.getElementById('uccContribute');
-                uccContribute.removeAttribute('disabled');
+
                 this.viewItem(itemPage)
                 setTimeout(() => {
                     this.getNavigationChildElement(selectedContentType);
@@ -157,8 +154,8 @@ export class ImageComponent {
                 const uccData = response.data;
                 if (uccData.digitalObject) {
                     if (uccData.digitalObject.id > 0) {
-                        const rootUrl = window.location.hostname.includes('localhost')?'': 'https://stdigitalmanifests.blob.core.windows.net/pdfservice/';
-                        const pdfManifestUrl =rootUrl +  eCopy + '.json';
+                        const rootUrl = window.location.hostname.includes('localhost') ? '' : this.configuration.pdfManifestUri;
+                        const pdfManifestUrl = rootUrl + eCopy + '.json';
                         await this.loadJsonData(pdfManifestUrl);
                     }
                 }
@@ -183,76 +180,25 @@ export class ImageComponent {
             })
             .then(jsonResponse => {
                 var data = jsonResponse;
-                if (typeof data.status != 'undefined' ) {
-                    console.log('data status ' + data.status);
+                if (typeof data.status != 'undefined') {
                     const dataStatus = data.status as number;
-                    if (dataStatus == PDFManifestStatus.InProgress || 
-                        dataStatus == PDFManifestStatus.NeverStarted || 
-                        dataStatus == PDFManifestStatus.Create)  {
-                        console.log('loading snackbar');
-                        this.viewItem(this.page);
-                        this.displaySnackBarMessage(t('pdfsplitprocessing'));
-                        let uccContribute = document.getElementById('uccContribute') as HTMLElement;
-                        uccContribute.setAttribute('disabled','true')
-                    } 
-                    else if (dataStatus == PDFManifestStatus.Complete) {
-                        console.log('loading addpdfpageitems');
-                        let uccContribute = document.getElementById('uccContribute') as HTMLElement;
-                        uccContribute.removeAttribute('disabled');
-
-                        this.addPDFPageItems(data);    
+                    if (dataStatus == PDFManifestStatus.Complete) {
+                        this.addPDFPageItems(data);
                     }
-                    else if (dataStatus == PDFManifestStatus.Error) {
-                        this.displaySnackBarMessage('Error encounter in generating Split PDF manifest');
-                        this.viewItem(this.page);
-                    }
-                    else {
-                        console.log('no item on the status ');
-                        this.viewItem(this.page);
-                    }
-                } else {
-                    let uccContribute = document.getElementById('uccContribute') as HTMLElement;
-                    uccContribute.removeAttribute('disabled');
+                    this.viewItem(this.page);
+                }
+                else {
                     this.addPDFPageItems(data);
                 }
-                
-                
             })
             .catch((error: Error) => {
                 this.viewItem(this.page);
             });
     }
-    displaySnackBarMessage(msg: string){
-         // Temporary - to refactor
-         const snackbarElem = document.querySelector('lac-harmonized-viewer .mdc-snackbar');
-         if (snackbarElem !== undefined) {
-           // Change label
-           const snackbarLabel = snackbarElem.querySelector('.mdc-snackbar__label');
-           if (snackbarLabel) {
-             snackbarLabel.textContent = msg; 
-
-             const snackBar = new MDCSnackbar(snackbarElem);
-             const snackBarDimissButton = snackbarElem.querySelector('button');
-             if (snackBarDimissButton) {
-               snackBarDimissButton.addEventListener('click', function () {
-                 snackBar.close();
-               })
-             }
-
-             snackBar.open();
-           }
-         }
-    }
 
     addPDFPageItems(data: any) {
-
         if (data.images.length > 0) {
-            //let hvEl = getInstance(this.el);
-            //let hilChild=  hvEl.querySelector('harmonized-navigation-child')[0] as HTMLElement;
-
-            let hilChild = isPDFChildElement();
-            console.log('harmonized navigation child -> harmonized image list');
-            console.log(hilChild);
+            //let hilChild = isPDFChildElement();
             const parentItemCount = this.items.length;
             data.images.forEach((element, index) => {
                 const title = this.getPDFChildImageTitle(element.urlImage);
@@ -272,28 +218,32 @@ export class ImageComponent {
                     } as DocumentPage;
                     this.items.push(page);
 
-                    if (hilChild) {
-                        
-                        let hvImage = document.createElement('harmonized-image') as HTMLHarmonizedImageElement;
-                        hvImage.src = page.thumbnail;
-                        hvImage.contentType = page.contentType;
-                        hvImage.page = parentItemCount + index;
-                        hvImage.caption = t(page.label);
-                        hvImage.showCaption = false;
-                        hvImage.showTooltip = false;
-                        hvImage.preload = index < 16;
-                        console.log('adding child');
-                        console.log(hvImage);
-                        hilChild.appendChild(hvImage);
-                    }
+                    // if (hilChild) {
+                    //     let hvImage = document.createElement('harmonized-image') as HTMLHarmonizedImageElement;
+                    //     hvImage.src = page.thumbnail;
+                    //     hvImage.contentType = page.contentType;
+                    //     hvImage.page = parentItemCount + index;
+                    //     hvImage.caption = t(page.label);
+                    //     hvImage.showCaption = false;
+                    //     hvImage.showTooltip = false;
+                    //     hvImage.preload = index < 16;
+                    //     hilChild.appendChild(hvImage);
+                    // }
                 }
             });
+            this.viewItem(this.page);
+            setTimeout(() => {
+                const maxCurrentItemCount = this.items.filter(s => typeof s.parentEcopy == 'undefined').length;  //Count items that has child
+                this.viewItem(maxCurrentItemCount);   //this will load the first page of the pdf child
+               
+            }, 1000)
+
         }
     }
 
     getNavigationChildElement(selectedContentType: string) {
         let hvEl = getInstance(this.el);
-        const navigationChild =  hvEl.querySelector('harmonized-navigation-child');
+        const navigationChild = hvEl.querySelector('harmonized-navigation-child');
         navigationChild.displayPdfChildNavigation(selectedContentType);
 
         const navigation = hvEl.querySelector('harmonized-navigation') as any;

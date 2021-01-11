@@ -163,4 +163,5 @@ interface Configuration {
     deepzoom: boolean
     suppressGallery: boolean
     uccApi: string
+    pdfManifestUri: string
 }

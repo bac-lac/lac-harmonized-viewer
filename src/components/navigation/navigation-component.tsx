@@ -4,7 +4,7 @@ import { Unsubscribe, Store } from '@stencil/redux';
 import { viewItem } from '../../store/actions/viewport';
 import { t } from '../../services/i18n-service';
 
-import { isPDFChildExist, getPdfImageElement, getInstance  } from '../../utils/utils';
+import { isPDFChildExist, getPdfImageElement, getInstance } from '../../utils/utils';
 
 @Component({
     tag: 'harmonized-navigation',
@@ -59,7 +59,7 @@ export class NavigationComponent {
             this.imageList = (this.el.querySelector('.harmonized-image-list') as HTMLElement);
         }
 
-       
+
         this.resize()
         this.scaleScroll();
 
@@ -75,18 +75,18 @@ export class NavigationComponent {
         // Handle keyboard previous/next navigation
         const navigationEl = this.el.querySelector('harmonized-image') as any;
         if (ev.key === 'ArrowRight' || ev.key == 'ArrowDown') {
-           navigationEl.LoadImageData(this.currentItemIndex + 1);
+            navigationEl.LoadImageData(this.currentItemIndex + 1);
             //this.viewItem(this.currentItemIndex + 1)
         }
         else if (ev.key === 'ArrowLeft' || ev.key == 'ArrowUp') {
-            let index = this.currentItemIndex -1;
+            let index = this.currentItemIndex - 1;
             const selectedContentType = this.items[index].contentType;
             console.log('content type:' + this.items[index].contentType);
             if (selectedContentType.includes('pdf')) {
-                index = index > 0 ? index -1:0;
+                index = index > 0 ? index - 1 : 0;
             }
             navigationEl.LoadImageData(index);
-            
+
         }
 
         if (ev.key == "ArrowDown" || ev.key == 'ArrowUp') {
@@ -193,6 +193,15 @@ export class NavigationComponent {
     async togglePDFThumbnail() {
         const nvEl = getInstance(this.el);
         let isPDFChildElementExist = isPDFChildExist(nvEl);
+        const currentvhHeight = nvEl.getAttribute('style');
+        if (!currentvhHeight)
+            nvEl.setAttribute('style', isPDFChildElementExist ? 'min-height:85vh' : 'min-height:75vh');
+        else {
+            if (!currentvhHeight.includes('90')) {
+                nvEl.setAttribute('style', isPDFChildElementExist ? 'min-height:85vh' : 'min-height:75vh');
+            }    
+        }
+
         const imageEL = this.el.querySelectorAll('img');
         setTimeout(() => {
             let imgSrc = getPdfImageElement(imageEL);
@@ -202,7 +211,7 @@ export class NavigationComponent {
             if (imgSrc != null) {
                 imgSrc.setAttribute('src', imgUrl);
                 imgSrc.setAttribute('data-src', imgUrl);
-                imgSrc.setAttribute('style',imgStyle);
+                imgSrc.setAttribute('style', imgStyle);
             }
         }, 100);
     }

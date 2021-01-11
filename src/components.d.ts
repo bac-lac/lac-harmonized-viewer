@@ -114,6 +114,7 @@ export namespace Components {
     'navigationEnable': boolean;
     'navigationPlacement': PlacementType;
     'navigationRows': number;
+    'pdfManifestUri': string;
     'preventLoadOnEmpty': boolean;
     'setItem': (index: number) => Promise<boolean>;
     'setManifest': (newUrl: string) => Promise<void>;
@@ -368,6 +369,7 @@ declare namespace LocalJSX {
     'onHvRender'?: (event: CustomEvent<any>) => void;
     'onItemChanged'?: (event: CustomEvent<any>) => void;
     'onItemsLoaded'?: (event: CustomEvent<any>) => void;
+    'pdfManifestUri'?: string;
     'preventLoadOnEmpty'?: boolean;
     'suppressGallery'?: boolean;
     'uccApi'?: string;
