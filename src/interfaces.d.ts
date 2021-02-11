@@ -162,6 +162,5 @@ interface Configuration {
     customItemProps: string[]
     deepzoom: boolean
     suppressGallery: boolean
-    uccApi: string
     pdfManifestUri: string
 }

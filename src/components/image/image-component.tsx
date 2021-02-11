@@ -7,7 +7,7 @@ import tippy, { sticky, Props, Instance } from 'tippy.js';
 import { t } from '../../services/i18n-service';
 
 import { selectCurrentItem } from '../../store/selectors/item';
-import { getInstance } from '../../utils/utils';
+import { getInstance, getParenteCopy } from '../../utils/utils';
 
 @Component({
     tag: 'harmonized-image',
@@ -122,29 +122,31 @@ export class ImageComponent {
         const eCopy = this.items[itemPage].label[0].value;
         const selectedContentType = this.items[itemPage].contentType;
         console.log('itemPage:' + itemPage);
-        if (itemPage > 0) {
-            if (selectedContentType.includes('pdf')) {
-                // const uccUrl = this.configuration.uccApi + '/Read/' + eCopy;
-                // this.getUccSetting(uccUrl, eCopy);
 
+        if (selectedContentType.includes('pdf')) {
+            const pdfChildCount = this.items.filter(s => s.parent == eCopy && s.contentType != selectedContentType).length;
+
+            if (pdfChildCount > 0) {
                 setTimeout(() => {
-                    console.log(this.items);
-                    const maxCurrentItemCount = this.items.filter(s => typeof s.parent == eCopy).length;  //Count items that has child
-
-                    console.log('maxCurrentItemCount:' + maxCurrentItemCount);
+                    const maxCurrentItemCount = this.items.filter(s => s.parent == getParenteCopy(s.image)).length;  //Count items that has child
                     this.viewItem(maxCurrentItemCount);   //this will load the first page of the pdf child
                     this.getNavigationChildElement(selectedContentType);
-                }, 1000)
+                }, 1000)                
             }
             else {
-
-                this.viewItem(itemPage)
-                setTimeout(() => {
-                    this.getNavigationChildElement(selectedContentType);
-                }, 100);
+                this.viewItem(itemPage)    
             }
+            
+        }
+        else {
+
+            this.viewItem(itemPage)
+            setTimeout(() => {
+                this.getNavigationChildElement(selectedContentType);
+            }, 100);
         }
     }
+
 
     // async getUccSetting(url: string, eCopy: string) {
     //     if (!url) {
@@ -236,7 +238,7 @@ export class ImageComponent {
     //         setTimeout(() => {
     //             const maxCurrentItemCount = this.items.filter(s => typeof s.parent == 'undefined').length;  //Count items that has child
     //             this.viewItem(maxCurrentItemCount);   //this will load the first page of the pdf child
-               
+
     //         }, 1000)
 
     //     }

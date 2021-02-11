@@ -216,29 +216,10 @@ export class NavigationComponent {
         }, 100);
     }
 
-    getEcopy(img, ecopy):string{
-        let itemName  ='';
-        var data = img.split('&');
-        for(let x=0;x < data.length; x++) {
-            if (data[x].includes('id')) {
-                var icopy = data[x].split('=');
-                itemName = icopy[1];
-                x= data.lenth;
-            }
-        }
-      
-        console.log(itemName);
-
-        return itemName;
-    }
-
     render() {
         if (this.items.length <= 1) {
             return null;
         }
-
-        console.log('navigation-component');
-        console.log(this.items);
         const parentItem = this.items.filter(s => s.parent ==  getParenteCopy(s.image));
         //this.togglePDFThumbnail();
 

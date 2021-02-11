@@ -119,7 +119,6 @@ export namespace Components {
     'setItem': (index: number) => Promise<boolean>;
     'setManifest': (newUrl: string) => Promise<void>;
     'suppressGallery': boolean;
-    'uccApi': string;
     'url': string;
   }
   interface HarmonizedViewport {}
@@ -372,7 +371,6 @@ declare namespace LocalJSX {
     'pdfManifestUri'?: string;
     'preventLoadOnEmpty'?: boolean;
     'suppressGallery'?: boolean;
-    'uccApi'?: string;
     'url'?: string;
   }
   interface HarmonizedViewport {
