@@ -62,19 +62,6 @@ export class IIIFResolver extends Resolver {
         return this;
     }
 
-    //Added by albert Opena
-    //2021-02-11
-    updateItemListWithParent(ecopy):string {
-        //const canvas =  
-        console.log(ecopy);
-        console.log('original Data');
-        
-        var parent= ecopy;
-
-
-        return parent;
-    }
-
     contentTypes(): string[] {
         return [
             'application/json',

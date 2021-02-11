@@ -166,18 +166,15 @@ export class NavigationComponent {
         }
     }
 
-    isParentEcopyExist(ecopy) {
-        return (typeof ecopy == 'undefined' ? true : false)
-    }
- 
+   
     @Method()
     async displayPdfChildNavigation(contentType: string) {
-        const childItem = this.items.filter(s => !this.isParentEcopyExist(s.parent))
+        const childItem = this.items.filter(s =>s.parent !== getParenteCopy(s.image))
         if (contentType.includes('pdf')) {
             this.el.className = childItem.length  > 0 ? "hydrated show" : "hydrated hide";
         }
         else {
-            if (this.isParentEcopyExist(this.currentItem.parent)) {
+            if (getParenteCopy(this.currentItem.image) == this.currentItem.parent) {
                 this.el.className = "hydrated hide";
             }
         }

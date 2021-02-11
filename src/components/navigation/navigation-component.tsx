@@ -33,8 +33,6 @@ export class NavigationComponent {
     @Event({ eventName: "hvNavigationUpdated" }) updatedEvent;
 
     private imageList: HTMLElement;
-    private imageItem: any;
-
     componentWillLoad() {
 
         this.store.mapDispatchToProps(this, { viewItem })
