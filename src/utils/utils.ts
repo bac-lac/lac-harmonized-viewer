@@ -86,6 +86,19 @@ export function getPdfImageElement(element: NodeListOf<HTMLImageElement>): HTMLE
   return imageElement;
 }
 
+export function getParenteCopy(imageId): string {
+   let parent  ='';
+    var data = imageId.split('&');
+    for(let x=0;x < data.length; x++) {
+        if (data[x].includes('id')) {
+            var icopy = data[x].split('=');
+            parent = icopy[1];
+            x= data.lenth;
+        }
+    }  
+    return parent;
+}
+
 
 export function isPDFChildElement(): any {
   const hv = document.querySelector("harmonized-viewer");

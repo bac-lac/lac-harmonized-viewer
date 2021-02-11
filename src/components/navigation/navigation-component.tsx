@@ -4,7 +4,7 @@ import { Unsubscribe, Store } from '@stencil/redux';
 import { viewItem } from '../../store/actions/viewport';
 import { t } from '../../services/i18n-service';
 
-import { isPDFChildExist, getPdfImageElement, getInstance } from '../../utils/utils';
+import { isPDFChildExist, getPdfImageElement, getInstance, getParenteCopy } from '../../utils/utils';
 
 @Component({
     tag: 'harmonized-navigation',
@@ -216,12 +216,30 @@ export class NavigationComponent {
         }, 100);
     }
 
+    getEcopy(img, ecopy):string{
+        let itemName  ='';
+        var data = img.split('&');
+        for(let x=0;x < data.length; x++) {
+            if (data[x].includes('id')) {
+                var icopy = data[x].split('=');
+                itemName = icopy[1];
+                x= data.lenth;
+            }
+        }
+      
+        console.log(itemName);
+
+        return itemName;
+    }
+
     render() {
         if (this.items.length <= 1) {
             return null;
         }
 
-        const parentItem = this.items.filter(s => this.isParentEcopyExist(s.parentEcopy));
+        console.log('navigation-component');
+        console.log(this.items);
+        const parentItem = this.items.filter(s => s.parent ==  getParenteCopy(s.image));
         //this.togglePDFThumbnail();
 
         const className = `harmonized-image-list mdc-image-list mdc-image-list--horizontal mdc-image-list--${this.cols}col`

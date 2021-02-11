@@ -33,6 +33,7 @@ export class IIIFResolver extends Resolver {
     private manifest: Manifesto.IManifest
     private manifestJson: string
 
+    originalManifest: any;
 
     constructor(language: string = 'en') {
         super();
@@ -47,6 +48,7 @@ export class IIIFResolver extends Resolver {
 
         await axios.get(url, { validateStatus: status => status === 200 })
         .then((response) => {
+            this.originalManifest = response.data
             this.manifestJson = response.data as string
             if (this.manifestJson) {
                 // Add a parse check here eventually
@@ -58,6 +60,19 @@ export class IIIFResolver extends Resolver {
         });
         
         return this;
+    }
+
+    //Added by albert Opena
+    //2021-02-11
+    updateItemListWithParent(ecopy):string {
+        //const canvas =  
+        console.log(ecopy);
+        console.log('original Data');
+        
+        var parent= ecopy;
+
+
+        return parent;
     }
 
     contentTypes(): string[] {
@@ -102,11 +117,13 @@ export class IIIFResolver extends Resolver {
 
                     const format = resource.getFormat()
 
+                    const ecopy = this.mapLabels(canvas.getLabel())[0].value;
                     const item: any = {
                         id: canvas.id,
                         contentType: format && format.value,
                         label: this.mapLabels(canvas.getLabel()),
                         image: resource.id,
+                        parent: ecopy,
                         thumbnail: this.getThumbnailUri(canvas),
                         tileSources: this.resolveTileSource(image),
                         metadata: canvas.getMetadata().map(

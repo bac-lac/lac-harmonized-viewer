@@ -5,9 +5,9 @@ import { isNumber } from 'util';
 import { resolveViewportType } from '../../utils/viewport';
 import tippy, { sticky, Props, Instance } from 'tippy.js';
 import { t } from '../../services/i18n-service';
-import axios from 'axios';
+
 import { selectCurrentItem } from '../../store/selectors/item';
-import { getInstance, PDFManifestStatus } from '../../utils/utils';
+import { getInstance } from '../../utils/utils';
 
 @Component({
     tag: 'harmonized-image',
@@ -62,9 +62,6 @@ export class ImageComponent {
 
     @Method()
     async LoadPDFSplitData(): Promise<void> {
-        const eCopy = this.getImageTitle(this.currentItemIndex);
-        const uccUrl = this.configuration.uccApi + '/Read/' + eCopy;
-        this.getUccSetting(uccUrl, eCopy);
         setTimeout(() => {
             this.getNavigationChildElement(this.contentType);
         }, 1000)
@@ -124,13 +121,17 @@ export class ImageComponent {
     handleImageData(itemPage: number) {
         const eCopy = this.items[itemPage].label[0].value;
         const selectedContentType = this.items[itemPage].contentType;
-        if (isNumber(itemPage)) {
+        console.log('itemPage:' + itemPage);
+        if (itemPage > 0) {
             if (selectedContentType.includes('pdf')) {
-                const uccUrl = this.configuration.uccApi + '/Read/' + eCopy;
-                this.getUccSetting(uccUrl, eCopy);
+                // const uccUrl = this.configuration.uccApi + '/Read/' + eCopy;
+                // this.getUccSetting(uccUrl, eCopy);
 
                 setTimeout(() => {
-                    const maxCurrentItemCount = this.items.filter(s => typeof s.parentEcopy == 'undefined').length;  //Count items that has child
+                    console.log(this.items);
+                    const maxCurrentItemCount = this.items.filter(s => typeof s.parent == eCopy).length;  //Count items that has child
+
+                    console.log('maxCurrentItemCount:' + maxCurrentItemCount);
                     this.viewItem(maxCurrentItemCount);   //this will load the first page of the pdf child
                     this.getNavigationChildElement(selectedContentType);
                 }, 1000)
@@ -145,101 +146,101 @@ export class ImageComponent {
         }
     }
 
-    async getUccSetting(url: string, eCopy: string) {
-        if (!url) {
-            return undefined
-        }
-        await axios.get(url, { validateStatus: status => status === 200 })
-            .then(async (response) => {
-                const uccData = response.data;
-                if (uccData.digitalObject) {
-                    if (uccData.digitalObject.id > 0) {
-                        const rootUrl = window.location.hostname.includes('localhost') ? '' : this.configuration.pdfManifestUri;
-                        const pdfManifestUrl = rootUrl + eCopy + '.json';
-                        await this.loadJsonData(pdfManifestUrl);
-                    }
-                }
+    // async getUccSetting(url: string, eCopy: string) {
+    //     if (!url) {
+    //         return undefined
+    //     }
+    //     await axios.get(url, { validateStatus: status => status === 200 })
+    //         .then(async (response) => {
+    //             const uccData = response.data;
+    //             if (uccData.digitalObject) {
+    //                 if (uccData.digitalObject.id > 0) {
+    //                     const rootUrl = this.configuration.pdfManifestUri;
+    //                     const pdfManifestUrl = rootUrl + eCopy + '.json';
+    //                     await this.loadJsonData(pdfManifestUrl);
+    //                 }
+    //             }
 
-            })
-            .catch((e) => {
-                this.viewItem(this.page);
-            });
+    //         })
+    //         .catch((e) => {
+    //             this.viewItem(this.page);
+    //         });
 
-        return this;
+    //     return this;
 
-    }
+    // }
 
     //PDF Pages 
-    async loadJsonData(url) {
-        await fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    this.viewItem(this.page);
-                }
-                return response.json();
-            })
-            .then(jsonResponse => {
-                var data = jsonResponse;
-                if (typeof data.status != 'undefined') {
-                    const dataStatus = data.status as number;
-                    if (dataStatus == PDFManifestStatus.Complete) {
-                        this.addPDFPageItems(data);
-                    }
-                    this.viewItem(this.page);
-                }
-                else {
-                    this.addPDFPageItems(data);
-                }
-            })
-            .catch((error: Error) => {
-                this.viewItem(this.page);
-            });
-    }
+    // async loadJsonData(url) {
+    //     await fetch(url)
+    //         .then(response => {
+    //             if (!response.ok) {
+    //                 this.viewItem(this.page);
+    //             }
+    //             return response.json();
+    //         })
+    //         .then(jsonResponse => {
+    //             var data = jsonResponse;
+    //             if (typeof data.status != 'undefined') {
+    //                 const dataStatus = data.status as number;
+    //                 if (dataStatus == PDFManifestStatus.Complete) {
+    //                     this.addPDFPageItems(data);
+    //                 }
+    //                 this.viewItem(this.page);
+    //             }
+    //             else {
+    //                 this.addPDFPageItems(data);
+    //             }
+    //         })
+    //         .catch((error: Error) => {
+    //             this.viewItem(this.page);
+    //         });
+    // }
 
-    addPDFPageItems(data: any) {
-        if (data.images.length > 0) {
-            //let hilChild = isPDFChildElement();
-            const parentItemCount = this.items.length;
-            data.images.forEach((element, index) => {
-                const title = this.getPDFChildImageTitle(element.urlImage);
-                const item = this.items.find(s => s.image == element.urlImage);
-                if (!this.isExist(item)) {
-                    let page = {
-                        id: this.currentItem.id,
-                        contentType: 'image/jpeg',
-                        label: this.setLabel(title),
-                        image: element.urlImage,
-                        tileSources: this.setTileSource(element.urlImage),
-                        thumbnail: element.urlThumbnail,
-                        metadata: this.currentItem.metadata,
-                        height: element.height,
-                        width: element.width,
-                        parentEcopy: data.parentEcopy
-                    } as DocumentPage;
-                    this.items.push(page);
+    // addPDFPageItems(data: any) {
+    //     if (data.images.length > 0) {
+    //         //let hilChild = isPDFChildElement();
+    //         const parentItemCount = this.items.length;
+    //         data.images.forEach((element, index) => {
+    //             const title = this.getPDFChildImageTitle(element.urlImage);
+    //             const item = this.items.find(s => s.image == element.urlImage);
+    //             if (!this.isExist(item)) {
+    //                 let page = {
+    //                     id: this.currentItem.id,
+    //                     contentType: 'image/jpeg',
+    //                     label: this.setLabel(title),
+    //                     image: element.urlImage,
+    //                     tileSources: this.setTileSource(element.urlImage),
+    //                     thumbnail: element.urlThumbnail,
+    //                     metadata: this.currentItem.metadata,
+    //                     height: element.height,
+    //                     width: element.width,
+    //                     parent: data.parent
+    //                 } as DocumentPage;
+    //                 this.items.push(page);
 
-                    // if (hilChild) {
-                    //     let hvImage = document.createElement('harmonized-image') as HTMLHarmonizedImageElement;
-                    //     hvImage.src = page.thumbnail;
-                    //     hvImage.contentType = page.contentType;
-                    //     hvImage.page = parentItemCount + index;
-                    //     hvImage.caption = t(page.label);
-                    //     hvImage.showCaption = false;
-                    //     hvImage.showTooltip = false;
-                    //     hvImage.preload = index < 16;
-                    //     hilChild.appendChild(hvImage);
-                    // }
-                }
-            });
-            this.viewItem(this.page);
-            setTimeout(() => {
-                const maxCurrentItemCount = this.items.filter(s => typeof s.parentEcopy == 'undefined').length;  //Count items that has child
-                this.viewItem(maxCurrentItemCount);   //this will load the first page of the pdf child
+    //                 // if (hilChild) {
+    //                 //     let hvImage = document.createElement('harmonized-image') as HTMLHarmonizedImageElement;
+    //                 //     hvImage.src = page.thumbnail;
+    //                 //     hvImage.contentType = page.contentType;
+    //                 //     hvImage.page = parentItemCount + index;
+    //                 //     hvImage.caption = t(page.label);
+    //                 //     hvImage.showCaption = false;
+    //                 //     hvImage.showTooltip = false;
+    //                 //     hvImage.preload = index < 16;
+    //                 //     hilChild.appendChild(hvImage);
+    //                 // }
+    //             }
+    //         });
+    //         this.viewItem(this.page);
+    //         setTimeout(() => {
+    //             const maxCurrentItemCount = this.items.filter(s => typeof s.parent == 'undefined').length;  //Count items that has child
+    //             this.viewItem(maxCurrentItemCount);   //this will load the first page of the pdf child
                
-            }, 1000)
+    //         }, 1000)
 
-        }
-    }
+    //     }
+    // }
 
     getNavigationChildElement(selectedContentType: string) {
         let hvEl = getInstance(this.el);

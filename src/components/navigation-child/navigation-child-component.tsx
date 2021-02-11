@@ -4,6 +4,7 @@ import { Unsubscribe, Store } from '@stencil/redux';
 import { viewItem } from '../../store/actions/viewport';
 import { t } from '../../services/i18n-service';
 import { selectCurrentItem } from '../../store/selectors/item';
+import { getParenteCopy } from '../../utils/utils';
 @Component({
     tag: 'harmonized-navigation-child',
     styleUrl: 'navigation-child-component.scss',
@@ -171,12 +172,12 @@ export class NavigationComponent {
  
     @Method()
     async displayPdfChildNavigation(contentType: string) {
-        const childItem = this.items.filter(s => !this.isParentEcopyExist(s.parentEcopy))
+        const childItem = this.items.filter(s => !this.isParentEcopyExist(s.parent))
         if (contentType.includes('pdf')) {
             this.el.className = childItem.length  > 0 ? "hydrated show" : "hydrated hide";
         }
         else {
-            if (this.isParentEcopyExist(this.currentItem.parentEcopy)) {
+            if (this.isParentEcopyExist(this.currentItem.parent)) {
                 this.el.className = "hydrated hide";
             }
         }
@@ -187,8 +188,8 @@ export class NavigationComponent {
             return null;
         }
 
-        const childItem = this.items.filter(s => !this.isParentEcopyExist(s.parentEcopy))
-        const parentItemCount  = this.items.filter(s => this.isParentEcopyExist(s.parentEcopy)).length;
+        const childItem = this.items.filter(s =>s.parent != getParenteCopy(s.image) )
+        const parentItemCount  = this.items.filter(s => s.parent == getParenteCopy(s.image)).length;
  
         const className = ` harmonized-image-list mdc-image-list mdc-image-list--horizontal mdc-image-list--${this.cols}col`
         return <harmonized-image-list class={className} tabindex={0}>

@@ -9,7 +9,7 @@ export class Item implements DocumentPage {
     metadata: DocumentMetadata[];
     height: number;
     width: number;
-    parentEcopy: string;
+    parent: string;
 
     constructor(item: DocumentPage) {
        Object.assign(this, item);
