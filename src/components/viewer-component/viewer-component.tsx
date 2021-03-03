@@ -33,6 +33,7 @@ export class ViewerComponent {
 	@Prop() navigationBackgroundColor: string
 
 	@Prop() url: string
+	@Prop() manifestFallBackUrl: string;
 	@Prop() language: string
 	@Prop({ attribute: 'customvideoplayer'}) customVideoPlayer: boolean = false;
 	@Prop() customItemProps: string[] = [];
@@ -240,13 +241,18 @@ export class ViewerComponent {
 			customVideoPlayer: this.customVideoPlayer,
 			customItemProps: this.customItemProps,
 			deepzoom: this.deepzoomEnabled,
-			suppressGallery: this.suppressGallery
+			suppressGallery: this.suppressGallery			
 		});
 	}
 
 	componentDidLoad() {
 		// Move this into WillLoad (needs tests)
-		this.fetchManifest(this.url);
+		console.log('component did load');
+		console.log(this.manifestFallBackUrl);
+		this.fetchManifest(this.url, this.manifestFallBackUrl);
+		
+		
+		
 	}
 
 	componentDidUpdate() {

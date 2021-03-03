@@ -39,25 +39,62 @@ export class IIIFResolver extends Resolver {
         this.language = language;
     }
 
-    async init(url: string) {
-
+    async init(url: string, fallbackUrl: string) {
         if (!url) {
             return undefined
-        }
-
+        }      
         await axios.get(url, { validateStatus: status => status === 200 })
         .then((response) => {
             this.manifestJson = response.data as string
             if (this.manifestJson) {
-                // Add a parse check here eventually
-                this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
+                // Add a parse check here eventually                
+                const rawManifest = this.manifestJson['sequences'][0]; 
+                const canvasCount = rawManifest['canvases'].length;
+                if (canvasCount == 0) {
+                   this.doFallbackCall(fallbackUrl);
+                }
+                else {
+                    this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
+                }
             }
+        })
+        .catch((e) => {            
+            this.doFallbackCall(fallbackUrl);
+            throw new Error('manifest-not-found');
+            
+        });
+        
+        return this;
+    }
+
+    async doFallbackCall(fallbackUrl) {
+       
+        console.log(fallbackUrl);
+
+        await axios.get(fallbackUrl, { validateStatus: status => status === 200 })
+        .then(async (response) => {
+
+            //Start calling and loading again the manifest
+            await axios.get(url, { validateStatus: status => status === 200 })
+            .then((response) => {
+                this.manifestJson = response.data as string
+                if (this.manifestJson) {
+                    // Add a parse check here eventually
+                    this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
+                }
+            })
+            .catch((e) => {
+                throw new Error('manifest-not-found');
+            });
+            return this;
+
+
+           
         })
         .catch((e) => {
             throw new Error('manifest-not-found');
         });
         
-        return this;
     }
 
     contentTypes(): string[] {

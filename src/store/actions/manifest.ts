@@ -7,7 +7,7 @@ import { AppConfig } from "../../app.config";
 export interface FetchingManifest {
     type: TypeKeys.FETCHING_MANIFEST
 };
-export const fetchManifest = (url: string) => async (dispatch, _getState) => {
+export const fetchManifest = (url: string, FallbackUrl: string) => async (dispatch, _getState) => {
     const fetchingAction: FetchingManifest = {
         type: TypeKeys.FETCHING_MANIFEST
     };
@@ -21,7 +21,7 @@ export const fetchManifest = (url: string) => async (dispatch, _getState) => {
     const resolver = new IIIFResolver(configuration.language);
     resolver.disableDeepzoom = configuration && !configuration.deepzoom;
 
-    await resolver.init(url)
+    await resolver.init(url, FallbackUrl)
             .then((iiifResolver) => {
                 const manifest : Manifesto.IManifest = resolver.getManifest();
                 dispatch(setManifest(manifest));
