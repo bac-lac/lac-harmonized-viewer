@@ -81,15 +81,23 @@ export class IIIFResolver extends Resolver {
 
             //Start calling and loading again the manifest
             console.log('calling manifest after fall back call:' + url);
-            await axios.get(url, { validateStatus: status => status === 200 })
-            .then((response) => {
-                this.manifestJson = response.data as string
+            await axios.get(url, { 
+                headers: {
+                    "Cache-control": "no-store",
+                    "Expires" : 0
+                },
+                validateStatus: status => status === 200 
+            })
+            .then((res) => {
+                console.log('response from the manifest call after doFallback');
+                this.manifestJson = res.data as string
                 if (this.manifestJson) {
                     // Add a parse check here eventually
                     this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
                 }
             })
             .catch((e) => {
+                console.log('error: response from the manifest call after doFallback');
                 throw new Error('manifest-not-found');
             });
             return this;
