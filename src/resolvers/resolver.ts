@@ -5,7 +5,7 @@ export abstract class Resolver {
 
     private _pages: DocumentPage[]
 
-    abstract init(url: string, FallbackUrl: string): Promise<this>
+    async abstract init(url: string, FallbackUrl: string): Promise<this>
 
     title() { return this.getTitle() }
     abstract getTitle(): DocumentLabel[]

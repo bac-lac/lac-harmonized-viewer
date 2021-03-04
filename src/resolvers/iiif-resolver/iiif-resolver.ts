@@ -51,15 +51,18 @@ export class IIIFResolver extends Resolver {
                 const rawManifest = this.manifestJson['sequences'][0]; 
                 const canvasCount = rawManifest['canvases'].length;
                 if (canvasCount == 0) {
-                   this.doFallbackCall(fallbackUrl);
+                    console.log('canvase count :' +  canvasCount);
+                    console.log('Will execute fall back call');
+                   this.doFallbackCall(fallbackUrl, url);
                 }
                 else {
                     this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
                 }
             }
         })
-        .catch((e) => {            
-            this.doFallbackCall(fallbackUrl);
+        .catch((e) => {         
+            console.log('do fallback where there is an error');   
+            this.doFallbackCall(fallbackUrl,url);
             throw new Error('manifest-not-found');
             
         });
@@ -67,14 +70,17 @@ export class IIIFResolver extends Resolver {
         return this;
     }
 
-    async doFallbackCall(fallbackUrl) {
-       
-        console.log(fallbackUrl);
+    async doFallbackCall(fallbackUrl,url) {
+        if (!fallbackUrl) {
+            return undefined
+        }      
+        console.log('executing  doFallBackCall:' + fallbackUrl);
 
         await axios.get(fallbackUrl, { validateStatus: status => status === 200 })
         .then(async (response) => {
 
             //Start calling and loading again the manifest
+            console.log('calling manifest after fall back call:' + url);
             await axios.get(url, { validateStatus: status => status === 200 })
             .then((response) => {
                 this.manifestJson = response.data as string
@@ -94,6 +100,8 @@ export class IIIFResolver extends Resolver {
         .catch((e) => {
             throw new Error('manifest-not-found');
         });
+
+        return this;
         
     }
 
