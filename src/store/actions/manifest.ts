@@ -27,6 +27,11 @@ export const fetchManifest = (url: string, FallbackUrl: string) => async (dispat
                 
                 const manifest : Manifesto.IManifest = resolver.getManifest();
                 dispatch(setManifest(manifest));
+                if (manifest == null) {
+                    console.log('call dofallbackcall in the manifest module')
+                    resolver.doFallbackCall(FallbackUrl, url);
+                } 
+               
 
                 console.log(manifest);
                 // Load items into the viewport

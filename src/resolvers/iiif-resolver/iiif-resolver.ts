@@ -46,7 +46,7 @@ export class IIIFResolver extends Resolver {
         
         url += "?" + this.currentDate.getTime().toString();
         await axios.get(url, { validateStatus: status => status === 200 })
-        .then((response) => {
+        .then( async (response) => {
             this.manifestJson = response.data as string
             if (this.manifestJson) {
                 // Add a parse check here eventually                
@@ -55,7 +55,8 @@ export class IIIFResolver extends Resolver {
                 if (canvasCount == 0) {
                     console.log('canvase count :' +  canvasCount);
                     console.log('Will execute fall back call');
-                   this.doFallbackCall(fallbackUrl, url);
+                   await this.doFallbackCall(fallbackUrl, url);
+                   this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
                 }
                 else {
                     this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
@@ -93,6 +94,7 @@ export class IIIFResolver extends Resolver {
                     // Add a parse check here eventually
                     this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
                     console.log(this.manifest);
+                    
                 }
             })
             .catch((e) => {

@@ -250,6 +250,7 @@ export class ViewerComponent {
 		console.log('component did load');
 		console.log(this.manifestFallBackUrl);
 		this.fetchManifest(this.url, this.manifestFallBackUrl);
+
 		console.log('items afte fectchmanifest call');
 		console.log(this.items);
 
@@ -257,7 +258,10 @@ export class ViewerComponent {
 	}
 
 	componentDidUpdate() {
+
 		console.log('this.manifestError:' +this.manifestError);
+		console.log('this.componentDidUpdate');
+		console.log(this.items);
 		if (this.manifestError) {
 			this.manifestErrorOccurred.emit();
 		}
