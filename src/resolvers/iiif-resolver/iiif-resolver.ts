@@ -32,7 +32,7 @@ export class IIIFResolver extends Resolver {
     private language: string
     private manifest: Manifesto.IManifest
     private manifestJson: string
-
+    private currentDate  = new Date()
 
     constructor(language: string = 'en') {
         super();
@@ -43,6 +43,8 @@ export class IIIFResolver extends Resolver {
         if (!url) {
             return undefined
         }      
+        
+        url += "?" + this.currentDate.getTime().toString();
         await axios.get(url, { validateStatus: status => status === 200 })
         .then((response) => {
             this.manifestJson = response.data as string
@@ -78,16 +80,10 @@ export class IIIFResolver extends Resolver {
 
         await axios.get(fallbackUrl, { validateStatus: status => status === 200 })
         .then(async (response) => {
-
             //Start calling and loading again the manifest
-            const d = new Date();
-            url += "?" + d.getTime().toString();
+            url += "?" + this.currentDate.getTime().toString();
             console.log('calling manifest after fall back call:' + url);
             await axios.get(url, { 
-                headers: {
-                    "Cache-control": "no-store",
-                    "Expires" : 0
-                },
                 validateStatus: status => status === 200 
             })
             .then((res) => {
@@ -96,6 +92,7 @@ export class IIIFResolver extends Resolver {
                 if (this.manifestJson) {
                     // Add a parse check here eventually
                     this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
+                    console.log(this.manifest);
                 }
             })
             .catch((e) => {
@@ -103,16 +100,11 @@ export class IIIFResolver extends Resolver {
                 throw new Error('manifest-not-found');
             });
             return this;
-
-
-           
         })
         .catch((e) => {
             throw new Error('manifest-not-found');
         });
-
         return this;
-        
     }
 
     contentTypes(): string[] {
