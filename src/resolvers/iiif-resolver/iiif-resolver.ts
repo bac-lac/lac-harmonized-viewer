@@ -80,6 +80,8 @@ export class IIIFResolver extends Resolver {
         .then(async (response) => {
 
             //Start calling and loading again the manifest
+            const d = new Date();
+            url += "?" + d.getTime().toString();
             console.log('calling manifest after fall back call:' + url);
             await axios.get(url, { 
                 headers: {
