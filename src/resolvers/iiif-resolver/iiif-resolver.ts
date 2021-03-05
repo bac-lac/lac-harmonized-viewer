@@ -86,7 +86,7 @@ export class IIIFResolver extends Resolver {
         setTimeout(() => {
             let loadingManifest = document.getElementById('loadingManifest');
             loadingManifest.removeAttribute("class");    
-        }, 5000);
+        }, 10);
         
     }
 
