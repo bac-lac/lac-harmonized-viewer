@@ -44,13 +44,7 @@ export class IIIFResolver extends Resolver {
             return undefined
         }      
 
-        const uccContainer = document.getElementsByClassName('ucc-container');
-        if (uccContainer[0] != null) {
-            let progressInfo = document.createElement('div');
-            progressInfo.setAttribute('id','loadingManifest');
-            progressInfo.setAttribute('class','uccLoader');
-            uccContainer[0].appendChild(progressInfo);
-        }
+        this.addProgressbar();
         
         url += "?" + this.currentDate.getTime().toString();
         await axios.get(url, { validateStatus: status => status === 200 })
@@ -84,10 +78,19 @@ export class IIIFResolver extends Resolver {
 
     disableProgressbar() {
         setTimeout(() => {
-            let loadingManifest = document.getElementById('loadingManifest');
-            loadingManifest.removeAttribute("class");    
-        }, 10);
-        
+            document.getElementById('loadingManifest').remove();
+        }, 100);        
+    }
+
+    addProgressbar() {
+        console.log('add progressbar');
+        const viewer = document.getElementsByTagName('lac-harmonized-viewer');
+        console.log(viewer[0].parentElement);
+        const parentElement = viewer[0].parentElement;
+        let progressInfo = document.createElement('div');
+        progressInfo.setAttribute('id','loadingManifest');
+        progressInfo.setAttribute('class','uccLoader');
+        parentElement.appendChild(progressInfo);
     }
 
     async doFallbackCall(fallbackUrl,url) {
