@@ -3,6 +3,7 @@ import { IIIFDocument } from "./iiif-document"
 import axios from 'axios'
 import { t } from "../../services/i18n-service"
 import 'manifesto.js';
+import { randomBytes } from "crypto";
 
 // Library getProperty function had a bug for falsy values (intentional? as in, no boolean values expected?)
 Manifesto.Canvas.prototype.getProperty = function(name: string) : any {
@@ -46,8 +47,9 @@ export class IIIFResolver extends Resolver {
 
         this.addProgressbar();
         
-        url += "?" + this.currentDate.getTime().toString();
-        await axios.get(url, { validateStatus: status => status === 200 })
+        
+        const sUrl = url + "?" + this.currentDate.getTime().toString();
+        await axios.get(sUrl, { validateStatus: status => status === 200 })
         .then( async (response) => {
             this.manifestJson = response.data as string
             if (this.manifestJson) {
@@ -79,18 +81,20 @@ export class IIIFResolver extends Resolver {
     disableProgressbar() {
         setTimeout(() => {
             document.getElementById('loadingManifest').remove();
-        }, 100);        
+        }, 500);        
     }
 
     addProgressbar() {
         console.log('add progressbar');
-        const viewer = document.getElementsByTagName('lac-harmonized-viewer');
-        console.log(viewer[0].parentElement);
-        const parentElement = viewer[0].parentElement;
-        let progressInfo = document.createElement('div');
-        progressInfo.setAttribute('id','loadingManifest');
-        progressInfo.setAttribute('class','uccLoader');
-        parentElement.appendChild(progressInfo);
+        var ui = window.location.pathname;
+        if (ui.includes('record.aspx') || ui == "/" ) {
+            const viewer = document.getElementById('wb-cont');
+            var next = viewer.nextElementSibling;
+            let progressInfo = document.createElement('div');
+            progressInfo.setAttribute('id','loadingManifest');
+            progressInfo.setAttribute('class','uccLoader');        
+            next.insertBefore(progressInfo,next.firstElementChild);
+        }
     }
 
     async doFallbackCall(fallbackUrl,url) {
@@ -102,9 +106,9 @@ export class IIIFResolver extends Resolver {
         await axios.get(fallbackUrl, { validateStatus: status => status === 200 })
         .then(async (response) => {
             //Start calling and loading again the manifest
-            url += "?" + this.currentDate.getTime().toString();
+            const fUrl = url +  "?" + this.currentDate.getTime().toString() + Math.random().toString() ;
             console.log('calling manifest after fall back call:' + url);
-            await axios.get(url, { 
+            await axios.get(fUrl, { 
                 validateStatus: status => status === 200 
             })
             .then((res) => {
