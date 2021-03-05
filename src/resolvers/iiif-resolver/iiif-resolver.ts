@@ -43,6 +43,14 @@ export class IIIFResolver extends Resolver {
         if (!url) {
             return undefined
         }      
+
+        const uccContainer = document.getElementsByClassName('ucc-container');
+        if (uccContainer[0] != null) {
+            let progressInfo = document.createElement('div');
+            progressInfo.setAttribute('id','loadingManifest');
+            progressInfo.setAttribute('class','uccLoader');
+            uccContainer[0].appendChild(progressInfo);
+        }
         
         url += "?" + this.currentDate.getTime().toString();
         await axios.get(url, { validateStatus: status => status === 200 })
@@ -60,17 +68,26 @@ export class IIIFResolver extends Resolver {
                 }
                 else {
                     this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
+                    this.disableProgressbar();
                 }
+
             }
         })
         .catch((e) => {         
             console.log('do fallback where there is an error');   
             this.doFallbackCall(fallbackUrl,url);
+            this.disableProgressbar();
             throw new Error('manifest-not-found');
-            
         });
-        
         return this;
+    }
+
+    disableProgressbar() {
+        setTimeout(() => {
+            let loadingManifest = document.getElementById('loadingManifest');
+            loadingManifest.removeAttribute("class");    
+        }, 5000);
+        
     }
 
     async doFallbackCall(fallbackUrl,url) {
@@ -93,19 +110,22 @@ export class IIIFResolver extends Resolver {
                 if (this.manifestJson) {
                     // Add a parse check here eventually
                     this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
-                    console.log(this.manifest);
-                    
                 }
+                this.disableProgressbar();
             })
             .catch((e) => {
                 console.log('error: response from the manifest call after doFallback');
+                this.disableProgressbar();
                 throw new Error('manifest-not-found');
             });
             return this;
         })
         .catch((e) => {
+            this.disableProgressbar();
             throw new Error('manifest-not-found');
+
         });
+
         return this;
     }
 

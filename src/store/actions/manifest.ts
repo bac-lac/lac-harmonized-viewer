@@ -24,22 +24,17 @@ export const fetchManifest = (url: string, FallbackUrl: string) => async (dispat
     await resolver.init(url, FallbackUrl)
             .then((iiifResolver) => {
                 console.log('resolver Init');
-                
                 const manifest : Manifesto.IManifest = resolver.getManifest();
                 dispatch(setManifest(manifest));
-                if (manifest == null) {
-                    console.log('call dofallbackcall in the manifest module')
-                    resolver.doFallbackCall(FallbackUrl, url);
-                } 
-               
-
-                console.log(manifest);
+                // if (manifest == null) {
+                //     console.log('call dofallbackcall in the manifest module')
+                //     resolver.doFallbackCall(FallbackUrl, url);
+                // }                
+              
                 // Load items into the viewport
                 const title: DocumentLabel[] = resolver.getTitle();
                 const metadata: DocumentMetadata[] = resolver.getMetadata();
                 const items: DocumentPage[] = resolver.getPages(configuration.customItemProps);
-                console.log(items);
-                
                 dispatch(loadView(title, metadata, items));
             })
             .catch((e) => {
