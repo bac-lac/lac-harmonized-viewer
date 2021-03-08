@@ -343,9 +343,7 @@ export class ViewerComponent {
 		// Errors not shown - to restructure like this:
 		// - Error with manifest fetching => Show here
 		// - Error with item loading/showing => Show in viewport
-		return  <div>
-				<div class='spinnerLoader' id='fallBackManifestLoader'></div>
-					<div class={className}>
+		return  <div class={className}>
 					<harmonized-topbar />
 
 					<harmonized-viewport />
@@ -362,8 +360,7 @@ export class ViewerComponent {
 						<harmonized-annotations></harmonized-annotations>
 					</harmonized-drawer>
 					
-				</div>
-				</div>	
+				</div>				
 	}
 
 	/*renderError(error: DocumentError) {

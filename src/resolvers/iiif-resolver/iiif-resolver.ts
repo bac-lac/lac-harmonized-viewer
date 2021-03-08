@@ -80,46 +80,22 @@ export class IIIFResolver extends Resolver {
 
     disableProgressbar() {
         setTimeout(() => {
-            const hv = document.querySelector("harmonized-viewer");
-            const fbLoader =   hv.shadowRoot.getElementById("fallBackManifestLoader");
-            
+            const fbLoader = document.getElementById('fallBackManifestLoader');
            console.log('disableProgressbar :');
            console.log(fbLoader);
             if (fbLoader != null) {
                 fbLoader.setAttribute('style','display:none');
             }
-
-           
         }, 2000);        
     }
 
     addProgressbar() {
-        const hv = document.querySelector("harmonized-viewer");
-        const fbLoader =   hv.shadowRoot.getElementById("fallBackManifestLoader");
-        
+        const fbLoader = document.getElementById('fallBackManifestLoader');
        console.log('addProgressbar:' );
        console.log(fbLoader);
         if (fbLoader != null) {
             fbLoader.setAttribute('style','display:block');
-        }
-        // console.log('add progressbar');
-        // const ui = window.location.pathname.toLowerCase();
-        // console.log('pathname: ' + ui)
-        // let progressInfo = document.createElement('div');
-        // progressInfo.setAttribute('id','loadingManifestSpinner');
-        // progressInfo.setAttribute('class','uccLoader');    
-
-        // if (ui.includes('record.aspx') || ui == "/" ) {
-        //     console.log('adding the progress bar to record')
-        //     const viewer = document.getElementById('wb-cont');
-        //     var next = viewer.nextElementSibling;           
-        //     next.insertBefore(progressInfo,next.firstElementChild);
-        // }
-        // else if (ui.includes('collectionsearch.aspx')) {
-        //     console.log('adding the progress bas to collection search')
-        //     const viewer = document.getElementById('jq-hv-container');            
-        //     viewer.appendChild(progressInfo);
-        // }
+        }       
     }
 
     async doFallbackCall(fallbackUrl,url) {
