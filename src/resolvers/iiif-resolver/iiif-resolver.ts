@@ -64,7 +64,7 @@ export class IIIFResolver extends Resolver {
                 }
                 else {
                     this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
-                   // this.disableProgressbar();
+                    this.disableProgressbar();
                 }
 
             }
@@ -72,7 +72,7 @@ export class IIIFResolver extends Resolver {
         .catch((e) => {         
             console.log('do fallback where there is an error');   
             this.doFallbackCall(fallbackUrl,url);
-          //  this.disableProgressbar();
+            this.disableProgressbar();
             throw new Error('manifest-not-found');
         });
         return this;
@@ -80,32 +80,46 @@ export class IIIFResolver extends Resolver {
 
     disableProgressbar() {
         setTimeout(() => {
-            document.getElementById('loadingManifest').remove();
-        }, 500);        
+            const hv = document.querySelector("harmonized-viewer");
+            const fbLoader =   hv.shadowRoot.getElementById("fallBackManifestLoader");
+            
+           console.log('disableProgressbar :');
+           console.log(fbLoader);
+            if (fbLoader != null) {
+                fbLoader.setAttribute('style','display:none');
+            }
+
+           
+        }, 2000);        
     }
 
     addProgressbar() {
-        console.log('add progressbar');
-        const ui = window.location.pathname.toLowerCase();
-        console.log('pathname: ' + ui)
-        if (ui.includes('record.aspx') || ui == "/" ) {
-            console.log('adding the progress bar to record')
-            const viewer = document.getElementById('wb-cont');
-            var next = viewer.nextElementSibling;
-            let progressInfo = document.createElement('div');
-            progressInfo.setAttribute('id','loadingManifest');
-            progressInfo.setAttribute('class','uccLoader');        
-            next.insertBefore(progressInfo,next.firstElementChild);
+        const hv = document.querySelector("harmonized-viewer");
+        const fbLoader =   hv.shadowRoot.getElementById("fallBackManifestLoader");
+        
+       console.log('addProgressbar:' );
+       console.log(fbLoader);
+        if (fbLoader != null) {
+            fbLoader.setAttribute('style','display:block');
         }
-        else if (ui.includes('collectionsearch.aspx')) {
-            console.log('adding the progress bas to collection search')
-            const viewer = document.getElementById('jq-hv-container');
-            //var next = viewer.nextElementSibling;
-            let progressInfo = document.createElement('div');
-            progressInfo.setAttribute('id','loadingManifest');
-            progressInfo.setAttribute('class','uccLoader');        
-            viewer.appendChild(progressInfo);
-        }
+        // console.log('add progressbar');
+        // const ui = window.location.pathname.toLowerCase();
+        // console.log('pathname: ' + ui)
+        // let progressInfo = document.createElement('div');
+        // progressInfo.setAttribute('id','loadingManifestSpinner');
+        // progressInfo.setAttribute('class','uccLoader');    
+
+        // if (ui.includes('record.aspx') || ui == "/" ) {
+        //     console.log('adding the progress bar to record')
+        //     const viewer = document.getElementById('wb-cont');
+        //     var next = viewer.nextElementSibling;           
+        //     next.insertBefore(progressInfo,next.firstElementChild);
+        // }
+        // else if (ui.includes('collectionsearch.aspx')) {
+        //     console.log('adding the progress bas to collection search')
+        //     const viewer = document.getElementById('jq-hv-container');            
+        //     viewer.appendChild(progressInfo);
+        // }
     }
 
     async doFallbackCall(fallbackUrl,url) {
@@ -129,17 +143,17 @@ export class IIIFResolver extends Resolver {
                     // Add a parse check here eventually
                     this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
                 }
-               // this.disableProgressbar();
+                this.disableProgressbar();
             })
             .catch((e) => {
                 console.log('error: response from the manifest call after doFallback');
-               // this.disableProgressbar();
+                this.disableProgressbar();
                 throw new Error('manifest-not-found');
             });
             return this;
         })
         .catch((e) => {
-            //this.disableProgressbar();
+            this.disableProgressbar();
             throw new Error('manifest-not-found');
 
         });
