@@ -80,7 +80,7 @@ export class IIIFResolver extends Resolver {
 
     disableProgressbar() {
         setTimeout(() => {
-            const fbLoader = document.getElementById('fallBackManifestLoader');
+            const fbLoader = document.getElementById('jq-fallBackManifestLoader');
            console.log('disableProgressbar :');
            console.log(fbLoader);
             if (fbLoader != null) {
@@ -90,7 +90,7 @@ export class IIIFResolver extends Resolver {
     }
 
     addProgressbar() {
-        const fbLoader = document.getElementById('fallBackManifestLoader');
+        const fbLoader = document.getElementById('jq-fallBackManifestLoader');
        console.log('addProgressbar:' );
        console.log(fbLoader);
         if (fbLoader != null) {
