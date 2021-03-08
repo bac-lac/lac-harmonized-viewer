@@ -86,14 +86,25 @@ export class IIIFResolver extends Resolver {
 
     addProgressbar() {
         console.log('add progressbar');
-        var ui = window.location.pathname;
+        const ui = window.location.pathname.toLowerCase();
+        console.log('pathname: ' + ui)
         if (ui.includes('record.aspx') || ui == "/" ) {
+            console.log('adding the progress bar to record')
             const viewer = document.getElementById('wb-cont');
             var next = viewer.nextElementSibling;
             let progressInfo = document.createElement('div');
             progressInfo.setAttribute('id','loadingManifest');
             progressInfo.setAttribute('class','uccLoader');        
             next.insertBefore(progressInfo,next.firstElementChild);
+        }
+        else if (ui.includes('collectionsearch.aspx')) {
+            console.log('adding the progress bas to collection search')
+            const viewer = document.getElementById('jq-hv-container');
+            //var next = viewer.nextElementSibling;
+            let progressInfo = document.createElement('div');
+            progressInfo.setAttribute('id','loadingManifest');
+            progressInfo.setAttribute('class','uccLoader');        
+            viewer.appendChild(progressInfo);
         }
     }
 
