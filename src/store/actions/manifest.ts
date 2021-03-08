@@ -26,11 +26,7 @@ export const fetchManifest = (url: string, FallbackUrl: string) => async (dispat
                 console.log('resolver Init');
                 const manifest : Manifesto.IManifest = resolver.getManifest();
                 dispatch(setManifest(manifest));
-                // if (manifest == null) {
-                //     console.log('call dofallbackcall in the manifest module')
-                //     resolver.doFallbackCall(FallbackUrl, url);
-                // }                
-              
+                           
                 // Load items into the viewport
                 const title: DocumentLabel[] = resolver.getTitle();
                 const metadata: DocumentMetadata[] = resolver.getMetadata();

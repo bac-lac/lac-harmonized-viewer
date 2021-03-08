@@ -64,7 +64,7 @@ export class IIIFResolver extends Resolver {
                 }
                 else {
                     this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
-                    this.disableProgressbar();
+                   // this.disableProgressbar();
                 }
 
             }
@@ -72,7 +72,7 @@ export class IIIFResolver extends Resolver {
         .catch((e) => {         
             console.log('do fallback where there is an error');   
             this.doFallbackCall(fallbackUrl,url);
-            this.disableProgressbar();
+          //  this.disableProgressbar();
             throw new Error('manifest-not-found');
         });
         return this;
@@ -129,17 +129,17 @@ export class IIIFResolver extends Resolver {
                     // Add a parse check here eventually
                     this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
                 }
-                this.disableProgressbar();
+               // this.disableProgressbar();
             })
             .catch((e) => {
                 console.log('error: response from the manifest call after doFallback');
-                this.disableProgressbar();
+               // this.disableProgressbar();
                 throw new Error('manifest-not-found');
             });
             return this;
         })
         .catch((e) => {
-            this.disableProgressbar();
+            //this.disableProgressbar();
             throw new Error('manifest-not-found');
 
         });
