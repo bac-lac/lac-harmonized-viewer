@@ -94,7 +94,7 @@ export class IIIFResolver extends Resolver {
        console.log('addProgressbar:' );
        console.log(fbLoader);
         if (fbLoader != null) {
-            fbLoader.setAttribute('style','display:inline-block;position:absolute;top:40;');
+            fbLoader.setAttribute('style','display:inline-block;position:absolute;top:40%;');
         }       
     }
 
