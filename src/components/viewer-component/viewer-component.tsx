@@ -35,10 +35,10 @@ export class ViewerComponent {
 	@Prop() url: string
 	@Prop() manifestFallBackUrl: string;
 	@Prop() language: string
-	@Prop({ attribute: 'customvideoplayer'}) customVideoPlayer: boolean = false;
+	@Prop({ attribute: 'customvideoplayer' }) customVideoPlayer: boolean = false;
 	@Prop() customItemProps: string[] = [];
 	@Prop() preventLoadOnEmpty: boolean = false;
-	@Prop({ attribute: 'deepzoom'}) deepzoomEnabled: boolean = true
+	@Prop({ attribute: 'deepzoom' }) deepzoomEnabled: boolean = true
 	@Prop() suppressGallery: boolean = false;
 
 	addLanguage: typeof addLanguage
@@ -79,22 +79,22 @@ export class ViewerComponent {
 
 	// Currently assume that the manifest is only fetched once
 	@Watch('currentItemIndex')
-	async emitItemChangeEvent(newValue: number, oldValue: number) : Promise<void> {
+	async emitItemChangeEvent(newValue: number, oldValue: number): Promise<void> {
 		if (!this.items || newValue >= this.items.length)
 			return null;
 
-		addEventListenerToRunOnce(this.el, 'hvRender', function() {
+		addEventListenerToRunOnce(this.el, 'hvRender', function () {
 			this.itemChanged.emit();
 		}.bind(this));
 	}
 
 	@Watch('items')
-	async emitItemsLoadedEvent(newValue: DocumentPage[], oldValue: DocumentPage[]) : Promise<void> {
+	async emitItemsLoadedEvent(newValue: DocumentPage[], oldValue: DocumentPage[]): Promise<void> {
 		// We avoid emitting an event on the initial componentLoad (goes from undefined => [])
 		if (!oldValue && (!newValue || newValue.length === 0))
 			return;
 
-		addEventListenerToRunOnce(this.el, 'hvRender', function() {
+		addEventListenerToRunOnce(this.el, 'hvRender', function () {
 			this.itemsLoaded.emit();
 		}.bind(this));
 	}
@@ -118,12 +118,12 @@ export class ViewerComponent {
 	}
 
 	@Method()
-	async getItems() : Promise<Item[]> {
+	async getItems(): Promise<Item[]> {
 		return this.items.map(item => new Item(item));
 	}
 
 	@Method()
-	async getItemCount() : Promise<number> {
+	async getItemCount(): Promise<number> {
 		return this.items.length;
 	}
 
@@ -166,33 +166,33 @@ export class ViewerComponent {
 	}
 
 	@Listen('viewerDrawerToggle')
-    handleDrawerToggle() {
-        this.toggleDrawer()
+	handleDrawerToggle() {
+		this.toggleDrawer()
 	}
-	
+
 	@Listen('fullscreenchange', { target: 'document' })
-    @Listen('MSFullscreenChange', { target: 'document' })
-    @Listen('mozfullscreenchange', { target: 'document' })
-    @Listen('webkitfullscreenchange', { target: 'document' })
-    handleFullscreenToggleByOther() {
-        // Possibilities - fullscreenElement is null, our current element or some other element
-        const documentElement: any = document;
-        // Remove our element from fullscreen if any other element is in fullscreen
-        if (documentElement.fullscreenElement === this.el ||
+	@Listen('MSFullscreenChange', { target: 'document' })
+	@Listen('mozfullscreenchange', { target: 'document' })
+	@Listen('webkitfullscreenchange', { target: 'document' })
+	handleFullscreenToggleByOther() {
+		// Possibilities - fullscreenElement is null, our current element or some other element
+		const documentElement: any = document;
+		// Remove our element from fullscreen if any other element is in fullscreen
+		if (documentElement.fullscreenElement === this.el ||
 			this.el.contains((documentElement as any).msFullscreenElement) || // IE11
-            documentElement.mozFullScreenElement === this.el ||
-            documentElement.webkitFullscreenElement === this.el) { // or others? 
+			documentElement.mozFullScreenElement === this.el ||
+			documentElement.webkitFullscreenElement === this.el) { // or others? 
 
-            if (!this.fullscreen) {
-                this.toggleFullscreen();
-            }
+			if (!this.fullscreen) {
+				this.toggleFullscreen();
+			}
 
-            return;  
-            
-        } else if (this.fullscreen) {
-            this.toggleFullscreen();
-        }
-    }
+			return;
+
+		} else if (this.fullscreen) {
+			this.toggleFullscreen();
+		}
+	}
 
 	// @Listen('click', { target: 'document' })
 	// handleDocumentClick() {
@@ -241,7 +241,7 @@ export class ViewerComponent {
 			customVideoPlayer: this.customVideoPlayer,
 			customItemProps: this.customItemProps,
 			deepzoom: this.deepzoomEnabled,
-			suppressGallery: this.suppressGallery			
+			suppressGallery: this.suppressGallery
 		});
 	}
 
@@ -250,6 +250,8 @@ export class ViewerComponent {
 		console.log('component did load');
 		console.log(this.manifestFallBackUrl);
 		this.fetchManifest(this.url, this.manifestFallBackUrl);
+
+
 	}
 
 	componentDidUpdate() {
@@ -313,20 +315,21 @@ export class ViewerComponent {
 	render() {
 
 		if (this.manifestFetching) {
-			return 	<div class="centered-box">
-						<span>{t('loadingManifest')}</span>
-						<div class="spinner-container">
-						<harmonized-spinner></harmonized-spinner>
-						</div>
-					</div>
+			return <div class="centered-box">
+				<span>{t('loadingManifest')}</span>
+				<div class="spinner-container">
+					<harmonized-spinner></harmonized-spinner>
+				</div>
+			</div>
 		}
 
 		if (this.manifestError) {
-			return  <div class="centered-box">
-						<harmonized-message type="error">
-								{t(`errors.${this.manifestError.code}`)}
-						</harmonized-message>
-					</div>
+			console.log('error: ' + this.manifestError.code)
+			return <div class="centered-box">
+				<harmonized-message type="error">
+					{t(`errors.${this.manifestError.code}`)}
+				</harmonized-message>
+			</div>
 		}
 
 		if (this.preventLoadOnEmpty) {
@@ -343,45 +346,49 @@ export class ViewerComponent {
 		// Errors not shown - to restructure like this:
 		// - Error with manifest fetching => Show here
 		// - Error with item loading/showing => Show in viewport
-		return  <div class={className}>
-					<harmonized-topbar />
 
-					<harmonized-viewport />
 
-					{!this.suppressGallery &&
-						<harmonized-navigation 	cols={this.navigationCols}
-												rows={this.navigationRows}
-												auto-resize={true}
-												style={{ backgroundColor: this.navigationBackgroundColor }} 
-						/>
-					}
+		return <div class={className}>
+			<harmonized-topbar />
 
-					<harmonized-drawer headerTitle="Details" shown={this.infoShown}>
-						<harmonized-annotations></harmonized-annotations>
-					</harmonized-drawer>
-					
-				</div>				
+			<harmonized-viewport />
+
+			{!this.suppressGallery &&
+				<harmonized-navigation cols={this.navigationCols}
+					rows={this.navigationRows}
+					auto-resize={true}
+					style={{ backgroundColor: this.navigationBackgroundColor }}
+				/>
+			}
+
+			<harmonized-drawer headerTitle="Details" shown={this.infoShown}>
+				<harmonized-annotations></harmonized-annotations>
+			</harmonized-drawer>
+
+		</div>
 	}
 
-	/*renderError(error: DocumentError) {
 
-		if (!error) {
-			return undefined
-		}
 
-		let errorParameters = {}
-
-		if (error && error.optionalParameters) {
-			error.optionalParameters.forEach((parameter) => {
-				errorParameters[parameter.key] = parameter.value
-			})
-		}
-
-		return <div class="error-message">
-			<div innerHTML={iconError}></div>
-			<div class="error-message__text">
-				{i18next.t(`errors.${error.code}`, { ...errorParameters, errorParameters, interpolation: { escapeValue: false } })}
+		/*renderError(error: DocumentError) {
+	
+			if (!error) {
+				return undefined
+			}
+	
+			let errorParameters = {}
+	
+			if (error && error.optionalParameters) {
+				error.optionalParameters.forEach((parameter) => {
+					errorParameters[parameter.key] = parameter.value
+				})
+			}
+	
+			return <div class="error-message">
+				<div innerHTML={iconError}></div>
+				<div class="error-message__text">
+					{i18next.t(`errors.${error.code}`, { ...errorParameters, errorParameters, interpolation: { escapeValue: false } })}
+				</div>
 			</div>
-		</div>
-	}*/
-}
+		}*/
+	}
