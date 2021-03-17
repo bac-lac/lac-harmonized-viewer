@@ -4,7 +4,7 @@
 
     "changeLanguage": "Change language",
     "language_changed": "Language changed to <b>{{language}}</b>.",
-    "loadingManifest": "Loading manifest...",
+    "loadingManifest": "Loading...",
     "fullscreen": "Fullscreen",
     "enterFullscreen": "Enter fullscreen",
     "exitFullscreen": "Exit fullscreen",

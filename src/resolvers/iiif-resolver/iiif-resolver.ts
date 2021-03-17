@@ -45,9 +45,6 @@ export class IIIFResolver extends Resolver {
             return undefined
         }      
 
-        //this.addProgressbar();
-        
-        
         const sUrl = url + "?" + this.currentDate.getTime().toString();
         await axios.get(sUrl, { validateStatus: status => status === 200 })
         .then( async (response) => {
@@ -57,23 +54,21 @@ export class IIIFResolver extends Resolver {
                 const rawManifest = this.manifestJson['sequences'][0]; 
                 const canvasCount = rawManifest['canvases'].length;
                 if (canvasCount == 0) {
-                    console.log('canvase count :' +  canvasCount);
+                    console.log('canvas count :' +  canvasCount);
                     console.log('Will execute fall back call');
                    await this.doFallbackCall(fallbackUrl, url);
                    this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
                 }
                 else {
-                    this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
-                   // this.disableProgressbar();
+                    this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest              
                 }
-
             }
         })
-        .catch((e) => {         
+        .catch(async(e) => {         
             console.log('do fallback where there is an error');   
-            this.doFallbackCall(fallbackUrl,url);
-            //this.disableProgressbar();
-            throw new Error('manifest-not-found');
+            await this.doFallbackCall(fallbackUrl,url);
+            this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
+            //throw new Error('manifest-not-found');
         });
         return this;
     }
@@ -173,12 +168,9 @@ export class IIIFResolver extends Resolver {
 
         return this.getDefaultSequence().getCanvases()
             .flatMap((canvas) => canvas.getImages().map((image) => {
-
                 const resource = image.getResource()
                 if (resource) {
-
                     const format = resource.getFormat()
-
                     const item: any = {
                         id: canvas.id,
                         contentType: format && format.value,
@@ -191,7 +183,6 @@ export class IIIFResolver extends Resolver {
                                 const key = lvp.getLabel();
                                 const label: DocumentLabel[] = lvp.label;
                                 const value: DocumentLabel[] = lvp.value; 
-
                                 return {
                                     key,
                                     label,

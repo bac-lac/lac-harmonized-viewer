@@ -3,7 +3,7 @@
     "name": "Français",
     "changeLanguage": "Choisir la langue",
     "language_changed": "Le texte s'affiche maintenant en {{language}}.",
-    "loadingManifest": "Chargement du manifeste...",
+    "loadingManifest": "Chargement en cours...",
     "fullscreen": "Plein écran",
     "enterFullscreen": "Ouvrir en mode plein écran",
     "exitFullscreen": "Quitter le mode plein écran",
