@@ -109,6 +109,7 @@ export namespace Components {
     'getViewportElement': () => Promise<HTMLElement>;
     'getViewportType': () => Promise<ViewportType>;
     'language': string;
+    'manifestFallBackUrl': string;
     'navigationBackgroundColor': string;
     'navigationCols': number;
     'navigationEnable': boolean;
@@ -358,6 +359,7 @@ declare namespace LocalJSX {
     'customVideoPlayer'?: boolean;
     'deepzoomEnabled'?: boolean;
     'language'?: string;
+    'manifestFallBackUrl'?: string;
     'navigationBackgroundColor'?: string;
     'navigationCols'?: number;
     'navigationEnable'?: boolean;

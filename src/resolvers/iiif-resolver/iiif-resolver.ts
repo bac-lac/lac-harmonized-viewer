@@ -3,6 +3,7 @@ import { IIIFDocument } from "./iiif-document"
 import axios from 'axios'
 import { t } from "../../services/i18n-service"
 import 'manifesto.js';
+import { randomBytes } from "crypto";
 
 // Library getProperty function had a bug for falsy values (intentional? as in, no boolean values expected?)
 Manifesto.Canvas.prototype.getProperty = function(name: string) : any {
@@ -32,6 +33,7 @@ export class IIIFResolver extends Resolver {
     private language: string
     private manifest: Manifesto.IManifest
     private manifestJson: string
+    private currentDate  = new Date()
 
     originalManifest: any;
 
@@ -40,25 +42,76 @@ export class IIIFResolver extends Resolver {
         this.language = language;
     }
 
-    async init(url: string) {
+    async init(url: string, fallbackUrl: string) {
 
         if (!url) {
             return undefined
         }
-
-        await axios.get(url, { validateStatus: status => status === 200 })
-        .then((response) => {
-            this.originalManifest = response.data
+        const sUrl = url + "?" + this.currentDate.getTime().toString();
+        await axios.get(sUrl, { validateStatus: status => status === 200 })
+        .then(async (response) => {
             this.manifestJson = response.data as string
             if (this.manifestJson) {
-                // Add a parse check here eventually
-                this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
+                // Add a parse check here eventually                
+                const rawManifest = this.manifestJson['sequences'][0]; 
+                const canvasCount = rawManifest['canvases'].length;
+                if (canvasCount == 0) {
+                    console.log('canvas count :' +  canvasCount);
+                    console.log('Will execute fall back call');
+                   await this.doFallbackCall(fallbackUrl, url);
+                   this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
+                }
+                else {
+                    this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest              
+                }
             }
         })
-        .catch((e) => {
+        .catch(async (e) => {
+            console.log('do fallback where there is an error');   
+            await this.doFallbackCall(fallbackUrl,url);
+            this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
             throw new Error('manifest-not-found');
         });
         
+        return this;
+    }
+
+    async doFallbackCall(fallbackUrl,url) {
+        if (!fallbackUrl) {
+            return undefined
+        }      
+        console.log('executing  doFallBackCall:' + fallbackUrl);
+
+        await axios.get(fallbackUrl, { validateStatus: status => status === 200 })
+        .then(async (response) => {
+            //Start calling and loading again the manifest
+            const fUrl = url +  "?" + this.currentDate.getTime().toString() + Math.random().toString() ;
+            console.log('calling manifest after fall back call:' + url);
+            await axios.get(fUrl, { 
+                validateStatus: status => status === 200 
+            })
+            .then((res) => {
+                console.log('response from the manifest call after doFallback');
+                this.manifestJson = res.data as string
+                if (this.manifestJson) {
+                    // Add a parse check here eventually
+                    this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
+                }
+                //this.disableProgressbar();
+            })
+            .catch((e) => {
+                console.log('error: response from the manifest call after doFallback');
+               // this.disableProgressbar();
+                throw new Error('manifest-not-found');
+            });
+            return this;
+        })
+        .catch((e) => {
+           // this.disableProgressbar();
+            throw new Error('manifest-not-found');
+
+        });
+
         return this;
     }
 

@@ -33,6 +33,7 @@ export class ViewerComponent {
 	@Prop() navigationBackgroundColor: string
 
 	@Prop() url: string
+	@Prop() manifestFallBackUrl: string;
 	@Prop() language: string
 	@Prop({ attribute: 'customvideoplayer' }) customVideoPlayer: boolean = false;
 	@Prop() customItemProps: string[] = [];
@@ -166,7 +167,7 @@ export class ViewerComponent {
 
 	@Method()
 	async setManifest(newUrl: string) {
-		this.fetchManifest(newUrl);
+		this.fetchManifest(this.url, this.manifestFallBackUrl);
 	}
 
 	@Listen('viewerDrawerToggle')
@@ -252,7 +253,7 @@ export class ViewerComponent {
 
 	componentDidLoad() {
 		// Move this into WillLoad (needs tests)
-		this.fetchManifest(this.url);
+		this.fetchManifest(this.url, this.manifestFallBackUrl);
 	}
 
 	componentDidUpdate() {
