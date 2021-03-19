@@ -68,7 +68,7 @@ export class IIIFResolver extends Resolver {
             console.log('do fallback where there is an error');   
             await this.doFallbackCall(fallbackUrl,url);
             this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
-            //throw new Error('manifest-not-found');
+            throw new Error('manifest-not-found');
         });
         return this;
     }
