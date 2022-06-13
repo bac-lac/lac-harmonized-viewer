@@ -40,7 +40,6 @@ export class ViewerComponent {
 	@Prop() preventLoadOnEmpty: boolean = false;
 	@Prop({ attribute: 'deepzoom' }) deepzoomEnabled: boolean = true
 	@Prop() suppressGallery: boolean = false;
-	@Prop() pdfManifestUri: string;
 
 	addLanguage: typeof addLanguage
 	addOverlayState: typeof addOverlay
@@ -113,6 +112,7 @@ export class ViewerComponent {
 		if (!this.items || index >= this.items.length || index < 0 || this.currentItemIndex == index) {
 			return false;
 		}
+
 		this.viewItem(index);
 		return true;
 	}
@@ -163,11 +163,6 @@ export class ViewerComponent {
 	@Method()
 	async addOverlay(x: number, y: number, width: number, height: number) {
 		this.addOverlayState(x, y, width, height)
-	}
-
-	@Method()
-	async setManifest(newUrl: string) {
-		this.fetchManifest(this.url, this.manifestFallBackUrl);
 	}
 
 	@Listen('viewerDrawerToggle')
@@ -246,22 +241,23 @@ export class ViewerComponent {
 			customVideoPlayer: this.customVideoPlayer,
 			customItemProps: this.customItemProps,
 			deepzoom: this.deepzoomEnabled,
-			suppressGallery: this.suppressGallery,
-			pdfManifestUri: this.pdfManifestUri
+			suppressGallery: this.suppressGallery
 		});
 	}
 
 	componentDidLoad() {
 		// Move this into WillLoad (needs tests)
+		console.log('component did load');
+		console.log(this.manifestFallBackUrl);
 		this.fetchManifest(this.url, this.manifestFallBackUrl);
+
+
 	}
 
 	componentDidUpdate() {
-		
 		if (this.manifestError) {
 			this.manifestErrorOccurred.emit();
 		}
-
 		if (this.preventLoadOnEmpty) {
 			// Check if manifest is loaded & empty
 			if (this.manifestFetched && this.items.length === 0) {
@@ -328,6 +324,7 @@ export class ViewerComponent {
 		}
 
 		if (this.manifestError) {
+			console.log('error: ' + this.manifestError.code)
 			return <div class="centered-box">
 				<harmonized-message type="error">
 					{t(`errors.${this.manifestError.code}`)}
@@ -349,11 +346,13 @@ export class ViewerComponent {
 		// Errors not shown - to restructure like this:
 		// - Error with manifest fetching => Show here
 		// - Error with item loading/showing => Show in viewport
+
+
 		return <div class={className}>
-
-
 			<harmonized-topbar />
+
 			<harmonized-viewport />
+
 			{!this.suppressGallery &&
 				<harmonized-navigation cols={this.navigationCols}
 					rows={this.navigationRows}
@@ -361,12 +360,6 @@ export class ViewerComponent {
 					style={{ backgroundColor: this.navigationBackgroundColor }}
 				/>
 			}
-			<harmonized-navigation-child class="hydrated hide"
-				cols={this.navigationCols}
-				rows={this.navigationRows}
-				auto-resize={true}
-				style={{ backgroundColor: this.navigationBackgroundColor }}
-			/>
 
 			<harmonized-drawer headerTitle="Details" shown={this.infoShown}>
 				<harmonized-annotations></harmonized-annotations>
@@ -375,25 +368,27 @@ export class ViewerComponent {
 		</div>
 	}
 
-	/*renderError(error: DocumentError) {
 
-		if (!error) {
-			return undefined
-		}
 
-		let errorParameters = {}
-
-		if (error && error.optionalParameters) {
-			error.optionalParameters.forEach((parameter) => {
-				errorParameters[parameter.key] = parameter.value
-			})
-		}
-
-		return <div class="error-message">
-			<div innerHTML={iconError}></div>
-			<div class="error-message__text">
-				{i18next.t(`errors.${error.code}`, { ...errorParameters, errorParameters, interpolation: { escapeValue: false } })}
+		/*renderError(error: DocumentError) {
+	
+			if (!error) {
+				return undefined
+			}
+	
+			let errorParameters = {}
+	
+			if (error && error.optionalParameters) {
+				error.optionalParameters.forEach((parameter) => {
+					errorParameters[parameter.key] = parameter.value
+				})
+			}
+	
+			return <div class="error-message">
+				<div innerHTML={iconError}></div>
+				<div class="error-message__text">
+					{i18next.t(`errors.${error.code}`, { ...errorParameters, errorParameters, interpolation: { escapeValue: false } })}
+				</div>
 			</div>
-		</div>
-	}*/
-}
+		}*/
+	}

@@ -35,21 +35,19 @@ export class IIIFResolver extends Resolver {
     private manifestJson: string
     private currentDate  = new Date()
 
-    originalManifest: any;
-
     constructor(language: string = 'en') {
         super();
         this.language = language;
     }
 
     async init(url: string, fallbackUrl: string) {
-
         if (!url) {
             return undefined
-        }
+        }      
+
         const sUrl = url + "?" + this.currentDate.getTime().toString();
         await axios.get(sUrl, { validateStatus: status => status === 200 })
-        .then(async (response) => {
+        .then( async (response) => {
             this.manifestJson = response.data as string
             if (this.manifestJson) {
                 // Add a parse check here eventually                
@@ -66,14 +64,33 @@ export class IIIFResolver extends Resolver {
                 }
             }
         })
-        .catch(async (e) => {
+        .catch(async(e) => {         
             console.log('do fallback where there is an error');   
             await this.doFallbackCall(fallbackUrl,url);
             this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
             throw new Error('manifest-not-found');
         });
-        
         return this;
+    }
+
+    disableProgressbar() {
+        setTimeout(() => {
+            const fbLoader = document.getElementById('jq-fallBackManifestLoader');
+           console.log('disableProgressbar :');
+           console.log(fbLoader);
+            if (fbLoader != null) {
+                fbLoader.setAttribute('style','display:none');
+            }
+        }, 2000);        
+    }
+
+    addProgressbar() {
+        const fbLoader = document.getElementById('jq-fallBackManifestLoader');
+       console.log('addProgressbar:' );
+       console.log(fbLoader);
+        if (fbLoader != null) {
+            fbLoader.setAttribute('style','display:inline-block;position:absolute;top:40%;');
+        }       
     }
 
     async doFallbackCall(fallbackUrl,url) {
@@ -151,19 +168,14 @@ export class IIIFResolver extends Resolver {
 
         return this.getDefaultSequence().getCanvases()
             .flatMap((canvas) => canvas.getImages().map((image) => {
-
                 const resource = image.getResource()
                 if (resource) {
-
                     const format = resource.getFormat()
-
-                    const ecopy = this.mapLabels(canvas.getLabel())[0].value;
                     const item: any = {
                         id: canvas.id,
                         contentType: format && format.value,
                         label: this.mapLabels(canvas.getLabel()),
                         image: resource.id,
-                        parent: ecopy,
                         thumbnail: this.getThumbnailUri(canvas),
                         tileSources: this.resolveTileSource(image),
                         metadata: canvas.getMetadata().map(
@@ -171,7 +183,6 @@ export class IIIFResolver extends Resolver {
                                 const key = lvp.getLabel();
                                 const label: DocumentLabel[] = lvp.label;
                                 const value: DocumentLabel[] = lvp.value; 
-
                                 return {
                                     key,
                                     label,
