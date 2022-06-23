@@ -254,7 +254,9 @@ declare global {
 }
 
 declare namespace LocalJSX {
-  interface HarmonizedAnnotations {}
+  interface HarmonizedAnnotations {
+    'onHvNavigationUpdated'?: (event: CustomEvent<any>) => void;
+  }
   interface HarmonizedAudio {
     'contentType'?: string;
     'url'?: string;

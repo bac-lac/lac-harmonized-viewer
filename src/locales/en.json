@@ -31,6 +31,13 @@
     "pdfIE11NoRenderLine1": "Harmonized Viewer could not render the PDF.",
     "pdfIE11NoRenderLine2": "Please make sure you have a PDF reader plugin enabled (i.e. Adobe Reader) or use a modern browser that supports PDF rendering.",
     "pdfNoEmbed": "Something went wrong displaying this PDF.",
+
+    "yourSearchFor": "Your search for",
+    "allTheseWords": "All these words: ",
+    "thisExactPhrase": "This exact phrase: ",
+    "anyOfTheseWords": "Any of these words: ",
+    "wasFound": "was found on ",
+    "pages": " page(s)",
     
     "errors": {
         "manifest-not-found": "Manifest not found.",

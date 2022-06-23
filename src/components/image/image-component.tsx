@@ -152,6 +152,18 @@ export class ImageComponent {
         }
     }
 
+    // Kwic
+    getParameterByName(name, url) {
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    
+
     render() {
 
         let className = 'mdc-image-list__item'
@@ -178,6 +190,47 @@ export class ImageComponent {
         const viewportType: string = resolveViewportType(this.contentType);
         const thumbnailSrc = this.determineThumbnail(viewportType);
 
+        // Kwic begin
+        var kwicImg = false;
+        // Kwic = f(kwic-pages)
+        /*
+        if (document.querySelector("lac-harmonized-viewer") && 
+            document.querySelector("lac-harmonized-viewer").getAttribute("kwic-pages") &&
+            document.querySelector("lac-harmonized-viewer").getAttribute("kwic-pages") != "")
+        {
+            var kwicPagesArr = document.querySelector("lac-harmonized-viewer").getAttribute("kwic-pages").split(',');
+            if (kwicPagesArr.length > 0)
+            {
+                var kwicPageNumArr = (this.caption).split(' ');
+                if (kwicPageNumArr.length == 2)
+                {
+                    var kwicPageNum = kwicPageNumArr[1];
+                    if (kwicPagesArr.find(x => x === kwicPageNum))
+                    {
+                        kwicImg = true;
+                    } 
+                } 
+            }
+        }
+        */
+        // Kwic = f(kwic-ecopies)
+        if (document.querySelector("lac-harmonized-viewer") && 
+            document.querySelector("lac-harmonized-viewer").getAttribute("kwic-ecopies") &&
+            document.querySelector("lac-harmonized-viewer").getAttribute("kwic-ecopies") != "")
+        {
+            var kwicEcopiesArr = document.querySelector("lac-harmonized-viewer").getAttribute("kwic-ecopies").split(',');
+            if (kwicEcopiesArr.length > 0)
+            {
+                var kwicEcopy = this.getParameterByName("id", thumbnailSrc);
+                if (kwicEcopy != "" &&
+                    kwicEcopiesArr.find(x => x === kwicEcopy))
+                {
+                    kwicImg = true;
+                }
+            }
+        }
+        // Kwic end         
+
         return <Host
             role="button"
             class={className}
@@ -200,6 +253,11 @@ export class ImageComponent {
                     }}
                     role="listitem"
                 />
+
+                { kwicImg ? 
+                    <img src="http://www.clker.com/cliparts/m/I/n/1/T/P/orange-dot-md.png" class="kwic-image" /> :
+                    "" 
+                }
 
                 <ul class="inv" role="listitem">
                     {this.props.map((prop) => 

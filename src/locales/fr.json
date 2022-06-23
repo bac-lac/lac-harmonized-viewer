@@ -30,6 +30,13 @@
     "pdfNoIE11Line1": "L'affichage des PDF n'est actuellement pas pris en charge par Internet Explorer 11.",
     "pdfNoIE11Line2": "Veuillez télécharger le fichier ou utiliser un navigateur pris en charge (par exemple Chrome, Safari, Firefox, Edge).",
 
+    "yourSearchFor": "Votre recherche de",
+    "allTheseWords": "Tous les mots : ",
+    "thisExactPhrase": "Expression exacte : ",
+    "anyOfTheseWords": "Un de ces mots : ",
+    "wasFound": "a été trouvé sur ",
+    "pages": " page(s)",
+    
     "errors": {
         "manifest-not-found": "Le manifeste n'a pas pu être trouvé.",
         "request-failed": "La requête a échoué {{url}}",
