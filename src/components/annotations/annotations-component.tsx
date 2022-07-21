@@ -4,6 +4,7 @@ import { kStringMaxLength } from 'buffer';
 import { t } from '../../services/i18n-service';
 import { viewItem } from '../../store/actions/viewport';
 import { getLanguageKvpValue } from '../../utils/lang';
+import { selectCurrentItem } from '../../store/selectors/item';
 
 @Component({
     tag: 'harmonized-annotations',
@@ -34,18 +35,16 @@ export class AnnotationsComponent {
     private imageList: HTMLElement
 
     componentWillLoad() {
-
         this.store.mapDispatchToProps(this, { viewItem })
         this.storeUnsubscribe = this.store.mapStateToProps(this, (state: MyAppState) => {
             const {
                 viewport: { itemIndex, items }
             } = state
             return {
-
                 language: state.document.configuration.language,
                 title: state.viewport.title,
                 metadata: state.viewport.metadata,
-                //currentItem: selectCurrentItem(state),
+                currentItem: selectCurrentItem(state),
                 currentItemIndex: itemIndex,
                 items
             }
@@ -116,7 +115,7 @@ export class AnnotationsComponent {
             if (kwicEcopiesArr.length > 0 && kwicPagesArr.length > 0 && kwicEcopiesArr.length == kwicPagesArr.length)
             {
                 if (document.querySelector("lac-harmonized-viewer").getAttribute("kwic-q") &&
-                document.querySelector("lac-harmonized-viewer").getAttribute("kwic-q") != "")
+                    document.querySelector("lac-harmonized-viewer").getAttribute("kwic-q") != "")
                 {
                     kwicQ = document.querySelector("lac-harmonized-viewer").getAttribute("kwic-q");
                 }
