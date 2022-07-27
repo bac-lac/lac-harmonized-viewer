@@ -36,7 +36,7 @@
     "anyOfTheseWords": "Un de ces mots : ",
     "wasFound": "a été trouvé sur ",
     "pages": " page(s)",
-    
+    "navigationObject":"Objets numériques appartenant à cette notice",
     "errors": {
         "manifest-not-found": "Le manifeste n'a pas pu être trouvé.",
         "request-failed": "La requête a échoué {{url}}",

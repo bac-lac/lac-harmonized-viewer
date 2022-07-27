@@ -7,7 +7,6 @@ import i18next from 'i18next';
 import { AppConfig } from '../../app.config';
 import { fetchManifest } from '../../store/actions/manifest';
 import { viewItem, toggleFullscreen, toggleDrawer } from '../../store/actions/viewport';
-import iconError from '../../assets/material-icons/ic_error_24px.svg'
 import { Item } from '../../models/item';
 import { t } from '../../services/i18n-service';
 import { resolveViewportType } from '../../utils/viewport';
@@ -355,13 +354,17 @@ export class ViewerComponent {
 
 			{!this.suppressGallery &&
 				<harmonized-navigation cols={this.navigationCols}
+					aria-controls='hv-viewport'
+					role='toolbar'
+					aria-label={t('navigationObject')}
 					rows={this.navigationRows}
 					auto-resize={true}
+					aria-describedby='legend'
 					style={{ backgroundColor: this.navigationBackgroundColor }}
 				/>
 			}
 
-			<harmonized-drawer headerTitle="Details" shown={this.infoShown}>
+			<harmonized-drawer headerTitle="Details" shown={this.infoShown} id='hv-drawer' aria-expanded='false'>
 				<harmonized-annotations></harmonized-annotations>
 			</harmonized-drawer>
 

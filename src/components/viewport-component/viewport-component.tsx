@@ -53,7 +53,7 @@ export class ViewportComponent {
         /*if (this.status.code == 'empty') {
             return undefined
         }*/
-        return <Host class={`viewport viewport-${viewportType}`}>
+        return <Host class={`viewport viewport-${viewportType}`} id='hv-viewport'>
 
             {/*
                 this.status.code == 'loading' &&

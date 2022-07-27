@@ -29,6 +29,9 @@ export class DrawerComponent {
 
     @Watch('shown')
     handleOpen(newValue: boolean, oldValue: boolean): void {
+        this.el.querySelector('button').setAttribute('aria-expanded','true');
+        this.el.querySelector('button').setAttribute('aria-hidden','false');
+      
         if (newValue !== oldValue && newValue) {
             this.drawer.open = true;
         }
@@ -36,6 +39,8 @@ export class DrawerComponent {
 
     handleClose() : void {
         this.drawer.open = false;
+        this.el.querySelector('button').setAttribute('aria-expanded','false');
+        this.el.querySelector('button').setAttribute('aria-hidden','true');
         this.viewerDrawerToggle.emit();
     }
 
@@ -47,7 +52,8 @@ export class DrawerComponent {
                             <harmonized-button
                             icon={arrowRight}
                             title={t('closeSidebar')}
-                            aria-label={t('closeSidebar')}
+                            tooltip={this.headerTitle}                           
+                            aria-controls='hv-drawer'
                             onClick={this.handleClose.bind(this)} />
                         </div>
                         <div class="mdc-drawer__title">

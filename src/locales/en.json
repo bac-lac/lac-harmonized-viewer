@@ -38,6 +38,7 @@
     "anyOfTheseWords": "Any of these words: ",
     "wasFound": "was found on ",
     "pages": " page(s)",
+    "navigationObject":"Digital objects belonging to this record",
     
     "errors": {
         "manifest-not-found": "Manifest not found.",

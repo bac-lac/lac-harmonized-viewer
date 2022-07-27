@@ -42,12 +42,13 @@ export class ButtonComponent {
         className = "-target-wrapper"
 
         if (this.icon && !this.label) {
-            buttonClassName = 'mdc-icon-button'
+            buttonClassName = 'mdc-icon-button'            
         }
         else {
-            buttonClassName = 'mdc-button'
+            buttonClassName = 'mdc-button'           
         }
 
+        
         if (this.size == 'lg') buttonClassName += ` ${buttonClassName}--lg`
         else if (this.size == 'md') buttonClassName += ` ${buttonClassName}--md`
         else if (this.size == 'sm') buttonClassName += ` ${buttonClassName}--sm`
@@ -58,7 +59,7 @@ export class ButtonComponent {
         if (this.outline) buttonClassName += ' mdc-button--outlined'
 
         if (this.fullWidth) className += ' full-width'
-
+      
         return <Host class={className}>
 
             <button
@@ -66,11 +67,11 @@ export class ButtonComponent {
                 class={buttonClassName}
                 disabled={this.disabled}
                 title={this.tooltip}
-                aria-label={this.tooltip}>
-
-
+                aria-controls='hv-drawer'
+                aria-label={this.tooltip}
+                aria-hidden='true'
+                aria-expanded='false'>
                 <div class="mdc-button__ripple"></div>
-
                 {this.icon && <span class={this.iconClassName} aria-hidden={true} innerHTML={this.icon}></span>}
                 {this.label && <span class="mdc-button__label">{this.label}</span>}
 
