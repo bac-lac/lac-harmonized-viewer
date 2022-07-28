@@ -22,6 +22,7 @@ export class ImageComponent {
     @Prop() caption: string = "" // also title
     @Prop() showCaption: boolean
     @Prop() showTooltip: boolean
+    
 
     @State() loading: boolean = false
     @State() loaded: boolean = false
@@ -229,12 +230,16 @@ export class ImageComponent {
                 }
             }
         }
+        
         // Kwic end         
-
+        let itemId = 'item_' + this.page;
+       
         return <Host
             role="button"
             class={className}
             onClick={this.loaded && this.handleClick.bind(this)}
+            aria-label={this.caption == "" ? t('untitled') : this.caption}
+            aria-describedby={itemId}
             title={this.caption == "" ? t('untitled') : this.caption}>
 
             <div class="mdc-image-list__image-aspect-container" role="list">
@@ -259,7 +264,7 @@ export class ImageComponent {
                     "" 
                 }
 
-                <ul class="inv" role="listitem">
+                <ul class="inv" role="listitem" id={itemId}>
                     {this.props.map((prop) => 
                         <li>{prop}</li>
                     )}
