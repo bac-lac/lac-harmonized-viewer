@@ -268,6 +268,9 @@ export class ImageComponent {
                     {this.props.map((prop) => 
                         <li>{prop}</li>
                     )}
+                    { kwicImg ? 
+                        <li>{t('imageContainsTerms')}</li> : ""
+                    }
                 </ul>
             </div>
 
