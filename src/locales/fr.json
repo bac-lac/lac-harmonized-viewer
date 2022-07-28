@@ -1,6 +1,7 @@
 {
     "code": "fr",
     "name": "Français",
+
     "changeLanguage": "Choisir la langue",
     "language_changed": "Le texte s'affiche maintenant en {{language}}.",
     "loadingManifest": "Chargement en cours...",
@@ -29,14 +30,17 @@
 
     "pdfNoIE11Line1": "L'affichage des PDF n'est actuellement pas pris en charge par Internet Explorer 11.",
     "pdfNoIE11Line2": "Veuillez télécharger le fichier ou utiliser un navigateur pris en charge (par exemple Chrome, Safari, Firefox, Edge).",
+    "pdfNoEmbed": "Une erreur s'est produite lors de l'affichage de ce PDF.",
 
-    "yourSearchFor": "Votre recherche de",
-    "allTheseWords": "Tous les mots : ",
-    "thisExactPhrase": "Expression exacte : ",
-    "anyOfTheseWords": "Un de ces mots : ",
-    "wasFound": "a été trouvé sur ",
+    "search": "RECHERCHE",
+    "yourSearchFor": "VOTRE RECHERCHE DE",
+    "allTheseWords": "- tous les mots : ",
+    "thisExactPhrase": "- expression exacte : ",
+    "anyOfTheseWords": "- un de ces mots : ",
+    "wasFound": "A ÉTÉ TROUVÉ SUR ",
     "pages": " page(s)",
     "navigationObject":"Objets numériques appartenant à cette notice",
+
     "errors": {
         "manifest-not-found": "Le manifeste n'a pas pu être trouvé.",
         "request-failed": "La requête a échoué {{url}}",

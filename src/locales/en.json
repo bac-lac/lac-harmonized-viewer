@@ -32,11 +32,12 @@
     "pdfIE11NoRenderLine2": "Please make sure you have a PDF reader plugin enabled (i.e. Adobe Reader) or use a modern browser that supports PDF rendering.",
     "pdfNoEmbed": "Something went wrong displaying this PDF.",
 
-    "yourSearchFor": "Your search for",
-    "allTheseWords": "All these words: ",
-    "thisExactPhrase": "This exact phrase: ",
-    "anyOfTheseWords": "Any of these words: ",
-    "wasFound": "was found on ",
+    "search": "SEARCH",
+    "yourSearchFor": "YOUR SEARCH FOR",
+    "allTheseWords": "- all these words: ",
+    "thisExactPhrase": "- this exact phrase: ",
+    "anyOfTheseWords": "- any of these words: ",
+    "wasFound": "WAS FOUND ON ",
     "pages": " page(s)",
     "navigationObject":"Digital objects belonging to this record",
     

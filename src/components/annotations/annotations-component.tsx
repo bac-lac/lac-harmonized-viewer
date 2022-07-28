@@ -166,43 +166,39 @@ export class AnnotationsComponent {
                         }
                     )
                 }
+            </dl>
 
+            <div id="KwicContent" class="kwic-content">
                 {(kwicEcopiesArr.length > 0 && kwicPagesArr.length > 0 && kwicEcopiesArr.length == kwicPagesArr.length) ?
-                    this.renderAnnotation("----------------------", "") :
-                    ""
+                    this.renderDivKwic() : ""  
                 }
+                <div id="detailsSearchLabel">
                 {(kwicEcopiesArr.length > 0 && kwicPagesArr.length > 0 && kwicEcopiesArr.length == kwicPagesArr.length) ?
-                    this.renderAnnotation(t('yourSearchFor'), "") :
-                    ""
+                    <span id="detailsSearchLabel1"><br />{t('yourSearchFor')} </span> : ""
                 }
                 {(kwicQ != "") ?
-                    this.renderAnnotation(t('allTheseWords') + kwicQ, "") :
-                    ""
+                    <span id="detailsSearchLabel2"><br />{t('allTheseWords')} {kwicQ}</span> : ""
                 }
                 {(kwicQExact != "") ?
-                    this.renderAnnotation(t('thisExactPhrase') + kwicQExact, "") :
-                    ""
+                    <span id="detailsSearchLabel3"><br />{t('thisExactPhrase')} {kwicQExact}</span> : ""
                 }
                 {(kwicQAny != "") ?
-                    this.renderAnnotation(t('anyOfTheseWords') + kwicQAny, "") :
-                    ""
+                    <span id="detailsSearchLabel4"><br />{t('anyOfTheseWords')} {kwicQAny}</span> : ""
                 }
                 {(kwicCount != "") ?
-                    this.renderAnnotation(t('wasFound') + kwicCount + t('pages'), "") :
-                    ""
+                    <span id="detailsSearchLabel5"><br /><br />{t('wasFound')} <br />{kwicCount} {t('pages')}<br /><br /></span> : ""
                 }
+                </div>
                 {(kwicEcopiesArr.length > 0 && kwicPagesArr.length > 0 && kwicEcopiesArr.length == kwicPagesArr.length) ?
-                    this.renderKwic(kwicEcopiesArr, kwicPagesArr) :
-                    ""
+                    this.renderKwic(kwicEcopiesArr, kwicPagesArr) : ""
                 }
-
-            </dl>
+            </div> 
         </Host>;
     }
 
     private renderAnnotation(label: string, value: string) {
         return [
-            <dt tabindex="0">
+            <dt>
                 <span>{label}</span>
             </dt>,
             <dd>
@@ -221,35 +217,11 @@ export class AnnotationsComponent {
             kwicItems.push(kItem);
         }
 
-        var cols = kwicEcopiesArr.length;
-        var className = 'harmonized-image-list mdc-image-list mdc-image-list--horizontal mdc-image-list--'+cols+'col';
-
-        /*
-        return <harmonized-image-list class={className} tabindex={0}>
-        {
-            kwicItems.map((page, index) => 
-            {
-                return <div>{t(page.label).replace('Page ','Page ')}
-                    <harmonized-image
-                        src={page.thumbnail}
-                        contentType={page.contentType}
-                        page={page.pageIndex}
-                        caption={t(page.label)}
-                        show-caption={true}
-                        show-tooltip={true}
-                        preload={index < 999}
-                    />
-                </div>
-            }
-            )
-        }
-        </harmonized-image-list>
-
         return <div class="kwic-annotation">
         {
             kwicItems.map((page, index) => 
             {
-                return <div>{t(page.label).replace('Page ','Page ')}
+                return <div>{t(page.label)}
                     <harmonized-image
                         src={page.thumbnail}
                         contentType={page.contentType}
@@ -264,26 +236,12 @@ export class AnnotationsComponent {
             )
         }
         </div>
-        */
+    }
 
-        return <div class="kwic-annotation">
-        {
-            kwicItems.map((page, index) => 
-            {
-                return <div>{t(page.label).replace('Page ','Page ')}
-                    <harmonized-image
-                        src={page.thumbnail}
-                        contentType={page.contentType}
-                        page={page.pageIndex}
-                        caption={t(page.label)}
-                        show-caption={true}
-                        show-tooltip={true}
-                        preload={index < 999}
-                    />
-                </div>
-            }
-            )
-        }
-        </div>
+    private renderDivKwic() {
+        if (this.language == "en")
+            return [ <div class="kwic-border-top" title="Search"><br />{t('search')}</div> ];
+        else
+            return [ <div class="kwic-border-top" title="Recherche"><br />{t('search')}</div> ];
     }
 }
