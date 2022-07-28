@@ -39,7 +39,7 @@
     "anyOfTheseWords": "- un de ces mots : ",
     "wasFound": "A ÉTÉ TROUVÉ SUR ",
     "pages": " page(s)",
-    "imageContainsTerms": "L'image contient des termes de votre recherche",
+    "imageContainsTerms": "L'objet contient des termes de votre recherche",
     "navigationObject":"Objets numériques appartenant à cette notice",
 
     "errors": {

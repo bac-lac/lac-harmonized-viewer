@@ -39,7 +39,7 @@
     "anyOfTheseWords": "- any of these words: ",
     "wasFound": "WAS FOUND ON ",
     "pages": " page(s)",
-    "imageContainsTerms": "Image contains terms from your search",
+    "imageContainsTerms": "Object contains terms from your search",
     "navigationObject":"Digital objects belonging to this record",
     
     "errors": {
