@@ -5,10 +5,11 @@ harmonized-annotations {
 
     dl {
         line-height: 1.5;
+        font-size: 15px;
 
         dt {
             width: 100%;
-            font-size: 14px;
+            /*font-size: 14px;*/
             display: block;
             align-items: center;
             position: relative;
@@ -130,7 +131,7 @@ harmonized-annotations {
 
     .kwic-content {
         color: #504A4B;
-        font-size: 14px;
+        font-size: 15px;
     }
 
     .kwic-border-top {
