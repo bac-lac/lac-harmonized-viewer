@@ -29,11 +29,12 @@ export class DrawerComponent {
 
     @Watch('shown')
     handleOpen(newValue: boolean, oldValue: boolean): void {
-        this.el.querySelector('button').setAttribute('aria-expanded','true');
-        this.el.querySelector('button').setAttribute('aria-hidden','true');
+        
         if (newValue !== oldValue && newValue) {
             this.drawer.open = true;
             this.el.setAttribute('aria-expanded','true');
+            this.el.querySelector('button').setAttribute('aria-hidden','false');
+            this.el.querySelector('button').setAttribute('aria-label', t('hideInfo'));
         }
         else {
             this.el.setAttribute('aria-expanded','false');
@@ -41,8 +42,7 @@ export class DrawerComponent {
     }
 
     handleClose() : void {
-        this.drawer.open = false;
-        this.el.querySelector('button').setAttribute('aria-expanded','false');
+        this.drawer.open = false;      
         this.el.querySelector('button').setAttribute('aria-hidden','false');
         this.viewerDrawerToggle.emit();
     }

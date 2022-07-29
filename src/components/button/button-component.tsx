@@ -67,10 +67,8 @@ export class ButtonComponent {
                 class={buttonClassName}
                 disabled={this.disabled}
                 title={this.tooltip}
-                aria-controls='hv-drawer'
-                aria-label={this.tooltip}
-                aria-hidden='false'
-                aria-expanded='false'>
+                aria-controls='hv-drawer'               
+                aria-hidden='false'>
                 <div class="mdc-button__ripple"></div>
                 {this.icon && <span class={this.iconClassName} aria-hidden={true} innerHTML={this.icon}></span>}
                 {this.label && <span class="mdc-button__label">{this.label}</span>}
