@@ -260,8 +260,7 @@ export class ImageComponent {
                 />
 
                 { kwicImg ? 
-                    <img src="http://www.clker.com/cliparts/m/I/n/1/T/P/orange-dot-md.png" class="kwic-image" alt="" /> :
-                    "" 
+                    <img src="/assets/material-icons/orange-circle.svg" class="kwic-image" alt="" /> : "" 
                 }
 
                 <ul class="inv" role="listitem" id={itemId}>
