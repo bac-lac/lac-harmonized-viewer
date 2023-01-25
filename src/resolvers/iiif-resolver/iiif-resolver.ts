@@ -65,10 +65,20 @@ export class IIIFResolver extends Resolver {
             }
         })
         .catch(async(e) => {         
-            console.log('do fallback where there is an error');   
+            console.log('do fallback when there is an error');   
             await this.doFallbackCall(fallbackUrl,url);
-            this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
-            throw new Error('manifest-not-found');
+            if (this.manifestJson) {
+                // Add a parse check here eventually                
+                const rawManifest = this.manifestJson['sequences'][0]; 
+                const canvasCount = rawManifest['canvases'].length;
+                if (canvasCount == 0) {
+                    throw new Error('manifest-not-found');
+                }
+            }
+            else {              
+                throw new Error('manifest-not-found');
+            }
+          
         });
         return this;
     }
@@ -101,27 +111,12 @@ export class IIIFResolver extends Resolver {
 
         await axios.get(fallbackUrl, { validateStatus: status => status === 200 })
         .then(async (response) => {
-            //Start calling and loading again the manifest
-            const fUrl = url +  "?" + this.currentDate.getTime().toString() + Math.random().toString() ;
-            console.log('calling manifest after fall back call:' + url);
-            await axios.get(fUrl, { 
-                validateStatus: status => status === 200 
-            })
-            .then((res) => {
-                console.log('response from the manifest call after doFallback');
-                this.manifestJson = res.data as string
-                if (this.manifestJson) {
-                    // Add a parse check here eventually
-                    this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
-                }
-                //this.disableProgressbar();
-            })
-            .catch((e) => {
-                console.log('error: response from the manifest call after doFallback');
-               // this.disableProgressbar();
-                throw new Error('manifest-not-found');
-            });
-            return this;
+            //Start calling and loading again the manifest           
+            this.manifestJson = response.data as string
+            if (this.manifestJson) {
+                // Add a parse check here eventually
+                this.manifest = manifesto.create(this.manifestJson) as Manifesto.IManifest
+            }
         })
         .catch((e) => {
            // this.disableProgressbar();
