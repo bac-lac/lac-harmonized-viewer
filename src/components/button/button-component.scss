@@ -49,8 +49,8 @@ harmonized-button {
             min-width: 60px;
         }
         &--lg {
-            @include mdc-icon-button-icon-size(80px, 80px);
-            min-width: 100px;
+            @include mdc-icon-button-icon-size(60px, 60px);
+            min-width: 120px;
         }
     }
 }
@@ -72,8 +72,7 @@ harmonized-button {
     .mdc-icon-button {
         @include mdc-icon-button-ink-color(#46494c);
         &[disabled] {
-            //@include mdc-icon-button-ink-color(#c5c3c6);
-            @include mdc-icon-button-ink-color(#46494c);
+            @include mdc-icon-button-ink-color(#c5c3c6);
         }
     }
 }
