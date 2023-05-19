@@ -395,15 +395,15 @@ export class OpenSeadragonComponent {
     render() {
         return <Host>
             <div class="button-topbar-group">
-                <harmonized-button
+                {/* <harmonized-button
                     class="button-topbar circle"
                     style={{ 'marginBottom': '15px' }}
                     icon={this.isFullscreen ? iconExitFullscreen : iconEnterFullscreen}
                     size="sm"
                     title={this.isFullscreen ? t('exitFullscreen') : t('enterFullscreen')}
                     aria-label={this.isFullscreen ? t('exitFullscreen') : t('enterFullscreen')}
-                    onClick={this.handleFullscreenToggle.bind(this)}
-                />
+                    onClick={this.handleFullscreenToggle.bind(this)} 
+                /> */}
 
                 <harmonized-button
                     class="button-topbar circle"
