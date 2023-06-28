@@ -260,7 +260,7 @@ export class ImageComponent {
                 />
 
                 { kwicImg ? 
-                    <img src="/assets/material-icons/orange-circle.svg" class="kwic-image" alt="" /> : "" 
+                    <img src="https://baclacpr.blob.core.windows.net/cdn/harmonized-viewer/1.0.0-beta1/assets/material-icons/orange-circle.svg" class="kwic-image" alt="" /> : "" 
                 }
 
                 <ul class="inv" role="listitem" id={itemId}>
