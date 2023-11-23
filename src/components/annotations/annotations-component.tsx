@@ -32,7 +32,14 @@ export class AnnotationsComponent {
 
     @Event({ eventName: "hvNavigationUpdated" }) updatedEvent;
 
-    private imageList: HTMLElement
+    private imageList: HTMLElement;  
+    private kwicItems: any[] = [];
+    private kwicQ = "";
+    private kwicQExact = "";
+    private kwicQAny = "";
+    private kwicCount = "";
+    private kwicPagesArr = [];
+    private kwicEcopiesArr = [];
 
     componentWillLoad() {
         this.store.mapDispatchToProps(this, { viewItem })
@@ -51,7 +58,7 @@ export class AnnotationsComponent {
         })
     }
 
-    componentDidUpdate() {
+    componentDidUpdate() {     
         if (!this.imageList) {
             this.imageList = (this.el.querySelector('.harmonized-image-list') as HTMLElement);
         }
@@ -61,6 +68,7 @@ export class AnnotationsComponent {
     componentDidUnload() {
         this.storeUnsubscribe()
     }
+
 
     render() {
 
@@ -93,50 +101,10 @@ export class AnnotationsComponent {
             : [];
 
         // Kwic begin
-        var kwicQ = "";
-        var kwicQExact = "";
-        var kwicQAny = "";
-        var kwicCount = "";
-        var kwicPagesArr = [];
-        var kwicEcopiesArr = [];
-        if (document.querySelector("lac-harmonized-viewer"))
-        {
-            if (document.querySelector("lac-harmonized-viewer").getAttribute("kwic-pages") &&
-                document.querySelector("lac-harmonized-viewer").getAttribute("kwic-pages") != "")
-            {
-                kwicPagesArr = document.querySelector("lac-harmonized-viewer").getAttribute("kwic-pages").split(',');
-            }
-            if (document.querySelector("lac-harmonized-viewer").getAttribute("kwic-ecopies") &&
-                document.querySelector("lac-harmonized-viewer").getAttribute("kwic-ecopies") != "")
-            {
-                kwicEcopiesArr = document.querySelector("lac-harmonized-viewer").getAttribute("kwic-ecopies").split(',');
-            }
-
-            if (kwicEcopiesArr.length > 0 && kwicPagesArr.length > 0 && kwicEcopiesArr.length == kwicPagesArr.length)
-            {
-                if (document.querySelector("lac-harmonized-viewer").getAttribute("kwic-q") &&
-                    document.querySelector("lac-harmonized-viewer").getAttribute("kwic-q") != "")
-                {
-                    kwicQ = document.querySelector("lac-harmonized-viewer").getAttribute("kwic-q");
-                }
-                if (document.querySelector("lac-harmonized-viewer").getAttribute("kwic-q-exact") &&
-                    document.querySelector("lac-harmonized-viewer").getAttribute("kwic-q-exact") != "")
-                {
-                    kwicQExact = document.querySelector("lac-harmonized-viewer").getAttribute("kwic-q-exact");
-                }
-                if (document.querySelector("lac-harmonized-viewer").getAttribute("kwic-q-any") &&
-                    document.querySelector("lac-harmonized-viewer").getAttribute("kwic-q-any") != "")
-                {
-                    kwicQAny = document.querySelector("lac-harmonized-viewer").getAttribute("kwic-q-any");
-                }
-                if (document.querySelector("lac-harmonized-viewer").getAttribute("kwic-count") &&
-                    document.querySelector("lac-harmonized-viewer").getAttribute("kwic-count") != "")
-                {
-                    kwicCount = document.querySelector("lac-harmonized-viewer").getAttribute("kwic-count");
-                }
-            } 
-        } 
-        // Kwic end
+      
+        this.getKWICPagedata();
+        this.getKwicItems();
+      
 
         return <Host >
             <dl class="annotation-list">
@@ -169,31 +137,79 @@ export class AnnotationsComponent {
             </dl>
 
             <div id="KwicContent" class="kwic-content">
-                {(kwicEcopiesArr.length > 0 && kwicPagesArr.length > 0 && kwicEcopiesArr.length == kwicPagesArr.length) ?
-                    this.renderDivKwic() : ""  
+                {(this.kwicEcopiesArr.length > 0 ) ?
+                    this.renderDivKwic() : ""
                 }
                 <div id="detailsSearchLabel">
-                {(kwicEcopiesArr.length > 0 && kwicPagesArr.length > 0 && kwicEcopiesArr.length == kwicPagesArr.length) ?
-                    <span id="detailsSearchLabel1"><br />{t('yourSearchFor')} </span> : ""
-                }
-                {(kwicQ != "") ?
-                    <span id="detailsSearchLabel2"><br />{t('allTheseWords')} {kwicQ}</span> : ""
-                }
-                {(kwicQExact != "") ?
-                    <span id="detailsSearchLabel3"><br />{t('thisExactPhrase')} {kwicQExact}</span> : ""
-                }
-                {(kwicQAny != "") ?
-                    <span id="detailsSearchLabel4"><br />{t('anyOfTheseWords')} {kwicQAny}</span> : ""
-                }
-                {(kwicCount != "") ?
-                    <span id="detailsSearchLabel5"><br /><br />{t('wasFound')} <br />{kwicCount} {t('pages')}<br /><br /></span> : ""
-                }
+                    {(this.kwicEcopiesArr.length > 0 ) ?
+                        <span id="detailsSearchLabel1"><br />{t('yourSearchFor')} </span> : ""
+                    }
+                    {(this.kwicQ != "") ?
+                        <span id="detailsSearchLabel2"><br />{t('allTheseWords')} {this.kwicQ}</span> : ""
+                    }
+                    {(this.kwicQExact != "") ?
+                        <span id="detailsSearchLabel3"><br />{t('thisExactPhrase')} {this.kwicQExact}</span> : ""
+                    }
+                    {(this.kwicQAny != "") ?
+                        <span id="detailsSearchLabel4"><br />{t('anyOfTheseWords')} {this.kwicQAny}</span> : ""
+                    }
+                    {(this.kwicCount != "") ?
+                        <span id="detailsSearchLabel5"><br /><br />{t('wasFound')} <br />{this.kwicCount} {t('pages')}<br /><br /></span> : ""
+                    }
                 </div>
-                {(kwicEcopiesArr.length > 0 && kwicPagesArr.length > 0 && kwicEcopiesArr.length == kwicPagesArr.length) ?
-                    this.renderKwic(kwicEcopiesArr, kwicPagesArr) : ""
+                {(this.kwicEcopiesArr.length > 0) ?
+                    this.renderKwic() : ""
                 }
-            </div> 
+            </div>
         </Host>;
+    }
+
+    private getKWICPagedata(): void{
+        this.kwicQ = "";
+        this.kwicQExact = "";
+        this.kwicQAny = "";
+        this.kwicCount = "";
+        this.kwicPagesArr = [];
+        this.kwicEcopiesArr = [];
+        const hvEl = document.querySelector("lac-harmonized-viewer");
+        if (hvEl) {
+            if (hvEl.getAttribute("kwic-ecopies") && hvEl.getAttribute("kwic-ecopies") != "") {
+                    this.kwicEcopiesArr = hvEl.getAttribute("kwic-ecopies").split(',');
+            }
+
+            if (this.kwicEcopiesArr.length > 0) {
+                if (hvEl.getAttribute("kwic-q") && hvEl.getAttribute("kwic-q") != "") {
+                    this.kwicQ = hvEl.getAttribute("kwic-q");
+                }
+                if (hvEl.getAttribute("kwic-q-exact") && hvEl.getAttribute("kwic-q-exact") != "") {
+                    this.kwicQExact = hvEl.getAttribute("kwic-q-exact");
+                }
+                if (hvEl.getAttribute("kwic-q-any") && hvEl.getAttribute("kwic-q-any") != "") {
+                    this.kwicQAny = hvEl.getAttribute("kwic-q-any");
+                }
+                if (hvEl.getAttribute("kwic-count") && hvEl.getAttribute("kwic-count") != "") {
+                    this.kwicCount =hvEl.getAttribute("kwic-count");
+                }
+            }
+        }
+    }
+
+    private getKwicItems(): void {
+        this.kwicItems = [];
+        this.kwicPagesArr = [];
+        this.items.forEach((element,index) => {
+            const urlThumbnail = element.thumbnail;
+            if (urlThumbnail) {
+                let searchParam = new URLSearchParams(urlThumbnail.replace('?','&'));
+                const itemEcopy = searchParam.get('id');
+                let checkKwicItem = this.kwicEcopiesArr.find(s=>s == itemEcopy); 
+                if (checkKwicItem) {
+                    this.kwicItems.push(element);
+                    this.kwicPagesArr.push(index);
+                }
+            }
+            
+        });        
     }
 
     private renderAnnotation(label: string, value: string) {
@@ -207,41 +223,31 @@ export class AnnotationsComponent {
         ];
     }
 
-    private renderKwic(kwicEcopiesArr, kwicPagesArr) {
-
-        var kwicItems = [];
-        for (var i = 0; i < kwicEcopiesArr.length; i++) {
-            var index = parseInt(kwicPagesArr[i]) - 1;
-            var kItem = this.items[index];
-                kItem["pageIndex"] = index;
-            kwicItems.push(kItem);
-        }
-
+    private renderKwic() {
         return <div class="kwic-annotation">
-        {
-            kwicItems.map((page, index) => 
             {
-                return <div>{t(page.label)}
-                    <harmonized-image
-                        src={page.thumbnail}
-                        contentType={page.contentType}
-                        page={page.pageIndex}
-                        caption={t(page.label)}
-                        show-caption={true}
-                        show-tooltip={true}
-                        preload={index < 999}
-                    />
-                </div>
+                this.kwicItems.map((page, index) => {
+                    return <div><br />{t(page.label)} <br />
+                        <harmonized-image
+                            src={page.thumbnail}
+                            contentType={page.contentType}
+                            page={this.kwicPagesArr[index]}
+                            caption={t(page.label)}
+                            show-caption={true}
+                            show-tooltip={true}
+                            preload={index < 999}
+                        />
+                    </div>
+                }
+                )
             }
-            )
-        }
         </div>
     }
 
     private renderDivKwic() {
         if (this.language == "en")
-            return [ <div class="kwic-border-top" title="Search"><br />{t('search')}</div> ];
+            return [<div class="kwic-border-top" title="Search"><br />{t('search')}</div>];
         else
-            return [ <div class="kwic-border-top" title="Recherche"><br />{t('search')}</div> ];
+            return [<div class="kwic-border-top" title="Recherche"><br />{t('search')}</div>];
     }
 }
