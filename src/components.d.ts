@@ -111,7 +111,9 @@ export namespace Components {
     'suppressGallery': boolean;
     'url': string;
   }
-  interface HarmonizedViewport {}
+  interface HarmonizedViewport {
+    'getViewportElement': () => Promise<HTMLElement>;
+  }
 }
 
 declare global {

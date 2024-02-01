@@ -95,6 +95,7 @@ export class ViewerComponent {
 
 		addEventListenerToRunOnce(this.el, 'hvRender', function () {
 			this.itemsLoaded.emit();
+
 		}.bind(this));
 	}
 
@@ -242,15 +243,14 @@ export class ViewerComponent {
 			deepzoom: this.deepzoomEnabled,
 			suppressGallery: this.suppressGallery
 		});
+		
+		
+		this.fetchManifest(this.url, this.manifestFallBackUrl);
+		
 	}
 
 	componentDidLoad() {
-		// Move this into WillLoad (needs tests)
-		console.log('component did load');
-		console.log(this.manifestFallBackUrl);
-		this.fetchManifest(this.url, this.manifestFallBackUrl);
-
-
+	
 	}
 
 	componentDidUpdate() {
@@ -263,10 +263,12 @@ export class ViewerComponent {
 				this.manifestIsEmpty.emit();
 			}
 		}
+		
 	}
 
 	componentDidRender() {
 		this.rendered.emit();
+	
 	}
 
 	componentDidUnload() {
@@ -312,7 +314,7 @@ export class ViewerComponent {
 	}
 
 	render() {
-
+		console.log(this.manifestFetching);
 		if (this.manifestFetching) {
 			return <div class="centered-box">
 				<span>{t('loadingManifest')}</span>
@@ -348,6 +350,7 @@ export class ViewerComponent {
 
 
 		return <div class={className}>
+			
 			<harmonized-topbar />
 
 			<harmonized-viewport />
